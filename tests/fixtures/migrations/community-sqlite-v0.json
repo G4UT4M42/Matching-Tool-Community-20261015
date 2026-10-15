@@ -1,0 +1,10 @@
+{
+  "classification": "TEST_SYNTHETIC",
+  "source_version": 0,
+  "source_name": "fictional-unversioned-preview",
+  "expected_behavior": "No automatic upgrade unless synthetic preview identity is independently verified",
+  "accounts": [
+    { "id": "FICTIONAL-EXAMPLE", "signed_minor": -1540, "currency": "EUR" }
+  ],
+  "total_minor_by_currency": { "EUR": -1540 }
+}

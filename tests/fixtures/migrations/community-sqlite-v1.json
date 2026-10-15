@@ -1,0 +1,12 @@
+{
+  "classification": "TEST_SYNTHETIC",
+  "target_version": "community-sqlite-v1",
+  "required_version": 1,
+  "required_tables": [
+    "transactions",
+    "documents",
+    "settings",
+    "community_storage_migrations"
+  ],
+  "expected_behavior": "Migrations are atomic, checksummed and reject unsupported newer versions"
+}

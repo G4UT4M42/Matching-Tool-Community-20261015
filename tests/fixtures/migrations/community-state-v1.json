@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "format": "matching-community-state-v1",
+  "run_id": "COMMUNITY_SYNTHETIC_DEMO_V1",
+  "transactions": {},
+  "documents": {},
+  "match_groups": {},
+  "exclusion_rules": [],
+  "audit_events": [],
+  "matched_transaction_ids": [],
+  "matched_document_ids": [],
+  "excluded_transaction_ids": []
+}

@@ -1,0 +1,2170 @@
+[
+  {
+    "repository": "v2_source",
+    "file": "src/server/index.ts",
+    "line": 90,
+    "method": "GET",
+    "route": "*",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 94,
+    "method": "POST",
+    "route": "/run",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 422,
+    "method": "GET",
+    "route": "/match",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 433,
+    "method": "POST",
+    "route": "/match",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 487,
+    "method": "GET",
+    "route": "/summary",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 565,
+    "method": "GET",
+    "route": "/transactions",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 669,
+    "method": "GET",
+    "route": "/transactions/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 689,
+    "method": "POST",
+    "route": "/transactions/:id/enrich-paypal",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 789,
+    "method": "GET",
+    "route": "/documents/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 799,
+    "method": "GET",
+    "route": "/documents",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 908,
+    "method": "GET",
+    "route": "/matches",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 964,
+    "method": "GET",
+    "route": "/matches/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 972,
+    "method": "PATCH",
+    "route": "/matches/:id/status",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 997,
+    "method": "POST",
+    "route": "/matches",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1040,
+    "method": "DELETE",
+    "route": "/matches/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1068,
+    "method": "POST",
+    "route": "/documents/delete",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1120,
+    "method": "GET",
+    "route": "/exclusions",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1125,
+    "method": "POST",
+    "route": "/exclusions",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1154,
+    "method": "DELETE",
+    "route": "/exclusions/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1170,
+    "method": "GET",
+    "route": "/review-queue",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1196,
+    "method": "GET",
+    "route": "/audit",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1212,
+    "method": "GET",
+    "route": "/report/json",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1221,
+    "method": "GET",
+    "route": "/report/csv",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1230,
+    "method": "GET",
+    "route": "/report/summary",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1246,
+    "method": "GET",
+    "route": "/report/vat",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1272,
+    "method": "GET",
+    "route": "/report/income-tax",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1298,
+    "method": "GET",
+    "route": "/report/eu-oss",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1331,
+    "method": "GET",
+    "route": "/report/vat/pdf",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1358,
+    "method": "GET",
+    "route": "/report/income-tax/pdf",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1448,
+    "method": "PUT",
+    "route": "/documents/:id/vat-edit",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1563,
+    "method": "POST",
+    "route": "/income/upload-wc",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1703,
+    "method": "POST",
+    "route": "/documents/eigenbeleg",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1747,
+    "method": "POST",
+    "route": "/documents/eigenbeleg/upload",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1786,
+    "method": "GET",
+    "route": "/settings/:key",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1797,
+    "method": "PUT",
+    "route": "/settings/:key",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1804,
+    "method": "DELETE",
+    "route": "/settings/:key",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1810,
+    "method": "POST",
+    "route": "/transactions/:id/disposition",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1838,
+    "method": "POST",
+    "route": "/private-vendors",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1881,
+    "method": "GET",
+    "route": "/private-vendors",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1888,
+    "method": "POST",
+    "route": "/compose-email",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1905,
+    "method": "GET",
+    "route": "/vendor-email",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 1956,
+    "method": "GET",
+    "route": "/vendors",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2024,
+    "method": "PUT",
+    "route": "/vendors/:name",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2046,
+    "method": "DELETE",
+    "route": "/private-vendors/:name",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2054,
+    "method": "GET",
+    "route": "/files/open/:filename(*)",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2126,
+    "method": "POST",
+    "route": "/import/stripe",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2160,
+    "method": "POST",
+    "route": "/import/paypal",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2193,
+    "method": "GET",
+    "route": "/import/bank/aspsps",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2207,
+    "method": "POST",
+    "route": "/import/bank/connect",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2230,
+    "method": "GET",
+    "route": "/import/bank/callback",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2252,
+    "method": "GET",
+    "route": "/import/bank/status",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2310,
+    "method": "POST",
+    "route": "/import/bank/transactions",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2349,
+    "method": "POST",
+    "route": "/import/documents",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2385,
+    "method": "POST",
+    "route": "/invoices/generate/google-play",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2407,
+    "method": "POST",
+    "route": "/invoices/generate/google-play/auto",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2454,
+    "method": "GET",
+    "route": "/belege/info",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2482,
+    "method": "POST",
+    "route": "/belege/open",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2500,
+    "method": "POST",
+    "route": "/import/amazon",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2582,
+    "method": "POST",
+    "route": "/import/amazon/link-pdfs",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2595,
+    "method": "POST",
+    "route": "/import/upload",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2677,
+    "method": "POST",
+    "route": "/invoicerec/upload",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2785,
+    "method": "POST",
+    "route": "/invoicerec/upload-and-match",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 2954,
+    "method": "GET",
+    "route": "/invoicerec/import-folder",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3063,
+    "method": "GET",
+    "route": "/invoicerec/scans",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3110,
+    "method": "GET",
+    "route": "/invoicerec/scans/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3121,
+    "method": "PUT",
+    "route": "/invoicerec/scans/:id/fields",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3211,
+    "method": "POST",
+    "route": "/invoicerec/scans/:id/reparse",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3246,
+    "method": "POST",
+    "route": "/invoicerec/scans/:id/confirm",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3290,
+    "method": "POST",
+    "route": "/invoicerec/scans/:id/rescan",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3552,
+    "method": "POST",
+    "route": "/invoicerec/scans/:id/reject",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3560,
+    "method": "DELETE",
+    "route": "/invoicerec/scans/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3589,
+    "method": "GET",
+    "route": "/invoicerec/scans/:id/preview",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3608,
+    "method": "GET",
+    "route": "/invoicerec/scans/:id/page/:page",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3668,
+    "method": "GET",
+    "route": "/invoicerec/scans/:id/words",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3694,
+    "method": "POST",
+    "route": "/invoicerec/scans/:id/learn-and-rescan",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3801,
+    "method": "GET",
+    "route": "/invoicerec/templates",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3806,
+    "method": "DELETE",
+    "route": "/invoicerec/templates/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3813,
+    "method": "GET",
+    "route": "/invoicerec/ai/models",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3823,
+    "method": "GET",
+    "route": "/invoicerec/ai/status",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3835,
+    "method": "PUT",
+    "route": "/invoicerec/ai/config",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3843,
+    "method": "DELETE",
+    "route": "/invoicerec/ai/config",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3849,
+    "method": "GET",
+    "route": "/backups",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3853,
+    "method": "POST",
+    "route": "/backups",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3863,
+    "method": "POST",
+    "route": "/backups/:name/restore",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3874,
+    "method": "DELETE",
+    "route": "/backups/:name",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3881,
+    "method": "GET",
+    "route": "/trash",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3886,
+    "method": "POST",
+    "route": "/trash/:id/restore",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3934,
+    "method": "DELETE",
+    "route": "/trash/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/api.ts",
+    "line": 3940,
+    "method": "DELETE",
+    "route": "/trash",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 47,
+    "method": "GET",
+    "route": "/executor/status",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 53,
+    "method": "GET",
+    "route": "/browser/status",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 63,
+    "method": "POST",
+    "route": "/browser/launch",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 73,
+    "method": "POST",
+    "route": "/browser/launch-visible",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 83,
+    "method": "POST",
+    "route": "/browser/launch-profile",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 159,
+    "method": "GET",
+    "route": "/portals/by-vendor",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 180,
+    "method": "POST",
+    "route": "/portals/auto-create",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 216,
+    "method": "GET",
+    "route": "/portals",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 221,
+    "method": "POST",
+    "route": "/portals",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 234,
+    "method": "PUT",
+    "route": "/portals/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 244,
+    "method": "DELETE",
+    "route": "/portals/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 266,
+    "method": "POST",
+    "route": "/portals/:id/runs",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 292,
+    "method": "GET",
+    "route": "/portals/:id/suggest-daterange",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 302,
+    "method": "POST",
+    "route": "/portals/:id/connect-session",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 315,
+    "method": "GET",
+    "route": "/runs",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 323,
+    "method": "GET",
+    "route": "/runs/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 329,
+    "method": "GET",
+    "route": "/runs/:id/files",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 337,
+    "method": "GET",
+    "route": "/files/:fileId/open",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 348,
+    "method": "GET",
+    "route": "/runs/:id/events",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 355,
+    "method": "POST",
+    "route": "/runs/:id/retry",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 370,
+    "method": "POST",
+    "route": "/runs/:id/cancel",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 381,
+    "method": "GET",
+    "route": "/costs/snapshot",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 385,
+    "method": "GET",
+    "route": "/costs/history",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 390,
+    "method": "GET",
+    "route": "/costs/sessions/:id/entries",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 394,
+    "method": "POST",
+    "route": "/costs/session/start",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 399,
+    "method": "POST",
+    "route": "/costs/session/end",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 404,
+    "method": "PUT",
+    "route": "/costs/limit",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 410,
+    "method": "POST",
+    "route": "/costs/continue",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 417,
+    "method": "GET",
+    "route": "/ai/config",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 422,
+    "method": "PUT",
+    "route": "/ai/config",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 428,
+    "method": "DELETE",
+    "route": "/ai/config",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 436,
+    "method": "GET",
+    "route": "/browser-use/status",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 446,
+    "method": "GET",
+    "route": "/runs/:id/artifacts",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 454,
+    "method": "GET",
+    "route": "/runs/:id/invoices",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 462,
+    "method": "GET",
+    "route": "/artifacts/:id/view",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/payments.ts",
+    "line": 179,
+    "method": "POST",
+    "route": "/candidates/refresh",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/payments.ts",
+    "line": 187,
+    "method": "POST",
+    "route": "/batches",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/payments.ts",
+    "line": 200,
+    "method": "GET",
+    "route": "/batches/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/payments.ts",
+    "line": 204,
+    "method": "PUT",
+    "route": "/batches/:id/items/:itemId",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/payments.ts",
+    "line": 216,
+    "method": "POST",
+    "route": "/batches/:id/review",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/payments.ts",
+    "line": 223,
+    "method": "POST",
+    "route": "/batches/:id/export",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/payments.ts",
+    "line": 231,
+    "method": "GET",
+    "route": "/batches/:id/export",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/payments.ts",
+    "line": 236,
+    "method": "POST",
+    "route": "/batches/:id/import-to-george",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/payments.ts",
+    "line": 242,
+    "method": "GET",
+    "route": "/batches/:id/automation",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/payments.ts",
+    "line": 253,
+    "method": "POST",
+    "route": "/batches/:id/request-release",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "v2_source",
+    "file": "src/server/routes/payments.ts",
+    "line": 258,
+    "method": "POST",
+    "route": "/batches/:id/cancel",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/index.ts",
+    "line": 41,
+    "method": "GET",
+    "route": "/api/community/session",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/index.ts",
+    "line": 111,
+    "method": "GET",
+    "route": "*",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 95,
+    "method": "POST",
+    "route": "/run",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 423,
+    "method": "GET",
+    "route": "/match",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 434,
+    "method": "POST",
+    "route": "/match",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 488,
+    "method": "GET",
+    "route": "/summary",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 566,
+    "method": "GET",
+    "route": "/transactions",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 670,
+    "method": "GET",
+    "route": "/transactions/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 690,
+    "method": "POST",
+    "route": "/transactions/:id/enrich-paypal",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 790,
+    "method": "GET",
+    "route": "/documents/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 800,
+    "method": "GET",
+    "route": "/documents",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 909,
+    "method": "GET",
+    "route": "/matches",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 965,
+    "method": "GET",
+    "route": "/matches/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 973,
+    "method": "PATCH",
+    "route": "/matches/:id/status",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 998,
+    "method": "POST",
+    "route": "/matches",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1041,
+    "method": "DELETE",
+    "route": "/matches/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1069,
+    "method": "POST",
+    "route": "/documents/delete",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1121,
+    "method": "GET",
+    "route": "/exclusions",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1126,
+    "method": "POST",
+    "route": "/exclusions",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1155,
+    "method": "DELETE",
+    "route": "/exclusions/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1171,
+    "method": "GET",
+    "route": "/review-queue",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1197,
+    "method": "GET",
+    "route": "/audit",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1213,
+    "method": "GET",
+    "route": "/report/json",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1222,
+    "method": "GET",
+    "route": "/report/csv",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1231,
+    "method": "GET",
+    "route": "/report/summary",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1247,
+    "method": "GET",
+    "route": "/report/vat",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1273,
+    "method": "GET",
+    "route": "/report/income-tax",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1299,
+    "method": "GET",
+    "route": "/report/eu-oss",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1332,
+    "method": "GET",
+    "route": "/report/vat/pdf",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1359,
+    "method": "GET",
+    "route": "/report/income-tax/pdf",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1449,
+    "method": "PUT",
+    "route": "/documents/:id/vat-edit",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1564,
+    "method": "POST",
+    "route": "/income/upload-wc",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1704,
+    "method": "POST",
+    "route": "/documents/eigenbeleg",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1748,
+    "method": "POST",
+    "route": "/documents/eigenbeleg/upload",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1787,
+    "method": "GET",
+    "route": "/settings/:key",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1792,
+    "method": "PUT",
+    "route": "/settings/:key",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1799,
+    "method": "DELETE",
+    "route": "/settings/:key",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1805,
+    "method": "POST",
+    "route": "/transactions/:id/disposition",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1833,
+    "method": "POST",
+    "route": "/private-vendors",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1876,
+    "method": "GET",
+    "route": "/private-vendors",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1883,
+    "method": "POST",
+    "route": "/compose-email",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1900,
+    "method": "GET",
+    "route": "/vendor-email",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 1951,
+    "method": "GET",
+    "route": "/vendors",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2019,
+    "method": "PUT",
+    "route": "/vendors/:name",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2041,
+    "method": "DELETE",
+    "route": "/private-vendors/:name",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2049,
+    "method": "GET",
+    "route": "/files/open/:filename(*)",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2121,
+    "method": "POST",
+    "route": "/import/stripe",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2155,
+    "method": "POST",
+    "route": "/import/paypal",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2188,
+    "method": "GET",
+    "route": "/import/bank/aspsps",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2202,
+    "method": "POST",
+    "route": "/import/bank/connect",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2225,
+    "method": "GET",
+    "route": "/import/bank/callback",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2247,
+    "method": "GET",
+    "route": "/import/bank/status",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2305,
+    "method": "POST",
+    "route": "/import/bank/transactions",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2344,
+    "method": "POST",
+    "route": "/import/documents",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2380,
+    "method": "POST",
+    "route": "/invoices/generate/google-play",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2402,
+    "method": "POST",
+    "route": "/invoices/generate/google-play/auto",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2449,
+    "method": "GET",
+    "route": "/belege/info",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2477,
+    "method": "POST",
+    "route": "/belege/open",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2495,
+    "method": "POST",
+    "route": "/import/amazon",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2577,
+    "method": "POST",
+    "route": "/import/amazon/link-pdfs",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2590,
+    "method": "POST",
+    "route": "/import/upload",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2672,
+    "method": "POST",
+    "route": "/invoicerec/upload",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2780,
+    "method": "POST",
+    "route": "/invoicerec/upload-and-match",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 2949,
+    "method": "GET",
+    "route": "/invoicerec/import-folder",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3058,
+    "method": "GET",
+    "route": "/invoicerec/scans",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3105,
+    "method": "GET",
+    "route": "/invoicerec/scans/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3116,
+    "method": "PUT",
+    "route": "/invoicerec/scans/:id/fields",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3206,
+    "method": "POST",
+    "route": "/invoicerec/scans/:id/reparse",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3241,
+    "method": "POST",
+    "route": "/invoicerec/scans/:id/confirm",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3285,
+    "method": "POST",
+    "route": "/invoicerec/scans/:id/rescan",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3547,
+    "method": "POST",
+    "route": "/invoicerec/scans/:id/reject",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3555,
+    "method": "DELETE",
+    "route": "/invoicerec/scans/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3584,
+    "method": "GET",
+    "route": "/invoicerec/scans/:id/preview",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3603,
+    "method": "GET",
+    "route": "/invoicerec/scans/:id/page/:page",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3663,
+    "method": "GET",
+    "route": "/invoicerec/scans/:id/words",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3689,
+    "method": "POST",
+    "route": "/invoicerec/scans/:id/learn-and-rescan",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3796,
+    "method": "GET",
+    "route": "/invoicerec/templates",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3801,
+    "method": "DELETE",
+    "route": "/invoicerec/templates/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3808,
+    "method": "GET",
+    "route": "/invoicerec/ai/models",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3818,
+    "method": "GET",
+    "route": "/invoicerec/ai/status",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3830,
+    "method": "PUT",
+    "route": "/invoicerec/ai/config",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3838,
+    "method": "DELETE",
+    "route": "/invoicerec/ai/config",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3844,
+    "method": "GET",
+    "route": "/backups",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3848,
+    "method": "POST",
+    "route": "/backups",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3860,
+    "method": "POST",
+    "route": "/backups/:name/restore",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3868,
+    "method": "DELETE",
+    "route": "/backups/:name",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3877,
+    "method": "GET",
+    "route": "/trash",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3882,
+    "method": "POST",
+    "route": "/trash/:id/restore",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3930,
+    "method": "DELETE",
+    "route": "/trash/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/api.ts",
+    "line": 3936,
+    "method": "DELETE",
+    "route": "/trash",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 47,
+    "method": "GET",
+    "route": "/executor/status",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 53,
+    "method": "GET",
+    "route": "/browser/status",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 63,
+    "method": "POST",
+    "route": "/browser/launch",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 73,
+    "method": "POST",
+    "route": "/browser/launch-visible",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 83,
+    "method": "POST",
+    "route": "/browser/launch-profile",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 159,
+    "method": "GET",
+    "route": "/portals/by-vendor",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 180,
+    "method": "POST",
+    "route": "/portals/auto-create",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 216,
+    "method": "GET",
+    "route": "/portals",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 221,
+    "method": "POST",
+    "route": "/portals",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 234,
+    "method": "PUT",
+    "route": "/portals/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 244,
+    "method": "DELETE",
+    "route": "/portals/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 266,
+    "method": "POST",
+    "route": "/portals/:id/runs",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 292,
+    "method": "GET",
+    "route": "/portals/:id/suggest-daterange",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 302,
+    "method": "POST",
+    "route": "/portals/:id/connect-session",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 315,
+    "method": "GET",
+    "route": "/runs",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 323,
+    "method": "GET",
+    "route": "/runs/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 329,
+    "method": "GET",
+    "route": "/runs/:id/files",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 337,
+    "method": "GET",
+    "route": "/files/:fileId/open",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 348,
+    "method": "GET",
+    "route": "/runs/:id/events",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 355,
+    "method": "POST",
+    "route": "/runs/:id/retry",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 370,
+    "method": "POST",
+    "route": "/runs/:id/cancel",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 381,
+    "method": "GET",
+    "route": "/costs/snapshot",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 385,
+    "method": "GET",
+    "route": "/costs/history",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 390,
+    "method": "GET",
+    "route": "/costs/sessions/:id/entries",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 394,
+    "method": "POST",
+    "route": "/costs/session/start",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 399,
+    "method": "POST",
+    "route": "/costs/session/end",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 404,
+    "method": "PUT",
+    "route": "/costs/limit",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 410,
+    "method": "POST",
+    "route": "/costs/continue",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 417,
+    "method": "GET",
+    "route": "/ai/config",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 422,
+    "method": "PUT",
+    "route": "/ai/config",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 428,
+    "method": "DELETE",
+    "route": "/ai/config",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 436,
+    "method": "GET",
+    "route": "/browser-use/status",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 446,
+    "method": "GET",
+    "route": "/runs/:id/artifacts",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 454,
+    "method": "GET",
+    "route": "/runs/:id/invoices",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/invoicebot.ts",
+    "line": 462,
+    "method": "GET",
+    "route": "/artifacts/:id/view",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/payments.ts",
+    "line": 179,
+    "method": "POST",
+    "route": "/candidates/refresh",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/payments.ts",
+    "line": 187,
+    "method": "POST",
+    "route": "/batches",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/payments.ts",
+    "line": 200,
+    "method": "GET",
+    "route": "/batches/:id",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/payments.ts",
+    "line": 204,
+    "method": "PUT",
+    "route": "/batches/:id/items/:itemId",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/payments.ts",
+    "line": 216,
+    "method": "POST",
+    "route": "/batches/:id/review",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/payments.ts",
+    "line": 223,
+    "method": "POST",
+    "route": "/batches/:id/export",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/payments.ts",
+    "line": 231,
+    "method": "GET",
+    "route": "/batches/:id/export",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/payments.ts",
+    "line": 236,
+    "method": "POST",
+    "route": "/batches/:id/import-to-george",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/payments.ts",
+    "line": 242,
+    "method": "GET",
+    "route": "/batches/:id/automation",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/payments.ts",
+    "line": 253,
+    "method": "POST",
+    "route": "/batches/:id/request-release",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  },
+  {
+    "repository": "community",
+    "file": "src/server/routes/payments.ts",
+    "line": 258,
+    "method": "POST",
+    "route": "/batches/:id/cancel",
+    "status": "SOURCE_PRESENT_RUNTIME_UNQUALIFIED"
+  }
+]

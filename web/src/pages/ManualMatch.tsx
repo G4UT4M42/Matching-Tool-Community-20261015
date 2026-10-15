@@ -1,0 +1,159 @@
+import React, { useEffect, useState } from 'react';
+import { api } from '../api';
+import { Card, Button, SearchInput, Amount, SourceBadge, FileLink, colors, formatDate, useWorkingYear } from '../components/shared';
+
+export function ManualMatch() {
+  const [txnSearch, setTxnSearch] = useState('');
+  const [docSearch, setDocSearch] = useState('');
+  const [txnResults, setTxnResults] = useState<any[]>([]);
+  const [docResults, setDocResults] = useState<any[]>([]);
+  const [selectedTxns, setSelectedTxns] = useState<string[]>([]);
+  const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
+  const [reason, setReason] = useState('');
+  const [message, setMessage] = useState('');
+  const { workingYear, quarter } = useWorkingYear();
+
+  const searchTxns = async () => {
+    if (!txnSearch) return;
+    const res = await api.getTransactions({ search: txnSearch, status: 'unmatched', limit: '20', year: String(workingYear), ...(quarter ? { quarter: String(quarter) } : {}) });
+    setTxnResults(res.items);
+  };
+
+  const searchDocs = async () => {
+    if (!docSearch) return;
+    const res = await api.getDocuments({ search: docSearch, status: 'unmatched', limit: '20', year: String(workingYear), ...(quarter ? { quarter: String(quarter) } : {}) });
+    setDocResults(res.items);
+  };
+
+  const toggleTxn = (id: string) => {
+    setSelectedTxns((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+  };
+
+  const toggleDoc = (id: string) => {
+    setSelectedDocs((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+  };
+
+  const createMatch = async () => {
+    if (selectedTxns.length === 0 && selectedDocs.length === 0) return;
+    try {
+      const result = await api.createMatch(selectedTxns, selectedDocs, reason);
+      setMessage(`Match created: ${result.match_group_id}`);
+      setSelectedTxns([]);
+      setSelectedDocs([]);
+      setReason('');
+      // Refresh searches
+      if (txnSearch) searchTxns();
+      if (docSearch) searchDocs();
+    } catch (err: any) {
+      setMessage(`Error: ${err.message}`);
+    }
+  };
+
+  return (
+    <div>
+      <h1 style={{ fontSize: 22, marginBottom: 16 }}>Manual Match</h1>
+
+      {message && (
+        <div style={{
+          padding: 12, marginBottom: 16, borderRadius: 6, fontSize: 13,
+          background: message.startsWith('Error') ? '#fce4ec' : '#e8f5e9',
+          color: message.startsWith('Error') ? colors.red : colors.green,
+        }}>
+          {message}
+        </div>
+      )}
+
+      <div style={{ display: 'flex', gap: 16 }}>
+        {/* Left panel: Transactions */}
+        <Card title="Select Transactions" style={{ flex: 1 }}>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+            <SearchInput value={txnSearch} onChange={setTxnSearch} placeholder="Search transactions..." />
+            <Button onClick={searchTxns}>Search</Button>
+          </div>
+
+          {selectedTxns.length > 0 && (
+            <div style={{ marginBottom: 8, fontSize: 12, color: colors.blue }}>
+              {selectedTxns.length} transaction(s) selected
+            </div>
+          )}
+
+          <div style={{ maxHeight: 400, overflow: 'auto' }}>
+            {txnResults.map((t: any) => (
+              <div
+                key={t.transaction_id}
+                onClick={() => toggleTxn(t.transaction_id)}
+                style={{
+                  padding: '8px 12px', marginBottom: 4, borderRadius: 4, cursor: 'pointer', fontSize: 12,
+                  background: selectedTxns.includes(t.transaction_id) ? '#e3f2fd' : '#f8f9fa',
+                  border: selectedTxns.includes(t.transaction_id) ? '2px solid #2196f3' : '1px solid #eee',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span><SourceBadge source={t.source_system} /> {formatDate(t.posting_at)}</span>
+                  <Amount value={t.amount} currency={t.currency_code} />
+                </div>
+                <div style={{ color: '#666', marginTop: 2 }}>{t.description_raw?.slice(0, 60)}</div>
+                <div style={{ color: '#999', marginTop: 1 }}>{t.counterparty_name ?? ''}</div>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Right panel: Documents */}
+        <Card title="Select Documents" style={{ flex: 1 }}>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+            <SearchInput value={docSearch} onChange={setDocSearch} placeholder="Search documents..." />
+            <Button onClick={searchDocs}>Search</Button>
+          </div>
+
+          {selectedDocs.length > 0 && (
+            <div style={{ marginBottom: 8, fontSize: 12, color: colors.blue }}>
+              {selectedDocs.length} document(s) selected
+            </div>
+          )}
+
+          <div style={{ maxHeight: 400, overflow: 'auto' }}>
+            {docResults.map((d: any) => (
+              <div
+                key={d.document_id}
+                onClick={() => toggleDoc(d.document_id)}
+                style={{
+                  padding: '8px 12px', marginBottom: 4, borderRadius: 4, cursor: 'pointer', fontSize: 12,
+                  background: selectedDocs.includes(d.document_id) ? '#e3f2fd' : '#f8f9fa',
+                  border: selectedDocs.includes(d.document_id) ? '2px solid #2196f3' : '1px solid #eee',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span><SourceBadge source={d.source_system} /> {formatDate(d.document_date)}</span>
+                  <Amount value={d.amount} currency={d.currency_code} />
+                </div>
+                <div style={{ color: '#666', marginTop: 2 }}><FileLink filename={d.filename ?? d.source_document_ref} /></div>
+                <div style={{ color: '#999', marginTop: 1 }}>{d.supplier_name ?? ''}</div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      {/* Match action */}
+      <Card style={{ marginTop: 16 }}>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <input
+            type="text"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Reason for manual match (optional)"
+            style={{ flex: 1, padding: '8px 12px', borderRadius: 6, border: '1px solid #ddd', fontSize: 13 }}
+          />
+          <Button
+            onClick={createMatch}
+            disabled={selectedTxns.length === 0 && selectedDocs.length === 0}
+            color={colors.green}
+          >
+            Create Match ({selectedTxns.length} txn + {selectedDocs.length} doc)
+          </Button>
+        </div>
+      </Card>
+    </div>
+  );
+}

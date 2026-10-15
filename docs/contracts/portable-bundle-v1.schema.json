@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/matching-tool/contracts/portable-bundle-v1.schema.json",
+  "title": "Matching Tool Portable Bundle Manifest v1 (specification draft)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["bundle_version", "origin_app", "origin_schema", "export_id", "created_at", "source_epoch", "entities", "artifacts", "unresolved_issues", "requires_reconnection"],
+  "properties": {
+    "bundle_version": { "const": 1 },
+    "origin_app": { "type": "string", "minLength": 1 },
+    "origin_schema": { "type": "integer", "minimum": 0 },
+    "export_id": { "type": "string", "minLength": 12 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "source_epoch": { "type": "string", "minLength": 1 },
+    "entities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transactions", "documents", "match_groups", "audit_events", "payment_history"],
+      "properties": {
+        "transactions": { "$ref": "#/$defs/countDigest" },
+        "documents": { "$ref": "#/$defs/countDigest" },
+        "match_groups": { "$ref": "#/$defs/countDigest" },
+        "audit_events": { "$ref": "#/$defs/countDigest" },
+        "payment_history": { "$ref": "#/$defs/countDigest" }
+      }
+    },
+    "artifacts": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
+    "unresolved_issues": { "type": "array", "items": { "type": "string" } },
+    "requires_reconnection": { "type": "array", "uniqueItems": true, "items": { "enum": ["banking", "oauth", "payment_provider", "invoice_bot", "email"] } }
+  },
+  "$defs": {
+    "countDigest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["count", "sha256"],
+      "properties": {
+        "count": { "type": "integer", "minimum": 0 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "artifact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["logical_id", "sha256", "byte_length", "relative_path"],
+      "properties": {
+        "logical_id": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "byte_length": { "type": "integer", "minimum": 0 },
+        "relative_path": { "type": "string", "pattern": "^[A-Za-z0-9_-][A-Za-z0-9_.\\/-]*$" }
+      }
+    }
+  }
+}

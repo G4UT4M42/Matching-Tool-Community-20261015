@@ -1,0 +1,45 @@
+name: Community verification
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  privacy-and-build:
+    name: Privacy, migration, build, tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install audited sources without arbitrary post-install scripts
+        run: |
+          npm ci --ignore-scripts
+          npm rebuild better-sqlite3 canvas sharp esbuild
+          npm ci --prefix web --ignore-scripts
+      - name: Check private data and prohibited artifacts
+        run: node scripts/check-public-tree.mjs
+      - name: Require migration evidence for persistence changes
+        if: github.event_name == 'pull_request'
+        run: node scripts/check-migration-pr.mjs --base origin/main
+      - name: Unit and migration tests
+        run: npm test
+      - name: Backend and frontend build
+        run: npm run build
+      - name: No production-level critical or high npm advisories
+        run: npm audit --omit=dev --audit-level=high
+      - name: No unlicensed banking XSD bundles
+        run: |
+          if find src/payments/xsd -type f -name '*.xsd' 2>/dev/null | grep -q .; then
+            echo "Unreviewed XSD must not enter the public source tree"
+            exit 1
+          fi

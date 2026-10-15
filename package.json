@@ -1,0 +1,68 @@
+{
+  "name": "matching-tool-community",
+  "version": "0.1.0-developer-preview",
+  "description": "Local-first community transaction reconciliation — synthetic-only developer preview",
+  "type": "module",
+  "engines": {
+    "node": ">=22 <23"
+  },
+  "scripts": {
+    "dev": "concurrently -n server,web -c blue,green \"npm run dev:server\" \"npm run dev:web\"",
+    "dev:server": "tsx src/server/index.ts",
+    "dev:web": "cd web && npx vite",
+    "build": "tsc --noEmit && tsc --noEmit -p web/tsconfig.json && cd web && npx vite build",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p web/tsconfig.json",
+    "test": "npm run test:app && npm run test:node",
+    "test:node": "node scripts/run-community-tests.mjs node",
+    "test:watch": "vitest",
+    "validate": "tsx src/app/validate.ts",
+    "cli": "tsx src/app/cli.ts",
+    "docs:test": "pwsh tools/docs_contract_tests/run.ps1",
+    "test:app": "vitest run --maxWorkers=1",
+    "test:smoke": "node --test --test-concurrency=1 tests/demo-http-smoke.test.mjs tests/community-smoke.e2e.mjs tests/community-account-server.test.mjs tests/matching-review.browser.e2e.mjs tests/community-account-browser.e2e.mjs tests/community-launcher.test.mjs tests/community-financial-browser.e2e.mjs",
+    "test:policy": "node --test tests/i18n.test.mjs tests/migration-gate.test.mjs tests/synthetic-migration.test.mjs tests/offline-legacy-import.test.mjs tests/legacy-migration-evolution.test.mjs tests/privacy-scanner.test.mjs",
+    "privacy:check": "node scripts/check-public-tree.mjs --include-untracked",
+    "migration:check": "node scripts/check-migration-pr.mjs --base origin/main",
+    "demo:generate": "node scripts/generate-synthetic-demo.mjs",
+    "audit:production": "npm audit --omit=dev --audit-level=high",
+    "demo:windows": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Start-Community-Demo.ps1"
+  },
+  "dependencies": {
+    "@tesseract.js-data/deu": "1.0.0",
+    "@tesseract.js-data/eng": "1.0.0",
+    "better-sqlite3": "^12.6.2",
+    "canvas": "^3.2.1",
+    "cors": "^2.8.5",
+    "csv-parse": "^7.0.3",
+    "express": "^4.21.0",
+    "fast-xml-parser": "5.11.0",
+    "multer": "^2.1.1",
+    "pdf-parse": "^2.4.5",
+    "pdfjs-dist": "^5.5.207",
+    "pdfkit": "^0.18.0",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0",
+    "puppeteer-core": "^25.13.0",
+    "react-router-dom": "7.18.4",
+    "sharp": "^0.35.5",
+    "tesseract.js": "^7.0.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
+    "xmllint-wasm": "5.3.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^22.0.0",
+    "@types/pdfkit": "^0.17.5",
+    "concurrently": "^9.1.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^5.0.4"
+  },
+  "private": true,
+  "overrides": {
+    "qs": "6.16.0"
+  }
+}

@@ -1,0 +1,3895 @@
+[
+  {
+    "repository": "v2_source",
+    "path": "src/app/cli.ts",
+    "sha256": "2f9ddd87bf753a5a98d8d68d2ba6609ea0039dd147541723863a9ed79285f9b0",
+    "lines": 77,
+    "exports": []
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/app/validate.ts",
+    "sha256": "e86f4bd7c4ea775389cbdfd3107dc4699f3b3e284f6f5faac51bc7fa070a322e",
+    "lines": 214,
+    "exports": []
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/ids.ts",
+    "sha256": "7feb40e8dcdd893f2af4a11774d4ddae825683432744b2fe591c5bd272686692",
+    "lines": 77,
+    "exports": [
+      "stableId",
+      "transactionId",
+      "documentId",
+      "matchGroupId",
+      "auditId",
+      "generateRunId",
+      "generateCorrelationId",
+      "exclusionId"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/ingestion/extracted-invoices.ts",
+    "sha256": "30a599075fa7fc422ffa8f6217747ec65cfb63685d04722501d7d4d482dd0d3b",
+    "lines": 77,
+    "exports": [
+      "ExtractedInvoiceRawRow",
+      "parseExtractedInvoices"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/ingestion/income.ts",
+    "sha256": "e5394ebec15818b9e88bcb9b285a47bd2fb28db69a0a21eba60466d99240e38b",
+    "lines": 63,
+    "exports": [
+      "IncomeRawRow",
+      "parseIncome"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/ingestion/index.ts",
+    "sha256": "01b14d99a4c79b727073be9a306442d24acc2cb104980c5270ac1b248d07d649",
+    "lines": 8,
+    "exports": []
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/ingestion/invoices.ts",
+    "sha256": "4342d64e787918b8c686660b5ed137c77ba89c4bd3f51c853188392cc6b609be",
+    "lines": 50,
+    "exports": [
+      "InvoiceRawRow",
+      "parseInvoices"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/ingestion/paypal.ts",
+    "sha256": "e46036e7433800f06d785e2e9583964d3521044794175a3c20470e2d007fde2a",
+    "lines": 45,
+    "exports": [
+      "PaypalRawRow",
+      "parsePaypal"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/ingestion/sparkasse.ts",
+    "sha256": "1cac50e7492f7eede920ab2d4c3ac50c0f25b54a1afde3b7c26950e94cf5dca5",
+    "lines": 91,
+    "exports": [
+      "SparkasseRawRow",
+      "parseSparkasse"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/ingestion/stripe.ts",
+    "sha256": "f010008462cf6f3191c49185490600e0dd186bb55c3eb4f2607d6eb6b1bb6f2b",
+    "lines": 51,
+    "exports": [
+      "StripeRawRow",
+      "parseStripe"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/ingestion/visa.ts",
+    "sha256": "09d78f2540f234842a1856826ed876bce37fc71ae8a53c6b89a3d1b1e04ce4ad",
+    "lines": 78,
+    "exports": [
+      "VisaRawRow",
+      "parseVisa"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/ingestion/xlsx-reader.ts",
+    "sha256": "da031c559694b411893717db407de08f55d9f64466416db2827554645e3b6c9f",
+    "lines": 89,
+    "exports": [
+      "RawRow",
+      "SheetData",
+      "readXlsx",
+      "readSheet",
+      "readFirstSheet"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/engine.ts",
+    "sha256": "ea27cd79ea72437edef234341cace2e5fd5a973a9a155178d6e7720b7cc19c04",
+    "lines": 85,
+    "exports": [
+      "MatchRule",
+      "createMatch",
+      "runMatchingEngine",
+      "findSparkasse",
+      "findUnmatched",
+      "findUnmatchedDocs"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/aliexpress-combo.ts",
+    "sha256": "c0bf2a67e9a9e60ab9ec5382fcd7882d402bbb125019a4e1b4fd041ea7682495",
+    "lines": 206,
+    "exports": [
+      "aliexpressComboRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/auto-match-invoice.ts",
+    "sha256": "17788322643c0bd552804e2d1fd760a9af66511965f74e1a579fd8cad7e6e0db",
+    "lines": 115,
+    "exports": [
+      "autoMatchInvoiceRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/eust-group.ts",
+    "sha256": "e59bf3e395b10d89d578079bff399f69e5cabac9eaf3c15758b32f28a2839ef6",
+    "lines": 76,
+    "exports": [
+      "eustGroupRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/fx-usd-invoice.ts",
+    "sha256": "1db2681b6a3ed753be0ba563604116abf8be37cc3ee1eb16d2ffa2bdb15b413a",
+    "lines": 275,
+    "exports": [
+      "fxUsdInvoiceRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/index.ts",
+    "sha256": "6a98354b5ab8da15a4d346b03b473647e4fd21a8104ff1c26547fffd32813753",
+    "lines": 114,
+    "exports": [
+      "ALL_RULES"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/paypal-income.ts",
+    "sha256": "fddd53529d86a2b0891a4052ac6dbb466932364f2e6132ddd04275f22eee5216",
+    "lines": 110,
+    "exports": [
+      "paypalIncomeRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/paypal-internal.ts",
+    "sha256": "40598b83989f958e2cb6c45ea6a4f78a744e46f5bf6e64df1142b04812631da4",
+    "lines": 278,
+    "exports": [
+      "paypalInternalPairRule",
+      "paypalFxPairRule",
+      "paypalSmallPairRule",
+      "paypalInstantFundingRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/paypal-invoice.ts",
+    "sha256": "46da08e8464365c42d680b5adf59a40313594b7dd8982e49a875bb543825a368",
+    "lines": 56,
+    "exports": [
+      "paypalInvoiceRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/paypal-refund.ts",
+    "sha256": "27d4e7a63b9eaf91d7c9007cc061c1c09ca241950f31ed7240f264cccbb5fad3",
+    "lines": 46,
+    "exports": [
+      "paypalRefundIncomeRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/paypal-split.ts",
+    "sha256": "0f214fd3a1dbbf14ac788d4eb13978bb4ead423f36fda80f92f23d0de4ec82bf",
+    "lines": 97,
+    "exports": [
+      "paypalSplitPayRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/psp-fee-summary.ts",
+    "sha256": "99b200b2e037938c8cecf2550f2dec73d1d3ec9829e2f0a5c2a69070901efd2e",
+    "lines": 97,
+    "exports": [
+      "stripeFeeMonthlyRule",
+      "paypalFeeMonthlyRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/scan-invoice.ts",
+    "sha256": "7d6de19bec00550cb6833f5241f9165240a43cc46bc31906fac3a62b5f1ef9b9",
+    "lines": 172,
+    "exports": [
+      "scanInvoiceRefRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/spk-amazon.ts",
+    "sha256": "2ca3396fcd038068cd22f2d3624e276bccddda0491c4233712a032539dc8700d",
+    "lines": 182,
+    "exports": [
+      "spkAmazonRefRule",
+      "spkAmazonInvoiceRule",
+      "spkAmazonAmountRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/spk-income.ts",
+    "sha256": "874c75163aac86a66019cc8bebfd6667cfee0e9085cbc3e07952e3018bf2b030",
+    "lines": 62,
+    "exports": [
+      "spkIncomeRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/spk-invoice.ts",
+    "sha256": "b174e26629b2c9002ed73005e36c8cc08b72cda65ee93ad5084841266bca8590",
+    "lines": 236,
+    "exports": [
+      "spkInvoiceRefRule",
+      "spkInvoiceAmountRule",
+      "spkInvoiceDescRefRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/spk-paypal.ts",
+    "sha256": "699f164cf6a57f02ec6d11416318cf6fa71be8afd965cdbb8be2350f63d384a7",
+    "lines": 120,
+    "exports": [
+      "spkPaypalRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/spk-stripe.ts",
+    "sha256": "8e1af7194bac05d78fa00540599e663555759da5dc6bfe97819edd0482924902",
+    "lines": 115,
+    "exports": [
+      "spkStripePayoutRule",
+      "spkStripeFeeRule",
+      "spkStripeRefundRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/spk-visa.ts",
+    "sha256": "869adc4a5261ca0fc52700b565828a73bf44e4ac9eec8f2f721af38420115969",
+    "lines": 35,
+    "exports": [
+      "spkVisaRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/stripe-income.ts",
+    "sha256": "a7e93672dee671a1d3fea20b2333d4352092a94fefa1a89d36b0746bcc62b853",
+    "lines": 78,
+    "exports": [
+      "stripeIncomeChargeRule",
+      "stripeIncomeRefundRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/matching/rules/visa-invoice.ts",
+    "sha256": "1dbd8b2c504865390cb12ec7745d53f1d1a2b6181861d1a3857340095dea1eef",
+    "lines": 239,
+    "exports": [
+      "visaInvoiceAmountRule",
+      "visaFxInvoiceRule",
+      "visaAmazonRule",
+      "visaInvoiceMerchantRule"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/normalization/amount.ts",
+    "sha256": "6a7a8e4353c31b149198fdef26544c3a42dd143cf3de3072dba823421c15eb0c",
+    "lines": 65,
+    "exports": [
+      "toMinor",
+      "fromMinor",
+      "parseGermanNumber",
+      "toCents",
+      "sparkasseAmount",
+      "visaAmount"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/normalization/dates.ts",
+    "sha256": "feab969bdd847b283e35e85af2ff4bb877bb1f272d78899a32b296d75f13e407",
+    "lines": 89,
+    "exports": [
+      "excelSerialToIso",
+      "excelSerialToIsoDateTime",
+      "normalizeDate",
+      "toDateOnly",
+      "daysBetween"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/normalization/fx.ts",
+    "sha256": "ca86c4c1368eea03e7a30343050f1ead0ad2387642fac6af04142698786eeb10",
+    "lines": 62,
+    "exports": [
+      "parseFxFromVisaDescription",
+      "computeOriginalAmount",
+      "fxAmountsMatch"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/normalization/index.ts",
+    "sha256": "fcfa5f77de5077ecbb761544a97157874b69bcb59a32bdcb7bc70911d3e0ad25",
+    "lines": 5,
+    "exports": []
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/normalization/normalize-document.ts",
+    "sha256": "223fa663af641a861bf44a106f81228474cd1733681d0e47f5d2646555a81e02",
+    "lines": 100,
+    "exports": [
+      "normalizeIncomeDocument",
+      "normalizeInvoiceDocument",
+      "normalizeExtractedInvoice"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/normalization/normalize-transaction.ts",
+    "sha256": "f1ddab0c4a07cdae7951dbf33d5ec258ad8fefc77b3f9df37b76e1c3b06d6860",
+    "lines": 125,
+    "exports": [
+      "normalizeSparkasse",
+      "normalizeVisa",
+      "normalizePaypal",
+      "normalizeStripe"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/pipeline.ts",
+    "sha256": "f738c490e95b590e3f4e6424f3edd4792aa2bd15cc0370cff8ec3735fcfe7189",
+    "lines": 127,
+    "exports": [
+      "PipelineInput",
+      "ingestAndNormalize",
+      "txnsBySource",
+      "docsBySource",
+      "isAvailable",
+      "isDocAvailable"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/reporting/export-csv.ts",
+    "sha256": "b115672610ff484ec96538c1e06ea08921dd0339e9da1fb96b52f4e2cd91efc6",
+    "lines": 54,
+    "exports": [
+      "exportCsv"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/reporting/export-json.ts",
+    "sha256": "899071cc1e7ad9b49dca93b6a40f50a7543ff796dd632d9d5edbcfff4bef908d",
+    "lines": 9,
+    "exports": [
+      "exportJson"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/reporting/generate-report.ts",
+    "sha256": "e5d29481a401a257a51180ba95238f4915a232c552b07b2bf5c447e469ef970d",
+    "lines": 195,
+    "exports": [
+      "CurrencyTotal",
+      "VatSummary",
+      "ReportWithExtras",
+      "ReportError",
+      "generateReport"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/reporting/income-tax-report.ts",
+    "sha256": "11d197eb79f5e181782c0276b36e312a9f29cddf5436ccb83be37123ae4f043c",
+    "lines": 389,
+    "exports": [
+      "IncomeTaxLine",
+      "IncomeTaxCategory",
+      "IncomeTaxReport",
+      "generateIncomeTaxReport"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/reporting/vat-report.ts",
+    "sha256": "0ad15e3770cdc9b22fd4455c730fd193fd943f6e93ea907f8173404047243c7a",
+    "lines": 525,
+    "exports": [
+      "VatReportLinkedTransaction",
+      "VatReportLine",
+      "VatReportCategory",
+      "VatReportRevenueBucket",
+      "VatReport",
+      "generateVatReport"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/tax-category.ts",
+    "sha256": "fae7fa10d67fc983c17214315bdab8d59af4238ee27ba0a3f5452fcfb204547a",
+    "lines": 89,
+    "exports": [
+      "getTaxCategory"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/types.ts",
+    "sha256": "06d04e270d579dda74c5e448a68c68024eedf6cff565783742b8b02a5c3d8c5c",
+    "lines": 199,
+    "exports": [
+      "SourceSystem",
+      "TransactionSourceSystem",
+      "DocumentSourceSystem",
+      "FxInfo",
+      "Transaction",
+      "Document",
+      "LineItem",
+      "MatchStatus",
+      "MatchGroup",
+      "ExclusionRule",
+      "ReportSummary",
+      "ReportItem",
+      "Report",
+      "Disposition",
+      "TransactionDisposition",
+      "DocumentDisposition",
+      "AuditAction",
+      "AuditEvent",
+      "MatchingState"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/core/validation.ts",
+    "sha256": "6921a84e2a7848be60fb7460e9de7d6c4fcbf6a59d75eba026a8518daa760e93",
+    "lines": 69,
+    "exports": [
+      "ValidationError",
+      "validateTransaction",
+      "validateDocument",
+      "validateMatchGroup",
+      "toMinorUnits",
+      "fromMinorUnits"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/import/amazon-import.ts",
+    "sha256": "6b06207c61c162edc435938012fe6ba418c500816b307666e7a1417d9f4d12a7",
+    "lines": 1279,
+    "exports": [
+      "AmazonOrder",
+      "AmazonImportResult",
+      "ParseDebug",
+      "getLastParseDebug",
+      "parseSendungen",
+      "parseErstattungen",
+      "parseAbgleich",
+      "mergeAmazonData",
+      "importAmazonOrders",
+      "OrganizeInvoicesResult",
+      "organizeInvoiceFiles",
+      "importAmazon",
+      "enrichAmazonDocsFromPdfs",
+      "LinkInvoicesResult",
+      "linkInvoicePdfs"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/import/bank-import.ts",
+    "sha256": "b8c93959de029db94cec7a202e6faedbaf6c1a7badef9e5bce3a8239baa7bbb5",
+    "lines": 125,
+    "exports": [
+      "BankImportResult",
+      "importBankTransactions"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/import/document-import.ts",
+    "sha256": "7cbc8ebbf85c731d480782fa398798857b35b46e763636b0eb418972376717c4",
+    "lines": 133,
+    "exports": [
+      "DocImportType",
+      "DocImportResult",
+      "importDocumentFile"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/import/enablebanking-api.ts",
+    "sha256": "f29dcd47c6f865ae4e8dccecec0f32deb27dddcaa48238fb9db57e2e81d177ae",
+    "lines": 270,
+    "exports": [
+      "getAuthToken",
+      "EbAspsp",
+      "EbAccount",
+      "EbSession",
+      "EbBalance",
+      "EbTransaction",
+      "listAspsps",
+      "startAuth",
+      "createSession",
+      "getSession",
+      "deleteSession",
+      "getBalances",
+      "fetchTransactions",
+      "normalizeEbTransaction"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/import/file-import.ts",
+    "sha256": "b95941863cb504bfc26780336fbf712f9f9ea68e38df01a68ea42cf0573904de",
+    "lines": 144,
+    "exports": [
+      "FileSourceType",
+      "FileImportResult",
+      "importFile"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/import/paypal-api.ts",
+    "sha256": "1b90f4d292c9f67ae384cc93c1d06d022cc9d9e38e45064394f1fa9b13832c38",
+    "lines": 226,
+    "exports": [
+      "PayPalTransactionInfo",
+      "PayPalTransactionDetail",
+      "getPayPalAccessToken",
+      "fetchPayPalTransactions",
+      "normalizePayPalTransaction"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/import/paypal-import.ts",
+    "sha256": "65b66be0a914f0df26ae5399e5b380d929eded11b8ecca97b28096b3d5640796",
+    "lines": 363,
+    "exports": [
+      "PayPalImportResult",
+      "importPayPalTransactions",
+      "generateMonthlyFeeSummaries"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/import/stripe-api.ts",
+    "sha256": "e2b9bb70eb1acd5f83bc77f939cb593194ad11f732de3b13cd24ca0f4c7637ee",
+    "lines": 268,
+    "exports": [
+      "StripeBalanceTransaction",
+      "StripeCharge",
+      "StripePayout",
+      "StripeRefund",
+      "fetchStripeCharges",
+      "fetchStripePayouts",
+      "fetchStripeFees",
+      "fetchStripeRefunds",
+      "normalizeStripeCharge",
+      "normalizeStripePayout",
+      "normalizeStripeRefund",
+      "normalizeStripeFee"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/import/stripe-import.ts",
+    "sha256": "774a15b7781f51d17d2db924619fb5595163a1bbac54ecf8b5dbc09b18df7211",
+    "lines": 332,
+    "exports": [
+      "StripeImportResult",
+      "importStripeTransactions",
+      "generateMonthlyFeeSummaries"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/ai.ts",
+    "sha256": "d95fc5494cd1a3ad0c29f555741170967f441d923e5cd84194be3cde7a88314d",
+    "lines": 300,
+    "exports": [
+      "ModelTier",
+      "BotAiConfig",
+      "BotAiCallResult",
+      "getApiKey",
+      "hasDedicatedKey",
+      "getModel",
+      "getBotAiConfig",
+      "saveBotAiConfig",
+      "deleteBotApiKey",
+      "callBotAi"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/browser-use-runner.ts",
+    "sha256": "21f496b3c34d7c7eb6569cfb234d90c7042095fffb7d6e0f40b16e7903fa0567",
+    "lines": 440,
+    "exports": [
+      "EventCallback",
+      "runBrowserUseWorker",
+      "checkPythonSetup"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/collection-service.ts",
+    "sha256": "81866522f4d4d62fd1ba6c33a4a3a4ea45cbefe71e7a327ce020b258b49762f8",
+    "lines": 301,
+    "exports": [
+      "queueRun",
+      "executeRun",
+      "cancelRun",
+      "retryRun"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/cost-monitor.ts",
+    "sha256": "b9f86f1d6c3350cb91099ea94207b6e593a3641dff6828e497b8773a131d8fe2",
+    "lines": 320,
+    "exports": [
+      "CostSession",
+      "CostEntry",
+      "CostSnapshot",
+      "startSession",
+      "endSession",
+      "ensureSession",
+      "recordCost",
+      "isPaused",
+      "isCallAllowed",
+      "approveContinuation",
+      "getCostLimit",
+      "setCostLimit",
+      "getCostSnapshot",
+      "getSessionHistory",
+      "getSessionEntries"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/errors.ts",
+    "sha256": "dd3befb459bb49b826ee939bc92037cc4a5839a6e0b15a3e0144833db2c7c2a6",
+    "lines": 78,
+    "exports": [
+      "InvoiceBotError",
+      "PortalNotFoundError",
+      "RunNotFoundError",
+      "InvalidRunStateError",
+      "DuplicateFileError",
+      "OpenclawConnectionError",
+      "BrowserConnectionError",
+      "SessionExpiredError",
+      "PortalLayoutChangedError",
+      "DownloadFailedError",
+      "ExecutorBusyError"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/file-store.ts",
+    "sha256": "27d76008b4a00b11e954f158514c6f1c8b8ea7b6f3dfc2a660d8287d07c9e648",
+    "lines": 141,
+    "exports": [
+      "ArchiveResult",
+      "hashFile",
+      "canonicalExtension",
+      "buildArchivePath",
+      "findExistingArchivePath",
+      "normalizeFilename",
+      "archiveFile",
+      "getArchiveRoot"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/import-bridge.ts",
+    "sha256": "7ba71910d1f3cb1c9904a66fe541d230f4abcce03c9a0103a497cae2f730bc23",
+    "lines": 152,
+    "exports": [
+      "ImportResult",
+      "importCollectedFile",
+      "importRunFiles"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/openclaw-client.ts",
+    "sha256": "b9146394519d2394c48dbc70c95434006b55df25f79fc30d6bb89874f1bdec98",
+    "lines": 599,
+    "exports": [
+      "ExecutorConfig",
+      "setExecutorConfig",
+      "getExecutorConfig",
+      "acquireExecutorLock",
+      "releaseExecutorLock",
+      "isExecutorLocked",
+      "BrowserLaunchStatus",
+      "BrowserLaunchResult",
+      "launchControlledBrowser",
+      "launchVisibleBrowser",
+      "getBrowserStatus",
+      "connectBrowser",
+      "isBrowserReachable",
+      "checkSession",
+      "startCollectionRun",
+      "OpenclawRunReport",
+      "isOpenclawAvailable",
+      "runOpenclawAgent",
+      "resolveOpenclawSiteId",
+      "openclawCollectInvoices",
+      "getOpenclawDownloads",
+      "getRunStatus",
+      "cancelRun",
+      "ensureSession"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/orchestrator.ts",
+    "sha256": "830b983ee184729b602dc69c17f081bda96a5171481575c3a4742fc247045f9b",
+    "lines": 93,
+    "exports": [
+      "startRun",
+      "executeRunInBackground",
+      "isRunActive",
+      "getActiveRunIds",
+      "resumeStaleRuns"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/portal-adapters/aliexpress.ts",
+    "sha256": "7eda08cd1ca0e571f186e6ce888b61976847a0f38deb4dd5f82334146aa7568f",
+    "lines": 441,
+    "exports": [
+      "AliExpressAdapter"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/portal-adapters/amazon-business.ts",
+    "sha256": "dac67ef9a6300317689ae520749be20d4d4b20fe9d4bbfd2e4a6a16dd868fe05",
+    "lines": 539,
+    "exports": [
+      "AmazonBusinessAdapter"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/portal-adapters/auto-login.ts",
+    "sha256": "df9c48db7301297ea273ea898e43d2edca45039db2b4b598a6220b8a6853bc7b",
+    "lines": 380,
+    "exports": [
+      "AutoLoginResult",
+      "attemptAutoLogin",
+      "attemptGoogleSSOLogin"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/portal-adapters/bambulab.ts",
+    "sha256": "29c00bb2b1f759afa0a0747d05b4edc706f5ef2a4e837eca1a0d80443f2ce48e",
+    "lines": 353,
+    "exports": [
+      "BambuLabAdapter"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/portal-adapters/browser-use.ts",
+    "sha256": "ab4888e65b4933f6316d17f2fbcd0ec6aa14c18dc7e7c4d306cbc280049af781",
+    "lines": 87,
+    "exports": [
+      "BrowserUseAdapter"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/portal-adapters/chatgpt.ts",
+    "sha256": "98ffe9dbf7b1e13844b69ade0b00c39c28602b4a40e255d090722b91edbe08fa",
+    "lines": 370,
+    "exports": [
+      "ChatGPTAdapter"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/portal-adapters/fiverr.ts",
+    "sha256": "7e86085973665f3c1ce7b523297632654bcf124f96f61c039e21df10f532cafe",
+    "lines": 342,
+    "exports": [
+      "FiverrAdapter"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/portal-adapters/google-cloud.ts",
+    "sha256": "f9866afe9b616ed53259eedd0871f2708344961557f2c1558d88d3b618a38a62",
+    "lines": 238,
+    "exports": [
+      "GoogleCloudAdapter"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/portal-adapters/google-one.ts",
+    "sha256": "67f3dd72667767cbfb4358ce353442ca3c7edf80bbea3fbe00eb84917438cb6f",
+    "lines": 283,
+    "exports": [
+      "GoogleOneAdapter"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/portal-adapters/index.ts",
+    "sha256": "f13a6c5ad887182390cd5c7e4ab2a41b6ba2e91375f0ad850bdc912d6da2b8d7",
+    "lines": 41,
+    "exports": [
+      "getAdapter",
+      "getSupportedPortalTypes"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/portal-adapters/openai.ts",
+    "sha256": "fcd7330c741cee7a79e8182cf1e1d6418abe4b179173a7df54f5ddbfbe0fde95",
+    "lines": 468,
+    "exports": [
+      "OpenAIAdapter"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/portal-adapters/post-at.ts",
+    "sha256": "5787e099291f52608d2e23c9ec8119ecd5669c501b206f26a6a7e18d9ea64a00",
+    "lines": 478,
+    "exports": [
+      "PostAtAdapter"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/portal-adapters/spotify.ts",
+    "sha256": "a90e4837797e6feddebb1c85bd9cb46d9b8714c438c5e22748948357afcc645f",
+    "lines": 308,
+    "exports": [
+      "SpotifyAdapter"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/repository.ts",
+    "sha256": "66c43951aec10846b0e53137dd9244ac3763f6be3c0534928c210cf0a73c52b2",
+    "lines": 536,
+    "exports": [
+      "createPortal",
+      "getPortal",
+      "listPortals",
+      "updatePortal",
+      "createRun",
+      "getRun",
+      "listRuns",
+      "isValidTransition",
+      "updateRunStatus",
+      "createFile",
+      "getFile",
+      "getFilesBySha256",
+      "listFilesByRun",
+      "updateFileImportStatus",
+      "createEvent",
+      "listEventsByRun",
+      "createProfile",
+      "getProfileForPortal",
+      "updateProfileStatus",
+      "updateProfileVerified",
+      "createArtifact",
+      "listArtifactsByRun",
+      "createExtractedInvoice",
+      "updateExtractedInvoiceStatus",
+      "listExtractedInvoicesByRun",
+      "findExtractedInvoiceBySha256",
+      "updateRunCost",
+      "incrementRunCounters"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicebot/types.ts",
+    "sha256": "e0ab5a4d8fba8bc9167595c1c7db48353c72e40aa43c772566c0403e5bf9758b",
+    "lines": 248,
+    "exports": [
+      "PortalType",
+      "AdapterType",
+      "RunStrategy",
+      "LoginStrategy",
+      "PortalState",
+      "ReviewPolicy",
+      "RunMode",
+      "OpenclawProfile",
+      "SessionMode",
+      "PortalConfig",
+      "CollectionRunStatus",
+      "RunStats",
+      "CollectionRun",
+      "ImportStatus",
+      "CollectedFile",
+      "EventLevel",
+      "BotEvent",
+      "CreatePortalParams",
+      "CreateRunParams",
+      "OpenclawFileResult",
+      "OpenclawRunResult",
+      "SessionCheckResult",
+      "PortalAdapter",
+      "BrowserProfile",
+      "ArtifactType",
+      "RunArtifact",
+      "ExtractedInvoiceImportStatus",
+      "ExtractedInvoice",
+      "WorkerEventType",
+      "WorkerEvent"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicerec/classify.ts",
+    "sha256": "2a7dc6e755b373a2b361c30a11be5a160145f5e93ffea070f9a0d8c98677ddbd",
+    "lines": 49,
+    "exports": [
+      "classifyFile"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicerec/extract-ai.ts",
+    "sha256": "ef9928f338c8e19927a620bd0977b0b0e4db8e8eafbdac649cbe65638bc7649c",
+    "lines": 457,
+    "exports": [
+      "AiTokenUsage",
+      "AiExtractionResult",
+      "extractWithAi",
+      "listOpenRouterModels"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicerec/extract-ocr.ts",
+    "sha256": "07e460bd0dc9e3cfcf7f6fa6a4039cb22a325e8439533f50cebb9f63a9cf05e8",
+    "lines": 208,
+    "exports": [
+      "OcrResult",
+      "OcrOrientation",
+      "OcrWord",
+      "extractOcrWords",
+      "scoreOcrResult",
+      "ocrImage",
+      "resetOcrWorker",
+      "terminateOcr"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicerec/extract-pdf-text.ts",
+    "sha256": "34cbc71385ff0dec34602c82dd61498accda111ad69958807bc11c7f7664ea3c",
+    "lines": 78,
+    "exports": [
+      "PdfTextResult",
+      "extractPdfText"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicerec/generate-invoice.ts",
+    "sha256": "c260733860750130081412407db92216716342995bc18301891d869718f14ccd",
+    "lines": 397,
+    "exports": [
+      "InvoiceData",
+      "getNextGPlayInvoiceNumber",
+      "generateGooglePlayInvoice",
+      "EigenbelegData",
+      "generateEigenbeleg",
+      "createEigenbeleg",
+      "createGooglePlayInvoice"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicerec/ids.ts",
+    "sha256": "56f69d47409206c605623b5bdd77adbef07218b63df2405386e217f159398451",
+    "lines": 22,
+    "exports": [
+      "scanId",
+      "templateId",
+      "editId"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicerec/parse-fields.ts",
+    "sha256": "89a86d505b88e2ecf1ae49e8fef01384e539fd0e708b89e80e82f109788880b1",
+    "lines": 845,
+    "exports": [
+      "detectCarrierEustSplit",
+      "parseFields"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicerec/pdf-to-image.ts",
+    "sha256": "2ddc2e3381598a8430cd687527aec9f1c91b504c9381dd90c0ec8b1ea59529d2",
+    "lines": 129,
+    "exports": [
+      "PageImage",
+      "pdfToImages"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicerec/pipeline.ts",
+    "sha256": "c1f13b5e11d0f4dbedb144f62b9bba59e2e85dd970975043c07ec4de921eaf54",
+    "lines": 630,
+    "exports": [
+      "shouldUsePdfTextLayer",
+      "processFile",
+      "normalizeOcrWords",
+      "processBatch"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicerec/preprocess.ts",
+    "sha256": "ba4df149ccabfa829135d820dd80fe8e34213295de807c4b58147b46164748d7",
+    "lines": 64,
+    "exports": [
+      "preprocessForOcr",
+      "createThumbnail"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicerec/store.ts",
+    "sha256": "45a0aec17d008c6cc7a5dd7c979ea5154fd5d1301c931edc31851c6fa29b3623",
+    "lines": 405,
+    "exports": [
+      "insertScan",
+      "updateScanStatus",
+      "updateScanDocumentId",
+      "updateScanTemplateId",
+      "getScan",
+      "getScanByHash",
+      "listScans",
+      "deleteScan",
+      "upsertFields",
+      "getFields",
+      "upsertTemplate",
+      "getTemplate",
+      "listTemplates",
+      "incrementTemplateUseCount",
+      "deleteTemplate",
+      "insertReviewEdit",
+      "getReviewEdits",
+      "CreatedDocument",
+      "CreateResult",
+      "createDocumentFromScan"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicerec/template-learn.ts",
+    "sha256": "c91566db6f9d336e8790f251d7b99af3505d99d200d16731e1b05a069dbffdfe",
+    "lines": 132,
+    "exports": [
+      "layoutFingerprint",
+      "learnTemplate"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicerec/template-match.ts",
+    "sha256": "4053f71b07fadc19c45a8b92cb00c0ecf1d4ecaf60a3ff9121ddae5670947056",
+    "lines": 192,
+    "exports": [
+      "TemplateMatchResult",
+      "findMatchingTemplate",
+      "extractTextFromRegion",
+      "applyTemplate",
+      "parseSpatialValue"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicerec/types.ts",
+    "sha256": "c8617a87565f817f7486348cedf0e14a9e2f975c85b2a693dcc893b40dd06a2a",
+    "lines": 138,
+    "exports": [
+      "FileType",
+      "ExtractionMethod",
+      "ScanStatus",
+      "InvoiceScan",
+      "TaxLine",
+      "ExtractedLineItem",
+      "FieldRegion",
+      "StoredOcrWord",
+      "ExtractionSource",
+      "FieldConfidence",
+      "ExtractedFields",
+      "ValidationResult",
+      "ValidationIssue",
+      "TemplateFieldPattern",
+      "TemplatePatterns",
+      "InvoiceTemplate",
+      "ReviewEdit",
+      "PipelineResult"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicerec/validate.ts",
+    "sha256": "4aa5f1a429cc1fb16f069f6df6d479e4927306f3cde07e248d2a97e7fb099766",
+    "lines": 129,
+    "exports": [
+      "validateFields"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/invoicerec/vendor-override.ts",
+    "sha256": "2fa14f4b7a481a745d743830465e4ced75132ddb0d754d611dcf790f4b371623",
+    "lines": 92,
+    "exports": [
+      "applyVendorOverride"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/observability/audit.ts",
+    "sha256": "a0c4e5871db1b0a37cb2aebd89f884b084f0bd8b570609448050347e0a9b3409",
+    "lines": 37,
+    "exports": [
+      "recordAudit"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/observability/logger.ts",
+    "sha256": "9d375a189ef46e74e402049fb9a65f5cfcf1658d2054e3f097bacb387711e3f0",
+    "lines": 51,
+    "exports": [
+      "LogLevel",
+      "EventType",
+      "LogContext",
+      "createLogContext",
+      "log"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/payments/automation-service.ts",
+    "sha256": "ef30e52e5680427bf8eb455f699430c24de95cd22dfba0d80662f420b94705a3",
+    "lines": 326,
+    "exports": [
+      "PaymentAutomationStatus",
+      "PaymentAutomationServiceError",
+      "getPaymentAutomationService"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/payments/browser/george-adapter.ts",
+    "sha256": "a4b00583e30be107c32396bc4a95f6b42c89b7d1ee2c6da1338520ec6541a209",
+    "lines": 887,
+    "exports": [
+      "GeorgePaymentController",
+      "createGeorgePaymentController"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/payments/browser/george-auth-prompt.ts",
+    "sha256": "6ef2e5db39fe1136719aa68c6f52ff650a1fa87b666f39e4943337ffa63b2954",
+    "lines": 53,
+    "exports": [
+      "GeorgeAuthPromptKind",
+      "buildGeorgeAuthPromptMessage",
+      "notifyGeorgeAuthRequired"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/payments/browser/george-page-driver.ts",
+    "sha256": "09a0fe54476135a56a637fbbb9589869e59b0070fd01c4bac37bec22ead30422",
+    "lines": 636,
+    "exports": [
+      "PuppeteerGeorgePageDriver",
+      "createGeorgePageDriver"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/payments/browser/types.ts",
+    "sha256": "a79cc913fe66b50258fabaaaff3bed806635534f6aff37e6c1a8b53fe6d3117f",
+    "lines": 77,
+    "exports": [
+      "GEORGE_USER_NUMBER",
+      "AutomationPhase",
+      "ObservedAccount",
+      "PackageIdentity",
+      "ObservedPackageStatus",
+      "GeorgeUrlClass",
+      "ReleaseConfirmation",
+      "ObservedPackage",
+      "GeorgePageDriver",
+      "GeorgeAutomationError"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/payments/candidates.ts",
+    "sha256": "06e76f2deb1b9b48e6773ef06c82c97e84eeaee4c840797de9cd413064d805d2",
+    "lines": 257,
+    "exports": [
+      "PaymentSummary",
+      "buildPaymentCandidate",
+      "refreshPaymentCandidate",
+      "paymentSummary"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/payments/eligibility.ts",
+    "sha256": "12fa02783919a60a0e4d184ea798b87fbaa7a6731257c2dd36e13204d5da5062",
+    "lines": 57,
+    "exports": [
+      "classifyPaymentEligibility"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/payments/repository.ts",
+    "sha256": "5576e1123e570caee0b3d6297f1eb2af91b475c51455060e22e99e032a720965",
+    "lines": 1030,
+    "exports": [
+      "PaymentBatchStatus",
+      "PaymentCandidateWriteInput",
+      "PaymentCandidate",
+      "PaymentBatchItem",
+      "PaymentBatch",
+      "PaymentStatusEvent",
+      "PaymentSelectionRepositoryResult",
+      "AtomicExportArtifact",
+      "AtomicExportResult",
+      "PaymentAutomationRun",
+      "PaymentAutomationReleaseConfirmationSnapshot",
+      "PaymentAutomationReleaseSafety",
+      "PaymentRepository"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/payments/sepa-assertions.ts",
+    "sha256": "b908ff52ea88b536240e40c8bf4a7e33607778e3cbc092b0e335f9d06a8fb652",
+    "lines": 319,
+    "exports": [
+      "PSA_ASSERTION_COUNT",
+      "PSA_ASSERTION_MANIFEST_SHA256",
+      "PsaAssertionManifestEntry",
+      "PSA_ASSERTION_MANIFEST",
+      "XmlNode",
+      "parseSepaXmlSecure",
+      "PsaAssertionHandler",
+      "PsaAssertionIdentity",
+      "psaAssertionKey",
+      "createPsaAssertionRegistryForTest",
+      "verifyAssertionCoverage",
+      "validatePsaAssertions"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/payments/sepa.ts",
+    "sha256": "7cccfcd992c21a1138437474e99221589b5ed1eab9294b371c84099b3ce3af49",
+    "lines": 590,
+    "exports": [
+      "PAIN_001_001_09_NAMESPACE",
+      "PINNED_XSD_SHA256",
+      "PINNED_XSD_PATH",
+      "SepaGenerationContext",
+      "SepaArtifact",
+      "XsdValidationResult",
+      "XsdValidationProcess",
+      "XsdValidationRunner",
+      "XsdValidationOptions",
+      "verifyPinnedPsaSchemas",
+      "validateAgainstPinnedXsd",
+      "verifySepaRoundTrip",
+      "SepaGenerator"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/payments/service.ts",
+    "sha256": "17b830b408093d8dca4c05e77600a8e3108f9ee5d5dd69926b95107c26683e9a",
+    "lines": 337,
+    "exports": [
+      "PaymentDomainError",
+      "PaymentSelectionAccepted",
+      "PaymentSelectionRejected",
+      "PaymentSelectionResult",
+      "PaymentBatchView",
+      "PaymentService"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/payments/types.ts",
+    "sha256": "790623640cf626c0d0db672b0e7b2f44035eeaed86984c8bd74cbe59688146c8",
+    "lines": 65,
+    "exports": [
+      "FixedDebtor",
+      "FIXED_DEBTOR",
+      "PaymentObligation",
+      "PaymentCandidateInput",
+      "PaymentDraftInput",
+      "PaymentValidationIssue",
+      "PaymentEligibilityInput",
+      "PaymentEligibility"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/payments/validation.ts",
+    "sha256": "3dd7538260cd2b0ec50a0f7d6b4d3a6c40e2846d4d99f9627ac4eba21124a602",
+    "lines": 84,
+    "exports": [
+      "normalizeIban",
+      "isValidIban",
+      "SEPA_IBAN_COUNTRY_CODES",
+      "isSepaIban",
+      "validatePaymentDraft"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/server/index.ts",
+    "sha256": "21e67a56560b462b3188c43ca580f213cdb7cbca8b943646824c0b9ee0bce2c7",
+    "lines": 96,
+    "exports": []
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/server/routes/api.ts",
+    "sha256": "e3257dc078de1904bf851e5d1dc4ae8b8420d95a5ce98d714fbb53e61f083b16",
+    "lines": 4192,
+    "exports": [
+      "createApiRouter"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/server/routes/invoicebot.ts",
+    "sha256": "17c81d46b465486f81df6160f4acb191ac1bd7fa507e8eb909011d07ded13d1c",
+    "lines": 567,
+    "exports": [
+      "createInvoiceBotRouter"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/server/routes/payments.ts",
+    "sha256": "c04252f6f85131b41055d4deb53941c413a3b74c5b25ab91eb398300cb75843a",
+    "lines": 267,
+    "exports": [
+      "createPaymentsRouter"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/storage/backup.ts",
+    "sha256": "9cda26e5af52dbd4158984c816c09fc8f43465d237811692ef31192c4c18bfdb",
+    "lines": 122,
+    "exports": [
+      "BackupInfo",
+      "createBackup",
+      "listBackups",
+      "restoreBackup",
+      "deleteBackup"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/storage/db.ts",
+    "sha256": "51fd98d060988d32f3c4211f458d65ef210a1f01da94a208f9068f0df13dac5f",
+    "lines": 107,
+    "exports": [
+      "getDb",
+      "closeDb",
+      "getDbPath"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/storage/disposition.ts",
+    "sha256": "4718cc522c277731bfb173743058a6a34927430497c1e3d37fc1f1bc31a444cf",
+    "lines": 146,
+    "exports": [
+      "DispositionSummary",
+      "getDispositionSummary",
+      "setDisposition",
+      "setDispositionBatch",
+      "getTransactionsByDisposition",
+      "autoMarkPrivateVendors",
+      "setDocumentDisposition"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/storage/json-store.ts",
+    "sha256": "69d97a103fd1ccc406d3a5c5c652ecf70fb3bb6c42bdbdeca82e4cb81769c271",
+    "lines": 71,
+    "exports": [
+      "saveState",
+      "loadState",
+      "createEmptyState"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/storage/schema-costmonitor.sql",
+    "sha256": "a654b921b101ee6e2bbc4f9d90fe2dac8c9bb9cc7546f6dc5f07447df5d61bae",
+    "lines": 34,
+    "exports": []
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/storage/schema-invoicebot.sql",
+    "sha256": "7f4d3a66782645e1467f21bb79701c8485529e4cc9ebbc5b8d9efcc97d82b81c",
+    "lines": 155,
+    "exports": []
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/storage/schema-invoicerec.sql",
+    "sha256": "e8f5208c8a4491ca4315245465928d6c05843590c671fdfee988e5dd4988638d",
+    "lines": 104,
+    "exports": []
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/storage/schema-payments.sql",
+    "sha256": "27df8521cf3e2bbe09386854bf99721a25e06fff8cdc0f9ee29a1ced6aab2f98",
+    "lines": 205,
+    "exports": []
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/storage/schema.sql",
+    "sha256": "be4bda7b5d0f385a2080abd389c3793811f8389a2cb364774b5d5b7620c16899",
+    "lines": 202,
+    "exports": []
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/storage/settings.ts",
+    "sha256": "f1270d59b70c461c1678249e47b06beed6b8bb3606f3cf6ecce6fb154422701f",
+    "lines": 19,
+    "exports": [
+      "getSetting",
+      "setSetting",
+      "deleteSetting"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/storage/sqlite-store.ts",
+    "sha256": "fb31f23cd24e09bfa620ddb4837946352b215cbf367fa4ea8da17c36c5483a4c",
+    "lines": 418,
+    "exports": [
+      "saveStateToDb",
+      "loadStateFromDb"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "src/storage/trash.ts",
+    "sha256": "9711e5a6e588566a440db50d7af11a5eb4b7ddfab498e7ade06aa6272177438c",
+    "lines": 74,
+    "exports": [
+      "TrashItem",
+      "moveToTrash",
+      "listTrash",
+      "getTrashItem",
+      "deleteFromTrash",
+      "emptyTrash",
+      "restoreFromTrash"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/api.ts",
+    "sha256": "9928905a4b8c4e6b4ad103e95f5c5f552f0c638f89b575ba72890df1146e3cb9",
+    "lines": 675,
+    "exports": [
+      "PaymentBatchStatus",
+      "PaymentValidationIssue",
+      "PaymentBatchItem",
+      "PaymentBatch",
+      "PaymentBatchView",
+      "PaymentSelectionEntry",
+      "PaymentSelectionRejection",
+      "PaymentBatchCreation",
+      "PaymentItemPatch",
+      "PaymentXmlDownload",
+      "PaymentAutomationPhase",
+      "PaymentAutomationStatus",
+      "PaymentReleaseConfirmation",
+      "PaymentApiError",
+      "paymentApiErrorMessage",
+      "createPaymentBatch",
+      "getPaymentBatch",
+      "updatePaymentItem",
+      "reviewPaymentBatch",
+      "cancelPaymentBatch",
+      "importPaymentBatchToGeorge",
+      "getPaymentAutomationStatus",
+      "requestPaymentBatchRelease",
+      "downloadPaymentBatchXml",
+      "api"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/components/payments/PaymentReview.tsx",
+    "sha256": "00e6a63f96760e1380741d18f712c60787f8211211b67363a23a78c52e614db1",
+    "lines": 819,
+    "exports": [
+      "PaymentReviewProps",
+      "PaymentReview"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/components/payments/payment-automation-release.ts",
+    "sha256": "a8a4f1764251e3e35a17daf28551a3ec1e29295c9013e454f117acbaae0b63c9",
+    "lines": 73,
+    "exports": [
+      "PaymentReleaseBatchSnapshot",
+      "PaymentAutomationReleaseDecision",
+      "paymentAutomationManualGuidance",
+      "exactPaymentReleaseConfirmation",
+      "paymentAutomationReleaseDecision"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/components/payments/payment-drafts.ts",
+    "sha256": "0b20b3d7c852f5df0470d6f1a22c8a38cee640a0807cefd94660e1d3d069b9ab",
+    "lines": 43,
+    "exports": [
+      "ItemDraft",
+      "draftFromPaymentItem",
+      "mergePaymentDrafts"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/components/payments/payment-operation-guard.ts",
+    "sha256": "80045a2cbba16f4a1e2b283b2263283b2be5b68cfa981391b410dfa59a850c7f",
+    "lines": 60,
+    "exports": [
+      "PaymentOperationToken",
+      "isPaymentOperationPreconditionSatisfied",
+      "PaymentOperationGuard"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/components/shared.tsx",
+    "sha256": "9e894e7fea6204e48a0ac4db5cbbb504374a533997855c3f16ad9e6c56c5d1b3",
+    "lines": 479,
+    "exports": [
+      "colors",
+      "Card",
+      "StatCard",
+      "Badge",
+      "StatusBadge",
+      "SourceBadge",
+      "Amount",
+      "Table",
+      "Pagination",
+      "Button",
+      "SearchInput",
+      "Select",
+      "FileLink",
+      "formatDate",
+      "formatDateTime",
+      "PageSizeProvider",
+      "usePageSize",
+      "PageSizeSelect",
+      "WorkingPeriod",
+      "WorkingYearProvider",
+      "useWorkingYear",
+      "workingPeriodDates",
+      "WorkingYearSelect",
+      "TooltipProvider",
+      "useTooltips",
+      "TooltipToggle",
+      "Tip",
+      "CopyValue"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/main.tsx",
+    "sha256": "a67762807a8edfdf0e87ea449ee24be840f9cf9fee5637092cc97d0a03595833",
+    "lines": 100,
+    "exports": []
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/AuditTrail.tsx",
+    "sha256": "73ac5afd39bb5ca37a2de583b5cc4bfad98c09089584cd8965dc7d2a78412848",
+    "lines": 44,
+    "exports": [
+      "AuditTrail"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/BankImport.tsx",
+    "sha256": "737eea9ac6f0876dedb5ad6bfd0185964c54b53c6b4538730459ac73c180be22",
+    "lines": 359,
+    "exports": [
+      "BankImport"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/Dashboard.tsx",
+    "sha256": "76f62eb09a0512e8e6bdf14d81f3603cceeb3317813ba9e5bc3d89b6f679c39b",
+    "lines": 222,
+    "exports": [
+      "Dashboard"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/Einkuenfte.tsx",
+    "sha256": "cca3816d5bee526bc90d8ddca01081886d26f67605cc9cac9b07ea4e28afc89c",
+    "lines": 579,
+    "exports": [
+      "Einkuenfte"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/Exclusions.tsx",
+    "sha256": "a26c95a4034c433cd9a2bdfc32b0b8f6813da2b5823f17ca4f16c8371964f5ff",
+    "lines": 107,
+    "exports": [
+      "Exclusions"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/Import.tsx",
+    "sha256": "a98330f0364ed85f3e8a9bbaf94048eb3d14ecf13280b4127ffcc3011d15589b",
+    "lines": 509,
+    "exports": [
+      "Import"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/IncomeTaxReport.tsx",
+    "sha256": "da903d74b1c08d1209477d7b216fbb19a68bbc4da1d491954a7fa70c275db378",
+    "lines": 837,
+    "exports": [
+      "IncomeTaxReport"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/InvoiceBot.tsx",
+    "sha256": "e4726278f0c467971b8da161a77696599adf35d83a8efd5164a343916ffcc5e2",
+    "lines": 1079,
+    "exports": [
+      "InvoiceBot"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/InvoiceRecognition.tsx",
+    "sha256": "2255d8a3079b9ba3b98899cb95df3a43616afde94564ee87a2f798fb72dc6cbb",
+    "lines": 2034,
+    "exports": [
+      "InvoiceRecognition"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/ManualMatch.tsx",
+    "sha256": "3356ad431b82d90a149bf9d7e249e037e38310ff751c6fae59d6c416f99e6c30",
+    "lines": 159,
+    "exports": [
+      "ManualMatch"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/Matches.tsx",
+    "sha256": "5d29e5dc02e6196594311fcb7e7f546acf3189924910cec5e0de08a86361e5a1",
+    "lines": 120,
+    "exports": [
+      "Matches"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/Matching.tsx",
+    "sha256": "4d51db6d20ca74f99fd3c6769868246545e4cf8b7be0bf45b498840820133222",
+    "lines": 605,
+    "exports": [
+      "Matching"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/Rechnungen.tsx",
+    "sha256": "1c8fad6a3a42165cbcf90f4526795ac7119755efcf46412ea3338a94e7419492",
+    "lines": 1079,
+    "exports": [
+      "Rechnungen"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/Reports.tsx",
+    "sha256": "dd05f10f672e5eff2fb55ee89af83fe7a621e42ee8cbcfb6226a7c1d7f5c88a1",
+    "lines": 216,
+    "exports": [
+      "Reports"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/ReviewQueue.tsx",
+    "sha256": "fefbb77b1fe1379f6eccf5ffdfce67e4a30a593f68031425e0708757b66dd638",
+    "lines": 38,
+    "exports": [
+      "ReviewQueue"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/Settings.tsx",
+    "sha256": "138c97f8d2b919defd94b6b17b3d7b69480ac18df383eb7a9e03b9c0e3d4cb6f",
+    "lines": 420,
+    "exports": [
+      "Settings"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/Transactions.tsx",
+    "sha256": "ebcf1b2d2eaef8c250b2c8421a042136b2acca731679bd9bc60cfba99e83fc3e",
+    "lines": 1863,
+    "exports": [
+      "Transactions"
+    ]
+  },
+  {
+    "repository": "v2_source",
+    "path": "web/src/pages/VatReport.tsx",
+    "sha256": "3b423a44bb4ebf911a77560b7f4a78c7a06c3345bb39f224ad462c362782ea9d",
+    "lines": 649,
+    "exports": [
+      "VatReport"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/app/cli.ts",
+    "sha256": "d3341ace963c7e4a8c7a0af0447e761c0ca021a93485d0327ff18d27d8396bbd",
+    "lines": 77,
+    "exports": []
+  },
+  {
+    "repository": "community",
+    "path": "src/app/validate.ts",
+    "sha256": "8b03428b85bf3e5169dbd9b291fe4493eb6abee309d61facbdb70bddcbe1d9e8",
+    "lines": 214,
+    "exports": []
+  },
+  {
+    "repository": "community",
+    "path": "src/core/ids.ts",
+    "sha256": "fd479e199e761c00f9c536020010597f79d2d3713aacb2cce4b106b1da051341",
+    "lines": 77,
+    "exports": [
+      "stableId",
+      "transactionId",
+      "documentId",
+      "matchGroupId",
+      "auditId",
+      "generateRunId",
+      "generateCorrelationId",
+      "exclusionId"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/ingestion/extracted-invoices.ts",
+    "sha256": "a32b1ec97b19e1c16f9360e8bf3b60308e493a03d5c854b8ea6a9a68af33ef7d",
+    "lines": 77,
+    "exports": [
+      "ExtractedInvoiceRawRow",
+      "parseExtractedInvoices"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/ingestion/income.ts",
+    "sha256": "c74cb355a104a0df06db6454a511b666e39bf3feedfa717a1debc99ad2f90c2f",
+    "lines": 63,
+    "exports": [
+      "IncomeRawRow",
+      "parseIncome"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/ingestion/index.ts",
+    "sha256": "88cf3e7d9f82b3e0fbb76bd6ce413ca98c54d3610212a1562ea0813f2965cd25",
+    "lines": 8,
+    "exports": []
+  },
+  {
+    "repository": "community",
+    "path": "src/core/ingestion/invoices.ts",
+    "sha256": "d4b652771ff3a92e27bbf7087870b75b7be6888172553532fb58fa4200e06fea",
+    "lines": 50,
+    "exports": [
+      "InvoiceRawRow",
+      "parseInvoices"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/ingestion/paypal.ts",
+    "sha256": "7c087820107c03c417361beab4e22ebc434f2795f70d01e362b4f7054e576d2b",
+    "lines": 45,
+    "exports": [
+      "PaypalRawRow",
+      "parsePaypal"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/ingestion/sparkasse.ts",
+    "sha256": "3269a851c317ea00168e9d7307fb9630479fd4dd82eb2d4812df63a0414b985b",
+    "lines": 91,
+    "exports": [
+      "SparkasseRawRow",
+      "parseSparkasse"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/ingestion/stripe.ts",
+    "sha256": "41a708575ee9b8e2bf71cea69fabd4e0b04c2d310645e9612761be2fbb14c6ff",
+    "lines": 51,
+    "exports": [
+      "StripeRawRow",
+      "parseStripe"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/ingestion/visa.ts",
+    "sha256": "4a45b48179849848ba3ba1f2ac58d596ed29131aec8a08b4b67a74946a409317",
+    "lines": 78,
+    "exports": [
+      "VisaRawRow",
+      "parseVisa"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/ingestion/xlsx-reader.ts",
+    "sha256": "57e4c1dfeb966d44ac50313d0fa2f11f43d27715dab651226d52355b96acb7dc",
+    "lines": 89,
+    "exports": [
+      "RawRow",
+      "SheetData",
+      "readXlsx",
+      "readSheet",
+      "readFirstSheet"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/engine.ts",
+    "sha256": "37fe6c1c4d22a984f7399c825991c4ed2b619a105ce7810fade439c25d5285db",
+    "lines": 85,
+    "exports": [
+      "MatchRule",
+      "createMatch",
+      "runMatchingEngine",
+      "findSparkasse",
+      "findUnmatched",
+      "findUnmatchedDocs"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/aliexpress-combo.ts",
+    "sha256": "c0bf2a67e9a9e60ab9ec5382fcd7882d402bbb125019a4e1b4fd041ea7682495",
+    "lines": 206,
+    "exports": [
+      "aliexpressComboRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/auto-match-invoice.ts",
+    "sha256": "17788322643c0bd552804e2d1fd760a9af66511965f74e1a579fd8cad7e6e0db",
+    "lines": 115,
+    "exports": [
+      "autoMatchInvoiceRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/eust-group.ts",
+    "sha256": "e59bf3e395b10d89d578079bff399f69e5cabac9eaf3c15758b32f28a2839ef6",
+    "lines": 76,
+    "exports": [
+      "eustGroupRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/fx-usd-invoice.ts",
+    "sha256": "b85f5b7892ff497dc8cdec68b64c5e847263b80f8b8b3721dc648b37e90724f2",
+    "lines": 275,
+    "exports": [
+      "fxUsdInvoiceRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/index.ts",
+    "sha256": "be2d89b7c05f57681275024c8ff8d19da84924e066ebe542a51c78e0e860b579",
+    "lines": 114,
+    "exports": [
+      "ALL_RULES"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/paypal-income.ts",
+    "sha256": "5e66af54f88cb70f399efd167d1a2c6b944ebb234372dce4e900210fda82de12",
+    "lines": 110,
+    "exports": [
+      "paypalIncomeRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/paypal-internal.ts",
+    "sha256": "bc179e532e125b72d829bb0b58afc708d24b98574dedee0a3c8be21ffe34670b",
+    "lines": 278,
+    "exports": [
+      "paypalInternalPairRule",
+      "paypalFxPairRule",
+      "paypalSmallPairRule",
+      "paypalInstantFundingRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/paypal-invoice.ts",
+    "sha256": "e40782ff03af0e419fa5b0fac2b1bb0b2143dec9e075f5c9ca342f223bdb5a06",
+    "lines": 56,
+    "exports": [
+      "paypalInvoiceRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/paypal-refund.ts",
+    "sha256": "e78f75c0437a9588ef53dab52cb81b1dc8ec19f62b58f52e53183a2a010e3003",
+    "lines": 46,
+    "exports": [
+      "paypalRefundIncomeRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/paypal-split.ts",
+    "sha256": "0f214fd3a1dbbf14ac788d4eb13978bb4ead423f36fda80f92f23d0de4ec82bf",
+    "lines": 97,
+    "exports": [
+      "paypalSplitPayRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/psp-fee-summary.ts",
+    "sha256": "99b200b2e037938c8cecf2550f2dec73d1d3ec9829e2f0a5c2a69070901efd2e",
+    "lines": 97,
+    "exports": [
+      "stripeFeeMonthlyRule",
+      "paypalFeeMonthlyRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/scan-invoice.ts",
+    "sha256": "7d6de19bec00550cb6833f5241f9165240a43cc46bc31906fac3a62b5f1ef9b9",
+    "lines": 172,
+    "exports": [
+      "scanInvoiceRefRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/spk-amazon.ts",
+    "sha256": "51846064e6f41da32081d285dc5b2cce4055ca6ede4d426efa59c0b5572f005b",
+    "lines": 182,
+    "exports": [
+      "spkAmazonRefRule",
+      "spkAmazonInvoiceRule",
+      "spkAmazonAmountRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/spk-income.ts",
+    "sha256": "6518ab0934be594ae680e439f095d351d2e0c18e5c065213a7e1eb406d58636f",
+    "lines": 62,
+    "exports": [
+      "spkIncomeRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/spk-invoice.ts",
+    "sha256": "901508e39b32c08f3f965628c6359a6be747b9e3a38a685ebb7cb079d5625b84",
+    "lines": 236,
+    "exports": [
+      "spkInvoiceRefRule",
+      "spkInvoiceAmountRule",
+      "spkInvoiceDescRefRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/spk-paypal.ts",
+    "sha256": "a21ddf994cf276c111a27621af2ada650889e82e53eeefb9db2ce42fa71ccb2a",
+    "lines": 120,
+    "exports": [
+      "spkPaypalRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/spk-stripe.ts",
+    "sha256": "342dd4e1c32b9c653ac564bbd82027d69e022cdc48ae430c73c6a83cfbff29b5",
+    "lines": 115,
+    "exports": [
+      "spkStripePayoutRule",
+      "spkStripeFeeRule",
+      "spkStripeRefundRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/spk-visa.ts",
+    "sha256": "b741c0dc29a4f4e5ad3d8a1129ff99e0b4669e7f31e09dce7fcbb9e37a5d888b",
+    "lines": 35,
+    "exports": [
+      "spkVisaRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/stripe-income.ts",
+    "sha256": "e8c2d5aa7392e82bb6b9b839d3a6e1ecbfc47a9dda6e8bc9cc08176d940b1bca",
+    "lines": 78,
+    "exports": [
+      "stripeIncomeChargeRule",
+      "stripeIncomeRefundRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/matching/rules/visa-invoice.ts",
+    "sha256": "3449f6838f2b1884bc33a22de871fe69c9627890a3ee038029f1ca621662b09e",
+    "lines": 239,
+    "exports": [
+      "visaInvoiceAmountRule",
+      "visaFxInvoiceRule",
+      "visaAmazonRule",
+      "visaInvoiceMerchantRule"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/normalization/amount.ts",
+    "sha256": "ae29acb2cc2de19b751d22cf2efaed790fac2251a14503806d68d203d1609774",
+    "lines": 65,
+    "exports": [
+      "toMinor",
+      "fromMinor",
+      "parseGermanNumber",
+      "toCents",
+      "sparkasseAmount",
+      "visaAmount"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/normalization/dates.ts",
+    "sha256": "b5f582a32553c82927ded8442ce0d975cbee2fde4bab8d094b7458bce4613311",
+    "lines": 89,
+    "exports": [
+      "excelSerialToIso",
+      "excelSerialToIsoDateTime",
+      "normalizeDate",
+      "toDateOnly",
+      "daysBetween"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/normalization/fx.ts",
+    "sha256": "4d1582a92cb95e7b5b6940a2e11e7ee6815b4a6ebd5e348ee35b48600c949c04",
+    "lines": 62,
+    "exports": [
+      "parseFxFromVisaDescription",
+      "computeOriginalAmount",
+      "fxAmountsMatch"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/normalization/index.ts",
+    "sha256": "c7a355069f5feaf4b63f0183b7c25915a654200360d93f326393374cb8caccce",
+    "lines": 5,
+    "exports": []
+  },
+  {
+    "repository": "community",
+    "path": "src/core/normalization/normalize-document.ts",
+    "sha256": "1a7057577cf093b768734ad6c9c1e0d4479c51fad2a50b5d9c32b9fdeb6982cb",
+    "lines": 100,
+    "exports": [
+      "normalizeIncomeDocument",
+      "normalizeInvoiceDocument",
+      "normalizeExtractedInvoice"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/normalization/normalize-transaction.ts",
+    "sha256": "35c9edb6e18b8588a0a7a27be9334d980b07a376f6e5f37a743ec6102a77b4f7",
+    "lines": 125,
+    "exports": [
+      "normalizeSparkasse",
+      "normalizeVisa",
+      "normalizePaypal",
+      "normalizeStripe"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/pipeline.ts",
+    "sha256": "c089eadc23e5126700654d570498d6c1adb361492a38328a8150dd6c268d402d",
+    "lines": 127,
+    "exports": [
+      "PipelineInput",
+      "ingestAndNormalize",
+      "txnsBySource",
+      "docsBySource",
+      "isAvailable",
+      "isDocAvailable"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/reporting/accepted-evidence.ts",
+    "sha256": "955c46044e11d4f33b298e597f1338e218f72e797ea805fb626674a3a346106e",
+    "lines": 19,
+    "exports": [
+      "isAcceptedMatchGroup",
+      "acceptedDocumentIds"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/reporting/export-csv.ts",
+    "sha256": "14be9c962ba7d6e793a72cd9838e8755a00cc3b6f6dcf5c98b848ec5d8f662a3",
+    "lines": 54,
+    "exports": [
+      "exportCsv"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/reporting/export-json.ts",
+    "sha256": "701f381d2e5276c3713f38846428bba82a8e72ead3e688f1aa72633935d7345e",
+    "lines": 9,
+    "exports": [
+      "exportJson"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/reporting/export-pdf.ts",
+    "sha256": "6a7bf3117a9d374800d9662935cd1ee7c0c4e3c48a36c35ece68ae89c47e3750",
+    "lines": 252,
+    "exports": [
+      "generateVatReportPdf",
+      "generateIncomeTaxPdf"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/reporting/generate-report.ts",
+    "sha256": "6251e118aa74e3a21a67183dfcb250c547f54725d9e0633bacc6aff5c8a7b009",
+    "lines": 195,
+    "exports": [
+      "CurrencyTotal",
+      "VatSummary",
+      "ReportWithExtras",
+      "ReportError",
+      "generateReport"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/reporting/income-tax-report.ts",
+    "sha256": "835ce0e7ee679174f3fe0436a1e416a3e630eb7fdaa611c9d2979e95b6220cd6",
+    "lines": 393,
+    "exports": [
+      "IncomeTaxLine",
+      "IncomeTaxCategory",
+      "IncomeTaxReport",
+      "generateIncomeTaxReport"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/reporting/vat-report.ts",
+    "sha256": "66e801fcdd05311a9d50faf015bb8827d9b2a730a20bf652f31f6d0e0e76ebb6",
+    "lines": 527,
+    "exports": [
+      "VatReportLinkedTransaction",
+      "VatReportLine",
+      "VatReportCategory",
+      "VatReportRevenueBucket",
+      "VatReport",
+      "generateVatReport"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/tax-category.ts",
+    "sha256": "f8f4ab073cdd349fdeb1b35c27ab8518caf3ad31ad087bdbbfaf67d4c932e90c",
+    "lines": 89,
+    "exports": [
+      "getTaxCategory"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/types.ts",
+    "sha256": "1346f22fb034a130c77fd477595568ea5610e4bf2769175afd95e0d6ec4621b9",
+    "lines": 199,
+    "exports": [
+      "SourceSystem",
+      "TransactionSourceSystem",
+      "DocumentSourceSystem",
+      "FxInfo",
+      "Transaction",
+      "Document",
+      "LineItem",
+      "MatchStatus",
+      "MatchGroup",
+      "ExclusionRule",
+      "ReportSummary",
+      "ReportItem",
+      "Report",
+      "Disposition",
+      "TransactionDisposition",
+      "DocumentDisposition",
+      "AuditAction",
+      "AuditEvent",
+      "MatchingState"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/core/validation.ts",
+    "sha256": "73fa00b220b3b4ae43e43383ef714950ebf96b836b20210fd4d44620313b0792",
+    "lines": 69,
+    "exports": [
+      "ValidationError",
+      "validateTransaction",
+      "validateDocument",
+      "validateMatchGroup",
+      "toMinorUnits",
+      "fromMinorUnits"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/import/amazon-import.ts",
+    "sha256": "eb95930e05123d78c5d46ecf4809f7436f0341fdb5724df18c1da41a2de4a485",
+    "lines": 1279,
+    "exports": [
+      "AmazonOrder",
+      "AmazonImportResult",
+      "ParseDebug",
+      "getLastParseDebug",
+      "parseSendungen",
+      "parseErstattungen",
+      "parseAbgleich",
+      "mergeAmazonData",
+      "importAmazonOrders",
+      "OrganizeInvoicesResult",
+      "organizeInvoiceFiles",
+      "importAmazon",
+      "enrichAmazonDocsFromPdfs",
+      "LinkInvoicesResult",
+      "linkInvoicePdfs"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/import/bank-import.ts",
+    "sha256": "1f087512a2499cbfdfe924fbec0ea9213cd91aa6967876b4c399d5da15145239",
+    "lines": 125,
+    "exports": [
+      "BankImportResult",
+      "importBankTransactions"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/import/document-import.ts",
+    "sha256": "86b037b256fff8a97349b30e5781a4b449392c9099a85319d3ca62ec2da65424",
+    "lines": 133,
+    "exports": [
+      "DocImportType",
+      "DocImportResult",
+      "importDocumentFile"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/import/enablebanking-api.ts",
+    "sha256": "3cc1c3482289a2b94cecf9501dde8f7608a705a425619f5a349d1de0ce4e83c4",
+    "lines": 270,
+    "exports": [
+      "getAuthToken",
+      "EbAspsp",
+      "EbAccount",
+      "EbSession",
+      "EbBalance",
+      "EbTransaction",
+      "listAspsps",
+      "startAuth",
+      "createSession",
+      "getSession",
+      "deleteSession",
+      "getBalances",
+      "fetchTransactions",
+      "normalizeEbTransaction"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/import/file-import.ts",
+    "sha256": "a96b93ecf5411d819fe029f7a03d35af51018cc8aa0dc24a9f917b8f88c7daa5",
+    "lines": 144,
+    "exports": [
+      "FileSourceType",
+      "FileImportResult",
+      "importFile"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/import/paypal-api.ts",
+    "sha256": "f9fab4f64822739ba2a3e48f2d9b012bc0e4b368398c937128ce3b11acf5507f",
+    "lines": 226,
+    "exports": [
+      "PayPalTransactionInfo",
+      "PayPalTransactionDetail",
+      "getPayPalAccessToken",
+      "fetchPayPalTransactions",
+      "normalizePayPalTransaction"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/import/paypal-import.ts",
+    "sha256": "9a05f547b21574e58c2431650144f37c26913fec92dec036c0602e740561a954",
+    "lines": 363,
+    "exports": [
+      "PayPalImportResult",
+      "importPayPalTransactions",
+      "generateMonthlyFeeSummaries"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/import/stripe-api.ts",
+    "sha256": "2a00c9574b7f6d116113cb3480f22b1f0c0d1c7b6c25759eb2708bcf55dd362f",
+    "lines": 268,
+    "exports": [
+      "StripeBalanceTransaction",
+      "StripeCharge",
+      "StripePayout",
+      "StripeRefund",
+      "fetchStripeCharges",
+      "fetchStripePayouts",
+      "fetchStripeFees",
+      "fetchStripeRefunds",
+      "normalizeStripeCharge",
+      "normalizeStripePayout",
+      "normalizeStripeRefund",
+      "normalizeStripeFee"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/import/stripe-import.ts",
+    "sha256": "160b9a8b5ffe0249c06bb0b961aaa00f366ffadfe260cf148d21c64251070063",
+    "lines": 332,
+    "exports": [
+      "StripeImportResult",
+      "importStripeTransactions",
+      "generateMonthlyFeeSummaries"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/ai.ts",
+    "sha256": "0e291081385f84f495c8a038e030864d5213178e7089e61031c973c269528dd8",
+    "lines": 299,
+    "exports": [
+      "ModelTier",
+      "BotAiConfig",
+      "BotAiCallResult",
+      "getApiKey",
+      "hasDedicatedKey",
+      "getModel",
+      "getBotAiConfig",
+      "saveBotAiConfig",
+      "deleteBotApiKey",
+      "callBotAi"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/browser-use-runner.ts",
+    "sha256": "21f496b3c34d7c7eb6569cfb234d90c7042095fffb7d6e0f40b16e7903fa0567",
+    "lines": 440,
+    "exports": [
+      "EventCallback",
+      "runBrowserUseWorker",
+      "checkPythonSetup"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/collection-service.ts",
+    "sha256": "117dfee07926636136f77913986a2c8782620887e46748ba255735131a11bb0b",
+    "lines": 301,
+    "exports": [
+      "queueRun",
+      "executeRun",
+      "cancelRun",
+      "retryRun"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/cost-monitor.ts",
+    "sha256": "b9f86f1d6c3350cb91099ea94207b6e593a3641dff6828e497b8773a131d8fe2",
+    "lines": 320,
+    "exports": [
+      "CostSession",
+      "CostEntry",
+      "CostSnapshot",
+      "startSession",
+      "endSession",
+      "ensureSession",
+      "recordCost",
+      "isPaused",
+      "isCallAllowed",
+      "approveContinuation",
+      "getCostLimit",
+      "setCostLimit",
+      "getCostSnapshot",
+      "getSessionHistory",
+      "getSessionEntries"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/errors.ts",
+    "sha256": "dd3befb459bb49b826ee939bc92037cc4a5839a6e0b15a3e0144833db2c7c2a6",
+    "lines": 78,
+    "exports": [
+      "InvoiceBotError",
+      "PortalNotFoundError",
+      "RunNotFoundError",
+      "InvalidRunStateError",
+      "DuplicateFileError",
+      "OpenclawConnectionError",
+      "BrowserConnectionError",
+      "SessionExpiredError",
+      "PortalLayoutChangedError",
+      "DownloadFailedError",
+      "ExecutorBusyError"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/file-store.ts",
+    "sha256": "27d76008b4a00b11e954f158514c6f1c8b8ea7b6f3dfc2a660d8287d07c9e648",
+    "lines": 141,
+    "exports": [
+      "ArchiveResult",
+      "hashFile",
+      "canonicalExtension",
+      "buildArchivePath",
+      "findExistingArchivePath",
+      "normalizeFilename",
+      "archiveFile",
+      "getArchiveRoot"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/import-bridge.ts",
+    "sha256": "d070fcbb5a3d5a7bc4bab2dd135bb7f1e9f4288564e428375b4ec47a7392d95a",
+    "lines": 152,
+    "exports": [
+      "ImportResult",
+      "importCollectedFile",
+      "importRunFiles"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/openclaw-client.ts",
+    "sha256": "18e9f6dc3d2ba0452d11333f9afaa0b9209005b4c6b6a1b527869650fc85094a",
+    "lines": 599,
+    "exports": [
+      "ExecutorConfig",
+      "setExecutorConfig",
+      "getExecutorConfig",
+      "acquireExecutorLock",
+      "releaseExecutorLock",
+      "isExecutorLocked",
+      "BrowserLaunchStatus",
+      "BrowserLaunchResult",
+      "launchControlledBrowser",
+      "launchVisibleBrowser",
+      "getBrowserStatus",
+      "connectBrowser",
+      "isBrowserReachable",
+      "checkSession",
+      "startCollectionRun",
+      "OpenclawRunReport",
+      "isOpenclawAvailable",
+      "runOpenclawAgent",
+      "resolveOpenclawSiteId",
+      "openclawCollectInvoices",
+      "getOpenclawDownloads",
+      "getRunStatus",
+      "cancelRun",
+      "ensureSession"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/orchestrator.ts",
+    "sha256": "830b983ee184729b602dc69c17f081bda96a5171481575c3a4742fc247045f9b",
+    "lines": 93,
+    "exports": [
+      "startRun",
+      "executeRunInBackground",
+      "isRunActive",
+      "getActiveRunIds",
+      "resumeStaleRuns"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/portal-adapters/aliexpress.ts",
+    "sha256": "7eda08cd1ca0e571f186e6ce888b61976847a0f38deb4dd5f82334146aa7568f",
+    "lines": 441,
+    "exports": [
+      "AliExpressAdapter"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/portal-adapters/amazon-business.ts",
+    "sha256": "9b7485bb513fbb4f44d8bedaac02abe815a7b329116a46e80d7a16f940ef6f6e",
+    "lines": 539,
+    "exports": [
+      "AmazonBusinessAdapter"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/portal-adapters/auto-login.ts",
+    "sha256": "df9c48db7301297ea273ea898e43d2edca45039db2b4b598a6220b8a6853bc7b",
+    "lines": 380,
+    "exports": [
+      "AutoLoginResult",
+      "attemptAutoLogin",
+      "attemptGoogleSSOLogin"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/portal-adapters/bambulab.ts",
+    "sha256": "29c00bb2b1f759afa0a0747d05b4edc706f5ef2a4e837eca1a0d80443f2ce48e",
+    "lines": 353,
+    "exports": [
+      "BambuLabAdapter"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/portal-adapters/browser-use.ts",
+    "sha256": "ab4888e65b4933f6316d17f2fbcd0ec6aa14c18dc7e7c4d306cbc280049af781",
+    "lines": 87,
+    "exports": [
+      "BrowserUseAdapter"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/portal-adapters/chatgpt.ts",
+    "sha256": "98ffe9dbf7b1e13844b69ade0b00c39c28602b4a40e255d090722b91edbe08fa",
+    "lines": 370,
+    "exports": [
+      "ChatGPTAdapter"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/portal-adapters/fiverr.ts",
+    "sha256": "7e86085973665f3c1ce7b523297632654bcf124f96f61c039e21df10f532cafe",
+    "lines": 342,
+    "exports": [
+      "FiverrAdapter"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/portal-adapters/google-cloud.ts",
+    "sha256": "f9866afe9b616ed53259eedd0871f2708344961557f2c1558d88d3b618a38a62",
+    "lines": 238,
+    "exports": [
+      "GoogleCloudAdapter"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/portal-adapters/google-one.ts",
+    "sha256": "67f3dd72667767cbfb4358ce353442ca3c7edf80bbea3fbe00eb84917438cb6f",
+    "lines": 283,
+    "exports": [
+      "GoogleOneAdapter"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/portal-adapters/index.ts",
+    "sha256": "e06cae59161f3647b321477ed881a68411b00cd34de92b76c8fdc8f57f8319f5",
+    "lines": 41,
+    "exports": [
+      "getAdapter",
+      "getSupportedPortalTypes"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/portal-adapters/openai.ts",
+    "sha256": "fcd7330c741cee7a79e8182cf1e1d6418abe4b179173a7df54f5ddbfbe0fde95",
+    "lines": 468,
+    "exports": [
+      "OpenAIAdapter"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/portal-adapters/post-at.ts",
+    "sha256": "5787e099291f52608d2e23c9ec8119ecd5669c501b206f26a6a7e18d9ea64a00",
+    "lines": 478,
+    "exports": [
+      "PostAtAdapter"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/portal-adapters/spotify.ts",
+    "sha256": "a90e4837797e6feddebb1c85bd9cb46d9b8714c438c5e22748948357afcc645f",
+    "lines": 308,
+    "exports": [
+      "SpotifyAdapter"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/repository.ts",
+    "sha256": "66c43951aec10846b0e53137dd9244ac3763f6be3c0534928c210cf0a73c52b2",
+    "lines": 536,
+    "exports": [
+      "createPortal",
+      "getPortal",
+      "listPortals",
+      "updatePortal",
+      "createRun",
+      "getRun",
+      "listRuns",
+      "isValidTransition",
+      "updateRunStatus",
+      "createFile",
+      "getFile",
+      "getFilesBySha256",
+      "listFilesByRun",
+      "updateFileImportStatus",
+      "createEvent",
+      "listEventsByRun",
+      "createProfile",
+      "getProfileForPortal",
+      "updateProfileStatus",
+      "updateProfileVerified",
+      "createArtifact",
+      "listArtifactsByRun",
+      "createExtractedInvoice",
+      "updateExtractedInvoiceStatus",
+      "listExtractedInvoicesByRun",
+      "findExtractedInvoiceBySha256",
+      "updateRunCost",
+      "incrementRunCounters"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicebot/types.ts",
+    "sha256": "283d031d699966833ba2f5dad798dcdcf740149dbfaa34086215a791fe9e33d7",
+    "lines": 248,
+    "exports": [
+      "PortalType",
+      "AdapterType",
+      "RunStrategy",
+      "LoginStrategy",
+      "PortalState",
+      "ReviewPolicy",
+      "RunMode",
+      "OpenclawProfile",
+      "SessionMode",
+      "PortalConfig",
+      "CollectionRunStatus",
+      "RunStats",
+      "CollectionRun",
+      "ImportStatus",
+      "CollectedFile",
+      "EventLevel",
+      "BotEvent",
+      "CreatePortalParams",
+      "CreateRunParams",
+      "OpenclawFileResult",
+      "OpenclawRunResult",
+      "SessionCheckResult",
+      "PortalAdapter",
+      "BrowserProfile",
+      "ArtifactType",
+      "RunArtifact",
+      "ExtractedInvoiceImportStatus",
+      "ExtractedInvoice",
+      "WorkerEventType",
+      "WorkerEvent"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicerec/classify.ts",
+    "sha256": "b7bbeaec866fbe9ca549d79e37d5b5dc447bd76854c3d2e2a333b2791a162dd8",
+    "lines": 49,
+    "exports": [
+      "classifyFile"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicerec/extract-ai.ts",
+    "sha256": "f53dd76ed4e7a4dbb52095dba1a74e8b1ab669839e769757c7a4257e5606b6ef",
+    "lines": 457,
+    "exports": [
+      "AiTokenUsage",
+      "AiExtractionResult",
+      "extractWithAi",
+      "listOpenRouterModels"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicerec/extract-ocr.ts",
+    "sha256": "c4f37f36d749c8ce3e842e2e80e9e2760e37b1789fc6cf27d1c49e9ac5c3815e",
+    "lines": 208,
+    "exports": [
+      "OcrResult",
+      "OcrOrientation",
+      "OcrWord",
+      "extractOcrWords",
+      "scoreOcrResult",
+      "ocrImage",
+      "resetOcrWorker",
+      "terminateOcr"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicerec/extract-pdf-text.ts",
+    "sha256": "282d16066c7cadd234aa2b84de96737352fe76786c8af2e6f918a007f0b86016",
+    "lines": 78,
+    "exports": [
+      "PdfTextResult",
+      "extractPdfText"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicerec/generate-invoice.ts",
+    "sha256": "956c2004fd170071f0b09c68020046a697d89955c8249e288a646b35e933eea5",
+    "lines": 397,
+    "exports": [
+      "InvoiceData",
+      "getNextGPlayInvoiceNumber",
+      "generateGooglePlayInvoice",
+      "EigenbelegData",
+      "generateEigenbeleg",
+      "createEigenbeleg",
+      "createGooglePlayInvoice"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicerec/ids.ts",
+    "sha256": "f0cc550cfeab54f0a33bb1223e7d284e72d4dccbeef3142ed266527c22113c0b",
+    "lines": 22,
+    "exports": [
+      "scanId",
+      "templateId",
+      "editId"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicerec/parse-fields.ts",
+    "sha256": "ff1c4a14404449ea5e4717af3c104a54282331c6f206d1c41f5a0d75cb8a7209",
+    "lines": 845,
+    "exports": [
+      "detectCarrierEustSplit",
+      "parseFields"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicerec/pdf-to-image.ts",
+    "sha256": "208e9afae1e2b3cdb44589ca7d15ff515ccd5e5081997655394e6816a32b0683",
+    "lines": 129,
+    "exports": [
+      "PageImage",
+      "pdfToImages"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicerec/pipeline.ts",
+    "sha256": "0d2e04d5d8d5b2d9dfa28d4bf3bc1b752166fc86bbc56fcdd228e89c1ab0b97d",
+    "lines": 630,
+    "exports": [
+      "shouldUsePdfTextLayer",
+      "processFile",
+      "normalizeOcrWords",
+      "processBatch"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicerec/preprocess.ts",
+    "sha256": "49c90fe31c9601e991c7bcda436f26a75ca600a8adec1e068253e981402c3da8",
+    "lines": 64,
+    "exports": [
+      "preprocessForOcr",
+      "createThumbnail"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicerec/store.ts",
+    "sha256": "09ee7e4ecfb973ece7da1866e4c35a2f6c46625f80803721843d16256e4ab75f",
+    "lines": 405,
+    "exports": [
+      "insertScan",
+      "updateScanStatus",
+      "updateScanDocumentId",
+      "updateScanTemplateId",
+      "getScan",
+      "getScanByHash",
+      "listScans",
+      "deleteScan",
+      "upsertFields",
+      "getFields",
+      "upsertTemplate",
+      "getTemplate",
+      "listTemplates",
+      "incrementTemplateUseCount",
+      "deleteTemplate",
+      "insertReviewEdit",
+      "getReviewEdits",
+      "CreatedDocument",
+      "CreateResult",
+      "createDocumentFromScan"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicerec/template-learn.ts",
+    "sha256": "b88fca8e856358fa86fa29436547026857ac088ab37a248958755af7563686cd",
+    "lines": 132,
+    "exports": [
+      "layoutFingerprint",
+      "learnTemplate"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicerec/template-match.ts",
+    "sha256": "228b8ab4d1c85f382ae04097bd4cf8dcd60f35749503f0514e681290d089280f",
+    "lines": 192,
+    "exports": [
+      "TemplateMatchResult",
+      "findMatchingTemplate",
+      "extractTextFromRegion",
+      "applyTemplate",
+      "parseSpatialValue"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicerec/types.ts",
+    "sha256": "2c05995887e56ac5dbf63ee3ff59d11b4c94faa63262253d1896eca63156b31d",
+    "lines": 138,
+    "exports": [
+      "FileType",
+      "ExtractionMethod",
+      "ScanStatus",
+      "InvoiceScan",
+      "TaxLine",
+      "ExtractedLineItem",
+      "FieldRegion",
+      "StoredOcrWord",
+      "ExtractionSource",
+      "FieldConfidence",
+      "ExtractedFields",
+      "ValidationResult",
+      "ValidationIssue",
+      "TemplateFieldPattern",
+      "TemplatePatterns",
+      "InvoiceTemplate",
+      "ReviewEdit",
+      "PipelineResult"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicerec/validate.ts",
+    "sha256": "3857f395b5fddbd3d88c9dc83200be2ed85c5493a050f29f4ba01637752341fb",
+    "lines": 129,
+    "exports": [
+      "validateFields"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/invoicerec/vendor-override.ts",
+    "sha256": "1bd2a3e7a244971005c32f4f4edbb83a05b686bbf4c16817e65c28185a91e965",
+    "lines": 92,
+    "exports": [
+      "applyVendorOverride"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/migration/offline-v2.mjs",
+    "sha256": "5b2755ec2a61795d630ea46a2288d2554ba9ebae28c89a165166e0cf866402ac",
+    "lines": 266,
+    "exports": [
+      "totalsAndReferences",
+      "stageLegacyV2"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/migration/synthetic-dry-run.mjs",
+    "sha256": "ae40ed4998acbbff8b35d969de82678798c76d10357d1cabe957df6b63c07e28",
+    "lines": 83,
+    "exports": [
+      "dryRunSyntheticBundle"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/migration/verify-offline-stage.mjs",
+    "sha256": "dca285950ab36b2529bdda8201f1deef15491af4f8f99d1dd2fa42bf7273d0c3",
+    "lines": 117,
+    "exports": [
+      "verifyLegacyStage"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/migrations/000-legacy-stage.mjs",
+    "sha256": "e11997f24cefe0ed5fadd3706d8dced91a619d1380925bafa1036a0f074daa78",
+    "lines": 5,
+    "exports": [
+      "migrationId",
+      "fromVersion",
+      "toVersion"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/migrations/001-community-sqlite-baseline.ts",
+    "sha256": "21fa27808c2419f8cba17e05db1a25b5276db032b8cbb6a99b7c2d30593e75a3",
+    "lines": 88,
+    "exports": [
+      "COMMUNITY_SQLITE_VERSION",
+      "COMMUNITY_SQLITE_MIGRATION_ID",
+      "communitySchemaDigest",
+      "communityPhysicalSchemaDigest",
+      "verifyCommunitySqliteV1",
+      "initializeCommunitySqliteV1"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/observability/audit.ts",
+    "sha256": "69486d19d3b1323786d35c1f338c4d86bc2b1c20234a50ab2bf7b615dd837934",
+    "lines": 37,
+    "exports": [
+      "recordAudit"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/observability/logger.ts",
+    "sha256": "f543c6880d2c0901fad5a951a35cc2ee6dea564d58631bdc902769f6a7c0d779",
+    "lines": 51,
+    "exports": [
+      "LogLevel",
+      "EventType",
+      "LogContext",
+      "createLogContext",
+      "log"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/payments/automation-service.ts",
+    "sha256": "ef30e52e5680427bf8eb455f699430c24de95cd22dfba0d80662f420b94705a3",
+    "lines": 326,
+    "exports": [
+      "PaymentAutomationStatus",
+      "PaymentAutomationServiceError",
+      "getPaymentAutomationService"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/payments/browser/george-adapter.ts",
+    "sha256": "a4b00583e30be107c32396bc4a95f6b42c89b7d1ee2c6da1338520ec6541a209",
+    "lines": 887,
+    "exports": [
+      "GeorgePaymentController",
+      "createGeorgePaymentController"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/payments/browser/george-auth-prompt.ts",
+    "sha256": "6ef2e5db39fe1136719aa68c6f52ff650a1fa87b666f39e4943337ffa63b2954",
+    "lines": 53,
+    "exports": [
+      "GeorgeAuthPromptKind",
+      "buildGeorgeAuthPromptMessage",
+      "notifyGeorgeAuthRequired"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/payments/browser/george-page-driver.ts",
+    "sha256": "09a0fe54476135a56a637fbbb9589869e59b0070fd01c4bac37bec22ead30422",
+    "lines": 636,
+    "exports": [
+      "PuppeteerGeorgePageDriver",
+      "createGeorgePageDriver"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/payments/browser/types.ts",
+    "sha256": "a79cc913fe66b50258fabaaaff3bed806635534f6aff37e6c1a8b53fe6d3117f",
+    "lines": 77,
+    "exports": [
+      "GEORGE_USER_NUMBER",
+      "AutomationPhase",
+      "ObservedAccount",
+      "PackageIdentity",
+      "ObservedPackageStatus",
+      "GeorgeUrlClass",
+      "ReleaseConfirmation",
+      "ObservedPackage",
+      "GeorgePageDriver",
+      "GeorgeAutomationError"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/payments/candidates.ts",
+    "sha256": "06e76f2deb1b9b48e6773ef06c82c97e84eeaee4c840797de9cd413064d805d2",
+    "lines": 257,
+    "exports": [
+      "PaymentSummary",
+      "buildPaymentCandidate",
+      "refreshPaymentCandidate",
+      "paymentSummary"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/payments/eligibility.ts",
+    "sha256": "12fa02783919a60a0e4d184ea798b87fbaa7a6731257c2dd36e13204d5da5062",
+    "lines": 57,
+    "exports": [
+      "classifyPaymentEligibility"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/payments/repository.ts",
+    "sha256": "5576e1123e570caee0b3d6297f1eb2af91b475c51455060e22e99e032a720965",
+    "lines": 1030,
+    "exports": [
+      "PaymentBatchStatus",
+      "PaymentCandidateWriteInput",
+      "PaymentCandidate",
+      "PaymentBatchItem",
+      "PaymentBatch",
+      "PaymentStatusEvent",
+      "PaymentSelectionRepositoryResult",
+      "AtomicExportArtifact",
+      "AtomicExportResult",
+      "PaymentAutomationRun",
+      "PaymentAutomationReleaseConfirmationSnapshot",
+      "PaymentAutomationReleaseSafety",
+      "PaymentRepository"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/payments/sepa-assertions.ts",
+    "sha256": "b908ff52ea88b536240e40c8bf4a7e33607778e3cbc092b0e335f9d06a8fb652",
+    "lines": 319,
+    "exports": [
+      "PSA_ASSERTION_COUNT",
+      "PSA_ASSERTION_MANIFEST_SHA256",
+      "PsaAssertionManifestEntry",
+      "PSA_ASSERTION_MANIFEST",
+      "XmlNode",
+      "parseSepaXmlSecure",
+      "PsaAssertionHandler",
+      "PsaAssertionIdentity",
+      "psaAssertionKey",
+      "createPsaAssertionRegistryForTest",
+      "verifyAssertionCoverage",
+      "validatePsaAssertions"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/payments/sepa.ts",
+    "sha256": "7cccfcd992c21a1138437474e99221589b5ed1eab9294b371c84099b3ce3af49",
+    "lines": 590,
+    "exports": [
+      "PAIN_001_001_09_NAMESPACE",
+      "PINNED_XSD_SHA256",
+      "PINNED_XSD_PATH",
+      "SepaGenerationContext",
+      "SepaArtifact",
+      "XsdValidationResult",
+      "XsdValidationProcess",
+      "XsdValidationRunner",
+      "XsdValidationOptions",
+      "verifyPinnedPsaSchemas",
+      "validateAgainstPinnedXsd",
+      "verifySepaRoundTrip",
+      "SepaGenerator"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/payments/service.ts",
+    "sha256": "17b830b408093d8dca4c05e77600a8e3108f9ee5d5dd69926b95107c26683e9a",
+    "lines": 337,
+    "exports": [
+      "PaymentDomainError",
+      "PaymentSelectionAccepted",
+      "PaymentSelectionRejected",
+      "PaymentSelectionResult",
+      "PaymentBatchView",
+      "PaymentService"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/payments/types.ts",
+    "sha256": "8368686c082847958b498dcd8f789354a0e8bc2cddbf0d5c08e4a4040a6f63c3",
+    "lines": 65,
+    "exports": [
+      "FixedDebtor",
+      "FIXED_DEBTOR",
+      "PaymentObligation",
+      "PaymentCandidateInput",
+      "PaymentDraftInput",
+      "PaymentValidationIssue",
+      "PaymentEligibilityInput",
+      "PaymentEligibility"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/payments/validation.ts",
+    "sha256": "3dd7538260cd2b0ec50a0f7d6b4d3a6c40e2846d4d99f9627ac4eba21124a602",
+    "lines": 84,
+    "exports": [
+      "normalizeIban",
+      "isValidIban",
+      "SEPA_IBAN_COUNTRY_CODES",
+      "isSepaIban",
+      "validatePaymentDraft"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/server/community-demo-state.ts",
+    "sha256": "58105512b30ddbb55fc8b38ca5384ebe6e24d02936a4dde19d17602f0d6aa34d",
+    "lines": 69,
+    "exports": [
+      "createCommunityDemoState"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/server/community-guard.ts",
+    "sha256": "1478af86583c087d0931133cca38eda942ef0ff1f01ee00c989972b867d23c4b",
+    "lines": 85,
+    "exports": [
+      "createCommunityGuard"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/server/host.ts",
+    "sha256": "adcde289aff950a270d8cd8b0d3955d309424ab3c2ab21997ca336db3a55eaef",
+    "lines": 12,
+    "exports": [
+      "resolveHttpHost"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/server/index.ts",
+    "sha256": "17a34aec091765fa4067e0f43122f1067e259d042eea308cb5a49385a08797d2",
+    "lines": 117,
+    "exports": []
+  },
+  {
+    "repository": "community",
+    "path": "src/server/routes/api.ts",
+    "sha256": "dd29e29a2f4ecea25f8e18b172d2965da4e24e586ef1b12dd977005a9b1b24be",
+    "lines": 4188,
+    "exports": [
+      "createApiRouter"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/server/routes/invoicebot.ts",
+    "sha256": "c1fc403ed74b8daf4470af3fabf927b8010bd0b277ff0929ca04a9506c5a1197",
+    "lines": 567,
+    "exports": [
+      "createInvoiceBotRouter"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/server/routes/payments.ts",
+    "sha256": "c04252f6f85131b41055d4deb53941c413a3b74c5b25ab91eb398300cb75843a",
+    "lines": 267,
+    "exports": [
+      "createPaymentsRouter"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/server/settings-security.ts",
+    "sha256": "aedf8406587b07b3026d8abcb2d2099d1aae434c088b580473b192492ed5d472",
+    "lines": 22,
+    "exports": [
+      "settingForHttp"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/storage/backup.ts",
+    "sha256": "549591f57f0c9d368583b9fab989a12b9b975348bdea3bcb1dfc5cab0161bc53",
+    "lines": 190,
+    "exports": [
+      "BackupInfo",
+      "createBackup",
+      "listBackups",
+      "restoreBackup",
+      "deleteBackup"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/storage/db.ts",
+    "sha256": "f40383e9897905262db8901b0a3c81d65719d40d8f6261edc6ef6b6292418ab2",
+    "lines": 138,
+    "exports": [
+      "getDb",
+      "closeDb",
+      "getDbPath"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/storage/disposition.ts",
+    "sha256": "73c6fbd51d462b9ebde7c49c6c7f65407f5b61bd670fbd859a3c4a6e0a2a156e",
+    "lines": 146,
+    "exports": [
+      "DispositionSummary",
+      "getDispositionSummary",
+      "setDisposition",
+      "setDispositionBatch",
+      "getTransactionsByDisposition",
+      "autoMarkPrivateVendors",
+      "setDocumentDisposition"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/storage/json-store.ts",
+    "sha256": "83810795b1c12fcfe095fa2ea769d2821d86a357713a618be8540482fe414ebe",
+    "lines": 174,
+    "exports": [
+      "COMMUNITY_JSON_STATE_VERSION",
+      "COMMUNITY_JSON_STATE_FORMAT",
+      "validateCommunityJsonState",
+      "writeStateFileAtomically",
+      "saveState",
+      "loadState",
+      "createEmptyState"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/storage/paths.ts",
+    "sha256": "9a4155c674abda978dfa09bc2bb91d440dc468849f18409c5a25276575184189",
+    "lines": 129,
+    "exports": [
+      "AccountingRuntimeMode",
+      "RuntimePathCategory",
+      "AccountingPaths",
+      "resolveAccountingPaths",
+      "resolveRuntimePath"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/storage/schema-costmonitor.sql",
+    "sha256": "7ffe039be34c2fb1d68fe0bf121df4ffc5c59bdb9d4f753dd5416b76391fa41a",
+    "lines": 34,
+    "exports": []
+  },
+  {
+    "repository": "community",
+    "path": "src/storage/schema-invoicebot.sql",
+    "sha256": "14687a597fc164aca17dcf5557a4d9afe8bc91bed78fd3aefc0c43c954cb5aa5",
+    "lines": 155,
+    "exports": []
+  },
+  {
+    "repository": "community",
+    "path": "src/storage/schema-invoicerec.sql",
+    "sha256": "e8f5208c8a4491ca4315245465928d6c05843590c671fdfee988e5dd4988638d",
+    "lines": 104,
+    "exports": []
+  },
+  {
+    "repository": "community",
+    "path": "src/storage/schema-payments.sql",
+    "sha256": "56dedb7e050ec9a357ebce2af952a86c8347955fe6a1d00447385a0ae537b3c2",
+    "lines": 205,
+    "exports": []
+  },
+  {
+    "repository": "community",
+    "path": "src/storage/schema.sql",
+    "sha256": "fa310adc7bab3d792353029de6456c1e04bc02c490cc0609108419dc0e69ebd1",
+    "lines": 202,
+    "exports": []
+  },
+  {
+    "repository": "community",
+    "path": "src/storage/settings.ts",
+    "sha256": "2321398fb3ded2b1096b447ef2154a7d4b13a762ed9ebc4fcf64c0a973c32477",
+    "lines": 19,
+    "exports": [
+      "getSetting",
+      "setSetting",
+      "deleteSetting"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/storage/sqlite-online-backup.ts",
+    "sha256": "cac796fbc184680d6cd44b10657109eb648484b8ccc63e7f2e4f6250290281d8",
+    "lines": 230,
+    "exports": [
+      "ApplicationConsistencyCheck",
+      "SqliteValidation",
+      "AccountingSqliteBackupV1",
+      "RestoreValidation",
+      "validateSqliteDatabase",
+      "createSqliteOnlineBackup",
+      "restoreAndValidateSqliteBackup"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/storage/sqlite-store.ts",
+    "sha256": "60aae2420e9d394bf8fd5dce2ec46115f207c14ce84e98e133b7f75c7278e53a",
+    "lines": 418,
+    "exports": [
+      "saveStateToDb",
+      "loadStateFromDb"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "src/storage/trash.ts",
+    "sha256": "96d137f29e7d8d23db636a9c0f6c19420e3b4d48fab0fb3f3ecd0708d46c13c6",
+    "lines": 74,
+    "exports": [
+      "TrashItem",
+      "moveToTrash",
+      "listTrash",
+      "getTrashItem",
+      "deleteFromTrash",
+      "emptyTrash",
+      "restoreFromTrash"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/api.ts",
+    "sha256": "07a4d372d0314e6bae01447e3ad6364719d5ed4e00ecd24c48e331db69500eb3",
+    "lines": 696,
+    "exports": [
+      "setCommunityAccessToken",
+      "getCommunityAccessToken",
+      "communityFetch",
+      "PaymentBatchStatus",
+      "PaymentValidationIssue",
+      "PaymentBatchItem",
+      "PaymentBatch",
+      "PaymentBatchView",
+      "PaymentSelectionEntry",
+      "PaymentSelectionRejection",
+      "PaymentBatchCreation",
+      "PaymentItemPatch",
+      "PaymentXmlDownload",
+      "PaymentAutomationPhase",
+      "PaymentAutomationStatus",
+      "PaymentReleaseConfirmation",
+      "PaymentApiError",
+      "paymentApiErrorMessage",
+      "createPaymentBatch",
+      "getPaymentBatch",
+      "updatePaymentItem",
+      "reviewPaymentBatch",
+      "cancelPaymentBatch",
+      "importPaymentBatchToGeorge",
+      "getPaymentAutomationStatus",
+      "requestPaymentBatchRelease",
+      "downloadPaymentBatchXml",
+      "api"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/components/matching/MatchingGovernance.tsx",
+    "sha256": "2d0eb188b6ce858a025e40e7a7a6ee34c352f51a1bcf75ca0902612bee06b5fa",
+    "lines": 385,
+    "exports": [
+      "MatchingGovernance"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/components/payments/PaymentReview.tsx",
+    "sha256": "aebd8f7a69a57836dc3e1216a26927ad8198406d3825990a79074bed72860d99",
+    "lines": 819,
+    "exports": [
+      "PaymentReviewProps",
+      "PaymentReview"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/components/payments/payment-automation-release.ts",
+    "sha256": "a8a4f1764251e3e35a17daf28551a3ec1e29295c9013e454f117acbaae0b63c9",
+    "lines": 73,
+    "exports": [
+      "PaymentReleaseBatchSnapshot",
+      "PaymentAutomationReleaseDecision",
+      "paymentAutomationManualGuidance",
+      "exactPaymentReleaseConfirmation",
+      "paymentAutomationReleaseDecision"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/components/payments/payment-drafts.ts",
+    "sha256": "0b20b3d7c852f5df0470d6f1a22c8a38cee640a0807cefd94660e1d3d069b9ab",
+    "lines": 43,
+    "exports": [
+      "ItemDraft",
+      "draftFromPaymentItem",
+      "mergePaymentDrafts"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/components/payments/payment-operation-guard.ts",
+    "sha256": "80045a2cbba16f4a1e2b283b2263283b2be5b68cfa981391b410dfa59a850c7f",
+    "lines": 60,
+    "exports": [
+      "PaymentOperationToken",
+      "isPaymentOperationPreconditionSatisfied",
+      "PaymentOperationGuard"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/components/shared.tsx",
+    "sha256": "141f26721cced27138c07972a909dce5d670529cf35155838d45eae910f4a561",
+    "lines": 480,
+    "exports": [
+      "colors",
+      "Card",
+      "StatCard",
+      "Badge",
+      "StatusBadge",
+      "SourceBadge",
+      "Amount",
+      "Table",
+      "Pagination",
+      "Button",
+      "SearchInput",
+      "Select",
+      "FileLink",
+      "formatDate",
+      "formatDateTime",
+      "PageSizeProvider",
+      "usePageSize",
+      "PageSizeSelect",
+      "WorkingPeriod",
+      "WorkingYearProvider",
+      "useWorkingYear",
+      "workingPeriodDates",
+      "WorkingYearSelect",
+      "TooltipProvider",
+      "useTooltips",
+      "TooltipToggle",
+      "Tip",
+      "CopyValue"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/i18n/catalog.en.mjs",
+    "sha256": "1bc95f83dac02a9eaae14f370e7b93ed0ae9e76d04d060430e3edbbe9c205635",
+    "lines": 27,
+    "exports": [
+      "en"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/i18n/index.mjs",
+    "sha256": "3585f9549d2c02086350c7f83e2b130f7da17a7aa8dd236df7661e62a7b2ad08",
+    "lines": 45,
+    "exports": [
+      "registerLocale",
+      "createI18n",
+      "defaultI18n"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/i18n/locale.tsx",
+    "sha256": "523d927ff5b1c53c2f64cc9d5ab6da445268c03b6651b8b8970dc9ad2b843b4a",
+    "lines": 89,
+    "exports": [
+      "LocaleCode",
+      "registerLocale",
+      "LanguageProvider",
+      "useLanguage"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/main.tsx",
+    "sha256": "e4a9135951646a71d0356c4995c1bf3ca1839ce2507ddb025c3d06a2e166f00f",
+    "lines": 163,
+    "exports": []
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/AuditTrail.tsx",
+    "sha256": "73ac5afd39bb5ca37a2de583b5cc4bfad98c09089584cd8965dc7d2a78412848",
+    "lines": 44,
+    "exports": [
+      "AuditTrail"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/BankImport.tsx",
+    "sha256": "737eea9ac6f0876dedb5ad6bfd0185964c54b53c6b4538730459ac73c180be22",
+    "lines": 359,
+    "exports": [
+      "BankImport"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/Dashboard.tsx",
+    "sha256": "18f268d9c5999e07ca95a8f23b24a8eb0114f622828a972c0056336aa33d740c",
+    "lines": 222,
+    "exports": [
+      "Dashboard"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/Einkuenfte.tsx",
+    "sha256": "8ec9106ff83d2d70ca64534dc181934564a23e8c80d107f5e0113d8fc12fb410",
+    "lines": 579,
+    "exports": [
+      "Einkuenfte"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/Exclusions.tsx",
+    "sha256": "a26c95a4034c433cd9a2bdfc32b0b8f6813da2b5823f17ca4f16c8371964f5ff",
+    "lines": 107,
+    "exports": [
+      "Exclusions"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/Import.tsx",
+    "sha256": "a98330f0364ed85f3e8a9bbaf94048eb3d14ecf13280b4127ffcc3011d15589b",
+    "lines": 509,
+    "exports": [
+      "Import"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/IncomeTaxReport.tsx",
+    "sha256": "5d2ed0578a3e1cdd3ce0f006c1fd5cba246cb28a38c0c99cee670cffa9576924",
+    "lines": 838,
+    "exports": [
+      "IncomeTaxReport"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/InvoiceBot.tsx",
+    "sha256": "e4726278f0c467971b8da161a77696599adf35d83a8efd5164a343916ffcc5e2",
+    "lines": 1079,
+    "exports": [
+      "InvoiceBot"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/InvoiceRecognition.tsx",
+    "sha256": "1ab26d74f4f154a7c62f3f384c9a6a5b0ac1406451460b9a597c4d53eca8e509",
+    "lines": 2034,
+    "exports": [
+      "InvoiceRecognition"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/ManualMatch.tsx",
+    "sha256": "24a9e8dc0cf0f2ae5b37623fa5e244aa716c28bf7886900b1eaf9f0b756613c3",
+    "lines": 159,
+    "exports": [
+      "ManualMatch"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/Matches.tsx",
+    "sha256": "facd3f32a075a9f0048fc453d4350ddc571157b2d326f689f1c03dc8c574bc60",
+    "lines": 120,
+    "exports": [
+      "Matches"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/Matching.tsx",
+    "sha256": "9303484cfba36e1b91fe64f2135cfad9fb0a74328eebb18f6757807a49aa81ba",
+    "lines": 605,
+    "exports": [
+      "Matching"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/Rechnungen.tsx",
+    "sha256": "1c8fad6a3a42165cbcf90f4526795ac7119755efcf46412ea3338a94e7419492",
+    "lines": 1079,
+    "exports": [
+      "Rechnungen"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/Reports.tsx",
+    "sha256": "dd05f10f672e5eff2fb55ee89af83fe7a621e42ee8cbcfb6226a7c1d7f5c88a1",
+    "lines": 216,
+    "exports": [
+      "Reports"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/ReviewQueue.tsx",
+    "sha256": "dc6345c7edfb75582222d4716c7c6d89e5489ad1481cf7accf2ae1ba71dcfb64",
+    "lines": 38,
+    "exports": [
+      "ReviewQueue"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/Settings.tsx",
+    "sha256": "ac7cd11696cd556a26775dd2f87e06cec03953c83b680103e0b5795bee39f857",
+    "lines": 396,
+    "exports": [
+      "Settings"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/Transactions.tsx",
+    "sha256": "ebcf1b2d2eaef8c250b2c8421a042136b2acca731679bd9bc60cfba99e83fc3e",
+    "lines": 1863,
+    "exports": [
+      "Transactions"
+    ]
+  },
+  {
+    "repository": "community",
+    "path": "web/src/pages/VatReport.tsx",
+    "sha256": "f89d946600eafbabb1e57285bd9826c85f43d47abd5f8470977e49c99779f51b",
+    "lines": 649,
+    "exports": [
+      "VatReport"
+    ]
+  }
+]

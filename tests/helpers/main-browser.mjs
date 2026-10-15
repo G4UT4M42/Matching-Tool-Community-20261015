@@ -1,0 +1,77 @@
+import assert from 'node:assert/strict';
+import { createHash, randomBytes } from 'node:crypto';
+import { createServer } from 'node:net';
+import { spawn, spawnSync } from 'node:child_process';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import puppeteer from 'puppeteer-core';
+import Database from 'better-sqlite3';
+
+const repository=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
+const pause=ms=>new Promise(ok=>setTimeout(ok,ms));
+const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+async function freePort(){const listener=createServer();await new Promise((ok,fail)=>{listener.once('error',fail);listener.listen(0,'127.0.0.1',ok);});const port=listener.address().port;await new Promise(ok=>listener.close(ok));return port;}
+export async function mainBrowser(name){
+  if(!/^[a-z0-9-]{1,60}$/.test(name))throw new Error('Invalid synthetic test name');
+  const temp=mkdtempSync(join(tmpdir(),'matching-real-'+name+'-'));
+  const runtime=join(temp,'runtime'),downloads=join(temp,'downloads');mkdirSync(runtime);mkdirSync(downloads);
+  const evidence=process.env.MATCHING_MAIN_BROWSER_EVIDENCE_DIR?join(resolve(process.env.MATCHING_MAIN_BROWSER_EVIDENCE_DIR),name):join(temp,'evidence');mkdirSync(evidence,{recursive:true});
+  const port=await freePort(),origin=`http://127.0.0.1:${port}`,setupCode=randomBytes(32).toString('base64url');
+  const password='Synthetic main browser owner passphrase 2026';
+  let server,browser,page;const screenshots=[],errors=[],external=[],network=[],consoleErrors=[];
+  const launch=()=>{
+    const env={...process.env,PORT:String(port),MATCHING_RUNTIME_MODE:'external-runtime-root',MATCHING_RUNTIME_ROOT:runtime,MATCHING_AUTH_MODE:'accounts',MATCHING_DEMO_MODE:'false',MATCHING_SETUP_TOKEN:setupCode,MATCHING_HTTP_HOST:'127.0.0.1',MATCHING_ENABLE_BANK_AUTOMATION:'false'};
+    delete env.MATCHING_LOCAL_ACCESS_TOKEN;delete env.MATCHING_OCR_LANGUAGE_DIR;
+    const child=spawn(process.execPath,['--import','tsx','src/server/index.ts'],{cwd:repository,env,windowsHide:true,stdio:['ignore','pipe','pipe']});
+    const result={child,log:''};for(const stream of[child.stdout,child.stderr])stream.on('data',bytes=>{result.log=(result.log+bytes).slice(-65536);});return result;
+  };
+  const ready=async()=>{for(let n=0;n<150;n++){if(server.child.exitCode!==null)throw new Error('Actual server exited: '+server.log);try{const response=await fetch(origin+'/health',{signal:AbortSignal.timeout(1000)});if(response.ok)return;}catch{}await pause(100);}throw new Error('Actual server readiness deadline exceeded');};
+  const stop=async()=>{
+    if(!server||server.child.exitCode!==null||server.child.signalCode!==null)return;
+    const exited=new Promise((ok,fail)=>{const timer=setTimeout(()=>fail(new Error('Owned synthetic server failed to stop')),10000);server.child.once('exit',()=>{clearTimeout(timer);ok();});});
+    if(process.platform==='win32')spawnSync('taskkill.exe',['/PID',String(server.child.pid),'/T','/F'],{windowsHide:true,stdio:'ignore',timeout:10000});else server.child.kill('SIGTERM');await exited;
+  };
+  try{
+    server=launch();await ready();
+    const executablePath=[process.env.MATCHING_TEST_BROWSER,'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe','C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'].filter(Boolean).find(path=>existsSync(path));assert.ok(executablePath,'An installed browser is required');
+    browser=await puppeteer.launch({executablePath,headless:true,userDataDir:join(temp,'browser'),defaultViewport:{width:1400,height:1000},args:['--no-first-run','--no-default-browser-check']});page=await browser.newPage();page.setDefaultTimeout(20000);
+    page.on('pageerror',error=>errors.push(error.message));
+    page.on('console',message=>{if(message.type()==='error')consoleErrors.push(message.text().slice(0,2000));});
+    page.on('response',async response=>{const url=new URL(response.url());if(url.origin!==origin||!url.pathname.startsWith('/api/')||url.pathname.startsWith('/api/auth/'))return;const entry={method:response.request().method(),path:url.pathname,status:response.status()};network.push(entry);if(!response.ok()){try{const body=await response.json();entry.code=typeof body.code==='string'?body.code:undefined;entry.error=typeof body.error==='string'?body.error:undefined;}catch{}}});
+    await page.setRequestInterception(true);
+    page.on('request',request=>{const target=new URL(request.url());if(target.origin===origin||['data:','blob:','about:'].includes(target.protocol))void request.continue();else{external.push(target.origin);void request.abort();}});
+    const client=await page.createCDPSession();await client.send('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:downloads});
+    await page.goto(origin,{waitUntil:'networkidle2'});
+  }catch(error){if(browser)await browser.close();await stop();rmSync(temp,{force:true,recursive:true,maxRetries:10,retryDelay:100});throw error;}
+  const fill=async(selector,value)=>{await page.waitForSelector(selector);await page.click(selector);await page.keyboard.down('Control');await page.keyboard.press('KeyA');await page.keyboard.up('Control');await page.keyboard.press('Backspace');await page.type(selector,String(value));assert.equal(await page.$eval(selector,node=>node.value),String(value));};
+  const click=async(text,scope='body')=>{
+    await page.waitForFunction((text,scope)=>[...document.querySelector(scope).querySelectorAll('button')].some(button=>button.textContent?.trim()===text&&!button.disabled),{},text,scope);
+    await page.evaluate((text,scope)=>{const button=[...document.querySelector(scope).querySelectorAll('button')].find(button=>button.textContent?.trim()===text&&!button.disabled);if(!button)throw new Error('Enabled button disappeared');button.click();},text,scope);
+  };
+  const screenshot=async(label)=>{const path=join(evidence,label+'.png');await page.screenshot({path,fullPage:true});screenshots.push({name:label,sha256:sha(readFileSync(path))});};
+  const read=async(path)=>page.evaluate(async path=>{const response=await fetch('/api'+path);return{status:response.status,data:await response.json()};},path);
+  const state=()=>JSON.parse(readFileSync(join(runtime,'state','state.json'),'utf8'));
+  const sql=()=>{const db=new Database(join(runtime,'database','matching.db'),{readonly:true,fileMustExist:true});try{return{version:db.pragma('user_version',{simple:true}),transactions:Number(db.prepare('SELECT count(*) FROM transactions').pluck().get()),documents:Number(db.prepare('SELECT count(*) FROM documents').pluck().get()),groups:Number(db.prepare('SELECT count(*) FROM match_groups').pluck().get()),audits:Number(db.prepare('SELECT count(*) FROM audit_events').pluck().get()),snapshot:JSON.parse(db.prepare('SELECT state_json FROM community_canonical_state WHERE singleton=1').pluck().get())};}finally{db.close();}};
+  const waitDownload=async(suffix)=>{for(let n=0;n<100;n++){const name=readdirSync(downloads).find(name=>name.endsWith(suffix)&&!name.endsWith('.crdownload'));if(name)return join(downloads,name);await pause(100);}throw new Error('Browser download did not complete');};
+  return{temp,runtime,downloads,evidence,page,origin,screenshots,errors,external,fill,click,read,state,sql,waitDownload,screenshot,
+    async createOwner(){await fill('#account-username','synthetic-owner');await fill('#account-password',password);await fill('#account-confirm',password);await fill('#account-setup-code',setupCode);await click('Create account');await page.waitForSelector('a[href="/documents"]');},
+    async visit(path){await page.goto(origin+path,{waitUntil:'networkidle2'});},
+    async restart(){await stop();assert.ok(!server.log.includes(password)&&!server.log.includes(setupCode));server=launch();await ready();await page.reload({waitUntil:'networkidle2'});},
+    async prove(result){assert.deepEqual(errors,[]);assert.deepEqual(external,[]);assert.ok(!server.log.includes(password)&&!server.log.includes(setupCode));writeFileSync(join(evidence,'result.json'),JSON.stringify({result:'PASS',mode:'actual-main-server-built-ui',...result,screenshots,page_errors:errors,external_requests:external,release_accepted:false},null,2));},
+    async close(error){
+      try {
+        if(error){
+          await page.screenshot({path:join(evidence,'failure.png'),fullPage:true}).catch(()=>{});
+          const uiAlerts=await page.evaluate(()=>Array.from(document.querySelectorAll('[role="alert"]'),node=>node.textContent)).catch(()=>[]);
+          const inspect=read=>{try{return read();}catch(error){return{inspection_error:String(error)};}};
+          writeFileSync(join(evidence,'failure.json'),JSON.stringify({error:String(error),stack:error?.stack,server_log:server.log,page_errors:errors,external_requests:external,console_errors:consoleErrors,network,ui_alerts:uiAlerts,financial_state:inspect(state),sql:inspect(sql)},null,2));
+        }
+      } finally {
+        try { await browser.close(); }
+        finally { try { await stop(); } finally { rmSync(temp,{force:true,recursive:true,maxRetries:10,retryDelay:100}); } }
+      }
+    }
+  };
+}

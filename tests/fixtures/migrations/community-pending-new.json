@@ -1,0 +1,9 @@
+{
+  "classification": "TEST_SYNTHETIC",
+  "schema_version": "community-pending-verification",
+  "transactions": [{"id": "fictional-txn-01", "amount_minor": -1250, "currency": "EUR"}],
+  "documents": [{"id": "fictional-doc-01", "transaction_id": "fictional-txn-01"}],
+  "status": "proposed",
+  "bank_credentials": null,
+  "activation_allowed": false
+}
