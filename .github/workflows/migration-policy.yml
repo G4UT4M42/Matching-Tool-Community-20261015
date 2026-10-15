@@ -42,6 +42,8 @@ jobs:
         run: node scripts/check-migration-pr.mjs --base origin/main
       - name: Backend and frontend build
         run: npm run build
+      - name: Synthetic capacity, exact persistence and bounded memory
+        run: node --import tsx scripts/qualify-community-capacity.mjs --out "${{ runner.temp }}/community-evidence/capacity"
       - name: Complete application and migration tests
         run: node scripts/run-community-tests.mjs app
       - name: Actual built browser, Windows installation and policy tests
