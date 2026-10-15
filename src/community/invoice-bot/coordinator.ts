@@ -3,9 +3,11 @@ import { lookup } from 'node:dns/promises';
 import type { CommunityDocumentService, Principal } from '../documents/service.js';
 import { DocumentInputError, MAX_DOCUMENT_BYTES } from '../documents/recognition.js';
 
-export interface PortalInvoice { source_id: string; filename: string; href: string; date?: string }
+export interface PortalInvoice { source_id: string; filename: string; href: string; date?: string; evidence_kind?:'provider-download'|'receipt-capture'; source_origin?:string; capture?:{scope:'selected-viewport';width:number;height:number;captured_at:string;unconfirmed:true} }
+export interface ReceiptCaptureTarget {id:string;origin:string;tab_number:number}
+export interface ReceiptCaptureSelection {tab_id:string;confirm_receipt_only:true;clip?:{x:number;y:number;width:number;height:number}}
 export interface PortalAdapter {
-  id: string; label: string; origin: string;
+  id: string; label: string; origin: string; help?:string; receiptCapture?:boolean;
   connect(principal: Principal, session: BrowserSessionCallbacks, signal: AbortSignal): Promise<void>;
   discover(principal: Principal, session: BrowserSessionCallbacks, signal: AbortSignal): Promise<PortalInvoice[]>;
   download(principal: Principal, session: BrowserSessionCallbacks, invoice: PortalInvoice, signal: AbortSignal): Promise<Buffer>;
@@ -15,6 +17,8 @@ export interface BrowserSessionCallbacks {
   openFreshSession(principal: Principal, adapterId: string, origin: string, signal: AbortSignal): Promise<void>;
   disconnect(principal: Principal, adapterId: string): Promise<void>;
   isConnected(principal: Principal, adapterId: string): Promise<boolean>;
+  receiptTargets?(principal:Principal,adapterId:string,signal:AbortSignal,guard?:()=>void):Promise<ReceiptCaptureTarget[]>;
+  captureReceipt?(principal:Principal,adapterId:string,selection:ReceiptCaptureSelection,signal:AbortSignal,guard?:()=>void):Promise<PortalInvoice>;
 }
 export interface BotRun {
   id: string; workspace_id: string; actor: string; adapter_id: string;
@@ -51,7 +55,7 @@ export class InvoiceBotCoordinator {
   private readonly runs = new Map<string, BotRun>();
   private readonly active = new Map<string, AbortController>();
   private readonly timers=new WeakMap<AbortController,ReturnType<typeof setTimeout>>();
-  constructor(adapters: PortalAdapter[], private readonly sessions: BrowserSessionCallbacks, private readonly documents: CommunityDocumentService, private readonly allowLocalTestAdapter = false, private readonly operationTimeoutMs=60000) {
+  constructor(adapters: PortalAdapter[], private readonly sessions: BrowserSessionCallbacks, private readonly documents: CommunityDocumentService, private readonly allowLocalTestAdapter = false, private readonly operationTimeoutMs=60000,private readonly authorizeMutation?:(principal:Principal,permission:'integrations:sync')=>void) {
     for (const adapter of adapters) {
       if (!/^[a-z][a-z0-9-]{1,50}$/.test(adapter.id) || this.adapters.has(adapter.id)) throw new Error('Invalid or duplicate portal adapter');
       if (!allowLocalTestAdapter) safeOrigin(adapter.origin);
@@ -59,7 +63,7 @@ export class InvoiceBotCoordinator {
     }
   }
   private begin(key:string){const abort=new AbortController();this.active.set(key,abort);const timer=setTimeout(()=>abort.abort(),this.operationTimeoutMs);timer.unref();this.timers.set(abort,timer);return abort;}
-  private finish(key:string,abort:AbortController){clearTimeout(this.timers.get(abort));this.active.delete(key);}
+  private finish(key:string,abort:AbortController){clearTimeout(this.timers.get(abort));if(this.active.get(key)===abort)this.active.delete(key);}
   private bounded<T>(signal:AbortSignal,work:Promise<T>):Promise<T>{
     return new Promise<T>((resolve,reject)=>{
       const cancel=()=>reject(new DocumentInputError('BOT_CANCELLED','Portal operation cancelled or timed out'));
@@ -68,7 +72,7 @@ export class InvoiceBotCoordinator {
       work.then(resolve,reject).finally(()=>signal.removeEventListener('abort',cancel));
     });
   }
-  catalog(): Array<{ id: string; label: string; origin: string }> { return [...this.adapters.values()].map(({ id, label, origin }) => ({ id, label, origin })); }
+  catalog(): Array<{ id: string; label: string; origin: string;help?:string;receipt_capture:boolean }> { return [...this.adapters.values()].map(({ id, label, origin,help,receiptCapture }) => ({ id, label, origin,...(help?{help}:{}),receipt_capture:receiptCapture===true })); }
   private adapter(id: string): PortalAdapter { const found = this.adapters.get(id); if (!found) throw new DocumentInputError('UNSUPPORTED_PORTAL', 'Select a configured supported portal'); return found; }
   private key(principal: Principal, adapterId: string) { return createHash('sha256').update(`${principal.workspace_id}\0${principal.subject}\0${adapterId}`).digest('hex'); }
   async status(principal: Principal, adapterId: string) { this.adapter(adapterId); return { connected: await this.sessions.isConnected(principal, adapterId), active: this.active.has(this.key(principal, adapterId)) }; }
@@ -85,6 +89,22 @@ export class InvoiceBotCoordinator {
   async disconnect(principal: Principal, adapterId: string): Promise<void> {
     this.adapter(adapterId); this.active.get(this.key(principal, adapterId))?.abort();
     await this.sessions.disconnect(principal, adapterId);
+  }
+  private captureAdapter(id:string){const adapter=this.adapter(id);if(!adapter.receiptCapture||!this.sessions.receiptTargets||!this.sessions.captureReceipt)throw new DocumentInputError('UNSUPPORTED_CAPTURE','This portal supports selected file downloads only');return adapter;}
+  async receiptTargets(principal:Principal,adapterId:string):Promise<ReceiptCaptureTarget[]>{
+    this.captureAdapter(adapterId);const key=this.key(principal,adapterId);if(this.active.has(key))throw new DocumentInputError('BOT_BUSY','Portal operation is already running');
+    const abort=this.begin(key),guard=()=>this.authorizeMutation?.(principal,'integrations:sync');
+    try{guard();return await this.bounded(abort.signal,this.sessions.receiptTargets!(principal,adapterId,abort.signal,guard));}finally{this.finish(key,abort);}
+  }
+  async captureReceipt(principal:Principal,adapterId:string,selection:ReceiptCaptureSelection):Promise<BotRun>{
+    this.captureAdapter(adapterId);if(!selection||selection.confirm_receipt_only!==true||typeof selection.tab_id!=='string'||!/^[a-f0-9-]{36}$/i.test(selection.tab_id))throw new DocumentInputError('INVALID_SELECTION','Explicitly select a receipt tab and confirm it contains no login or credential material');
+    const key=this.key(principal,adapterId);if(this.active.has(key))throw new DocumentInputError('BOT_BUSY','Portal operation is already running');
+    const abort=this.begin(key),guard=()=>this.authorizeMutation?.(principal,'integrations:sync');
+    try{
+      guard();const evidence=await this.bounded(abort.signal,this.sessions.captureReceipt!(principal,adapterId,selection,abort.signal,guard));guard();
+      if(abort.signal.aborted)throw new DocumentInputError('BOT_CANCELLED','Receipt capture cancelled');
+      const run:BotRun={id:randomUUID(),workspace_id:principal.workspace_id,actor:principal.subject,adapter_id:adapterId,status:'discovered',discovered:[evidence],imported:[],started_at:new Date().toISOString(),ended_at:new Date().toISOString()};this.runs.set(run.id,run);return run;
+    }finally{this.finish(key,abort);}
   }
   async discover(principal: Principal, adapterId: string): Promise<BotRun> {
     const adapter = this.adapter(adapterId); const key = this.key(principal, adapterId);
@@ -132,6 +152,7 @@ export class InvoiceBotCoordinator {
         const buffer = await this.bounded(abort.signal,adapter.download(principal, this.sessions, invoice, abort.signal));
         if(abort.signal.aborted)throw new DocumentInputError('BOT_CANCELLED','Import cancelled');
         if (!Buffer.isBuffer(buffer) || buffer.length > MAX_DOCUMENT_BYTES) throw new DocumentInputError('FILE_LIMIT', 'Portal invoice exceeds file limit');
+        this.authorizeMutation?.(principal,'integrations:sync');
         await this.documents.upload(principal, buffer, invoice.filename, `${adapter.id}:${sourceId}`, 'invoice-bot');
         run.imported.push(sourceId);
       }

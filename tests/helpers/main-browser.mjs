@@ -16,7 +16,8 @@ const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 async function freePort(){const listener=createServer();await new Promise((ok,fail)=>{listener.once('error',fail);listener.listen(0,'127.0.0.1',ok);});const port=listener.address().port;await new Promise(ok=>listener.close(ok));return port;}
 export async function mainBrowser(name,{entrypoint='src/server/index.ts',packageDirectory}={}){
   if(!/^[a-z0-9-]{1,60}$/.test(name))throw new Error('Invalid synthetic test name');
-  if(!['src/server/index.ts','tests/helpers/integrated-server.mjs'].includes(entrypoint))throw new Error('Unreviewed test server entrypoint');
+  if(!['src/server/index.ts','tests/helpers/integrated-server.mjs','tests/helpers/portal-evidence-server.mjs'].includes(entrypoint))throw new Error('Unreviewed test server entrypoint');
+  if(packageDirectory&&entrypoint==='tests/helpers/portal-evidence-server.mjs')throw new Error('The receipt fixture composition is source-only and cannot claim installed application qualification');
   const temp=mkdtempSync(join(tmpdir(),'matching-real-'+name+'-'));
   const runtime=join(temp,'runtime'),downloads=join(temp,'downloads');mkdirSync(runtime);mkdirSync(downloads);
   const applicationRoot=packageDirectory?join(temp,'installed-application'):repository;

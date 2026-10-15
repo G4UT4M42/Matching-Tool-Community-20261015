@@ -67,6 +67,8 @@ export const COMMUNITY_WORKSPACE_ROUTES:readonly CommunityRouteRule[]=[
   rule('GET','^/community/invoice-bot/portals/'+id+'/status$','integrations:read'),
   rule('POST','^/community/invoice-bot/portals/'+id+'/(?:connect|disconnect)$','integrations:configure'),
   rule('POST','^/community/invoice-bot/portals/'+id+'/discover$','integrations:sync'),
+  rule('GET','^/community/invoice-bot/portals/'+id+'/receipt-targets$','integrations:sync'),
+  rule('POST','^/community/invoice-bot/portals/'+id+'/capture-receipt$','integrations:sync'),
   rule('POST','^/community/invoice-bot/runs/'+id+'/(?:import|cancel)$','integrations:sync'),
   rule('GET','^/accounting$','finance:read'),
   rule('GET','^/accounting/reports(?:/export\\.(?:json|csv))?$','reports:read'),
@@ -154,7 +156,13 @@ export function createCommunityWorkspace(options:WorkspaceOptions){
     const routes=Router();
     const documents=new CommunityDocumentService({workspaceId:options.auth.workspaceId,root:join(options.runtimeRoot,'documents'),getState:options.getState,persistAndActivate:commit,localLanguageDir:options.localLanguageDir});
     routes.use('/community/documents',createCommunityDocumentsRouter(documents,can));
-    const bot=options.invoiceBot?new InvoiceBotCoordinator(options.invoiceBot.adapters,options.invoiceBot.sessions,documents,options.invoiceBot.allowLocalFixture===true):new InvoiceBotCoordinator(portalSessions.adapters(),portalSessions,documents);
+    const authorizePortalMutation=(principal:{subject:string;workspace_id:string},permission:'integrations:sync')=>{
+      const actor=requireCurrent(permission);
+      if(actor.subject!==principal.subject||actor.workspace_id!==principal.workspace_id)throw new CanonicalStateError('AUTHENTICATION_REQUIRED','The portal principal changed');
+    };
+    const bot=options.invoiceBot
+      ?new InvoiceBotCoordinator(options.invoiceBot.adapters,options.invoiceBot.sessions,documents,options.invoiceBot.allowLocalFixture===true,undefined,authorizePortalMutation)
+      :new InvoiceBotCoordinator(portalSessions.adapters(),portalSessions,documents,false,undefined,authorizePortalMutation);
     routes.use('/community/invoice-bot',createCommunityInvoiceBotRouter(bot,can));
     routes.use('/community/integrations',createCommunityIntegrationsRouter(providers,(principal,permission)=>can(principal,permission),{
       observe:entry=>{

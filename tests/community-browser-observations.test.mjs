@@ -2,6 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {classifyFailedRequest,expectedHttpFailures} from './helpers/browser-observations.mjs';
 const origin='http://127.0.0.1:49123';
+test('source-only receipt fixture refuses an installed package claim before touching package paths',async()=>{
+ const {mainBrowser}=await import('./helpers/main-browser.mjs');
+ await assert.rejects(mainBrowser('source-only-receipt-guard',{entrypoint:'tests/helpers/portal-evidence-server.mjs',packageDirectory:'SYNTHETIC-NEVER-ACCESSED'}),/source-only/);
+});
 test('explain Chromium empty204 only for reviewed same-origin POST routes with received204 headers',()=>{
  for(const path of ['/api/auth/logout','/api/community-banking/configure','/api/community-banking/disconnect']){
   const result=classifyFailedRequest({origin,url:origin+path,method:'POST',error:'net::ERR_ABORTED',responseStatus:204});
