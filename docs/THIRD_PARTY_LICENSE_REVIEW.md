@@ -1,5 +1,6 @@
 # Third-party dependency license review (preliminary)
 
+> Historical 2026-10-13 baseline retained for provenance. Current qualification supersedes its package versions, counts and unfinished-function statements; see [compliance/README.md](compliance/README.md). This historical table is not current acceptance.
 **Status:** PARTIAL — not legal approval or permission to publish.
 
 The review below is generated from installed package manifests in the private candidate on 2026-10-13, using Node.js 22. Verify all distribution artifacts and NOTICE obligations independently before public release. Manifests can be inaccurate; this is not a source-provenance or copyright audit.

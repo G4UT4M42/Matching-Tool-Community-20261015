@@ -1,5 +1,6 @@
 # Release acceptance and evidence matrix
 
+> Historical 2026-10-13 baseline retained for provenance. Current qualification supersedes its package versions, counts and unfinished-function statements; see [../feature-parity/STATUS.md](../feature-parity/STATUS.md). This historical table is not current acceptance.
 | Phase | Required objective | Evidence presently available | Status |
 |---|---|---|---|
 | P00 | repository and work packages traced | branch `feature/community-app-port-20261013`, clean baseline `bd4700f`; documentation started | IN PROGRESS |

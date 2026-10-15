@@ -48,8 +48,7 @@ productive V2 remain untouched.
 - Windows development packages include qualified runtime, native dependencies,
   offline OCR languages, NOTICE, SBOM and full external license text evidence.
   Runtime dependency reachability excludes unused development roots. Distribution
-  mode refuses unresolved source/license gates. Final Windows uninstall retry
-  qualification is still running.
+  mode refuses unresolved source/license gates. Windows installation/upgrade/uninstall regression passed; final exact-candidate repetition remains required.
 
 ## Verification and evidence
 

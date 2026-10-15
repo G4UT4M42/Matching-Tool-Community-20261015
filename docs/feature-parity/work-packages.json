@@ -478,7 +478,7 @@
       "src/payments/sepa.ts",
       "src/payments/validation.ts",
       "src/server/routes/payments.ts",
-      "web/src/pages/PaymentReview.tsx"
+      "web/src/pages/CommunityPayments.tsx"
     ],
     "design": "Expose candidate review and editable draft batches without triggering money movement. Validate recipient, IBAN checksum, amount/currency/purpose/date and duplicate candidates. Generate supported SEPA with explicit revision/hash, control sums and redistributable schema provenance. Test zero/negative amounts, invalid IBAN, stale revision, duplicate invoices, XML escaping and fictional browser approval.",
     "status": "IN_PROGRESS",
@@ -704,7 +704,7 @@
     ],
     "source_files": [
       "tests",
-      "docs/feature-parity/evidence"
+      "docs/feature-parity/packages/FINAL-P03-integrated-acceptance.md"
     ],
     "design": "Execute all 40 user-specified acceptance steps against a fresh synthetic runtime, real built UI and controlled provider fixtures. Capture meaningful screenshots and exact outputs; stop only own child processes. Verify totals and source hashes before/after restart/backup/migration. A successful launch or unit test is not E2E parity.",
     "status": "IN_PROGRESS",
@@ -748,7 +748,7 @@
       "P11-W02"
     ],
     "source_files": [
-      "tests/integrations",
+      "tests/community-integrations.test.ts",
       "docs/feature-parity/09_INTEGRATION_MATRIX.md"
     ],
     "design": "Run separately labeled PayPal sandbox/Stripe test-mode/provider authorization checks using independently supplied accounts only. Mock success is not provider success. Missing credentials block live/sandbox evidence only, not local implementation. Record exact scopes, mode and nonsecret result; never execute real transfers.",
