@@ -1,12 +1,13 @@
 # Launch a privately installed Community package with independent account storage.
 param(
   [Parameter(Mandatory=$true)][string]$DataDirectory,
-  [string]$InstallDirectory = (Split-Path -Parent $PSScriptRoot),
-  [string]$NodeExe = 'node.exe',
+  [string]$InstallDirectory = '',
+  [string]$NodeExe = '',
   [ValidateRange(1024,65535)][int]$Port = 3433
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+if (-not $InstallDirectory) { $InstallDirectory = Split-Path -Parent $PSScriptRoot }
 $app = [IO.Path]::GetFullPath($InstallDirectory)
 $runtime = [IO.Path]::GetFullPath($DataDirectory)
 if (-not [IO.Path]::IsPathRooted($DataDirectory) -or $runtime -eq $app -or $runtime.StartsWith(($app.TrimEnd('\') + '\'), [StringComparison]::OrdinalIgnoreCase) -or $app.StartsWith(($runtime.TrimEnd('\') + '\'), [StringComparison]::OrdinalIgnoreCase)) {
@@ -20,6 +21,10 @@ foreach ($path in @($app, $runtime, (Split-Path -Parent $runtime))) {
 }
 if (-not (Test-Path -LiteralPath (Join-Path $app 'node_modules\tsx\dist\cli.mjs'))) { throw 'Installed server dependencies are missing.' }
 if (-not (Test-Path -LiteralPath (Join-Path $app 'web\dist\index.html'))) { throw 'Installed web build is missing.' }
+if (-not $NodeExe) {
+  $bundled = Join-Path $app 'runtime\node.exe'
+  $NodeExe = if (Test-Path -LiteralPath $bundled -PathType Leaf) { $bundled } else { 'node.exe' }
+}
 $node = (Get-Command $NodeExe -ErrorAction Stop).Source
 $version = (& $node -p 'process.versions.node').Trim()
 $abi = (& $node -p 'process.versions.modules').Trim()
@@ -50,6 +55,8 @@ try { $random.GetBytes($bytes) } finally { $random.Dispose() }
 $setupCode = [Convert]::ToBase64String($bytes).TrimEnd('=').Replace('+','-').Replace('/','_')
 [Array]::Clear($bytes,0,$bytes.Length)
 $env:MATCHING_SETUP_TOKEN = $setupCode
+$env:PATH = (Split-Path -Parent $node) + ';' + $env:PATH
+$env:NODE_ENV = 'production'
 $env:MATCHING_DEMO_MODE = 'false'
 $env:MATCHING_ENABLE_BANK_AUTOMATION = 'false'
 Remove-Item Env:MATCHING_LOCAL_ACCESS_TOKEN -ErrorAction SilentlyContinue

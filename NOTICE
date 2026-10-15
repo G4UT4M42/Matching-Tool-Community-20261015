@@ -1,0 +1,39 @@
+Matching Tool Community
+
+The root MIT license applies only to original material for which the
+contributors possess the necessary rights. Third-party components retain
+their own licenses. This notice does not grant rights to third-party code,
+data, fonts, schemas, trademarks, or binary libraries.
+
+SheetJS Community Edition -- https://sheetjs.com/
+Copyright (C) 2012-present SheetJS LLC
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    https://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Offline OCR uses Tesseract.js, its compiled engine, and English/German
+traineddata distributed through the Tesseract.js data project. The upstream
+traineddata repository uses Apache-2.0; MIT declarations in the language
+package manifests do not replace the upstream data license.
+https://github.com/naptha/tessdata
+
+PDF.js distributions include additional font, CMap, ICC, and WebAssembly
+materials with separate notices. PDFKit distributions include Adobe font
+metrics. Native image/PDF libraries can incorporate additional libraries
+under permissive, MPL, and LGPL terms. Their complete applicable notices
+and source/relink requirements must accompany a qualified binary package.
+
+This source notice is an attribution entry point, not the full legal-notice
+bundle or a statement of legal clearance. Generate and review the exact
+dependency inventory and complete license-text bundle as described in
+docs/compliance/README.md. Preserve upstream notices with redistributed
+components, include applicable license texts, and satisfy source/relink
+obligations before distributing a binary installation package.
+
+Release acceptance and source ownership confirmation remain separate gates.

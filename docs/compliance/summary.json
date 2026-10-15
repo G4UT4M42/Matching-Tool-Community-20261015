@@ -1,0 +1,238 @@
+{
+  "format": "matching-community-compliance-v1",
+  "sourceLockSha256": {
+    "package-lock.json": "8a62f174788392ce04bef1e839472d04550e82f74472356f3209629242473653",
+    "web/package-lock.json": "8e93fe21fe9b612726062a2643d9d86e48f6e32c606bb00fbb3796c8417529f8"
+  },
+  "packageInstallations": 517,
+  "installed": 374,
+  "absent": 143,
+  "installedWithoutLicenseMetadata": 3,
+  "absentWithoutLicenseMetadata": 95,
+  "noticeFiles": 381,
+  "distinctNoticeTexts": 235,
+  "assets": 52,
+  "unresolvedDependencyEdges": [
+    {
+      "workspace": "root",
+      "from": "root:node_modules/@puppeteer/browsers@3.2.4",
+      "name": "proxy-agent",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/@puppeteer/browsers@3.2.4",
+      "name": "yauzl",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/@vitest/mocker@5.0.4",
+      "name": "msw",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/node-fetch@2.7.0",
+      "name": "encoding",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vite@8.3.4",
+      "name": "@vitejs/devtools",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vite@8.3.4",
+      "name": "jiti",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vite@8.3.4",
+      "name": "less",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vite@8.3.4",
+      "name": "sass",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vite@8.3.4",
+      "name": "sass-embedded",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vite@8.3.4",
+      "name": "stylus",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vite@8.3.4",
+      "name": "sugarss",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vite@8.3.4",
+      "name": "terser",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vite@8.3.4",
+      "name": "yaml",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vitest@5.0.4",
+      "name": "@edge-runtime/vm",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vitest@5.0.4",
+      "name": "@opentelemetry/api",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vitest@5.0.4",
+      "name": "@vitest/browser-playwright",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vitest@5.0.4",
+      "name": "@vitest/browser-preview",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vitest@5.0.4",
+      "name": "@vitest/browser-webdriverio",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vitest@5.0.4",
+      "name": "@vitest/coverage-istanbul",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vitest@5.0.4",
+      "name": "@vitest/coverage-v8",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vitest@5.0.4",
+      "name": "@vitest/ui",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vitest@5.0.4",
+      "name": "happy-dom",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/vitest@5.0.4",
+      "name": "jsdom",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/ws@8.22.0",
+      "name": "bufferutil",
+      "optional": true
+    },
+    {
+      "workspace": "root",
+      "from": "root:node_modules/ws@8.22.0",
+      "name": "utf-8-validate",
+      "optional": true
+    },
+    {
+      "workspace": "web",
+      "from": "web:node_modules/vite@6.4.1",
+      "name": "@types/node",
+      "optional": true
+    },
+    {
+      "workspace": "web",
+      "from": "web:node_modules/vite@6.4.1",
+      "name": "jiti",
+      "optional": true
+    },
+    {
+      "workspace": "web",
+      "from": "web:node_modules/vite@6.4.1",
+      "name": "less",
+      "optional": true
+    },
+    {
+      "workspace": "web",
+      "from": "web:node_modules/vite@6.4.1",
+      "name": "lightningcss",
+      "optional": true
+    },
+    {
+      "workspace": "web",
+      "from": "web:node_modules/vite@6.4.1",
+      "name": "sass",
+      "optional": true
+    },
+    {
+      "workspace": "web",
+      "from": "web:node_modules/vite@6.4.1",
+      "name": "sass-embedded",
+      "optional": true
+    },
+    {
+      "workspace": "web",
+      "from": "web:node_modules/vite@6.4.1",
+      "name": "stylus",
+      "optional": true
+    },
+    {
+      "workspace": "web",
+      "from": "web:node_modules/vite@6.4.1",
+      "name": "sugarss",
+      "optional": true
+    },
+    {
+      "workspace": "web",
+      "from": "web:node_modules/vite@6.4.1",
+      "name": "terser",
+      "optional": true
+    },
+    {
+      "workspace": "web",
+      "from": "web:node_modules/vite@6.4.1",
+      "name": "tsx",
+      "optional": true
+    },
+    {
+      "workspace": "web",
+      "from": "web:node_modules/vite@6.4.1",
+      "name": "yaml",
+      "optional": true
+    }
+  ],
+  "scope": "all_root_and_web_locks_including_dev_and_optional; installed_files_only_for_assets_and_notices",
+  "automatedInventoryOnly": true,
+  "sourceOwnershipVerified": false,
+  "redistributionRightsVerified": false,
+  "releaseAccepted": false
+}
