@@ -75,7 +75,7 @@ describe('provider normalization and paging', () => {
       if (request.method === 'POST') { expect(request.headers.Authorization).toMatch(/^Basic /); return {status: 200, json: {access_token:'synthetic-token', expires_in: 3600}}; }
       expect(request.headers.Authorization).toBe('Bearer synthetic-token');
       const page = Number(new URL(request.url).searchParams.get('page'));
-      return {status: 200, json: {total_pages: 2, transaction_details: [paypalRow(`PP${page}`)]}};
+      return {status: 200, json: {account_number:'SYNTHETICMERCHANT',total_pages: 2, transaction_details: [paypalRow(`PP${page}`)]}};
     };
     const client = new PayPalClient(paypalCredential, 'sandbox', transport);
     const pages = [];
@@ -92,10 +92,10 @@ describe('provider normalization and paging', () => {
     expect(normalizeStripe({...row, id:'txn_2', type:'payout', amount:-970, fee:0, net:-970}, 'test', owner.subject).revenue).toBe(false);
     expect(() => normalizeStripe({...row, net:971}, 'test', owner.subject)).toThrow('INVALID_PROVIDER_AMOUNT');
     let calls = 0;
-    const transport: Transport = async request => { calls++; expect(request.url).toMatch(/^https:\/\/api\.stripe\.com\/v1\/balance_transactions/); return {status: 200, json: {data:[row], has_more:true}}; };
+    const transport: Transport = async request => { calls++;if(request.url==='https://api.stripe.com/v1/account')return{status:200,json:{id:'acct_SYNTHETIC',object:'account'}}; expect(request.url).toMatch(/^https:\/\/api\.stripe\.com\/v1\/balance_transactions/); return {status: 200, json: {data:[row], has_more:true}}; };
     const client = new StripeClient('rk_test_synthetic1234', 'test', transport);
     await expect((async () => { for await (const _ of client.pages(new Date('2025-01-01'), new Date('2026-01-01'), owner.subject)) {} })()).rejects.toThrow('PROVIDER_PAGINATION_LOOP');
-    expect(calls).toBe(2);
+    expect(calls).toBe(3);
   });
   it('bounds rate limits and transport failures without exposing provider text', async () => {
     const transport: Transport = async () => ({status: 429, json:{message:'synthetic-sensitive-provider-text'}});
@@ -108,7 +108,7 @@ describe('provider normalization and paging', () => {
     let searchCalls = 0;
     const transport: Transport = async request => request.method === 'POST'
       ? {status:200,json:{access_token:'synthetic-token',expires_in:3600}}
-      : (searchCalls++, {status:200,json:{total_pages:2,transaction_details:[paypalRow('SAME_PAGE')]}});
+      : (searchCalls++, {status:200,json:{account_number:'SYNTHETICMERCHANT',total_pages:2,transaction_details:[paypalRow('SAME_PAGE')]}});
     const client = new PayPalClient(paypalCredential,'sandbox',transport);
     await expect((async () => { for await (const _ of client.pages(new Date('2026-10-01'),new Date('2026-10-02'),owner.subject)) {} })()).rejects.toThrow('PROVIDER_PAGINATION_LOOP');
     expect(searchCalls).toBe(2);
@@ -119,7 +119,7 @@ describe('provider normalization and paging', () => {
     let tokens = 0, searches = 0;
     const transport: Transport = async request => request.method === 'POST'
       ? {status:200,json:{access_token:`token-${++tokens}`,expires_in:3600}}
-      : (++searches === 1 ? {status:401,json:{message:'expired'}} : {status:200,json:{total_pages:1,transaction_details:[]}});
+      : (++searches === 1 ? {status:401,json:{message:'expired'}} : {status:200,json:{account_number:'SYNTHETICMERCHANT',total_pages:1,transaction_details:[]}});
     const client = new PayPalClient(paypalCredential,'sandbox',transport);
     await client.testConnection();
     expect([tokens,searches]).toEqual([2,2]);
@@ -134,18 +134,20 @@ describe('orchestration and router', () => {
       {id:'txn_payout',type:'payout',amount:-770,fee:0,net:-770,currency:'eur',created:1790000000,source:'po_1'},
     ];
     const batches: Array<{references:string[]; revenue:number; net:number}> = [];
-    const service = new IntegrationService(vault,async ({transactions}) => { batches.push({references:transactions.map(t=>t.reference),revenue:transactions.filter(t=>t.revenue).reduce((sum,t)=>sum+t.amountMinor,0),net:transactions.reduce((sum,t)=>sum+t.netMinor,0)}); },async () => ({status:200,json:{data:rows,has_more:false}}),() => new Date('2026-10-14T00:00:00Z'));
+    const service = new IntegrationService(vault,async ({transactions}) => { batches.push({references:transactions.map(t=>t.reference),revenue:transactions.filter(t=>t.revenue).reduce((sum,t)=>sum+t.amountMinor,0),net:transactions.reduce((sum,t)=>sum+t.netMinor,0)}); },async request => request.url==='https://api.stripe.com/v1/account'?{status:200,json:{id:'acct_SYNTHETIC',object:'account'}}:({status:200,json:{data:rows,has_more:false}}),() => new Date('2026-10-14T00:00:00Z'));
     await service.configure(owner,'stripe','test',{apiKey:'rk_test_synthetic1234'});
     expect((await service.synchronize(owner,'stripe','test')).imported).toBe(3);
     expect(batches[0]).toEqual({references:['txn_charge','txn_refund','txn_payout'],revenue:800,net:0});
     expect((await service.synchronize(owner,'stripe','test')).imported).toBe(0);
-    expect(batches[1].references).toEqual([]);
+    // Replayed observations still reach canonical validation; the durable
+    // coordinator independently proves that this does not create ledger rows.
+    expect(batches[1]).toEqual(batches[0]);
   });
   it('rolls cursor back after failed durable callback and deduplicates restart', async () => {
     const dir = await directory(), protector = new TestProtector(), vault = new CredentialVault(dir, protector);
     const commits: string[][] = []; let fail = true;
     const callback: CommitBatch = async ({transactions}) => { if (fail) throw new Error('SYNTHETIC_COMMIT_FAILURE'); commits.push(transactions.map(x => x.reference)); };
-    const transport: Transport = async request => request.method === 'POST' ? {status:200,json:{access_token:'token',expires_in:3600}} : {status:200,json:{total_pages:1,transaction_details:[paypalRow('PP1'),paypalRow('PP1'),paypalRow('PP2','-2.00','0')]}};
+    const transport: Transport = async request => request.method === 'POST' ? {status:200,json:{access_token:'token',expires_in:3600}} : {status:200,json:{account_number:'SYNTHETICMERCHANT',total_pages:1,transaction_details:[paypalRow('PP1'),paypalRow('PP1'),paypalRow('PP2','-2.00','0')]}};
     const now = () => new Date('2026-10-14T00:00:00Z');
     const service = new IntegrationService(vault, callback, transport, now);
     await service.configure(owner, 'paypal', 'sandbox', paypalCredential);

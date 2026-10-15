@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { createEmptyState } from '../src/storage/json-store.js';
 import { prepareProviderImport } from '../src/community/integrations/canonical-import.js';
 import type { CanonicalTransaction, CommitBatch } from '../src/community/integrations/types.js';
+import {providerAccountIdentity} from '../src/community/integrations/provider-account.js';
 
 const subject='USR-synthetic-provider-owner';
+const account=providerAccountIdentity('stripe','test','acct_SYNTHETIC');
 const event=(overrides:Partial<CanonicalTransaction>={}):CanonicalTransaction=>({
- provider:'stripe', environment:'test',account:subject,reference:'txn_synthetic_charge',
+ provider:'stripe', environment:'test',account,reference:'txn_synthetic_charge',
  occurredAt:'2026-10-14T00:00:00.000Z',currency:'EUR',amountMinor:1000,feeMinor:-30,
  netMinor:970,classification:'payment',revenue:true,...overrides,
 });
@@ -22,7 +24,7 @@ describe('provider-to-canonical durable import preparation',()=>{
    expect([...result.state.transactions.values()].reduce((sum,row)=>sum+row.amount_minor,0)).toBe(970);
    for(const row of result.state.transactions.values()){
      expect(row.source_system).toBe('stripe');
-     expect(row.source_account_id).toBe(subject+':test');
+     expect(row.source_account_id).toBe(account+':test');
      expect(row.booking_reference).toBe('txn_synthetic_charge');
      expect(row.currency_code).toBe('EUR');
    }

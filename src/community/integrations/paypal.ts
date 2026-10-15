@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { asObject, currencyCode, decimalMinor, type CanonicalTransaction, type Environment, type HttpRequest, type Transport } from './types.js';
 import { requestJson } from './http.js';
+import {providerAccountIdentity} from './provider-account.js';
 
 export class PayPalClient {
   private token: { value: string; expiresAt: number } | null = null;
@@ -16,11 +17,12 @@ export class PayPalClient {
     this.token = { value: json.access_token, expiresAt: Date.now() + Math.min(Number(json.expires_in), 86400) * 1000 };
     return this.token.value;
   }
-  async *pages(start: Date, end: Date, account: string): AsyncGenerator<{transactions: CanonicalTransaction[]; checkpoint: string}> {
+  async *pages(start: Date, end: Date, _localSubject?: string): AsyncGenerator<{transactions: CanonicalTransaction[]; checkpoint: string}> {
     if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || start >= end || end.getTime() - start.getTime() > 31 * 86400000) throw new Error('INVALID_DATE_WINDOW');
     let token = await this.accessToken();
     let totalPages = 1;
     const fingerprints = new Set<string>();
+    let account:string|undefined;
     for (let page = 1; page <= totalPages; page++) {
       if (page > 1000) throw new Error('PROVIDER_PAGINATION_LIMIT');
       const url = new URL(`${this.base}/v1/reporting/transactions`);
@@ -34,18 +36,21 @@ export class PayPalClient {
         body = await requestJson(this.transport, { method: 'GET', url: url.href, headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' } });
       }
       const json = asObject(body);
+      const observedAccount=providerAccountIdentity('paypal',this.environment,json.account_number);
+      if(account!==undefined&&observedAccount!==account)throw new Error('PROVIDER_ACCOUNT_CHANGED');
+      account=observedAccount;
       const rows = json.transaction_details ?? (json.total_pages === 0 ? [] : undefined);
       if (!Array.isArray(rows) || !Number.isSafeInteger(json.total_pages) || Number(json.total_pages) < 0 || Number(json.total_pages) > 1000 || (Number(json.total_pages) < page && !(page === 1 && json.total_pages === 0))) throw new Error('INVALID_PROVIDER_RESPONSE');
       const fingerprint = createHash('sha256').update(JSON.stringify(rows)).digest('hex');
       if (fingerprints.has(fingerprint) && rows.length > 0) throw new Error('PROVIDER_PAGINATION_LOOP');
       fingerprints.add(fingerprint);
       totalPages = Number(json.total_pages);
-      yield { transactions: rows.flatMap(row => normalizePayPal(row, this.environment, account)), checkpoint: end.toISOString() };
+      yield { transactions: rows.flatMap(row => normalizePayPal(row, this.environment, observedAccount)), checkpoint: end.toISOString() };
     }
   }
   async testConnection(): Promise<void> {
     const end = new Date(), start = new Date(end.getTime() - 86400000);
-    await this.pages(start, end, 'connection-test').next();
+    await this.pages(start, end).next();
   }
 }
 

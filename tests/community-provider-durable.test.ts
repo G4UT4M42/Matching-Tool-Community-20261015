@@ -47,7 +47,7 @@ describe('actual durable provider journal and encrypted checkpoint coordination'
        {id:'txn_payout_syn',type:'payout',amount:-770,fee:0,net:-770,currency:'eur',created:1790000000,source:'po_synthetic'},
      ];
      let transportCalls=0;
-     const transport:Transport=async request=>{transportCalls++;if(!request.url.startsWith('https://api.stripe.com/v1/balance_transactions'))throw new Error('UNEXPECTED_PROVIDER_ENDPOINT');
+     const transport:Transport=async request=>{transportCalls++;if(request.url==='https://api.stripe.com/v1/account')return{status:200,json:{id:'acct_SYNTHETIC',object:'account'}};if(!request.url.startsWith('https://api.stripe.com/v1/balance_transactions'))throw new Error('UNEXPECTED_PROVIDER_ENDPOINT');
        return{status:200,json:{data:rows,has_more:false}};};
      const now=()=>new Date('2026-10-15T00:00:00.000Z');
      let faultAfterDurableCommit=true;

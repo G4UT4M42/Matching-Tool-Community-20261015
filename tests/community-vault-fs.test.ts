@@ -67,7 +67,7 @@ describe('Provider credential and checkpoint filesystem boundaries', () => {
   it('rejects a checkpoint symlink before reading or disconnecting provider state', async () => {
     const fakeTransport: Transport = async req => req.method === 'POST'
       ? {status:200,json:{access_token:'fictional-token',expires_in:3600}}
-      : {status:200,json:{total_pages:1,transaction_details:[]}};
+      : {status:200,json:{account_number:'SYNTHETICMERCHANT',total_pages:1,transaction_details:[]}};
     const service = new IntegrationService(vault,async()=>{},fakeTransport,()=>new Date('2026-10-14T00:00:00Z'));
     await service.configure(principal,'paypal','sandbox',fakeCredentials);
     await service.testConnection(principal,'paypal','sandbox');

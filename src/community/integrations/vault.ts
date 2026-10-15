@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
+import { renameSync, rmSync } from 'node:fs';
 import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
-import { chmod, rename, rm, writeFile } from 'node:fs/promises';
+import { chmod, open, rm } from 'node:fs/promises';
 import { inspectVaultMember, readVaultMember, secureVaultDirectory, trustedWindowsPowerShell } from './vault-files.js';
 import path from 'node:path';
 import { assertEnvironment, assertPrincipal, assertProvider, type Environment, type Principal, type Provider } from './types.js';
@@ -36,7 +37,7 @@ export class CredentialVault {
   private file(principal: Principal, provider: Provider, environment: Environment): string {
     return path.join(this.directory, `${createHash('sha256').update(identity(principal, provider, environment)).digest('hex')}.credential`);
   }
-  async put(rawPrincipal: Principal, rawProvider: Provider, rawEnvironment: Environment, credentials: Record<string,string>): Promise<void> {
+  async put(rawPrincipal: Principal, rawProvider: Provider, rawEnvironment: Environment, credentials: Record<string,string>, beforeCommit?:()=>void): Promise<void> {
     const principal = assertPrincipal(rawPrincipal), provider = assertProvider(rawProvider), environment = assertEnvironment(provider, rawEnvironment);
     if (!credentials || Object.keys(credentials).length === 0 || Object.keys(credentials).length > 4 || Object.values(credentials).some(x => typeof x !== 'string' || x.length < 1 || x.length > 4096)) throw new Error('INVALID_CREDENTIALS');
     await this.ensureStorage();
@@ -45,12 +46,14 @@ export class CredentialVault {
     if (plain.length > 16384) { plain.fill(0); throw new Error('INVALID_CREDENTIALS'); }
     let cipher: Buffer;
     try { cipher = this.protector.protect(plain, context); } finally { plain.fill(0); }
-    const target = this.file(principal, provider, environment), temp = `${target}.${randomUUID()}.tmp`;
+    const target = this.file(principal, provider, environment), temp = path.join(this.directory,createHash('sha256').update(randomUUID()).digest('hex')+'.credential');
     await inspectVaultMember(this.directory, target, 65536);
     try {
-      await writeFile(temp, JSON.stringify({ version: 1, identity: context.toString('base64'), ciphertext: cipher.toString('base64') }), { flag: 'wx', mode: 0o600 });
+      const handle=await open(temp,'wx',0o600);
+      try{await handle.writeFile(JSON.stringify({ version: 1, identity: context.toString('base64'), ciphertext: cipher.toString('base64') }));await handle.sync();}finally{await handle.close();}
       await chmod(temp, 0o600);
-      await rename(temp, target);
+      beforeCommit?.();
+      renameSync(temp, target);
     } finally { await rm(temp, { force: true }); cipher.fill(0); }
   }
   async get(rawPrincipal: Principal, rawProvider: Provider, rawEnvironment: Environment): Promise<Record<string,string> | null> {
@@ -69,7 +72,7 @@ export class CredentialVault {
     } catch { throw new Error('CREDENTIAL_UNAVAILABLE'); }
   }
   async has(principal: Principal, provider: Provider, environment: Environment): Promise<boolean> { return (await this.get(principal, provider, environment)) !== null; }
-  async remove(principal: Principal, provider: Provider, environment: Environment): Promise<void> { const target = this.file(assertPrincipal(principal), assertProvider(provider), assertEnvironment(provider, environment)); await inspectVaultMember(this.directory, target, 65536); await rm(target, { force: true }); }
+  async remove(principal: Principal, provider: Provider, environment: Environment, beforeCommit?:()=>void): Promise<void> { const target = this.file(assertPrincipal(principal), assertProvider(provider), assertEnvironment(provider, environment)); await inspectVaultMember(this.directory, target, 65536); beforeCommit?.(); rmSync(target, { force: true }); }
   sealMetadata(principal: Principal, provider: Provider, environment: Environment, value: Buffer): Buffer {
     return this.protector.protect(value, Buffer.from(`checkpoint\0${identity(principal, provider, environment)}`));
   }

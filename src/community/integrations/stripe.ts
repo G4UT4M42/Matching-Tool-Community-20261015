@@ -1,12 +1,19 @@
 import { asObject, currencyCode, safeInteger, type CanonicalTransaction, type Environment, type Transport } from './types.js';
 import { requestJson } from './http.js';
+import {providerAccountIdentity} from './provider-account.js';
 
 export class StripeClient {
   constructor(private key: string, private environment: Environment, private transport: Transport) {
     if (environment !== 'test' && environment !== 'live' || !new RegExp(`^rk_${environment}_[A-Za-z0-9]{8,}$`).test(key)) throw new Error('INVALID_CREDENTIALS');
   }
-  async *pages(start: Date, end: Date, account: string): AsyncGenerator<{transactions: CanonicalTransaction[]; checkpoint: string}> {
+  private async accountIdentity():Promise<string>{
+    const account=asObject(await requestJson(this.transport,{method:'GET',url:'https://api.stripe.com/v1/account',headers:{Authorization:`Bearer ${this.key}`,Accept:'application/json'}}));
+    if(account.object!=='account')throw new Error('PROVIDER_ACCOUNT_UNAVAILABLE');
+    return providerAccountIdentity('stripe',this.environment,account.id);
+  }
+  async *pages(start: Date, end: Date, _localSubject?: string): AsyncGenerator<{transactions: CanonicalTransaction[]; checkpoint: string}> {
     if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || start >= end) throw new Error('INVALID_DATE_WINDOW');
+    const account=await this.accountIdentity();
     let after: string | null = null;
     const seenPages = new Set<string>();
     for (let page = 0; page < 1000; page++) {
@@ -26,7 +33,7 @@ export class StripeClient {
     }
     throw new Error('PROVIDER_PAGINATION_LIMIT');
   }
-  async testConnection(): Promise<void> { const iterator = this.pages(new Date(Date.now() - 86400000), new Date(), 'test'); await iterator.next(); }
+  async testConnection(): Promise<void> { const iterator = this.pages(new Date(Date.now() - 86400000), new Date()); await iterator.next(); }
 }
 
 export function normalizeStripe(value: unknown, environment: Environment, account: string): CanonicalTransaction {
