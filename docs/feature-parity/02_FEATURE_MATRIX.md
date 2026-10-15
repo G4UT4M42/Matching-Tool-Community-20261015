@@ -1,5 +1,7 @@
 # Source-backed feature matrix
 
+> Current checkpoint (2026-10-15): safe parentless Community ancestry; exact `fa6c49a` app regression441/441. Full Node run70/71, zero skips/cancellations: the complete installed source-supply browser journey passed, while a separate maintenance command reached its120-second deadline. Failed evidence is retained; measured300-second command/900-second maintenance budgets now pass the separate3/3 maintenance regression without removing assertions. Replacement01 failed artifact privacy; it is excluded from the new allowlist. Replacement02 image/PDF/OCR and independent286-payload hash/UTF8-UTF16 privacy review pass; final packaging rerun remains mandatory. Windows libvips and sharp WASM source engineering continue independently. All three repository/software/release acceptance milestones remain false.
+
 Updated 2026-10-15. All 21 areas remain mandatory. IMPLEMENTED behavior below
 has concrete synthetic evidence; full-area status remains IN_PROGRESS until its
 remaining software and final exact-candidate criteria are satisfied. External

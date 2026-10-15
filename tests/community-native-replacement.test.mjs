@@ -23,7 +23,7 @@ test('internally consistent self-asserted replacement evidence cannot impersonat
 });
 test('the approved manifest cannot authorize substituted native bytes',()=>{
  const f=fixture();try{
-  const bytes=readFileSync(join(root,'docs/compliance/canvas-replacement-manifest.json'));assert.equal(sha256(bytes),'5d791594cb4ed6dba342c85522b928a53cad3151f2d47cc83acb09ecb89052b4');
+  const bytes=readFileSync(join(root,'docs/compliance/canvas-replacement-manifest.json'));assert.equal(sha256(bytes),'907cdd47091358e832c3765610ee61da12145635917655f5b7b23022395a3b58');
   const approved=JSON.parse(bytes);writeFileSync(join(f.folder,'manifest.json'),bytes);const target=join(f.folder,approved.binary.path);mkdirSync(dirname(target),{recursive:true});writeFileSync(target,'MZSYNTHETIC-SUBSTITUTED');
   assert.throws(()=>validateNativeReplacement(f.folder),/checksum or bounds/);
  }finally{f.close();}

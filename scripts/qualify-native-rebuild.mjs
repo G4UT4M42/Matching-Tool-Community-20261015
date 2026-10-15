@@ -191,6 +191,21 @@ if (phase==='build') {
   writeFileSync(cmakeToolchain,'set(CMAKE_POLICY_DEFAULT_CMP0091 NEW)\nset(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "isolated static runtime" FORCE)\nset(CMAKE_C_FLAGS_RELEASE "/O2 /Ob2 /DNDEBUG" CACHE STRING "isolated release flags" FORCE)\nset(CMAKE_CXX_FLAGS_RELEASE "/O2 /Ob2 /DNDEBUG" CACHE STRING "isolated release flags" FORCE)\n');
   Object.assign(env,{CMAKE_GENERATOR:'Ninja',CARGO_TARGET_DIR:targetRoot,CC:'cl',CXX:'cl',CMAKE_TOOLCHAIN_FILE:cmakeToolchain,CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER:linker});
   run('rustc-version',join(out,'tools/rust/bin/rustc.exe'),['-Vv'],{env});run('cargo-version',join(out,'tools/rust/bin/cargo.exe'),['--version'],{env});
+  // Keep physical build locations out of Rust panic strings and CAPI header macros.
+  const remapPairs=[];
+  for(const [path,logical] of [[out,'/build/native'],[join(out,'src','canvas'),'/source/canvas'],[join(out,'src','skia'),'/source/skia'],[join(out,'vendor'),'/source/vendor'],[join(out,'cargo-home'),'/build/cargo-home'],[targetRoot,'/build/target']]) {
+    for(const physical of [path,path.replace(/\\/g,'/')]) remapPairs.push([physical,logical]);
+  }
+  const rustFlags=['-C','target-feature=+crt-static'];
+  for(const [physical,logical] of remapPairs) rustFlags.push('--remap-path-prefix',physical+'='+logical);
+  env.CARGO_ENCODED_RUSTFLAGS=rustFlags.join('\x1f');
+  const cppFlags=[];
+  for(const [physical,logical] of remapPairs) for(const flag of ['-ffile-prefix-map=','-fmacro-prefix-map=']) {
+    const argument='/clang:'+flag+physical+'='+logical;
+    cppFlags.push('"'+argument.replace(/\\/g,'\\\\').replace(/"/g,'\\"')+'"');
+  }
+  env.CXXFLAGS=cppFlags.join(' ');
+  env.CC_SHELL_ESCAPED_FLAGS='1';
   run('cargo-release-offline',join(out,'tools/rust/bin/cargo.exe'),['build','--release','--locked','--offline','--target','x86_64-pc-windows-msvc','-j','2'],{cwd:join(out,'src','canvas'),env,timeout:1200000});
   const binary=join(targetRoot,'x86_64-pc-windows-msvc','release','canvas.dll');
   writeFileSync(join(out,'build-result.json'),JSON.stringify({rebuiltCanvas:true,binarySha256:hash(readFileSync(binary)),cmakeToolchainSha256:hash(readFileSync(cmakeToolchain)),msvcToolsetVersion:toolsetVersion,frozenLockSha256:hash(readFileSync(join(out,'Cargo.lock'))),skiaStaticLibrariesRebuiltFromSource:false,newFrozenRustClosure:true,runtimeReplaced:false,releaseAccepted:false},null,2)+'\n');

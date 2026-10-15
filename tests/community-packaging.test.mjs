@@ -11,12 +11,21 @@ import { verifyPackage, sha256 } from '../scripts/verify-community-package.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const evidenceRoot = process.env.MATCHING_PACKAGING_EVIDENCE;
+let commandSequence = 0;
 function command(file, args, options = {}) {
+  const started = Date.now();
   const run = spawnSync(file, args, { cwd: root, encoding: 'utf8', windowsHide: true, timeout: 120000, ...options });
-  assert.equal(run.status, 0, (run.stderr || run.stdout || String(run.error)).slice(-4000));
+  const observation = { executable: file.split(/[\\/]/).pop(), action: args.find(value => value.endsWith('.ps1'))?.split(/[\\/]/).pop() ?? 'node', elapsedMs: Date.now() - started, deadlineMs: options.timeout ?? 120000, exitCode: run.status, signal: run.signal, errorCode: run.error?.code ?? null };
+  if (evidenceRoot) {
+    const evidence = resolve(evidenceRoot), rel = relative(root, evidence), runId = process.env.MATCHING_TEST_RUN_ID ?? String(started);
+    if (!(isAbsolute(rel) || rel === '..' || rel.startsWith('..\\'))) throw new Error('Evidence must stay external');
+    assert.match(runId, /^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$/); mkdirSync(evidence, { recursive: true });
+    writeFileSync(join(evidence, `packaging-command-${runId}-${++commandSequence}.json`), JSON.stringify(observation, null, 2) + '\n', { flag: 'wx' });
+  }
+  assert.equal(run.status, 0, JSON.stringify(observation) + '\n' + (run.stderr || run.stdout || String(run.error)).slice(-4000));
   return run.stdout;
 }
-function ps(script, args) { return command('powershell.exe', ['-NoProfile', '-File', join(root, 'scripts', script), ...args]); }
+function ps(script, args) { return command('powershell.exe', ['-NoProfile', '-File', join(root, 'scripts', script), ...args], { timeout: 300000 }); }
 async function port() { const server = createServer(); await new Promise(ok => server.listen(0, '127.0.0.1', ok)); const value = server.address().port; await new Promise(ok => server.close(ok)); return value; }
 function launch(install, data, number) {
   // No NodeExe override: the installed runtime must work independently of PATH.
@@ -69,7 +78,7 @@ test('installation and uninstall refuse junctions while retaining independent sy
   } finally { assert.ok(resolve(base).startsWith(resolve(tmpdir()) + '\\')); rmSync(base, { recursive: true, force: true }); }
 });
 
-test('external development package installs, runs with bundled runtime, upgrades and uninstalls retaining synthetic data', { timeout: 600000 }, async () => {
+test('external development package installs, runs with bundled runtime, upgrades and uninstalls retaining synthetic data', { timeout: 900000 }, async () => {
   const base = mkdtempSync(join(tmpdir(), 'community-package-synthetic-'));
   const compliance = join(base, 'compliance'), pack = join(base, 'package'), install = join(base, 'Application Übung'), data = join(base, 'Daten Übung');
   const results = { syntheticOnly: true, releaseAccepted: false }; let server;

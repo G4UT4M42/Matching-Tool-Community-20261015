@@ -113,3 +113,79 @@ a denied move is explicitly excluded, preserved and not delivered as source.
 
 Milestones: PRIVATE_REPOSITORY_READY=false; SOFTWARE_ACCEPTED=false;
 RELEASE_ACCEPTED=false. No real provider or real-money acceptance is claimed.
+
+## Current fa6c49a checkpoint
+
+`full-fa6c49a-01-vitest.json` records441/441 app tests, zero failed/skipped,
+63 actual entrypoints. Its manifest reports the committed revision and dirty
+state caused by active external-compliance helper/doc development. Full Node
+regression is running with the actual reviewed native replacement and both
+complete source/notice supplements. This is a current qualification checkpoint;
+it is not a clean final-release declaration.
+
+The earlier diagnostic `final-bbf73b8-01` Node run had64 tests:60 passed,
+3 failed and1 timeout-cancelled, zero skipped. Causes were exact204 browser
+observation classification, an obsolete provider-history fixture, installation
+budget and a364.97s complete package test against a360s deadline. Actual package
+functional assertions completed, but the timeout remains a failed run. Repairs
+retain all financial/security assertions. Provider malformed-response handling
+now has20 EN/DE cases plus the delayed prior-scope regression; focused real
+browser and both typechecks pass. No failed run is relabeled PASS.
+
+`installed-native-01` subsequently passed the complete fresh-install journey,
+including48 interface combinations, real cutover exit86/rollback/retry, OCR,
+exact finances,6 legacy original downloads and roles. Its7437-file manifest
+SHA256 is `956918dd9f1c129cce79c0f9bc924ff7187864e1255b80692d3354b0e8350038`.
+It precedes the final review allowlist/wrapper check and is not final acceptance.
+
+`candidate-native-replacement-observations-03.log` passes8 focused tests.
+Actual independent bundle validation confirms the exact reviewed manifest,
+rebuilt binary and282 source/build/notice files. Admission now rejects any
+other manifest before parsing or reading payloads; final package/install rerun
+is mandatory. `capacity-02` passed fixed2000 transactions/200 documents/200
+allocations, exact currency totals, bounded p95/peak memory and cleanup.
+
+Independent privacy review covers `2318718`,18 parent-closed sanitized commits,
+526 files and676 unique blobs. No concrete privacy finding remains in that
+scope; later commits and final artifacts require their own verification.
+
+Artifact privacy finding: the actual first rebuilt native binary contains one private-denylist match and a local build prefix. The bounded UTF8/UTF16 scan records suppressed values in native-replacement-binary-privacy-01.json. This is an unresolved artifact gate, separate from passed source-only privacy review and runtime tests. Native replacement02 is being genuinely rebuilt with compiler path remapping; no binary string patching or overwrite of old evidence is permitted. Final acceptance must use the new independently checked artifact.
+
+## Completed fa6c49a diagnostic and remapped artifact
+
+`candidate-full-fa6c49a-01-node.log` completed71 tests:70 passed,1 failed,
+zero skipped/cancelled,973794.873ms. The failure was a120-second maintenance
+subcommand timeout (null status), not a financial/browser assertion. Its
+separate complete test elapsed370484.3587ms before failure. The new maintenance
+helper records executable/action, actual elapsed/deadline, exit/signal/error
+in new external JSON; command budget300s, complete test900s. Retesting remains
+required; this diagnostic is not relabeled PASS.
+
+The actual installed integrated browser journey in that same run passed.
+Its7861-file installed package manifest SHA256 is
+`7e294b5b8d5c0393fdc129ebd56c4c87ef77a3ba5fded901a5221639bab265d4`,
+source `fa6c49a`,dirty=true (active compliance/doc work). Installation took
+103652ms with a300000ms deadline and exit0. It includes48 interface
+combinations, exact finances, six legacy original downloads and actual
+cutover exit86/rollback/retry. Its canvas01 binary subsequently failed the
+separate artifact privacy gate, so this is intermediate functional evidence.
+
+A fresh compiler-remapped canvas02 passes real image/font/PDF/OCR qualification
+and independent hash/privacy review: manifest907cdd47091358e832c3765610ee61da12145635917655f5b7b23022395a3b58,
+binary0ea4e2558a21542e4364537cfbf06f3cc950f009cd9e740d159ca9edae250209,
+286 payloads404970748bytes,285 evidence files. Independent report:
+`independent-security/native-artifact-privacy-02.report.txt`. The original01
+finding is preserved. No legal, historical reproduction or release claim is
+promoted. Focused replacement/supplement admission regression5/5 and actual02
+bundle admission pass. Source review additionally hardened packaged descriptor
+preflight to a single bounded hash/parse buffer before general payload reads,
+with two distinct reviewed-target bounds and global evidence collisions.
+
+The separate `candidate-packaging-budget-02.log` retest completed3/3, no
+failed/skipped/cancelled,336374.3535ms. The complete real maintenance test took
+334611.0697ms. Actual install84323ms,upgrade93844ms,uninstall6386ms,each exit0;
+immutable command JSON and exact tested manifest are under
+`packaging-budget-02/`. All owner setup, native/OCR assets, restart/login,
+retained state/database checks and cleanup assertions passed. This focused
+working-snapshot retest resolves the maintenance defect; final combined-source
+installed acceptance is still required.

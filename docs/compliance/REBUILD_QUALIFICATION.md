@@ -50,10 +50,10 @@ The repository recipe also passes Node syntax validation, relative-path and abso
 ## Remaining integration and review
 
 Development packaging now admits only the independently reviewed manifest
-`5d791594cb4ed6dba342c85522b928a53cad3151f2d47cc83acb09ecb89052b4`
+`907cdd47091358e832c3765610ee61da12145635917655f5b7b23022395a3b58`
 and its exact rebuilt binary. The complete portable manifest is retained in
 `canvas-replacement-manifest.json`. Package inventory and installed verification
-bind the new binary and all282 source/build/notice files, while legal, release
+bind the new binary and all285 source/build/notice files, while legal, release
 and historical-reproduction claims remain false. A self-asserted qualification
 record cannot authorize a different bundle.
 
@@ -71,3 +71,13 @@ establish the provenance of the original publisher binary.
 This canvas qualification does not qualify sharp/libvips DLL replacement or either retained WebAssembly runtime. Windows libvips still requires its separate component/source and recipient replacement review. The WASM paths require their own source-build and runtime results. Docker Desktop Linux infrastructure is available locally; its presence alone is not a successful native or WASM build.
 
 The owner must decide the distribution terms and review license compatibility, notice placement, corresponding-source/relink requirements and any written-offer arrangements for the exact final artifacts. Review also covers proprietary application rights and assets outside these dependency snapshots. No release, legal-clearance or source-complete gate is promoted by this document.
+
+## Path-neutral replacement02
+
+The first full-source binary above passed functional checks but failed the separate artifact privacy review: compiler strings retained local build locations. It is retained as failed intermediate evidence and is excluded from the current allowlist. No delivered release used it.
+
+A fresh target rebuilt the same source closure with Rust `--remap-path-prefix` and clang file/macro-prefix maps in137.77 seconds. `CARGO_ENCODED_RUSTFLAGS` preserves `+crt-static` and handles both Windows slash forms; quoted C++ flags use `CC_SHELL_ESCAPED_FLAGS=1` to preserve paths with spaces. These are compiler settings; binary string patching was not used. The repository recipe includes the exact tested settings.
+
+The neutral binary is21,215,744 bytes, SHA256 `0ea4e2558a21542e4364537cfbf06f3cc950f009cd9e740d159ca9edae250209`. Real image/font/PNG/JPEG/WebP and PDF-to-offline-OCR checks again passed with exact `COMMUNITY 12345`. The replacement02 manifest above binds285 evidence files plus the binary,404,970,748 bytes. Its qualification SHA256 is `3c5e7c79fcb5aac55665adfc1f367c2e0988025e3a482d31dd27b2af9d01ee90`.
+
+An independent review verified all286 payload hashes, unique evidence destinations, proof identity and unchanged false legal/release/historical claims. UTF8/UTF16LE/UTF16BE scanning of the new binary and267 nonarchive files found zero private-denylist or local audit/worktree/profile-root matches. The20 unchanged source/tool archives retain the prior independent archive-header review. This measured scope authorizes only the exact engineering/privacy descriptor; final installed acceptance and legal/source-rights review remain separate.

@@ -132,9 +132,9 @@ offline-OCR qualification. Unsafe or conflicting destinations, modified bytes,
 missing checks and promoted legal claims reject before package output creation.
 Admission and packaged verification additionally allow only the independently
 reviewed manifest SHA-256
-`5d791594cb4ed6dba342c85522b928a53cad3151f2d47cc83acb09ecb89052b4`
+`907cdd47091358e832c3765610ee61da12145635917655f5b7b23022395a3b58`
 and binary SHA-256
-`e113eda0affe2217592fcf3ce690ab6c780e52904d3546ae8be15f6cbc3ca065`.
+`0ea4e2558a21542e4364537cfbf06f3cc950f009cd9e740d159ca9edae250209`.
 Self-asserted matching proof records cannot authorize another bundle. Future
 replacements require a separately reviewed source change to that allowlist.
 
@@ -155,3 +155,21 @@ external source-supplement directories. It passes those through the ordinary
 strict package builder, performs a real installation, and retains the exact
 installed package manifest bytes alongside screenshots and financial evidence.
 This packaging input is absent from the production server.
+
+
+The verifier contains the fixed reviewed descriptors and remains self-contained;
+the installer bootstrap still hashes its complete file. The builder imports
+those same descriptors from the existing verifier. Repeated `--replacement`
+arguments are bounded to two distinct reviewed targets, checked before output
+creation. Duplicate targets and source/supplement collisions reject. Each
+component requires its own exact manifest/binary allowlist and measured proof;
+self-asserted source-build claims cannot admit a component.
+
+The first full-source canvas binary failed artifact privacy because compiler
+strings retained local paths. It is retained only as failed intermediate
+evidence. The current replacement02 descriptor uses a fresh compiler-remapped
+binary and independent UTF8/UTF16 privacy/hash review. No binary string patching
+was used. Complete installation/upgrade/uninstall test commands now record
+actual elapsed time, deadline, exit and error code in immutable external JSON.
+Large verified installations have a bounded300-second command budget and the
+complete maintenance test has a900-second budget; all data/hash checks remain.

@@ -5,16 +5,24 @@
   "packagePath": "node_modules/@napi-rs/canvas-win32-x64-msvc/skia.win32-x64-msvc.node",
   "binary": {
     "path": "replacement/skia.win32-x64-msvc.node",
-    "bytes": 21226496,
-    "sha256": "e113eda0affe2217592fcf3ce690ab6c780e52904d3546ae8be15f6cbc3ca065"
+    "bytes": 21215744,
+    "sha256": "0ea4e2558a21542e4364537cfbf06f3cc950f009cd9e740d159ca9edae250209"
   },
   "replacedUpstreamSha256": "2f73f296e1aacec88e4600d97182d8cf13cfbfe8a0e5c27c6e60b7b33918158d",
   "sourceBuildQualified": true,
+  "binaryPrivacyQualified": true,
+  "pathNeutralBuild": true,
   "qualification": {
     "path": "qualification/qualification.json",
-    "sha256": "0403b8115f56d33715956d0a7965b3aec0a98f7dec382e2c12493c19d10f4f08"
+    "sha256": "3c5e7c79fcb5aac55665adfc1f367c2e0988025e3a482d31dd27b2af9d01ee90"
   },
   "files": [
+    {
+      "path": "metadata/binary-privacy.json",
+      "packagePath": "compliance/native-replacement/metadata/binary-privacy.json",
+      "bytes": 459,
+      "sha256": "5f0ff18c9d996a3630b1b4f27d79a34360a5f56631942c3fdea7a64520feeefb"
+    },
     {
       "path": "metadata/Cargo.lock",
       "packagePath": "compliance/native-replacement/metadata/Cargo.lock",
@@ -52,6 +60,12 @@
       "sha256": "08d2da998726ac4ec9126326af001444db77675c19e6c78aedd6d973e44abe3d"
     },
     {
+      "path": "metadata/path-neutral-build.json",
+      "packagePath": "compliance/native-replacement/metadata/path-neutral-build.json",
+      "bytes": 1295,
+      "sha256": "fdd417de0c6c3c051c9fd6fa2a40ca641f88e53ed1446daca60f48ae01d51469"
+    },
+    {
       "path": "metadata/skia-source-build.json",
       "packagePath": "compliance/native-replacement/metadata/skia-source-build.json",
       "bytes": 11926,
@@ -62,6 +76,12 @@
       "packagePath": "compliance/native-replacement/metadata/source-archive-catalog.json",
       "bytes": 7238,
       "sha256": "449969662c16c4c828cda91a06bd57635fae1f8bf196d3f06a2575fab14e2803"
+    },
+    {
+      "path": "metadata/source-content-privacy.json",
+      "packagePath": "compliance/native-replacement/metadata/source-content-privacy.json",
+      "bytes": 309,
+      "sha256": "8583aceef2d046318191ff3c4947887b5238260d033aaf1dabf22d7924ce2a9c"
     },
     {
       "path": "metadata/tool-inputs.json",
@@ -1506,8 +1526,8 @@
     {
       "path": "qualification/qualification.json",
       "packagePath": "compliance/native-replacement/qualification/qualification.json",
-      "bytes": 773,
-      "sha256": "0403b8115f56d33715956d0a7965b3aec0a98f7dec382e2c12493c19d10f4f08"
+      "bytes": 890,
+      "sha256": "3c5e7c79fcb5aac55665adfc1f367c2e0988025e3a482d31dd27b2af9d01ee90"
     },
     {
       "path": "qualification/qualify.cjs",
@@ -1537,19 +1557,19 @@
       "path": "qualification/synthetic-pdf-result.json",
       "packagePath": "compliance/native-replacement/qualification/synthetic-pdf-result.json",
       "bytes": 326,
-      "sha256": "7afd698b40ea58d45b5b7aa9b9ede468dd9dc1749af4a19930bfbe489273e772"
+      "sha256": "b0ddc34abd3019f080f0253ed28c26eebedab689e4d2eb860301cdd14cb13fcc"
     },
     {
       "path": "qualification/synthetic.pdf",
       "packagePath": "compliance/native-replacement/qualification/synthetic.pdf",
       "bytes": 1264,
-      "sha256": "6ae7f6d7173d992e3589af7a584d8bd23eaca61e1f41ebbfe8c1830ddf0f31d5"
+      "sha256": "68b23a634a6a066f308a9885aa554dfbecdf985dfde5d37b033879e60f144ff3"
     },
     {
       "path": "README.txt",
       "packagePath": "compliance/native-replacement/README.txt",
-      "bytes": 4894,
-      "sha256": "11841a2b485c922b35d95c6cb9b355383aa8dc3c2b9769fa8241ec1d42504a78"
+      "bytes": 5916,
+      "sha256": "aa252c5f4bce705301bccfe1ad1e4b9e589d123f8832ea44ae9220b68b3b2dcf"
     },
     {
       "path": "recipes/cmake-static-runtime.cmake",
@@ -1572,8 +1592,8 @@
     {
       "path": "recipes/rebuild-from-bundle.py",
       "packagePath": "compliance/native-replacement/recipes/rebuild-from-bundle.py",
-      "bytes": 9161,
-      "sha256": "629bb44f819df23dd50b74df6319ae75a11f4d292fbb480f60cfb34b3b8771a2"
+      "bytes": 9964,
+      "sha256": "4fa53f7d76aed892242cd63c498453512c2b88aae7aa78a37b6dec9e339ea85d"
     },
     {
       "path": "replacement/icudtl.dat",
@@ -1704,8 +1724,8 @@
     {
       "path": "workspace.json",
       "packagePath": "compliance/native-replacement/workspace.json",
-      "bytes": 120,
-      "sha256": "7abc4aa1a935059df10d4fda1775b355d3cd5e5a7588e7a65edcb7dc1071b5ea"
+      "bytes": 148,
+      "sha256": "15b182a086823d98c155f86ceb1da2d9797a9f5c1c171e6f2171f5fb581f8798"
     }
   ],
   "legalClearance": false,

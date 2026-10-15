@@ -6,3 +6,5 @@
 *.json text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
+# Review allowlists bind the original manifest bytes, including their line endings.
+docs/compliance/*-replacement-manifest.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
