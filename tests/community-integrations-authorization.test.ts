@@ -45,7 +45,7 @@ const sent: Array<{ subject:string; workspace_id:string; role:string; permission
 const root = mkdtempSync(path.join(tmpdir(),'community-integrations-auth-synthetic-'));
 const fakeTransport: Transport = async request => request.method === 'POST'
   ? {status:200,json:{access_token:'synthetic-only-bearer',expires_in:3600}}
-  : {status:200,json:{total_pages:1,transaction_details:[]}};
+  : {status:200,json:{account_number:'SYNTHETICMERCHANT',total_pages:1,transaction_details:[]}};
 const service = new IntegrationService(new CredentialVault(path.join(root,'vault'),new FakeProtector()),
   async () => {},fakeTransport,()=>new Date('2026-10-14T00:00:00Z'));
 let server: Server, endpoint = '';

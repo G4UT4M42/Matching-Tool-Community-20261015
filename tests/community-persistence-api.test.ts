@@ -3,11 +3,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createCommunityPersistenceRouter } from '../src/server/routes/community-persistence.js';
+import {type CommunityPersistenceDependencies, createCommunityPersistenceRouter } from '../src/server/routes/community-persistence.js';
 import type { Server } from 'node:http';
 
 let server: Server | undefined, root: string, closeDb: (() => void) | undefined;
-async function fixture() {
+async function fixture(observe?:CommunityPersistenceDependencies['observe']) {
   root = mkdtempSync(join(tmpdir(), 'community-api-'));
   process.env.MATCHING_RUNTIME_MODE = 'external-runtime-root'; process.env.MATCHING_RUNTIME_ROOT = root;
   vi.resetModules();
@@ -21,7 +21,7 @@ async function fixture() {
   const app = express(); app.use(express.json());
   app.use((request, response, next) => { const user=request.headers['x-test-subject'];if (user === 'owner'||user==='second-owner') response.locals.communityPrincipal = { subject: 'synthetic-'+user,workspace_id:'synthetic-workspace' }; next(); });
   app.use('/api/community/persistence', createCommunityPersistenceRouter({
-    activeRuntimeRoot: () => root,
+    activeRuntimeRoot: () => root,observe,
     withExclusiveAccess: run => run(),
     safeActivate: async (change, rollback) => { closeDb?.(); try { change(); } catch (error) { rollback(); throw error; } },
     may: principal => ['synthetic-owner','synthetic-second-owner'].includes(principal.subject),
@@ -39,6 +39,13 @@ afterEach(async () => {
   delete process.env.MATCHING_RUNTIME_MODE; delete process.env.MATCHING_RUNTIME_ROOT; vi.resetModules();
 });
 describe('authenticated persistence router', () => {
+  it('audits data operations before mutation and before success, and refuses mutation when durable start fails',async()=>{
+    const events:Array<{id:string;operation:string;phase:string;subject:string}>=[];let refuse=false;const base=await fixture(entry=>{if(refuse)throw new Error('SYNTHETIC_AUDIT_UNAVAILABLE');events.push(entry);}),headers={'x-test-subject':'owner'};
+    expect((await fetch(base+'/backups',{method:'POST',headers})).status).toBe(201);expect(events.map(entry=>entry.phase)).toEqual(['started','succeeded']);expect(events[0].id).toBe(events[1].id);expect(events[0]).toMatchObject({operation:'backup',subject:'synthetic-owner'});
+    refuse=true;expect((await fetch(base+'/backups',{method:'POST',headers})).status).toBe(500);expect((await(await fetch(base+'/backups',{headers})).json()).backups).toHaveLength(1);
+    refuse=false;expect((await fetch(base+'/legacy/unknown/inspect',{method:'POST',headers})).status).toBe(422);expect(events.slice(-2).map(entry=>entry.phase)).toEqual(['started','failed']);
+  });
+
   it('selects a bounded local source per account without exposing paths or reading source contents',async()=>{
     const base=await fixture(),legacy=mkdtempSync(join(tmpdir(),'community-legacy-selection-'));
     try{

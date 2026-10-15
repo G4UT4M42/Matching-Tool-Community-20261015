@@ -12,7 +12,8 @@ import { createCommunityDocumentsRouter } from '../src/server/routes/community-d
 import { InvoiceBotCoordinator } from '../src/community/invoice-bot/coordinator.ts';
 import { createCommunityInvoiceBotRouter } from '../src/server/routes/community-invoice-bot.ts';
 
-const evidence = '<external-audit-root>/Matching-Community-E2E-20261014-045708/worker-documents';
+const evidence = process.env.MATCHING_COMPONENT_BROWSER_EVIDENCE_ROOT ? join(process.env.MATCHING_COMPONENT_BROWSER_EVIDENCE_ROOT,'documents') : await mkdtemp(join(tmpdir(),'matching-documents-evidence-'));
+await mkdir(evidence,{recursive:true});
 const working = await mkdtemp(join(evidence, 'browser-synthetic-'));
 const profile = join(working, 'clean-edge-profile');
 await mkdir(profile);

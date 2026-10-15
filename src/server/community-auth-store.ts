@@ -163,15 +163,22 @@ export class CommunityAuthStore {
       previous = row.event_hash;
     }
   }
+  recordDataOperation(token:unknown,entry:{id:string;operation:string;phase:string;before:{sha256:string;transactions:number;documents:number;audits:number};after:{sha256:string;transactions:number;documents:number;audits:number}}):void{
+    const session=this.requireSession(token),permission=entry.operation==='backup'?'data:backup':entry.operation.startsWith('legacy-')?'data:migrate':'data:restore';
+    if(!hasCommunityPermission(session.principal,this.workspaceId,permission))throw new CommunityAuthError(403,'PERMISSION_REQUIRED','Data operation permission is required');
+    if(!/^[a-f0-9-]{36}$/.test(entry.id)||!['backup','restore-stage','restore-activate','legacy-inspect','legacy-stage'].includes(entry.operation)||!['started','succeeded','failed'].includes(entry.phase))throw new Error('Invalid data audit event');
+    const snapshot=(value:typeof entry.before)=>{if(!value||!/^[a-f0-9]{64}$/.test(value.sha256)||![value.transactions,value.documents,value.audits].every(n=>Number.isSafeInteger(n)&&n>=0))throw new Error('Invalid data audit snapshot');return{sha256:value.sha256,transactions:value.transactions,documents:value.documents,audits:value.audits};};
+    this.verifyAudit();this.event('DATA_OPERATION_'+entry.phase.toUpperCase(),session.principal.subject,{target:entry.id,operation:entry.operation,phase:entry.phase,before:snapshot(entry.before),after:snapshot(entry.after)});
+  }
   securityEvents(token:unknown,before?:number){
     const session=this.requireSession(token);
     if(!hasCommunityPermission(session.principal,this.workspaceId,'audit:read'))throw new CommunityAuthError(403,'PERMISSION_REQUIRED','Audit permission is required');
     if(before!==undefined&&(!Number.isSafeInteger(before)||before<1))throw new CommunityAuthError(400,'AUDIT_CURSOR_INVALID','Use a valid audit cursor');
     this.verifyAudit();
     const rows=this.db.prepare('SELECT sequence,event_id,occurred_at,event_type,subject,metadata FROM auth_security_events WHERE sequence<? ORDER BY sequence DESC LIMIT 100').all(before??Number.MAX_SAFE_INTEGER) as Array<{sequence:number;event_id:string;occurred_at:number;event_type:string;subject:string|null;metadata:string}>;
-    const fields=(value:unknown)=>{const result:Record<string,unknown>={};if(value&&typeof value==='object'&&!Array.isArray(value)){const item=value as Record<string,unknown>;if(typeof item.role==='string'&&['owner','bookkeeper','viewer','payment_approver'].includes(item.role))result.role=item.role;if(typeof item.disabled==='boolean')result.disabled=item.disabled;}return result;};
+    const fields=(value:unknown)=>{const result:Record<string,unknown>={};if(value&&typeof value==='object'&&!Array.isArray(value)){const item=value as Record<string,unknown>;if(typeof item.role==='string'&&['owner','bookkeeper','viewer','payment_approver'].includes(item.role))result.role=item.role;if(typeof item.disabled==='boolean')result.disabled=item.disabled;if(typeof item.sha256==='string'&&/^[a-f0-9]{64}$/.test(item.sha256))result.sha256=item.sha256;for(const key of ['transactions','documents','audits'])if(Number.isSafeInteger(item[key])&&Number(item[key])>=0)result[key]=item[key];}return result;};
     return{events:rows.map(row=>{const metadata=JSON.parse(row.metadata) as Record<string,unknown>;return{sequence:row.sequence,audit_id:row.event_id,timestamp:new Date(row.occurred_at).toISOString(),actor_id:row.subject,action:row.event_type,
-      entity_id:typeof metadata.target==='string'?metadata.target:row.subject,before:fields(metadata.before),after:fields(metadata.after??metadata)};}),next_cursor:rows.length===100?rows.at(-1)!.sequence:null};
+      ...(typeof metadata.operation==='string'&&['backup','restore-stage','restore-activate','legacy-inspect','legacy-stage'].includes(metadata.operation)?{operation:metadata.operation,phase:metadata.phase}:{}),entity_id:typeof metadata.target==='string'?metadata.target:row.subject,before:fields(metadata.before),after:fields(metadata.after??metadata)};}),next_cursor:rows.length===100?rows.at(-1)!.sequence:null};
   }
   private consumeAttempt(key: string, maximum: number, windowMs = 60000): void {
     this.db.transaction(() => {

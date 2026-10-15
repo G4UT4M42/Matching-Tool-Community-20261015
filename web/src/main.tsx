@@ -28,18 +28,25 @@ import { CommunityDataManagement } from './pages/CommunityDataManagement';
 import { CommunityIntegrations } from './pages/CommunityIntegrations';
 import { CommunityPayments } from './pages/CommunityPayments';
 import { CommunityInvoiceBot } from './pages/CommunityInvoiceBot';
+import { CommunityHome } from './pages/CommunityHome';
+import { CommunitySettings } from './pages/CommunitySettings';
+import { CommunityAudit } from './pages/CommunityAudit';
+import { CommunityBanking } from './pages/CommunityBanking';
 import { LanguageProvider, useLanguage } from './i18n/locale';
 
 function App() {
   const { t, language, languages, setLanguage } = useLanguage();
   const account = useCommunityAccount(); const access = accountLabels(language);
+  const permissions=account.principal?.permissions??[];
+  const mayPayments=['payments:prepare','payments:approve','payments:submit'].some(permission=>permissions.includes(permission));
   const [accessError, setAccessError] = React.useState('');
   return (
     <PageSizeProvider>
     <WorkingYearProvider>
     <TooltipProvider>
     <BrowserRouter>
-      <div style={{ display: 'flex', minHeight: '100vh' }}>
+      <div className="community-shell" style={{ display: 'flex', minHeight: '100vh' }}>
+        <style>{`*{box-sizing:border-box} .community-shell>main{min-width:0} button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #0879c9;outline-offset:3px} @media(max-width:760px){.community-shell{flex-direction:column}.community-shell>nav{width:100%!important;height:auto!important;position:relative!important;max-height:40vh}.community-shell>main{padding:12px!important}.community-shell input,.community-shell select,.community-shell textarea{max-width:100%}.community-shell table{display:block;overflow-x:auto;max-width:100%}}`}</style>
         <nav style={{
           width: 220, background: '#1a1a2e', color: '#eee', padding: '20px 0',
           display: 'flex', flexDirection: 'column', flexShrink: 0,
@@ -56,7 +63,8 @@ function App() {
               {to:'/accounting',label:language==='de'?'Abstimmung und Berichte':'Reconciliation and reports',tip:language==='de'?'Teilzahlungen und exakte Berichte':'Partial payments and exact reports'},
               ...(account.principal?.permissions.includes('data:backup')?[{to:'/data',label:language==='de'?'Sicherung und Migration':'Backup and migration',tip:language==='de'?'Geprüfte Sicherung und Wiederherstellung':'Verified backups and restoration'}]:[]),
               ...(account.principal?.permissions.includes('integrations:read') ? [{ to: '/integrations', label: language === 'de' ? 'Integrationen' : 'Integrations', tip: language === 'de' ? 'Eigene PayPal- und Stripe-Verbindungen verwalten' : 'Manage your PayPal and Stripe connections' }] : []),
-              ...(account.principal?.permissions.includes('payments:prepare') ? [{ to: '/payments', label: language === 'de' ? 'Zahlungssimulation' : 'Payment simulation', tip: language === 'de' ? 'SEPA-Entwürfe und lokale simulierte Übermittlung' : 'SEPA drafts and local simulated submission' }] : []),
+              ...(mayPayments ? [{ to: '/payments', label: language === 'de' ? 'Zahlungssimulation' : 'Payment simulation', tip: language === 'de' ? 'SEPA-Entwürfe und lokale simulierte Übermittlung' : 'SEPA drafts and local simulated submission' }] : []),
+              ...(account.principal?.permissions.includes('integrations:read') ? [{to:'/banking',label:language==='de'?'Bankverbindung':'Bank connection',tip:language==='de'?'Autorisierte Kontoinformationen lesen':'Read authorized account information'}] : []),
             ] : []),
             { to: '/rechnungen', label: t('navigation.invoices'), tip: t('navigation.invoicesHelp') },
             { to: '/einkuenfte', label: t('navigation.income'), tip: t('navigation.incomeHelp') },
@@ -93,7 +101,7 @@ function App() {
             <p style={{ color: '#ccc', fontSize: 11, lineHeight: 1.3 }}>{account.demo ? t('status.demo') : access.signedIn + ': ' + account.principal?.username}</p>
             <button onClick={() => { setAccessError(''); void account.signOut().catch(() => setAccessError(access.failed)); }} style={{padding:'8px 12px',cursor:'pointer'}}>{access.signOut}</button>
             {accessError && <p role="alert">{accessError}</p>}
-            <WorkingYearSelect />
+            <WorkingYearSelect locale={language==='de'?'de':'en'} />
           </div>
         </nav>
         <main style={{ flex: 1, padding: 24, overflow: 'auto', position: 'relative' }}>
@@ -101,28 +109,29 @@ function App() {
             <TooltipToggle />
           </div>
           <Routes>
-            <Route path="/" element={<Transactions />} />
+            <Route path="/" element={account.demo ? <Transactions /> : <CommunityHome />} />
             <Route path="/accounts" element={<CommunityAccounts />} />
-            <Route path="/documents" element={!account.demo ? <CommunityDocuments /> : <p>{access.previewHelp}</p>} />
-            <Route path="/accounting" element={!account.demo ? <CommunityAccounting locale={language === 'de' ? 'de' : 'en'} /> : <p>{access.previewHelp}</p>} />
+            <Route path="/documents" element={!account.demo ? <CommunityDocuments permissions={permissions} /> : <p>{access.previewHelp}</p>} />
+            <Route path="/accounting" element={!account.demo ? <CommunityAccounting permissions={permissions} locale={language === 'de' ? 'de' : 'en'} /> : <p>{access.previewHelp}</p>} />
             <Route path="/data" element={!account.demo && account.principal?.permissions.includes('data:backup') ? <CommunityDataManagement /> : <p role="alert">{access.permission}</p>} />
-            <Route path="/integrations" element={!account.demo && account.principal?.permissions.includes('integrations:read') ? <CommunityIntegrations /> : <p role="alert">{access.permission}</p>} />
-            <Route path="/payments" element={!account.demo && account.principal?.permissions.includes('payments:prepare') ? <CommunityPayments /> : <p role="alert">{access.permission}</p>} />
+            <Route path="/integrations" element={!account.demo && account.principal?.permissions.includes('integrations:read') ? <CommunityIntegrations permissions={permissions} /> : <p role="alert">{access.permission}</p>} />
+            <Route path="/banking" element={!account.demo && account.principal?.permissions.includes('integrations:read') ? <CommunityBanking permissions={permissions} /> : <p role="alert">{access.permission}</p>} />
+            <Route path="/payments" element={!account.demo && mayPayments ? <CommunityPayments permissions={permissions} /> : <p role="alert">{access.permission}</p>} />
             <Route path="/import" element={!account.demo && account.principal?.permissions.includes('finance:import') ? <CommunityStatementReview locale={language === 'de' ? 'de' : 'en'} request={communityFetch} /> : <p role="alert">{access.permission}</p>} />
-            <Route path="/rechnungen" element={account.demo ? <Rechnungen /> : <CommunityDocuments />} />
-            <Route path="/einkuenfte" element={account.demo ? <Einkuenfte /> : <CommunityDocuments />} />
-            <Route path="/matching" element={account.demo ? <Matching /> : <CommunityAccounting locale={language === "de" ? "de" : "en"} />} />
-            <Route path="/belegerkennung" element={account.demo ? <InvoiceRecognition /> : <CommunityDocuments />} />
-            <Route path="/invoice-bot" element={account.demo ? <InvoiceBot /> : account.principal?.permissions.includes('integrations:read') ? <CommunityInvoiceBot /> : <p role="alert">{access.permission}</p>} />
-            <Route path="/reports" element={account.demo ? <Reports /> : <CommunityAccounting locale={language === "de" ? "de" : "en"} />} />
-            <Route path="/vat-report" element={account.demo ? <VatReport /> : <CommunityAccounting locale={language === "de" ? "de" : "en"} />} />
-            <Route path="/einkommensteuer" element={account.demo ? <IncomeTaxReport /> : <CommunityAccounting locale={language === "de" ? "de" : "en"} />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/matches" element={<Matches />} />
-            <Route path="/review" element={<ReviewQueue />} />
-            <Route path="/manual-match" element={<ManualMatch />} />
-            <Route path="/exclusions" element={account.demo ? <Exclusions /> : <CommunityAccounting locale={language === "de" ? "de" : "en"} />} />
-            <Route path="/audit" element={<AuditTrail />} />
+            <Route path="/rechnungen" element={account.demo ? <Rechnungen /> : <CommunityDocuments permissions={permissions} />} />
+            <Route path="/einkuenfte" element={account.demo ? <Einkuenfte /> : <CommunityDocuments permissions={permissions} />} />
+            <Route path="/matching" element={account.demo ? <Matching /> : <CommunityAccounting permissions={permissions} locale={language === "de" ? "de" : "en"} />} />
+            <Route path="/belegerkennung" element={account.demo ? <InvoiceRecognition /> : <CommunityDocuments permissions={permissions} />} />
+            <Route path="/invoice-bot" element={account.demo ? <InvoiceBot /> : account.principal?.permissions.includes('integrations:read') ? <CommunityInvoiceBot permissions={permissions} /> : <p role="alert">{access.permission}</p>} />
+            <Route path="/reports" element={account.demo ? <Reports /> : <CommunityAccounting permissions={permissions} locale={language === "de" ? "de" : "en"} />} />
+            <Route path="/vat-report" element={account.demo ? <VatReport /> : <CommunityAccounting permissions={permissions} locale={language === "de" ? "de" : "en"} />} />
+            <Route path="/einkommensteuer" element={account.demo ? <IncomeTaxReport /> : <CommunityAccounting permissions={permissions} locale={language === "de" ? "de" : "en"} />} />
+            <Route path="/settings" element={account.demo ? <Settings /> : <CommunitySettings />} />
+            <Route path="/matches" element={account.demo ? <Matches /> : <CommunityAccounting permissions={permissions} locale={language === "de" ? "de" : "en"} />} />
+            <Route path="/review" element={account.demo ? <ReviewQueue /> : <CommunityAccounting permissions={permissions} locale={language === "de" ? "de" : "en"} />} />
+            <Route path="/manual-match" element={account.demo ? <ManualMatch /> : <CommunityAccounting permissions={permissions} locale={language === "de" ? "de" : "en"} />} />
+            <Route path="/exclusions" element={account.demo ? <Exclusions /> : <CommunityAccounting permissions={permissions} locale={language === "de" ? "de" : "en"} />} />
+            <Route path="/audit" element={account.demo ? <AuditTrail /> : <CommunityAudit />} />
           </Routes>
         </main>
       </div>

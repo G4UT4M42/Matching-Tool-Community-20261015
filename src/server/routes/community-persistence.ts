@@ -15,6 +15,7 @@ export interface CommunityPersistenceDependencies {
   may(principal: CommunityPrincipal, permission: PersistencePermission): boolean;
   invalidateCheckpoint(): void;
   inspectCurrent(): unknown;
+  observe?(entry:{id:string;operation:'backup'|'restore-stage'|'restore-activate'|'legacy-inspect'|'legacy-stage';phase:'started'|'succeeded'|'failed';subject:string}):void;
   legacySources?(): Array<{ id: string; label: string; root: string }>;
 }
 function principal(response: Response): CommunityPrincipal | null {
@@ -28,6 +29,11 @@ function sendError(response: Response, error: unknown): void {
 }
 export function createCommunityPersistenceRouter(deps: CommunityPersistenceDependencies): Router {
   const router = Router();
+  const observed=async<T>(response:Response,operation:'backup'|'restore-stage'|'restore-activate'|'legacy-inspect'|'legacy-stage',run:()=>Promise<T>):Promise<T>=>{
+    const id=randomUUID(),subject=principal(response)!.subject;deps.observe?.({id,operation,phase:'started',subject});
+    let value:T;try{value=await run();}catch(error){deps.observe?.({id,operation,phase:'failed',subject});throw error;}
+    deps.observe?.({id,operation,phase:'succeeded',subject});return value;
+  };
   const selections=new Map<string,{id:string;label:string;root:string}>();
   const selectionKey=(p:CommunityPrincipal)=>JSON.stringify([p.workspace_id??'',p.subject]);
   const choices=(p:CommunityPrincipal)=>[...(deps.legacySources?.()??[]),...(selections.has(selectionKey(p))?[selections.get(selectionKey(p))!]:[])];
@@ -57,7 +63,7 @@ export function createCommunityPersistenceRouter(deps: CommunityPersistenceDepen
   });
   router.post('/backups', gate('data:backup'), async (_request, response) => {
     try {
-      const result = await createCommunityBackup(resolve(deps.activeRuntimeRoot()), deps.withExclusiveAccess);
+      const result = await observed(response,'backup',()=>createCommunityBackup(resolve(deps.activeRuntimeRoot()), deps.withExclusiveAccess));
       response.status(201).json({ id: result.id, manifest: result.manifest });
     } catch (error) { sendError(response, error); }
   });
@@ -73,7 +79,7 @@ export function createCommunityPersistenceRouter(deps: CommunityPersistenceDepen
   router.post('/restore/stage', gate('data:restore'), raw({ type: 'application/zip', limit: '512mb' }), async (request, response) => {
     try {
       if (!Buffer.isBuffer(request.body)) throw new Error('Invalid backup upload body');
-      const stage = await stageCommunityRestore(resolve(deps.activeRuntimeRoot()), request.body, deps.withExclusiveAccess);
+      const stage = await observed(response,'restore-stage',()=>stageCommunityRestore(resolve(deps.activeRuntimeRoot()), request.body, deps.withExclusiveAccess));
       response.status(201).json(stage);
     } catch (error) { sendError(response, error); }
   });
@@ -81,7 +87,7 @@ export function createCommunityPersistenceRouter(deps: CommunityPersistenceDepen
     try {
       const confirmation = request.body?.fingerprint;
       if (typeof confirmation !== 'string' || !/^[a-f0-9]{64}$/.test(confirmation)) throw new Error('Invalid restore confirmation');
-      const manifest = await activateCommunityRestore(resolve(deps.activeRuntimeRoot()), String(request.params.id), confirmation, deps.withExclusiveAccess, deps.safeActivate);
+      const manifest = await observed(response,'restore-activate',()=>activateCommunityRestore(resolve(deps.activeRuntimeRoot()), String(request.params.id), confirmation, deps.withExclusiveAccess, deps.safeActivate));
       deps.invalidateCheckpoint();
       response.json({ activated: true, manifest });
     } catch (error) { sendError(response, error); }
@@ -102,7 +108,7 @@ export function createCommunityPersistenceRouter(deps: CommunityPersistenceDepen
     response.json({ sources: choices(principal(response)!).map(({ id, label }) => ({ id, label })) });
   });
   router.post('/legacy/:id/inspect', gate('data:migrate'), async (request, response) => {
-    try { response.json(await inspectLegacy(source(String(request.params.id),principal(response)!))); }
+    try { response.json(await observed(response,'legacy-inspect',()=>inspectLegacy(source(String(request.params.id),principal(response)!)))); }
     catch (error) { sendError(response, error); }
   });
   router.post('/legacy/:id/stage', gate('data:migrate'), async (request, response) => {
@@ -110,12 +116,12 @@ export function createCommunityPersistenceRouter(deps: CommunityPersistenceDepen
       const fingerprint = request.body?.fingerprint;
       if (typeof fingerprint !== 'string' || !/^[a-f0-9]{64}$/.test(fingerprint)) throw new Error('Invalid legacy dry run confirmation');
       const legacy = source(String(request.params.id),principal(response)!);
-      const { before, result } = await deps.withExclusiveAccess(async () => {
+      const { before, result } = await observed(response,'legacy-stage',()=>deps.withExclusiveAccess(async () => {
         const held: Exclusive = run => run();
         const before = await createCommunityBackup(resolve(deps.activeRuntimeRoot()), held);
         const result = await stageLegacyConversion(resolve(deps.activeRuntimeRoot()), legacy, fingerprint, held);
         return { before, result };
-      });
+      }));
       response.status(201).json({ ...result, previous_backup_id: before.id });
     } catch (error) { sendError(response, error); }
   });

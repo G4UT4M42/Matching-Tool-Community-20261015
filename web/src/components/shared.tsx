@@ -330,7 +330,8 @@ export function workingPeriodDates(year: number, quarter: number | null) {
   };
 }
 
-export function WorkingYearSelect() {
+export function WorkingYearSelect({locale='en'}:{locale?:'en'|'de'}={}) {
+  const de=locale==='de';
   const { period, setPeriod } = useContext(WorkingPeriodContext);
   const [localYear, setLocalYear] = useState(period.year);
   const [localQ, setLocalQ] = useState<number | null>(period.quarter);
@@ -346,16 +347,16 @@ export function WorkingYearSelect() {
 
   return (
     <div style={{ padding: '12px 16px', fontSize: 12, color: '#aaa' }}>
-      <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#ccc' }}>Arbeitszeitraum: {label}</label>
-      <select value={String(localYear)} onChange={e => setLocalYear(Number(e.target.value))} style={{ ...selStyle, marginBottom: 6 }}>
+      <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, color: '#ccc' }}>{de?'Arbeitszeitraum':'Working period'}: {label}</label>
+      <select aria-label={de?'Arbeitsjahr':'Working year'} value={String(localYear)} onChange={e => setLocalYear(Number(e.target.value))} style={{ ...selStyle, marginBottom: 6 }}>
         {YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}
       </select>
-      <select value={localQ === null ? '' : String(localQ)} onChange={e => setLocalQ(e.target.value ? Number(e.target.value) : null)} style={{ ...selStyle, marginBottom: 8 }}>
-        <option value="">Ganzes Jahr</option>
+      <select aria-label={de?'Quartal':'Quarter'} value={localQ === null ? '' : String(localQ)} onChange={e => setLocalQ(e.target.value ? Number(e.target.value) : null)} style={{ ...selStyle, marginBottom: 8 }}>
+        <option value="">{de?'Ganzes Jahr':'Whole year'}</option>
         <option value="1">Q1 (Jan–Mar)</option>
         <option value="2">Q2 (Apr–Jun)</option>
         <option value="3">Q3 (Jul–Sep)</option>
-        <option value="4">Q4 (Okt–Dez)</option>
+        <option value="4">{de?'Q4 (Okt–Dez)':'Q4 (Oct–Dec)'}</option>
       </select>
       <button
         onClick={apply}
@@ -366,7 +367,7 @@ export function WorkingYearSelect() {
           transition: 'all 0.15s',
         }}
       >
-        Anwenden
+        {de?'Anwenden':'Apply'}
       </button>
     </div>
   );

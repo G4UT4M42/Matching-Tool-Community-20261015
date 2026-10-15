@@ -77,8 +77,8 @@ describe('real browser data management', () => {
     await page.$$eval('button', buttons => buttons.find(button => button.textContent === 'Activate verified backup')?.click());
     await page.waitForSelector('[role=status]');
     console.log('browser: restore activated');
-    const evidence = '<external-audit-root>/Matching-Community-E2E-20261014-045708\\worker-persistence';
-    if (existsSync(evidence)) await page.screenshot({ path: join(evidence, 'community-persistence-browser.png'), fullPage: true });
+    const evidence = process.env.MATCHING_COMPONENT_BROWSER_EVIDENCE_ROOT ? join(process.env.MATCHING_COMPONENT_BROWSER_EVIDENCE_ROOT,'persistence') : join(root,'browser-evidence');
+    mkdirSync(evidence,{recursive:true});await page.screenshot({ path: join(evidence, 'community-persistence-browser.png'), fullPage: true });
     expect(readFileSync(join(root, 'state', 'state.json'), 'utf8')).toContain('BROWSER-SYNTHETIC');
   }, 60000);
 });

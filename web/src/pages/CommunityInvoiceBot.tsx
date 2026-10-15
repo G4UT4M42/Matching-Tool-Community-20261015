@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { communityFetch } from '../api';
+import {problemMessage} from '../i18n/community-problems';
 import { useLanguage } from '../i18n/locale';
 import { communityInvoiceBotText } from '../i18n/community-invoice-bot';
 
@@ -7,7 +8,8 @@ type Portal = { id: string; label: string; origin: string };
 type Invoice = { source_id: string; filename: string; date?: string };
 type Run = { id: string; adapter_id: string; status: string; discovered: Invoice[]; imported: string[]; error?: string };
 const base = '/api/community/invoice-bot';
-export function CommunityInvoiceBot() {
+export function CommunityInvoiceBot({permissions}:{permissions?:readonly string[]}={}) {
+  const mayConfigure=permissions===undefined||permissions.includes('integrations:configure'),maySync=permissions===undefined||permissions.includes('integrations:sync');
   const { language } = useLanguage();
   const t = communityInvoiceBotText[language === 'de' ? 'de' : 'en'];
   const [portals, setPortals] = useState<Portal[]>([]);
@@ -19,7 +21,7 @@ export function CommunityInvoiceBot() {
   const request = async (path: string, method = 'GET', body?: unknown) => {
     const response = await communityFetch(`${base}${path}`, { method, ...(body === undefined ? {} : { body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' } }) });
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error ?? data.code ?? 'Invoice Bot operation failed');
+    if (!response.ok) throw new Error(problemMessage(data));
     return data;
   };
   const load = async () => {
@@ -35,25 +37,25 @@ export function CommunityInvoiceBot() {
     catch (error) { setError((error as Error).message); }
     finally { setBusy(false); }
   };
-  return <main style={{ maxWidth: 1000, margin: '1rem auto', padding: 16 }}>
-    <h1>{t.title}</h1>{error && <p role="alert">{error}</p>}
+  return <section style={{ maxWidth: 1000, margin: '1rem auto', padding: 16 }}>
+    <h1>{t.title}</h1><p>{t.assisted}</p><p>{t.authorization}</p>{error && <p role="alert">{error}</p>}
     <h2>{t.portals}</h2>
     {portals.length === 0 && <p>{t.noPortal}</p>}
     {portals.map(portal => <section key={portal.id} style={{ padding: 12, border: '1px solid #ccc', marginBottom: 12 }}>
-      <h3>{portal.label}</h3><p>{portal.origin}</p><p>{t.status}: {connected[portal.id] ? 'connected' : 'disconnected'}</p>
-      {!connected[portal.id] ? <button disabled={busy} onClick={() => void act(`/portals/${portal.id}/connect`)}>{t.connect}</button> : <>
-        <button disabled={busy} onClick={() => void act(`/portals/${portal.id}/discover`)}>{t.discover}</button>{' '}
-        <button disabled={busy} onClick={() => void act(`/portals/${portal.id}/disconnect`)}>{t.disconnect}</button>
+      <h3>{portal.label}</h3><p>{portal.origin}</p><p>{t.status}: {connected[portal.id] ? t.connected : t.disconnected}</p>
+      {!connected[portal.id] ? mayConfigure&&<button disabled={busy} onClick={() => void act(`/portals/${portal.id}/connect`)}>{t.connect}</button> : <>
+        <button disabled={busy||!maySync} onClick={() => void act(`/portals/${portal.id}/discover`)}>{t.discover}</button>{' '}
+        <button disabled={busy||!mayConfigure} onClick={() => void act(`/portals/${portal.id}/disconnect`)}>{t.disconnect}</button>
       </>}
     </section>)}
     <h2>{t.runs}</h2>
     {runs.map(run => <section key={run.id} style={{ padding: 12, border: '1px solid #ccc', marginBottom: 12 }}>
-      <h3>{run.adapter_id} · {run.status}</h3>{run.error && <p role="alert">{run.error}</p>}
+      <h3>{run.adapter_id} · {language==='de'?({running:'Wird ausgeführt',discovered:'Gefunden',imported:'Importiert',failed:'Fehlgeschlagen',cancelled:'Abgebrochen'} as Record<string,string>)[run.status]??run.status:run.status}</h3>{run.error && <p role="alert">{problemMessage({code:run.error},language,run.error)}</p>}
       {run.discovered.length > 0 && <><p>{t.select}</p>{run.discovered.map(invoice => <label key={invoice.source_id} style={{ display: 'block' }}>
-        <input type="checkbox" checked={selected.includes(invoice.source_id)} disabled={run.imported.includes(invoice.source_id)} onChange={event => setSelected(event.target.checked ? [...selected, invoice.source_id] : selected.filter(id => id !== invoice.source_id))} /> {invoice.filename} {invoice.date ?? ''} {run.imported.includes(invoice.source_id) ? '✓' : ''}
-      </label>)}<button disabled={busy || !selected.length} onClick={() => void act(`/runs/${run.id}/import`, { source_ids: selected })}>{t.import}</button></>}
+        <input type="checkbox" checked={selected.includes(invoice.source_id)} disabled={!maySync||run.imported.includes(invoice.source_id)} onChange={event => setSelected(event.target.checked ? [...selected, invoice.source_id] : selected.filter(id => id !== invoice.source_id))} /> {invoice.filename} {invoice.date ?? ''} {run.imported.includes(invoice.source_id) ? '✓' : ''}
+      </label>)}<button disabled={busy || !maySync || !selected.length} onClick={() => void act(`/runs/${run.id}/import`, { source_ids: selected })}>{t.import}</button></>}
       {run.status === 'running' && <button disabled={busy} onClick={() => void act(`/runs/${run.id}/cancel`)}>{t.cancel}</button>}
       {(run.status === 'failed' || run.status === 'cancelled') && <button disabled={busy} onClick={() => void act(`/portals/${run.adapter_id}/discover`)}>{t.retry}</button>}
     </section>)}
-  </main>;
+  </section>;
 }

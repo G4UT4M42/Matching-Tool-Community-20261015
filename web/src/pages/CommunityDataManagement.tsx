@@ -1,5 +1,6 @@
 import React from 'react';
 import { communityFetch } from '../api';
+import {problemMessage} from '../i18n/community-problems';
 import { useLanguage } from '../i18n/locale';
 import { persistenceText } from '../i18n/community-persistence';
 
@@ -12,7 +13,7 @@ async function result<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await communityFetch(base + path, init);
   if (!response.ok) {
     const body = await response.json().catch(() => ({})) as { error?: string };
-    throw new Error(body.error || `HTTP ${response.status}`);
+    throw new Error(problemMessage(body));
   }
   return response.json() as Promise<T>;
 }
@@ -32,6 +33,7 @@ export function CommunityDataManagement() {
   const [stage, setStage] = React.useState<Stage | null>(null);
   const [sources, setSources] = React.useState<Array<{ id: string; label: string }>>([]);
   const [sourceId, setSourceId] = React.useState('');
+  const [sourceRoot,setSourceRoot]=React.useState(''),[sourceLabel,setSourceLabel]=React.useState('');
   const [legacyPreview, setLegacyPreview] = React.useState<{ fingerprint: string; counts: Summary['counts']; signed_totals_minor_by_currency: Record<string, number> } | null>(null);
   const [error, setError] = React.useState('');
   const [busy, setBusy] = React.useState(false);
@@ -56,7 +58,7 @@ export function CommunityDataManagement() {
     const anchor = document.createElement('a'); anchor.href = url; anchor.download = `community-backup-${id}.zip`;
     document.body.appendChild(anchor); anchor.click(); anchor.remove(); URL.revokeObjectURL(url);
   }
-  return <main style={{ padding: 24, maxWidth: 900 }}>
+  return <section style={{ padding: 24, maxWidth: 900 }}>
     <h1>{t.title}</h1>
     {error && <p role="alert" style={{ color: '#a21d22' }}>{error}</p>}
     {notice && <p role="status">{notice}</p>}
@@ -77,7 +79,7 @@ export function CommunityDataManagement() {
         const staged = await result<Stage>('/restore/stage', { method: 'POST', headers: { 'Content-Type': 'application/zip' }, body: await file.arrayBuffer() });
         setStage(staged);
       })}>{t.stage}</button>
-      {stage && <div role="group" aria-label={t.staged}>
+      {stage && <div role="group" aria-label={t.staged} data-restore-stage-id={stage.id}>
         <p>{t.staged}</p><Financial value={stage.manifest.financial} labels={t} />
         <p>{t.warning}</p>
         <button disabled={busy} onClick={() => void run(async () => {
@@ -88,6 +90,9 @@ export function CommunityDataManagement() {
     </section>
     <section aria-label={t.legacy}>
       <h2>{t.legacy}</h2>
+      <form onSubmit={event=>{event.preventDefault();void run(async()=>{const selected=await result<{id:string;label:string}>('/legacy/sources',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({root:sourceRoot,label:sourceLabel})});setSources([selected]);setSourceId(selected.id);setLegacyPreview(null);});}} style={{display:'grid',gap:8,maxWidth:600}}>
+        <label>{t.sourceLabel}<input id="legacy-source-label" required value={sourceLabel} onChange={event=>setSourceLabel(event.target.value)}/></label><label>{t.sourceRoot}<input id="legacy-source-root" required value={sourceRoot} onChange={event=>setSourceRoot(event.target.value)}/></label><button disabled={busy}>{t.selectSource}</button>
+      </form><p>{t.sourceHelp}</p>
       {sources.length === 0 ? <p>{t.noSources}</p> : <>
         <label>{t.source} <select value={sourceId} onChange={event => { setSourceId(event.target.value); setLegacyPreview(null); }}>
           <option value="">—</option>{sources.map(source => <option value={source.id} key={source.id}>{source.label}</option>)}
@@ -105,5 +110,5 @@ export function CommunityDataManagement() {
         </div>}
       </>}
     </section>
-  </main>;
+  </section>;
 }

@@ -13,18 +13,29 @@ const repository=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
 const pause=ms=>new Promise(ok=>setTimeout(ok,ms));
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 async function freePort(){const listener=createServer();await new Promise((ok,fail)=>{listener.once('error',fail);listener.listen(0,'127.0.0.1',ok);});const port=listener.address().port;await new Promise(ok=>listener.close(ok));return port;}
-export async function mainBrowser(name){
+export async function mainBrowser(name,{entrypoint='src/server/index.ts',packageDirectory}={}){
   if(!/^[a-z0-9-]{1,60}$/.test(name))throw new Error('Invalid synthetic test name');
+  if(!['src/server/index.ts','tests/helpers/integrated-server.mjs'].includes(entrypoint))throw new Error('Unreviewed test server entrypoint');
   const temp=mkdtempSync(join(tmpdir(),'matching-real-'+name+'-'));
   const runtime=join(temp,'runtime'),downloads=join(temp,'downloads');mkdirSync(runtime);mkdirSync(downloads);
+  const applicationRoot=packageDirectory?join(temp,'installed-application'):repository;
+  let installedManifest;
+  if(packageDirectory){
+    const install=spawnSync('powershell.exe',['-NoProfile','-File',join(repository,'scripts/Install-Community.ps1'),'-PackageDirectory',resolve(packageDirectory),'-InstallDirectory',applicationRoot,'-DataDirectory',runtime],{cwd:repository,encoding:'utf8',windowsHide:true,timeout:120000});
+    assert.equal(install.status,0,(install.stderr||install.stdout||String(install.error)).slice(-2000));
+    installedManifest=JSON.parse(readFileSync(join(applicationRoot,'community-package.json'),'utf8'));
+  }
   const evidence=process.env.MATCHING_MAIN_BROWSER_EVIDENCE_DIR?join(resolve(process.env.MATCHING_MAIN_BROWSER_EVIDENCE_DIR),name):join(temp,'evidence');mkdirSync(evidence,{recursive:true});
   const port=await freePort(),origin=`http://127.0.0.1:${port}`,setupCode=randomBytes(32).toString('base64url');
   const password='Synthetic main browser owner passphrase 2026';
-  let server,browser,page;const screenshots=[],errors=[],external=[],network=[],consoleErrors=[];
+  let server,browser,page;const screenshots=[],errors=[],external=[],network=[],consoleErrors=[],failedRequests=[],explainedInterruptions=[];
+  let armedInterruption;
   const launch=()=>{
     const env={...process.env,PORT:String(port),MATCHING_RUNTIME_MODE:'external-runtime-root',MATCHING_RUNTIME_ROOT:runtime,MATCHING_AUTH_MODE:'accounts',MATCHING_DEMO_MODE:'false',MATCHING_SETUP_TOKEN:setupCode,MATCHING_HTTP_HOST:'127.0.0.1',MATCHING_ENABLE_BANK_AUTOMATION:'false'};
     delete env.MATCHING_LOCAL_ACCESS_TOKEN;delete env.MATCHING_OCR_LANGUAGE_DIR;
-    const child=spawn(process.execPath,['--import','tsx','src/server/index.ts'],{cwd:repository,env,windowsHide:true,stdio:['ignore','pipe','pipe']});
+    const serverEntry=entrypoint==='src/server/index.ts'?join(applicationRoot,entrypoint):join(repository,entrypoint);
+    const program=packageDirectory?join(applicationRoot,'runtime','node.exe'):process.execPath;
+    const child=spawn(program,['--import','tsx',serverEntry,...(entrypoint==='tests/helpers/integrated-server.mjs'?[applicationRoot]:[])],{cwd:applicationRoot,env,windowsHide:true,stdio:['ignore','pipe','pipe']});
     const result={child,log:''};for(const stream of[child.stdout,child.stderr])stream.on('data',bytes=>{result.log=(result.log+bytes).slice(-65536);});return result;
   };
   const ready=async()=>{for(let n=0;n<150;n++){if(server.child.exitCode!==null)throw new Error('Actual server exited: '+server.log);try{const response=await fetch(origin+'/health',{signal:AbortSignal.timeout(1000)});if(response.ok)return;}catch{}await pause(100);}throw new Error('Actual server readiness deadline exceeded');};
@@ -39,6 +50,7 @@ export async function mainBrowser(name){
     browser=await puppeteer.launch({executablePath,headless:true,userDataDir:join(temp,'browser'),defaultViewport:{width:1400,height:1000},args:['--no-first-run','--no-default-browser-check']});page=await browser.newPage();page.setDefaultTimeout(20000);
     page.on('pageerror',error=>errors.push(error.message));
     page.on('console',message=>{if(message.type()==='error')consoleErrors.push(message.text().slice(0,2000));});
+    page.on('requestfailed',request=>{const url=new URL(request.url());const error=request.failure()?.errorText,responseStatus=request.response()?.status();const emptyLogout=request.method()==='POST'&&url.pathname==='/api/auth/logout'&&responseStatus===204&&error==='net::ERR_ABORTED';failedRequests.push({method:request.method(),path:url.pathname,error,response_status:responseStatus,expected:!!armedInterruption&&request.method()==='POST'&&url.pathname===armedInterruption.path||emptyLogout,...(emptyLogout?{explanation:'Chromium empty 204 logout response; authenticated session revocation is asserted separately'}:{})});});
     page.on('response',async response=>{const url=new URL(response.url());if(url.origin!==origin||!url.pathname.startsWith('/api/')||url.pathname.startsWith('/api/auth/'))return;const entry={method:response.request().method(),path:url.pathname,status:response.status()};network.push(entry);if(!response.ok()){try{const body=await response.json();entry.code=typeof body.code==='string'?body.code:undefined;entry.error=typeof body.error==='string'?body.error:undefined;}catch{}}});
     await page.setRequestInterception(true);
     page.on('request',request=>{const target=new URL(request.url());if(target.origin===origin||['data:','blob:','about:'].includes(target.protocol))void request.continue();else{external.push(target.origin);void request.abort();}});
@@ -55,11 +67,13 @@ export async function mainBrowser(name){
   const state=()=>JSON.parse(readFileSync(join(runtime,'state','state.json'),'utf8'));
   const sql=()=>{const db=new Database(join(runtime,'database','matching.db'),{readonly:true,fileMustExist:true});try{return{version:db.pragma('user_version',{simple:true}),transactions:Number(db.prepare('SELECT count(*) FROM transactions').pluck().get()),documents:Number(db.prepare('SELECT count(*) FROM documents').pluck().get()),groups:Number(db.prepare('SELECT count(*) FROM match_groups').pluck().get()),audits:Number(db.prepare('SELECT count(*) FROM audit_events').pluck().get()),snapshot:JSON.parse(db.prepare('SELECT state_json FROM community_canonical_state WHERE singleton=1').pluck().get())};}finally{db.close();}};
   const waitDownload=async(suffix)=>{for(let n=0;n<100;n++){const name=readdirSync(downloads).find(name=>name.endsWith(suffix)&&!name.endsWith('.crdownload'));if(name)return join(downloads,name);await pause(100);}throw new Error('Browser download did not complete');};
-  return{temp,runtime,downloads,evidence,page,origin,screenshots,errors,external,fill,click,read,state,sql,waitDownload,screenshot,
+  return{temp,runtime,downloads,evidence,page,origin,screenshots,errors,external,fill,click,read,state,sql,waitDownload,screenshot,installedManifest,
     async createOwner(){await fill('#account-username','synthetic-owner');await fill('#account-password',password);await fill('#account-confirm',password);await fill('#account-setup-code',setupCode);await click('Create account');await page.waitForSelector('a[href="/documents"]');},
     async visit(path){await page.goto(origin+path,{waitUntil:'networkidle2'});},
-    async restart(){await stop();assert.ok(!server.log.includes(password)&&!server.log.includes(setupCode));server=launch();await ready();await page.reload({waitUntil:'networkidle2'});},
-    async prove(result){assert.deepEqual(errors,[]);assert.deepEqual(external,[]);assert.ok(!server.log.includes(password)&&!server.log.includes(setupCode));writeFileSync(join(evidence,'result.json'),JSON.stringify({result:'PASS',mode:'actual-main-server-built-ui',...result,screenshots,page_errors:errors,external_requests:external,release_accepted:false},null,2));},
+    armCutoverInterruption(path){assert.equal(entrypoint,'tests/helpers/integrated-server.mjs');assert.match(path,/^\/api\/community\/persistence\/restore\/[a-f0-9-]{36}\/activate$/);assert.equal(armedInterruption,undefined);armedInterruption={path,consoleStart:consoleErrors.length,failedStart:failedRequests.length};writeFileSync(join(runtime,'synthetic-cutover-interruption.json'),JSON.stringify({run_id:'SYNTHETIC-COMPLETE-LEGACY'}));},
+    async verifyCutoverInterruption(){assert.ok(armedInterruption);for(let n=0;n<150&&server.child.exitCode===null;n++)await pause(100);assert.equal(server.child.exitCode,86,'Synthetic process must exit at the exact cutover hook');assert.deepEqual(JSON.parse(readFileSync(join(runtime,'synthetic-cutover-interruption.json.occurred'),'utf8')),{phase:'after-directory-cutover-before-reopen',exit_code:86});for(let n=0;n<50&&failedRequests.length===armedInterruption.failedStart;n++)await pause(50);const failures=failedRequests.slice(armedInterruption.failedStart);assert.equal(failures.length,1);assert.equal(failures[0].expected,true);assert.match(failures[0].error,/net::ERR_(EMPTY_RESPONSE|CONNECTION_RESET|CONNECTION_REFUSED)/);const messages=consoleErrors.slice(armedInterruption.consoleStart);assert.ok(messages.length<=1);assert.ok(messages.every(message=>/^Failed to load resource: net::ERR_(EMPTY_RESPONSE|CONNECTION_RESET|CONNECTION_REFUSED)$/.test(message)));explainedInterruptions.push({...armedInterruption,exit_code:86,phase:'after-directory-cutover-before-reopen',failed_requests:failures,console_errors:messages});armedInterruption=undefined;},
+    async restart(){const previous=page.url();await page.goto('about:blank');await stop();assert.ok(!server.log.includes(password)&&!server.log.includes(setupCode));server=launch();await ready();await page.goto(previous,{waitUntil:'networkidle2'});},
+    async prove(result){assert.deepEqual(errors,[]);assert.deepEqual(external,[]);assert.deepEqual(network.filter(entry=>entry.status>=500),[],'No unexplained API server failures');assert.equal(armedInterruption,undefined);assert.deepEqual(failedRequests.filter(entry=>!entry.expected),[],'No unexplained network failures');const explainedConsole=new Set(explainedInterruptions.flatMap(entry=>entry.console_errors.map((_,offset)=>entry.consoleStart+offset)));assert.deepEqual(consoleErrors.filter((message,index)=>!explainedConsole.has(index)&&!/^Failed to load resource: the server responded with a status of (400|401|403|404|409|413|415|422|429)\b/.test(message)),[],'No unexplained browser console errors');assert.ok(!server.log.includes(password)&&!server.log.includes(setupCode));writeFileSync(join(evidence,'result.json'),JSON.stringify({result:'PASS',mode:'actual-main-server-built-ui',...result,screenshots,page_errors:errors,console_errors:consoleErrors,api_network:network,failed_requests:failedRequests,explained_interruptions:explainedInterruptions,external_requests:external,release_accepted:false},null,2));},
     async close(error){
       try {
         if(error){

@@ -1,0 +1,127 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {join} from 'node:path';
+import {mkdirSync,readFileSync,writeFileSync,readdirSync} from 'node:fs';
+import Database from 'better-sqlite3';
+import {acceptancePackage} from './helpers/acceptance-package.mjs';
+import {mainBrowser} from './helpers/main-browser.mjs';
+import {financialBrowserJourney} from './helpers/financial-journey.mjs';
+import {createCompleteLegacyFixture} from './helpers/complete-legacy-fixture.mjs';
+const iban='DE36'+'0'.repeat(18),sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+async function eventually(check){for(let n=0;n<200;n++){if(await check())return;await new Promise(resolve=>setTimeout(resolve,50));}throw new Error('Synthetic acceptance condition did not become true');}
+function treeHashes(root,prefix=''){return Object.fromEntries(readdirSync(join(root,prefix),{withFileTypes:true}).flatMap(entry=>{const path=join(prefix,entry.name);return entry.isDirectory()?Object.entries(treeHashes(root,path)):[[path,sha(readFileSync(join(root,path)))]];}));}
+
+async function roles(h){
+ const{page,fill,click}=h;await h.visit('/accounts');
+ for(const [name,role]of[['synthetic-reader','viewer'],['synthetic-approver','payment_approver'],['synthetic-bookkeeper','bookkeeper']]){
+   await fill('#new-account-username',name);await fill('#new-account-password','Synthetic independent role passphrase 2026');await page.select('#new-account-role',role);await click('Add account');await page.waitForSelector(`[data-account="${name}"]`);
+ }
+ await h.screenshot('00-created-workspace-roles');await h.visit('/audit');await page.waitForFunction(()=>document.body.textContent.includes('ACCOUNT_CREATED'));const audit=(await h.read('/auth/audit')).data;assert.ok(audit.events.filter(event=>event.action==='ACCOUNT_CREATED').length>=3);await h.screenshot('00b-visible-immutable-account-audit');
+}
+async function providers(h){
+ const{page,fill,click}=h;await h.visit('/integrations');
+ for(const provider of['paypal','stripe']){
+   if(provider==='stripe'){await page.waitForFunction(()=>!document.querySelector('#integration-provider')?.disabled);await page.select('#integration-provider','stripe');await page.waitForSelector('#integration-api-key');await fill('#integration-api-key','rk_test_syntheticINTEGRATED123');}
+   else{await fill('#integration-client-id','synthetic-client');await fill('#integration-client-secret','synthetic-secret');}
+   await click('Save configuration');await page.waitForFunction(()=>document.querySelector('[data-testid="integration-status"]')?.textContent?.startsWith('Configured'));
+   await click('Test connection');await page.waitForFunction(()=>document.querySelector('[role="status"]')?.textContent==='Operation completed');
+   const before=h.sql().transactions;await click('Synchronize');await eventually(()=>h.sql().transactions>before);
+   await eventually(async()=>{const history=(await h.read(`/community/integrations/${provider}/${provider==='paypal'?'sandbox':'test'}/history`)).data.items;return history.some(entry=>entry.operation==='sync'&&entry.outcome==='succeeded');});
+   const count=h.sql().transactions;await click('Synchronize');await eventually(async()=>{const items=(await h.read(`/community/integrations/${provider}/${provider==='paypal'?'sandbox':'test'}/history`)).data.items;return items.filter(entry=>entry.operation==='sync'&&entry.outcome==='succeeded').length===2;});assert.equal(h.sql().transactions,count);
+ }
+ const rows=Object.values(h.state().transactions).filter(row=>['paypal','stripe'].includes(row.source_system));
+ assert.equal(rows.reduce((sum,row)=>sum+row.amount_minor,0),750,'Provider gross, refund, payout and fee legs reconcile independently');
+ assert.ok(rows.some(row=>row.meta.accounting_event_kind==='provider_payout'));assert.ok(rows.some(row=>row.meta.accounting_event_kind==='provider_fee'));
+ await h.screenshot('08-provider-sync-and-immutable-history');await h.restart();
+ assert.ok((await h.read('/community/integrations/stripe/test/history')).data.items.some(entry=>entry.operation==='sync'&&entry.outcome==='succeeded'));
+}
+async function botAndPayment(h){
+ const{page,fill,click}=h;await h.visit('/invoice-bot');await click('Connect a fresh browser session');await page.waitForFunction(()=>document.body.textContent.includes('Dedicated browser open'));
+ await click('Discover invoices');await page.waitForSelector('input[type="checkbox"]');for(const box of await page.$$('input[type="checkbox"]'))await box.click();await click('Import selected');
+ await eventually(async()=>{const items=(await h.read('/community/invoice-bot/runs')).data.items;return items.some(run=>run.status==='imported'&&run.imported.length===2);});
+ await h.screenshot('09-isolated-synthetic-portal-import');await h.visit('/documents');
+ await page.waitForFunction(()=>[...document.querySelectorAll('[data-document-id]')].some(node=>node.textContent.includes('synthetic-portal.pdf')));
+ await page.evaluate(()=>[...document.querySelectorAll('[data-document-id]')].find(node=>node.textContent.includes('synthetic-portal.pdf')).click());await page.waitForSelector('#document-field-invoice_number');
+ const correct=async(reference)=>{await fill('#document-field-invoice_number',reference);await fill('#document-field-supplier_name','Fictional Portal Supplier');await fill('#document-field-document_date','2026-01-12');await fill('#document-field-total_amount','4.25');await fill('#document-field-currency_code','EUR');await fill('#document-field-payment_reference',reference);await fill('#document-field-iban',iban);await fill('#document-field-due_date','2026-11-15');await click('Save corrections');await page.waitForFunction(()=>document.body.textContent.includes('corrected'));await click('Confirm invoice');await page.waitForFunction(()=>!document.querySelector('#document-field-invoice_number'));};
+ await correct('SYN-PORTAL-ACK');
+ await page.evaluate(()=>[...document.querySelectorAll('[data-document-id]')].find(node=>node.textContent.includes('synthetic-portal-unknown.pdf')).click());await page.waitForSelector('#document-field-invoice_number');await correct('SYN-PORTAL-UNKNOWN');
+ let batch;
+ for(const [source,expected]of[['synthetic-portal:SYN-PORTAL-1','acknowledged'],['synthetic-portal:SYN-PORTAL-2','unknown']]){
+  const doc=Object.values(h.state().documents).find(row=>row.meta.portal_source_id===source);assert.ok(doc,'Trusted bot source survives confirmation');
+  await h.visit('/payments');await page.waitForSelector(`input[aria-label="Select ${doc.document_id}"]`);await page.click(`input[aria-label="Select ${doc.document_id}"]`);await fill('input[aria-label="Debtor name"]','Fictional Debtor');await fill('input[aria-label="Debtor IBAN"]',iban);await click('Create draft');
+  for(const [label,status]of[['Validate','validated'],['Review','reviewed'],['Approve','approved']]){await click(label);await page.waitForFunction(status=>document.querySelector('strong')?.textContent===status,{},status);}
+  const active=(await h.read('/community-payments/batches')).data.find(item=>item.items.some(item=>item.documentId===doc.document_id));assert.ok(active);
+  await click('Download SEPA XML');const xml=readFileSync(await h.waitDownload(`payment-${active.id}.xml`),'utf8');assert.match(xml,/<CtrlSum>4\.25<\/CtrlSum>/);assert.match(xml,/<NbOfTxs>1<\/NbOfTxs>/);
+  await click('Confirm this exact payment');await page.waitForFunction(()=>document.body.textContent.includes('My confirmation expires'));await click('Simulate submission (no transfer)');await page.waitForFunction(status=>document.querySelector('strong')?.textContent===status,{},expected);
+  assert.equal(await page.$$eval('button',nodes=>nodes.filter(node=>node.textContent==='Simulate submission (no transfer)').length),0,'Claimed payment cannot be resubmitted');
+ }
+ const db=new Database(join(h.runtime,'database','matching.db'),{readonly:true});try{const rows=db.prepare('SELECT * FROM community_payment_batches').all();assert.equal(rows.length,2);assert.deepEqual(rows.map(row=>row.status).sort(),['acknowledged','unknown']);batch=rows.find(row=>row.status==='unknown');assert.ok(rows.every(row=>row.claim_id));assert.equal(db.prepare("SELECT count(*) FROM community_payment_events WHERE action='submission_claimed'").pluck().get(),2);assert.equal(db.prepare('SELECT count(*) FROM community_payment_confirmations WHERE used_at IS NOT NULL').pluck().get(),2);}finally{db.close();}
+ await h.screenshot('10-acknowledged-and-unknown-no-resubmission');await h.restart();await h.visit('/payments');await page.waitForFunction(()=>document.body.textContent.includes('unknown'));
+
+ const session=(await h.read('/auth/session')).data;const replay=await page.evaluate(async({id,revision,csrf})=>{const response=await fetch(`/api/community-payments/batches/${id}/confirmation`,{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':csrf},body:JSON.stringify({revision})});return response.status;},{id:batch.id,revision:batch.revision,csrf:session.csrf_token});assert.equal(replay,409);
+}
+async function extendedLedger(h){
+ const{page,fill,click}=h;const file=join(h.temp,'extended.csv');writeFileSync(file,'Datum;Partnername;Betrag;Waehrung;Referenz;Verwendungszweck\n12.01.2026;Fictional split;-6.00;EUR;SYN-SPLIT1;SYN-SPLIT\n12.01.2026;Fictional split;-4.00;EUR;SYN-SPLIT2;SYN-SPLIT\n12.01.2026;Fictional refund;5.00;EUR;SYN-REFUND;Refund\n12.01.2026;Fictional fee;-0.25;EUR;SYN-FEE;Fee\n12.01.2026;Fictional FX;-10.00;USD;SYN-FX;FX\n12.01.2026;Fictional private;-1.23;EUR;SYN-PRIVATE;Private');
+ await h.visit('/import');await fill('input[aria-label="Local account identifier"]','SYNTHETIC-EXTENDED');await(await page.$('input[type="file"]')).uploadFile(file);await click('Preview statement');await page.waitForFunction(()=>document.body.textContent.includes('SYN-SPLIT1'));await click('Confirm import');await page.waitForFunction(()=>document.body.textContent.includes('New records: 6'));
+ const table=join(h.temp,'extended-invoices.csv');writeFileSync(table,'source_id;invoice_number;supplier_name;document_date;total_amount;currency_code;document_type\nSYN-SPLIT;SYN-SPLIT;Fictional split;2026-01-12;10.00;EUR;invoice\nSYN-REFUND;SYN-REFUND;Fictional refund;2026-01-12;-5.00;EUR;credit_note\nSYN-FX;SYN-FX;Fictional FX;2026-01-12;15.00;EUR;invoice');
+ await h.visit('/documents');await(await page.$('#document-invoice-file')).uploadFile(table);await eventually(()=>Object.values(h.state().documents).some(row=>row.source_document_ref==='SYN-FX'));
+ const state=h.state(),tx=ref=>Object.values(state.transactions).find(row=>row.source_row_ref===ref).transaction_id,doc=ref=>Object.values(state.documents).find(row=>row.source_document_ref===ref).document_id;
+ await h.visit('/accounting');await page.waitForSelector('#accounting-transactionId');await fill('#accounting-evidence','SYNTHETIC-EXACT-ALLOCATION');
+ const allocate=async(ref,kind,amount,document,documentAmount)=>{await page.select('#accounting-transactionId',tx(ref));await page.select('#accounting-kind',kind);await fill('#accounting-amount',amount);if(document){await page.select('#accounting-documentId',doc(document));await fill('#accounting-documentAmount',documentAmount);}const before=h.state().accounting.allocations.length;await click('Save Create allocation');await eventually(()=>h.state().accounting.allocations.length===before+1);};
+ await allocate('SYN-SPLIT1','payment',-600,'SYN-SPLIT',600);await allocate('SYN-SPLIT2','payment',-400,'SYN-SPLIT',400);await allocate('SYN-REFUND','refund',500,'SYN-REFUND',-500);await allocate('SYN-FEE','fee',-25);
+ await page.click('details summary');await fill('#accounting-fx-numerator','3');await fill('#accounting-fx-denominator','2');await fill('#accounting-fx-source','SYNTHETIC-FX-QUOTE');await allocate('SYN-FX','payment',-1000,'SYN-FX',1500);
+ await page.select('#accounting-transactionId',tx('SYN-PRIVATE'));await page.select('#accounting-disposition','private');await click('Save Private or excluded');await eventually(()=>h.state().accounting.classifications.some(row=>row.transaction_id===tx('SYN-PRIVATE')&&row.category==='private'));
+ const report=(await h.read('/accounting/reports?start=2026-01-01&end=2026-12-31')).data;for(const ref of['SYN-SPLIT','SYN-REFUND','SYN-FX'])assert.equal(report.documents.find(row=>row.document_id===doc(ref)).remaining_minor,0);assert.equal(report.totals_by_currency.USD.unclassified,-1000);
+ assert.equal(h.state().accounting.allocations.find(row=>row.transaction_id===tx('SYN-FX')).conversion.numerator,3);await h.screenshot('11-split-refund-fee-exact-fx-private');
+}
+async function migration(h){
+ const{page,fill,click}=h,legacy=join(h.temp,'complete-legacy');const fixture=createCompleteLegacyFixture(legacy),original=treeHashes(legacy);
+ await h.visit('/accounts');await fill('#account-current-password','Synthetic main browser owner passphrase 2026');await click('Confirm current password');await page.waitForFunction(()=>document.body.textContent.includes('Password confirmed for five minutes'));
+ await h.visit('/data');await fill('#legacy-source-label','Complete independent synthetic history');await fill('#legacy-source-root',legacy);await click('Select migration source');await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(node=>node.textContent==='Inspect and dry run'&&!node.disabled));
+ await click('Inspect and dry run');await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(node=>node.textContent==='Stage migration'));assert.deepEqual(treeHashes(legacy),original);
+ await h.screenshot('12-migration-read-only-dry-run');await click('Stage migration');await page.waitForFunction(()=>document.body.textContent.includes('Backup verified.'));
+ const prior=h.state();
+ // The test observes the real UI activation request, then kills only its own
+ // synthetic process after durable directory cutover and before database reopen.
+ const target=await page.evaluate(()=>document.querySelector('[data-restore-stage-id]')?.getAttribute('data-restore-stage-id'));
+ assert.ok(target,'The verified stage has a stable review identifier');h.armCutoverInterruption('/api/community/persistence/restore/'+target+'/activate');
+ await click('Activate verified backup');await h.verifyCutoverInterruption();await h.restart();assert.deepEqual(h.state(),prior,'Startup rolls an interrupted migration back to exact prior canonical state');assert.deepEqual(h.sql().snapshot,prior);assert.deepEqual(treeHashes(legacy),original);await h.screenshot('12b-interrupted-migration-recovered');
+ await fill('#legacy-source-label','Complete independent synthetic history');await fill('#legacy-source-root',legacy);await click('Select migration source');await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(node=>node.textContent==='Inspect and dry run'&&!node.disabled));await click('Inspect and dry run');await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(node=>node.textContent==='Stage migration'));await click('Stage migration');await page.waitForFunction(()=>document.body.textContent.includes('Backup verified.'));await click('Activate verified backup');await page.waitForFunction(()=>document.querySelector('[role="status"]')?.textContent==='Data management');
+ const expectedDocuments=structuredClone(fixture.state.documents);for(const[id,document]of Object.entries(expectedDocuments))document.filename=id+'-'+sha(fixture.attachments[id]);
+ const actual=h.state();assert.deepEqual(actual.transactions,fixture.state.transactions);assert.deepEqual(actual.documents,expectedDocuments);assert.deepEqual(actual.match_groups,fixture.state.match_groups);assert.deepEqual(actual.accounting,fixture.state.accounting);assert.deepEqual(actual.audit_events,fixture.state.audit_events);assert.deepEqual(treeHashes(legacy),original);assert.deepEqual(h.sql().snapshot,actual);
+ for(const [id,bytes]of Object.entries(fixture.attachments))assert.equal(sha(readFileSync(join(h.runtime,'documents',actual.documents[id].filename))),sha(bytes));
+ await h.visit('/documents');await page.waitForSelector('[data-document-id]');const migratedReviews=(await h.read('/community/documents')).data.items;assert.equal(migratedReviews.length,6,'All supported historical originals are available in the normal workspace UI');assert.ok(migratedReviews.every(record=>record.owner_subject===''),'Missing original ownership is preserved');await page.click('[data-document-id="SYN-D1"]');await click('Download');assert.deepEqual(readFileSync(await h.waitDownload(actual.documents['SYN-D1'].filename)),fixture.attachments['SYN-D1']);assert.deepEqual(h.state(),actual,'Retrieving historical evidence never rewrites canonical sources');await h.screenshot('13-migrated-complete-historical-relationships');await h.restart();assert.deepEqual(h.state(),actual);assert.deepEqual(treeHashes(legacy),original);
+ return{transactions:10,documents:6,allocations:5,source_sha256:original,source_unchanged:true,interruption_recovery:true};
+}
+async function interfaceMatrix(h){
+ const results=[];
+ for(const language of ['en','de']){
+  await h.page.select('#community-language',language);
+  for(const route of ['/','/import','/documents','/accounting','/integrations','/invoice-bot','/banking','/payments','/data','/settings','/accounts','/audit']){
+   await h.visit(route);await h.page.waitForSelector('h1');
+   for(const width of [390,1400]){
+    await h.page.setViewport({width,height:900});const observed=await h.page.evaluate(()=>({lang:document.documentElement.lang,headings:document.querySelectorAll('h1').length,main:document.querySelectorAll('main').length,overflow:document.documentElement.scrollWidth>innerWidth,unlabelled:Array.from(document.querySelectorAll('input:not([type=hidden]),select,textarea')).filter(node=>!node.getAttribute('aria-label')&&!node.getAttribute('aria-labelledby')&&!Array.from(node.labels??[]).some(label=>label.textContent.trim())).map(node=>node.id||node.tagName)}));
+    assert.equal(observed.lang,language);assert.equal(observed.headings,1,route+' has one page heading');assert.equal(observed.main,1,route+' has one main landmark');assert.equal(observed.overflow,false,route+' fits viewport '+width);assert.deepEqual(observed.unlabelled,[],route+' has named form controls');await h.page.keyboard.press('Tab');assert.ok(await h.page.evaluate(()=>document.activeElement!==document.body),route+' accepts keyboard focus');results.push({route,language,width,...observed});
+   }
+   await h.screenshot('interface-'+language+'-'+(route.slice(1)||'home'));
+  }
+ }
+ await h.page.setViewport({width:1400,height:1000});await h.page.select('#community-language','en');return results;
+}
+async function localizationAndAuthorization(h){
+ const{page,fill,click}=h;await h.visit('/');await page.waitForSelector('#workspace-search');await fill('#workspace-search','Fictional legacy economic event 1');await eventually(async()=>await page.$$eval('[data-transaction-id]',nodes=>nodes.length)===2);await page.reload({waitUntil:'networkidle2'});assert.equal(await page.$eval('#workspace-search',node=>node.value),'Fictional legacy economic event 1');await fill('#workspace-search','');
+ await page.select('#community-language','de');await page.waitForFunction(()=>document.querySelector('h1')?.textContent==='Konten und Buchungen');await page.setViewport({width:390,height:844});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);await h.screenshot('14-german-responsive-account-dashboard');await page.keyboard.press('Tab');assert.ok(await page.evaluate(()=>document.activeElement!==document.body));await page.setViewport({width:1400,height:1000});await page.select('#community-language','en');
+ await click('Sign out');await page.waitForSelector('#account-username');await fill('#account-username','synthetic-reader');await fill('#account-password','Synthetic independent role passphrase 2026');await click('Sign in');await page.waitForSelector('nav');await h.visit('/accounting');assert.equal(await page.$$eval('button',nodes=>nodes.some(node=>node.textContent==='Find exact proposals')),false);assert.equal(await page.$('#accounting-amount'),null);
+ const session=(await h.read('/auth/session')).data;const denied=await page.evaluate(async csrf=>{const response=await fetch('/api/accounting/proposals',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':csrf},body:'{}'});return response.status;},session.csrf_token);assert.equal(denied,403);assert.equal((await h.read('/community/integrations/stripe/test/history')).status,403);await h.screenshot('15-reader-controls-and-server-denial');await h.visit('/documents');assert.equal(await page.$('#document-upload-file'),null,'Reader cannot upload source evidence');
+ await click('Sign out');await page.waitForSelector('#account-username');await fill('#account-username','synthetic-bookkeeper');await fill('#account-password','Synthetic independent role passphrase 2026');await click('Sign in');await page.waitForSelector('nav');await h.visit('/integrations');assert.equal(await page.$('#integration-client-secret'),null);await h.visit('/banking');assert.equal(await page.$('#bank-private-key'),null);
+ await click('Sign out');await page.waitForSelector('#account-username');await fill('#account-username','synthetic-approver');await fill('#account-password','Synthetic independent role passphrase 2026');await click('Sign in');await page.waitForSelector('nav a[href="/payments"]');await h.visit('/payments');await page.waitForFunction(()=>document.querySelector('h1')?.textContent==='Payments');assert.equal(await page.$$eval('button',nodes=>nodes.some(node=>node.textContent==='Create draft')),false);
+ await click('Sign out');await page.waitForSelector('#account-username');assert.equal((await h.read('/accounting')).status,401);
+}
+test('one actual application session integrates synthetic financial, provider, portal, payment, restore, migration and role workflows',{timeout:600000},async()=>{
+ const mode=process.env.MATCHING_ACCEPTANCE_MODE??'installed';assert.ok(['source','installed'].includes(mode));
+ const pack=mode==='source'?{packageDirectory:undefined,result:{manifestSha256:null},close(){}}:acceptancePackage();let h,failure;
+ try{h=await mainBrowser('integrated-acceptance',{entrypoint:'tests/helpers/integrated-server.mjs',packageDirectory:pack.packageDirectory});}catch(error){pack.close();throw error;}
+ try{await h.createOwner();await roles(h);await financialBrowserJourney(h);await providers(h);await botAndPayment(h);await extendedLedger(h);const legacy=await migration(h);const interface_matrix=await interfaceMatrix(h);await localizationAndAuthorization(h);await h.prove({production_application_factory:true,synthetic_transports_only:true,financial_journey:true,provider_idempotency:true,portal_discovery_import:true,unknown_payment_no_resubmission:true,exact_fx:true,split_refund_fee:true,legacy,interface_matrix,role_negative:true,logout:true,installation_qualification:mode==='installed'?'fresh-actual-development-package':'source-iteration-only',installed_runtime:h.installedManifest?.runtime,package_manifest_sha256:pack.result.manifestSha256,acknowledged_payment:true,real_provider_accepted:false,real_transfer:false});}
+ catch(error){failure=error;throw error;}finally{try{await h.close(failure);}finally{pack.close();}}
+});

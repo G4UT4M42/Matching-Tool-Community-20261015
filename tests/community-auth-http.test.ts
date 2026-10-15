@@ -45,6 +45,14 @@ function call(path: string, method = 'GET', session?: AuthSession, body?: unknow
 }
 
 describe('P02 authenticated HTTP boundary and role enforcement', () => {
+  it('keeps data-operation before/after evidence in the verified identity audit across reopen',()=>{
+    const snapshot={sha256:'a'.repeat(64),transactions:2,documents:1,audits:3},entry={id:'11111111-1111-4111-8111-111111111111',operation:'backup',phase:'started',before:snapshot,after:snapshot};
+    expect(()=>store.recordDataOperation(viewer.token,entry)).toThrow(/permission/);
+    store.recordDataOperation(owner.token,entry);store.recordDataOperation(owner.token,{...entry,phase:'succeeded',after:{...snapshot,sha256:'b'.repeat(64)}});
+    expect(()=>store.recordDataOperation(owner.token,{...entry,operation:'forged'})).toThrow(/Invalid/);
+    store.verifyAudit();const reopened=new CommunityAuthStore({runtimeRoot:root});try{const events=reopened.securityEvents(owner.token).events;expect(events.find(event=>event.action==='DATA_OPERATION_SUCCEEDED')).toMatchObject({actor_id:owner.principal.subject,entity_id:entry.id,before:snapshot,after:{...snapshot,sha256:'b'.repeat(64)}});expect(JSON.stringify(events)).not.toContain(owner.token);}finally{reopened.close();}
+  });
+
   it('provides no financial data to unauthenticated callers or forged preview tokens', async () => {
     expect((await call('/summary')).status).toBe(401);
     expect((await call('/summary', 'GET', undefined, undefined, { 'X-Community-Access-Token': 'synthetic-preview-token-cannot-authorize-accounts' })).status).toBe(401);

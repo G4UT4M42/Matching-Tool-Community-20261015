@@ -1,0 +1,29 @@
+import React from 'react';
+import {communityFetch} from '../api';
+import {useCommunityAccount} from '../components/CommunityAccountAccess';
+import {useLanguage} from '../i18n/locale';
+import {minorUnitDecimal} from '../format/money';
+type Transaction={transaction_id:string;source_system:string;source_account_id:string;posting_at:string;amount_minor:number;currency_code:string;description_raw:string};
+type Snapshot={transactions:Transaction[];documents:unknown[];match_groups:Array<{status:string}>};
+const labels={en:{title:'Accounts and transactions',account:'Account',all:'All accounts',search:'Search transactions',from:'From',to:'To',refresh:'Refresh',loading:'Loading…',failed:'Could not load the workspace',count:'Transactions',documents:'Documents',matches:'Accepted matches',cashflow:'Net cash flow by currency',date:'Date',description:'Description',amount:'Amount',empty:'No transactions match these filters'},de:{title:'Konten und Buchungen',account:'Konto',all:'Alle Konten',search:'Buchungen suchen',from:'Von',to:'Bis',refresh:'Aktualisieren',loading:'Lädt…',failed:'Arbeitsbereich konnte nicht geladen werden',count:'Buchungen',documents:'Belege',matches:'Akzeptierte Zuordnungen',cashflow:'Netto-Zahlungsfluss je Währung',date:'Datum',description:'Beschreibung',amount:'Betrag',empty:'Keine Buchungen entsprechen diesen Filtern'}};
+export function CommunityHome(){
+ const {language}=useLanguage(),t=labels[language==='de'?'de':'en'],{principal}=useCommunityAccount();
+ const key='community-filters:'+principal?.workspace_id+':'+principal?.subject;
+ const [filters,setFilters]=React.useState<{account:string;search:string;from:string;to:string}>(()=>{try{const x=JSON.parse(sessionStorage.getItem(key)??'null');if(x&&['account','search','from','to'].every(k=>typeof x[k]==='string'))return x;}catch{}return{account:'',search:'',from:'',to:''};});
+ const [snapshot,setSnapshot]=React.useState<Snapshot|null>(null),[error,setError]=React.useState(''),[revision,setRevision]=React.useState(0);
+ React.useEffect(()=>{try{sessionStorage.setItem(key,JSON.stringify(filters));}catch{}},[filters,key]);
+ React.useEffect(()=>{const abort=new AbortController();setError('');void(async()=>{try{const response=await communityFetch('/api/accounting',{signal:abort.signal});if(!response.ok)throw new Error();setSnapshot(await response.json());}catch{if(!abort.signal.aborted)setError(t.failed);}})();return()=>abort.abort();},[revision,t.failed]);
+ const accounts=[...new Set(snapshot?.transactions.map(row=>JSON.stringify([row.source_system,row.source_account_id]))??[])].sort();
+ const rows=(snapshot?.transactions??[]).filter(row=>(!filters.account||JSON.stringify([row.source_system,row.source_account_id])===filters.account)&&(!filters.from||row.posting_at.slice(0,10)>=filters.from)&&(!filters.to||row.posting_at.slice(0,10)<=filters.to)&&(!filters.search||[row.description_raw,row.transaction_id,row.source_account_id].some(value=>value.toLowerCase().includes(filters.search.toLowerCase())))).sort((a,b)=>b.posting_at.localeCompare(a.posting_at));
+ const totals=new Map<string,bigint>();for(const row of rows)totals.set(row.currency_code,(totals.get(row.currency_code)??0n)+BigInt(row.amount_minor));
+ const money=(amount:bigint,currency:string)=>{const digits=new Intl.NumberFormat(language,{style:'currency',currency}).resolvedOptions().maximumFractionDigits??2;const negative=amount<0n,absolute=negative?-amount:amount,scale=10n**BigInt(digits);return(negative?'-':'')+(absolute/scale).toString()+(digits?'.'+(absolute%scale).toString().padStart(digits,'0'):'')+' '+currency;};
+ return<section><h1>{t.title}</h1>{error&&<p role="alert">{error}</p>}{!snapshot&&!error&&<p role="status">{t.loading}</p>}
+   <div style={{display:'flex',gap:16,flexWrap:'wrap'}}><p>{t.count}: <strong data-testid="transaction-count">{rows.length}</strong></p><p>{t.documents}: {snapshot?.documents.length??0}</p><p>{t.matches}: {snapshot?.match_groups.filter(x=>['accepted','confirmed','manual'].includes(x.status)).length??0}</p></div>
+   <form onSubmit={event=>event.preventDefault()} style={{display:'flex',gap:12,flexWrap:'wrap',alignItems:'end'}}>
+     <label>{t.account} <select id="workspace-account-filter" value={filters.account} onChange={event=>setFilters({...filters,account:event.target.value})}><option value="">{t.all}</option>{accounts.map(account=><option key={account} value={account}>{JSON.parse(account).join(' · ')}</option>)}</select></label>
+     <label>{t.search} <input id="workspace-search" value={filters.search} onChange={event=>setFilters({...filters,search:event.target.value})}/></label>
+     <label>{t.from} <input type="date" value={filters.from} onChange={event=>setFilters({...filters,from:event.target.value})}/></label><label>{t.to} <input type="date" value={filters.to} onChange={event=>setFilters({...filters,to:event.target.value})}/></label><button onClick={()=>setRevision(value=>value+1)}>{t.refresh}</button>
+   </form><h2>{t.cashflow}</h2><ul>{[...totals].sort(([a],[b])=>a.localeCompare(b)).map(([currency,total])=><li key={currency}>{money(total,currency)}</li>)}</ul>
+   <div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse'}}><caption>{t.count}</caption><thead><tr>{[t.date,t.account,t.description,t.amount].map(label=><th scope="col" key={label} style={{textAlign:'left',padding:8}}>{label}</th>)}</tr></thead><tbody>{rows.map(row=><tr key={row.transaction_id} data-transaction-id={row.transaction_id}><td style={{padding:8}}>{row.posting_at.slice(0,10)}</td><td style={{padding:8}}>{row.source_system} · {row.source_account_id}</td><td style={{padding:8}}>{row.description_raw}</td><td style={{padding:8,whiteSpace:'nowrap'}}>{minorUnitDecimal(row.amount_minor,row.currency_code)} {row.currency_code}</td></tr>)}</tbody></table></div>{snapshot&&rows.length===0&&<p>{t.empty}</p>}
+ </section>;
+}

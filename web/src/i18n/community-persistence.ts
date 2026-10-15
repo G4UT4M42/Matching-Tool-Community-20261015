@@ -1,5 +1,5 @@
 export const persistenceText = {
-  en: {
+  en: {sourceLabel:'Source label',sourceRoot:'Absolute local V2 data directory',selectSource:'Select migration source',sourceHelp:'Select an offline source directory containing database/matching.db + state/state.json, data/matching.db + data/state.json, or matching.db + state.json. Inspection is read-only. A backup and verified comparison are required before activation.',
     title: 'Data management', current: 'Current data', backups: 'Backups', create: 'Create backup', download: 'Download',
     restore: 'Restore a backup', choose: 'Choose a backup ZIP', stage: 'Stage and verify', confirm: 'Activate verified backup',
     warning: 'Activation replaces the current accounting dataset. A previous copy remains available for recovery.',
@@ -8,7 +8,7 @@ export const persistenceText = {
     legacy: 'Legacy migration', source: 'Legacy source', inspect: 'Inspect and dry run', migrate: 'Stage migration',
     noSources: 'No offline legacy source was selected by the local server.',
   },
-  de: {
+  de: {sourceLabel:'Bezeichnung der Quelle',sourceRoot:'Absolutes lokales V2-Datenverzeichnis',selectSource:'Migrationsquelle auswählen',sourceHelp:'Wählen Sie eine nicht geöffnete Quelle mit database/matching.db + state/state.json, data/matching.db + data/state.json oder matching.db + state.json. Die Prüfung ist schreibgeschützt. Vor der Aktivierung sind Sicherung und geprüfter Vergleich erforderlich.',
     title: 'Datenverwaltung', current: 'Aktuelle Daten', backups: 'Sicherungen', create: 'Sicherung erstellen', download: 'Herunterladen',
     restore: 'Sicherung wiederherstellen', choose: 'Sicherungs-ZIP auswählen', stage: 'Bereitstellen und prüfen', confirm: 'Geprüfte Sicherung aktivieren',
     warning: 'Die Aktivierung ersetzt den aktuellen Buchungsbestand. Die vorherige Kopie bleibt für die Wiederherstellung erhalten.',

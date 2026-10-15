@@ -5,7 +5,7 @@ const en: Record<string, string> = Object.freeze({
   ...matchReviewEn,
   'app.title': 'Matching Tool Community',
   'navigation.transactions': 'Transactions',
-  'navigation.transactionsHelp': 'View and review fictional bank and card transactions',
+  'navigation.transactionsHelp': 'View and filter workspace bank and card transactions',
   'navigation.invoices': 'Invoices',
   'navigation.invoicesHelp': 'Review invoice evidence, documents and linked transactions',
   'navigation.income': 'Income',
@@ -13,13 +13,13 @@ const en: Record<string, string> = Object.freeze({
   'navigation.matching': 'Matching',
   'navigation.matchingHelp': 'Match transactions with invoices and reconcile evidence',
   'navigation.recognition': 'Document recognition',
-  'navigation.recognitionHelp': 'Review extracted invoice fields (external AI disabled in preview)',
+  'navigation.recognitionHelp': 'Review invoice fields extracted by local OCR',
   'navigation.invoicebot': 'Invoice bot',
-  'navigation.invoicebotHelp': 'External browser collection is disabled in this preview',
+  'navigation.invoicebotHelp': 'Collect invoices through a fresh user-controlled browser session',
   'navigation.vat': 'VAT report',
-  'navigation.vatHelp': 'Review Austrian VAT classifications; not tax advice',
+  'navigation.vatHelp': 'Review entered VAT classifications and supporting evidence',
   'navigation.incomeTax': 'Income tax',
-  'navigation.incomeTaxHelp': 'Review income and expense categories; not tax advice',
+  'navigation.incomeTaxHelp': 'Review entered income and expense classifications',
   'navigation.settings': 'Settings',
   'navigation.settingsHelp': 'Local preferences, safe backups and configuration',
   'settings.language': 'Language',
@@ -30,7 +30,7 @@ const de: Partial<typeof en> = Object.freeze({
   ...matchReviewDe,
   'app.title': 'Matching Tool Community',
   'navigation.transactions': 'Buchungen',
-  'navigation.transactionsHelp': 'Fiktive Bank- und Kartentransaktionen prüfen',
+  'navigation.transactionsHelp': 'Bank- und Kartenbuchungen des Arbeitsbereichs prüfen',
   'navigation.invoices': 'Rechnungen',
   'navigation.invoicesHelp': 'Rechnungen und Belege prüfen',
   'navigation.income': 'Einnahmen',
@@ -38,11 +38,11 @@ const de: Partial<typeof en> = Object.freeze({
   'navigation.matching': 'Zuordnung',
   'navigation.matchingHelp': 'Buchungen und Rechnungen zuordnen',
   'navigation.recognition': 'Belegerkennung',
-  'navigation.recognitionHelp': 'Rechnungsfelder prüfen; externe KI ist deaktiviert',
+  'navigation.recognitionHelp': 'Lokal erkannte Rechnungsfelder prüfen',
   'navigation.invoicebot': 'Rechnungsbot',
-  'navigation.invoicebotHelp': 'Externe Browseraktionen sind deaktiviert',
+  'navigation.invoicebotHelp': 'Belege über eine neue selbst gesteuerte Browsersitzung sammeln',
   'navigation.vat': 'Umsatzsteuerbericht',
-  'navigation.vatHelp': 'Österreichische Umsatzsteuer prüfen',
+  'navigation.vatHelp': 'Erfasste Steuerklassifikationen und Nachweise prüfen',
   'navigation.incomeTax': 'Einkommensteuer',
   'navigation.incomeTaxHelp': 'Einkommens- und Ausgabenkategorien prüfen',
   'navigation.settings': 'Einstellungen',
@@ -72,6 +72,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     const initial = typeof window !== 'undefined' ? window.localStorage.getItem('matching-community-locale') : null;
     return initial && catalogs.has(initial) ? initial : 'en';
   });
+  React.useEffect(()=>{document.documentElement.lang=language;},[language]);
   const setLanguage = React.useCallback((value: string) => {
     const safe = catalogs.has(value) ? value : 'en';
     setState(safe);
