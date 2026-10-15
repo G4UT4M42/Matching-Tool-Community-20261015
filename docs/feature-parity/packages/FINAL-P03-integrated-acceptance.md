@@ -189,3 +189,40 @@ immutable command JSON and exact tested manifest are under
 retained state/database checks and cleanup assertions passed. This focused
 working-snapshot retest resolves the maintenance defect; final combined-source
 installed acceptance is still required.
+
+## b979ebe source-built WASM and runtime SBOM checkpoint
+
+Integrated independent reviewed WASM manifest222f7ad3b205aefdcf004434fd49525054ba822e39266756d8e2633568bb204c,
+binary740521302afc687d45443ce86a9182a6a4ecc8f0dd0cffab70db117764e5efc3.
+Independent review verifies442payloads360099264bytes,443actualfiles,
+415nonarchive files,28archives51905headers,9072generatedpayloads and10157
+actual runtime-source files. Actual stopped-container readonly checks prove
+28source/copy staticlibrary pairs,25selectedsource libraries,10compiler-runtime
+archives, finalbinary and unchanged installedglue. No private-denylist finding
+remains. Legal/release/historical claims remain false.
+
+Combined package01 failed because the optional WASM package was outside normal
+sharp dependency roots; failed output retained. Approved replacement components
+now seed only their own required installed closure. Combined02 verifies8331files,
+226runtimepackages;manifestSHA256
+964db3e3574203b9b3b78297e8d1fcab7ccd4497d462bd0b3f94ddc1c158d9e4.
+Actual copied WASM/glue passes all nine measured Windows codec/load/ICC checks
+in `wasm-combined-package-02/result.json`; no UltraHDR gain-map fixture claim.
+Working-snapshot provenance prevents final exact-clean-candidate promotion.
+
+The initial permissive runtime SBOM check was independently shown to admit
+contradictions after outer rehash. Shared complete canonical expectation now
+rejects all seven independent cases, preserved in durable source tests.
+`candidate-wasm-overlay-regression-01.log` passes8/8 focused tests.
+`candidate-packaging-overlay-01.log` separately passes3/3 real maintenance
+checks in347677.8727ms, including consistently rehashed SBOM-tamper rejection.
+Final complete installed acceptance must use the final reviewed descriptors.
+
+Independent source snapshotf96dac5:21commits,527files,696blobs7405154bytes,
+physical safe-root closure and no concrete privacy leak. Later source requires
+extension. Fresh compliance self-test18/18 passes; root/web SBOM snapshots
+remain byte-identical. Official npm production audit has zero advisories at
+all severities (`npm-audit-f96dac5-01.result.json`); raw CLI notices retained.
+A new native Windows fullsource libvips core also passes actual loaded-path/hash
+and PNG/JPEG/WebP/SVG/AVIF with unchanged companion/binding; bundling and separate
+independent review remain active, so no native descriptor is admitted yet.
