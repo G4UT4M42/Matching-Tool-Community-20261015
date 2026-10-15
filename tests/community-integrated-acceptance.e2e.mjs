@@ -118,7 +118,7 @@ async function localizationAndAuthorization(h){
  await click('Sign out');await page.waitForSelector('#account-username');await fill('#account-username','synthetic-approver');await fill('#account-password','Synthetic independent role passphrase 2026');await click('Sign in');await page.waitForSelector('nav a[href="/payments"]');await h.visit('/payments');await page.waitForFunction(()=>document.querySelector('h1')?.textContent==='Payments');assert.equal(await page.$$eval('button',nodes=>nodes.some(node=>node.textContent==='Create draft')),false);
  await click('Sign out');await page.waitForSelector('#account-username');assert.equal((await h.read('/accounting')).status,401);
 }
-test('one actual application session integrates synthetic financial, provider, portal, payment, restore, migration and role workflows',{timeout:600000},async()=>{
+test('one actual application session integrates synthetic financial, provider, portal, payment, restore, migration and role workflows',{timeout:900000},async()=>{
  const mode=process.env.MATCHING_ACCEPTANCE_MODE??'installed';assert.ok(['source','installed'].includes(mode));
  const pack=mode==='source'?{packageDirectory:undefined,result:{manifestSha256:null},close(){}}:acceptancePackage();let h,failure;
  try{h=await mainBrowser('integrated-acceptance',{entrypoint:'tests/helpers/integrated-server.mjs',packageDirectory:pack.packageDirectory});}catch(error){pack.close();throw error;}

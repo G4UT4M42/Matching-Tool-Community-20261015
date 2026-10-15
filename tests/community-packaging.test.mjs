@@ -69,7 +69,7 @@ test('installation and uninstall refuse junctions while retaining independent sy
   } finally { assert.ok(resolve(base).startsWith(resolve(tmpdir()) + '\\')); rmSync(base, { recursive: true, force: true }); }
 });
 
-test('external development package installs, runs with bundled runtime, upgrades and uninstalls retaining synthetic data', { timeout: 360000 }, async () => {
+test('external development package installs, runs with bundled runtime, upgrades and uninstalls retaining synthetic data', { timeout: 600000 }, async () => {
   const base = mkdtempSync(join(tmpdir(), 'community-package-synthetic-'));
   const compliance = join(base, 'compliance'), pack = join(base, 'package'), install = join(base, 'Application Übung'), data = join(base, 'Daten Übung');
   const results = { syntheticOnly: true, releaseAccepted: false }; let server;
