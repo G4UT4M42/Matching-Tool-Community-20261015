@@ -10,6 +10,7 @@ import {jsonCopy,snapshot,same,immutableReview,validateReviewRecord,recoverAudit
 import { recordAudit } from '../../observability/audit.js';
 import {checkedDocumentAmounts,type InvoiceDocumentType} from './amount-contract.js';
 import { parseDocumentTable, tableDocumentId, type TableKind } from './tabular.js';
+import {workspaceRecoveryDocumentIds} from '../persistence/workspace-recovery.js';
 
 export interface Principal { subject: string; workspace_id: string; permissions?: unknown }
 export interface ReviewFields { document_type?:InvoiceDocumentType; invoice_number?: string; supplier_name?: string; document_date?: string; total_amount_minor?: number; net_amount_minor?: number; vat_amount_minor?: number; currency_code?: string; payment_reference?: string; iban?: string; due_date?: string }
@@ -113,6 +114,7 @@ export class CommunityDocumentService {
       if(position<0)index.records.push(record);else index.records[position]=record;
     }
     const financial = state.documents;
+    const configuredAdoptions=this.options.workspaceId?workspaceRecoveryDocumentIds(state,{workspace_id:this.options.workspaceId}):new Set<string>();
     for (const record of index.records) {
       const doc = financial.get(record.id);
       if (doc && doc.meta.workspace_id === record.workspace_id) {
@@ -126,7 +128,7 @@ export class CommunityDocumentService {
     // evidence. Missing attachment errors are never mistaken for a missing index.
     for (const doc of financial.values()) {
       const workspaceId=typeof doc.meta.workspace_id==='string'?doc.meta.workspace_id:this.options.workspaceId;
-      if (index.records.some(record => record.id === doc.document_id) || !workspaceId || this.options.workspaceId&&workspaceId!==this.options.workspaceId || typeof doc.file_hash !== 'string' || !/^[a-fA-F0-9]{64}$/.test(doc.file_hash) || !doc.filename) continue;
+      if (index.records.some(record => record.id === doc.document_id) || !workspaceId || this.options.workspaceId&&workspaceId!==this.options.workspaceId&&!configuredAdoptions.has(doc.document_id) || typeof doc.file_hash !== 'string' || !/^[a-fA-F0-9]{64}$/.test(doc.file_hash) || !doc.filename) continue;
       const workspaceHash = createHash('sha256').update(workspaceId).digest('hex'),fileHash=doc.file_hash.toLowerCase();
       const dir=join(this.blobs,workspaceHash),file = join(dir, fileHash);verifyRuntimePath(this.root,file);
       // Migration already retains the original under the reviewed documents root.
@@ -177,15 +179,17 @@ export class CommunityDocumentService {
   }
   private find(index: Index, principal: Principal, id: string): DocumentRecord {
     scope(principal);
-    const record = index.records.find(item => item.id === id && item.workspace_id === principal.workspace_id);
+    const adopted=workspaceRecoveryDocumentIds(this.options.getState(),{workspace_id:principal.workspace_id});
+    const record = index.records.find(item => item.id === id && (item.workspace_id === principal.workspace_id||adopted.has(item.id)));
     if (!record) throw new DocumentInputError('NOT_FOUND', 'Document not found');
     return record;
   }
   async list(principal: Principal, search = ''): Promise<DocumentRecord[]> {
     scope(principal);
     const index = await this.readIndex();
+    const adopted=workspaceRecoveryDocumentIds(this.options.getState(),{workspace_id:principal.workspace_id});
     const needle = search.trim().toLowerCase().slice(0, 100);
-    return index.records.filter(item => item.workspace_id === principal.workspace_id && (!needle || [item.filename, item.fields.invoice_number, item.fields.supplier_name, item.source_id].some(value => value?.toLowerCase().includes(needle))));
+    return index.records.filter(item => (item.workspace_id === principal.workspace_id||adopted.has(item.id)) && (!needle || [item.filename, item.fields.invoice_number, item.fields.supplier_name, item.source_id].some(value => value?.toLowerCase().includes(needle))));
   }
   async get(principal: Principal, id: string): Promise<DocumentRecord> { return this.find(await this.readIndex(), principal, id); }
   async upload(principal: Principal, buffer: Buffer, filename: string, sourceId?: string, sourceKind:DocumentSourceKind='user-supplied'): Promise<{ record: DocumentRecord; duplicate: boolean }> {
@@ -195,7 +199,8 @@ export class CommunityDocumentService {
     if (sourceId && (!/^[\w.:-]{1,160}$/.test(sourceId))) problem('INVALID_SOURCE_ID', 'Invalid source identifier');
     return this.lock(async () => {
       const index = await this.readIndex();
-      const prior = index.records.find(item => item.workspace_id === principal.workspace_id && (item.hash === hash || sourceId && (item.source_id === sourceId||item.source_refs?.some(ref=>ref.source_id===sourceId))));
+      const adopted=workspaceRecoveryDocumentIds(this.options.getState(),{workspace_id:principal.workspace_id});
+      const prior = index.records.find(item => (item.workspace_id === principal.workspace_id||adopted.has(item.id)) && (item.hash === hash || item.workspace_id===principal.workspace_id&&sourceId && (item.source_id === sourceId||item.source_refs?.some(ref=>ref.source_id===sourceId))));
       if (prior) {
         if (sourceId && (prior.source_id === sourceId||prior.source_refs?.some(ref=>ref.source_id===sourceId)) && prior.hash !== hash) problem('SOURCE_CONFLICT', 'An existing source identifier contains different document bytes');
         if(sourceId&&!prior.source_refs?.some(ref=>ref.source_id===sourceId&&ref.kind===sourceKind)){
@@ -215,7 +220,7 @@ export class CommunityDocumentService {
       let recognition: RecognizedInvoice;
       try { recognition = await recognizeDocument(buffer, inspected.kind, this.options.localLanguageDir); }
       catch (error) {
-        recognition = { confidence: 0, raw_text: '', warnings: [error instanceof DocumentInputError ? error.message : 'DOCUMENT_RECOGNITION_FAILED'] };
+        recognition = { confidence: 0, raw_text: '', warnings: [error instanceof DocumentInputError&&['OCR_ENGINE_UNAVAILABLE','OCR_TIMEOUT','PAGE_LIMIT','TEXT_LIMIT','PIXEL_LIMIT'].includes(error.code)?error.code:'DOCUMENT_RECOGNITION_FAILED'] };
       }
       const workspaceHash = createHash('sha256').update(principal.workspace_id).digest('hex');
       const dir = join(this.blobs, workspaceHash);
@@ -254,12 +259,16 @@ export class CommunityDocumentService {
     return this.lock(async () => {
       const index = await this.readIndex();
       const expected = this.options.getState(); const next = cloneState(expected);
+      const adopted=workspaceRecoveryDocumentIds(expected,{workspace_id:principal.workspace_id});
       const created: DocumentRecord[] = []; let duplicates = 0;
       for (const row of rows) {
-        const id = tableDocumentId(principal.workspace_id, kind, row.source_id);
+        const originals=[...expected.documents.values()].filter(doc=>adopted.has(doc.document_id)&&doc.meta.table_kind===kind&&doc.source_document_ref===row.source_id);
+        const localId=tableDocumentId(principal.workspace_id,kind,row.source_id);
+        if(originals.length>1||originals.length&&next.documents.has(localId))problem('SOURCE_CONFLICT','Source identifier is ambiguous across recovered workspaces');
+        const id = originals[0]?.document_id??localId;
         const prior = next.documents.get(id);
         if (prior) {
-          if (prior.meta.workspace_id !== principal.workspace_id || prior.source_document_ref !== row.source_id || prior.total_amount_minor !== row.total_amount_minor || prior.currency_code !== row.currency_code || prior.document_date !== row.document_date || prior.supplier_name !== row.supplier_name || prior.source_document_ref !== row.source_id || prior.vat_amount_minor !== row.vat_amount_minor || prior.meta.invoice_number !== row.invoice_number || prior.meta.net_amount_minor !== row.net_amount_minor || prior.meta.document_type !== row.document_type) problem('SOURCE_CONFLICT', 'Source identifier has conflicting document values');
+          if (prior.meta.workspace_id !== principal.workspace_id&&!adopted.has(id) || prior.source_document_ref !== row.source_id || prior.total_amount_minor !== row.total_amount_minor || prior.currency_code !== row.currency_code || prior.document_date !== row.document_date || prior.supplier_name !== row.supplier_name || prior.source_document_ref !== row.source_id || prior.vat_amount_minor !== row.vat_amount_minor || prior.meta.invoice_number !== row.invoice_number || prior.meta.net_amount_minor !== row.net_amount_minor || prior.meta.document_type !== row.document_type) problem('SOURCE_CONFLICT', 'Source identifier has conflicting document values');
           duplicates++; continue;
         }
         const document: Document = { document_id: id, source_system: kind === 'income' ? 'income' : 'invoice_file', source_document_ref: row.source_id, captured_at: now(), document_date: row.document_date, total_amount_minor: row.total_amount_minor, currency_code: row.currency_code, supplier_name: row.supplier_name, vat_amount_minor: row.vat_amount_minor, file_hash: hash, filename, meta: { workspace_id: principal.workspace_id, owner_subject: principal.subject, invoice_number: row.invoice_number, net_amount_minor: row.net_amount_minor, table_kind: kind,...(row.document_type?{document_type:row.document_type}:{}), settlement_convention: kind === 'invoice' ? 'payable-face-v1' : 'signed-cashflow-v1', document_review_status: 'confirmed', attachment_path: 'attachments/' + createHash('sha256').update(principal.workspace_id).digest('hex') + '/' + hash } };
@@ -286,7 +295,7 @@ export class CommunityDocumentService {
   }
   async download(principal: Principal, id: string): Promise<{ record: DocumentRecord; buffer: Buffer }> {
     const record = await this.get(principal, id);
-    const workspaceHash = createHash('sha256').update(principal.workspace_id).digest('hex');
+    const workspaceHash = createHash('sha256').update(record.workspace_id).digest('hex');
     const file = join(this.blobs, workspaceHash, record.hash);
     for (const folder of [this.blobs, join(this.blobs, workspaceHash)]) { const stat = await lstat(folder); if (!stat.isDirectory() || stat.isSymbolicLink()) problem('UNSAFE_STORAGE', 'Attachment directory is unsafe'); }
     const stat = await lstat(file);
@@ -318,7 +327,7 @@ export class CommunityDocumentService {
       const before=jsonCopy(record);
       const fields = validFields({ document_type:record.fields.document_type,invoice_number: record.fields.invoice_number, supplier_name: record.fields.supplier_name, document_date: record.fields.document_date, total_amount: minorText(record.fields.total_amount_minor, record.fields.currency_code), net_amount: minorText(record.fields.net_amount_minor, record.fields.currency_code), vat_amount: minorText(record.fields.vat_amount_minor, record.fields.currency_code), currency_code: record.fields.currency_code, payment_reference: record.fields.payment_reference, iban: record.fields.iban, due_date: record.fields.due_date });
       const expected = this.options.getState(); const next = cloneState(expected);
-      const document: Document = { document_id: record.id, source_system: 'upload', source_document_ref: record.source_id ?? fields.invoice_number!, captured_at: record.created_at, document_date: fields.document_date!, total_amount_minor: fields.total_amount_minor!, currency_code: fields.currency_code!, supplier_name: fields.supplier_name, vat_amount_minor: fields.vat_amount_minor, file_hash: record.hash, filename: record.filename, meta: { workspace_id: principal.workspace_id, owner_subject: record.owner_subject, ...(record.source_refs?{document_source_refs:structuredClone(record.source_refs)}:{}), ...(record.source_refs?.some(ref=>ref.kind==='invoice-bot') ? {portal_source_id:record.source_refs.find(ref=>ref.kind==='invoice-bot')!.source_id,portal_source_refs:record.source_refs.filter(ref=>ref.kind==='invoice-bot').map(ref=>ref.source_id)} : {}), net_amount_minor: fields.net_amount_minor, payment_reference: fields.payment_reference, iban: fields.iban, due_date: fields.due_date, recognition_confidence: record.recognition.confidence, invoice_number: fields.invoice_number, ...(fields.document_type?{document_type:fields.document_type}:{}),settlement_convention: 'payable-face-v1', document_review_status: 'confirmed', attachment_path: 'attachments/' + createHash('sha256').update(principal.workspace_id).digest('hex') + '/' + record.hash } };
+      const document: Document = { document_id: record.id, source_system: 'upload', source_document_ref: record.source_id ?? fields.invoice_number!, captured_at: record.created_at, document_date: fields.document_date!, total_amount_minor: fields.total_amount_minor!, currency_code: fields.currency_code!, supplier_name: fields.supplier_name, vat_amount_minor: fields.vat_amount_minor, file_hash: record.hash, filename: record.filename, meta: { workspace_id: record.workspace_id, owner_subject: record.owner_subject, ...(record.source_refs?{document_source_refs:structuredClone(record.source_refs)}:{}), ...(record.source_refs?.some(ref=>ref.kind==='invoice-bot') ? {portal_source_id:record.source_refs.find(ref=>ref.kind==='invoice-bot')!.source_id,portal_source_refs:record.source_refs.filter(ref=>ref.kind==='invoice-bot').map(ref=>ref.source_id)} : {}), net_amount_minor: fields.net_amount_minor, payment_reference: fields.payment_reference, iban: fields.iban, due_date: fields.due_date, recognition_confidence: record.recognition.confidence, invoice_number: fields.invoice_number, ...(fields.document_type?{document_type:fields.document_type}:{}),settlement_convention: 'payable-face-v1', document_review_status: 'confirmed', attachment_path: 'attachments/' + createHash('sha256').update(record.workspace_id).digest('hex') + '/' + record.hash } };
       next.documents.set(record.id, document);
       record.status = 'confirmed'; record.history.push({ at: now(), actor: principal.subject, action: 'confirmed', fields: { ...fields } });
       this.auditReview(next,principal,'confirmed',before,record);

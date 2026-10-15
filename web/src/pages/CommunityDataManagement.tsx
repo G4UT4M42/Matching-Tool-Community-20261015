@@ -8,6 +8,8 @@ type Summary = { counts: { transactions: number; documents: number; match_groups
 type Manifest = { created_at: string; financial: Summary; files: Record<string, { bytes: number; sha256: string }> };
 type Backup = { id: string; manifest: Manifest };
 type Stage = { id: string; fingerprint: string; manifest: Manifest };
+type RecoveredPayment = {batch:{id:string;workspaceId:string;status:string;revision:number;items:Array<{documentId:string;amountMinor:number;currency:string}>};audit:unknown[];read_only:true};
+type RecoveryReview = {fingerprint:string;documents:Array<{document_id:string;source_workspace_id:string;hash:string;status:string}>;source_workspaces:string[];target_workspace_id:string;target_subject:string};
 const base = '/api/community/persistence';
 async function result<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await communityFetch(base + path, init);
@@ -25,9 +27,11 @@ function Financial({ value, labels }: { value: Summary; labels: typeof persisten
     <dt>{labels.total}</dt><dd>{Object.entries(value.totals_minor_by_currency).map(([currency, amount]) => `${currency} ${amount}`).join(', ') || '—'}</dd>
   </dl>;
 }
-export function CommunityDataManagement() {
+export function CommunityDataManagement({permissions=[],owner=false}:{permissions?:readonly string[];owner?:boolean}) {
+  const mayRestore=permissions.includes('data:restore'),mayMigrate=permissions.includes('data:migrate');
   const { language } = useLanguage();
   const t = language.startsWith('de') ? persistenceText.de : persistenceText.en;
+  const paymentStatus=(value:string)=>language.startsWith('de')?({draft:'Entwurf',validated:'Geprüft',reviewed:'Kontrolliert',approved:'Genehmigt',submission_claimed:'Übermittlung beansprucht',acknowledged:'Bestätigt',unknown:'Unbekannt',failed:'Fehlgeschlagen',reconciled:'Abgeglichen',cancelled:'Storniert'} as Record<string,string>)[value]??value:value;
   const [backups, setBackups] = React.useState<Backup[]>([]);
   const [file, setFile] = React.useState<File | null>(null);
   const [stage, setStage] = React.useState<Stage | null>(null);
@@ -38,14 +42,16 @@ export function CommunityDataManagement() {
   const [error, setError] = React.useState('');
   const [busy, setBusy] = React.useState(false);
   const [notice, setNotice] = React.useState('');
+  const [recoveredPayments,setRecoveredPayments]=React.useState<RecoveredPayment[]|null>(null);
+  const [recovery,setRecovery]=React.useState<RecoveryReview|null>(null),[recoveryAccepted,setRecoveryAccepted]=React.useState(false);
   const refresh = React.useCallback(async () => {
     const data = await result<{ backups: Backup[] }>('/backups');
     setBackups(data.backups);
   }, []);
   React.useEffect(() => {
     void refresh().catch(error => setError(String(error)));
-    void result<{ sources: Array<{ id: string; label: string }> }>('/legacy/sources').then(value => setSources(value.sources)).catch(() => {});
-  }, [refresh]);
+    if(mayMigrate)void result<{ sources: Array<{ id: string; label: string }> }>('/legacy/sources').then(value => setSources(value.sources)).catch(error=>setError(String(error)));
+  }, [refresh,mayMigrate]);
   async function run(action: () => Promise<void>) {
     setError(''); setNotice(''); setBusy(true);
     try { await action(); } catch (problem) { setError(problem instanceof Error ? problem.message : t.error); }
@@ -71,7 +77,7 @@ export function CommunityDataManagement() {
         <button disabled={busy} onClick={() => void run(() => download(backup.id))}>{t.download}</button>
       </li>)}</ul>
     </section>
-    <section aria-label={t.restore}>
+    {mayRestore&&<section aria-label={t.restore}>
       <h2>{t.restore}</h2>
       <label>{t.choose} <input id="restore-backup-file" type="file" accept=".zip,application/zip" onChange={event => { setFile(event.target.files?.[0] ?? null); setStage(null); }} /></label>
       <button disabled={!file || busy} onClick={() => void run(async () => {
@@ -84,11 +90,26 @@ export function CommunityDataManagement() {
         <p>{t.warning}</p>
         <button disabled={busy} onClick={() => void run(async () => {
           await result(`/restore/${stage.id}/activate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fingerprint: stage.fingerprint }) });
-          setStage(null); setNotice(t.title); await refresh();
+          setStage(null);setRecovery(null);setRecoveredPayments(null);setRecoveryAccepted(false); setNotice(t.title); await refresh();
         })}>{t.confirm}</button>
       </div>}
-    </section>
-    <section aria-label={t.legacy}>
+    </section>}
+    {owner&&mayRestore&&<section aria-label={t.recovery}>
+      <h2>{t.recovery}</h2><p>{t.recoveryHelp}</p>
+      <button disabled={busy} onClick={()=>void run(async()=>{setRecoveryAccepted(false);setRecovery(await result<RecoveryReview>('/workspace-recovery'));})}>{t.recoveryInspect}</button>
+      <button disabled={busy} onClick={()=>void run(async()=>{const history=await result<{items:RecoveredPayment[];read_only:true}>('/workspace-recovery/payment-history');if(history.read_only!==true)throw new Error(t.error);setRecoveredPayments(history.items);})}>{t.recoveryPayments}</button>
+      {recoveredPayments&&<div><p>{t.recoveryReadOnly}</p>{recoveredPayments.length===0?<p>{t.recoveryNoPayments}</p>:<ul>{recoveredPayments.map(item=><li key={item.batch.id} data-recovered-payment-id={item.batch.id} style={{overflowWrap:'anywhere'}}><code>{item.batch.id}</code> · <code>{item.batch.workspaceId}</code> · {paymentStatus(item.batch.status)} · {t.documents}: {item.batch.items.length}<details><summary>{t.recoveryAudit}</summary><pre style={{whiteSpace:'pre-wrap'}}>{JSON.stringify(item.audit,null,2)}</pre></details></li>)}</ul>}</div>}
+      {recovery&&<div data-workspace-recovery-fingerprint={recovery.fingerprint}>
+        <p>{t.documents}: {recovery.documents.length}; {t.recoverySources}: {recovery.source_workspaces.length}</p>
+        <p>{t.recoveryTarget}: <code>{recovery.target_workspace_id}</code></p>
+        {recovery.documents.length===0?<p>{t.recoveryNone}</p>:<>
+          <ul>{recovery.documents.map(item=><li key={item.document_id} data-recovery-document-id={item.document_id} style={{overflowWrap:'anywhere'}}><code>{item.document_id}</code> · <code>{item.source_workspace_id}</code> · SHA-256 <code>{item.hash}</code></li>)}</ul>
+          <label><input id="workspace-recovery-consent" type="checkbox" checked={recoveryAccepted} onChange={event=>setRecoveryAccepted(event.target.checked)}/>{t.recoveryConsent}</label>
+          <button disabled={busy||!recoveryAccepted} onClick={()=>void run(async()=>{await result('/workspace-recovery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fingerprint:recovery.fingerprint,confirm_preserve_originals:true})});setRecovery(null);setRecoveryAccepted(false);setNotice(t.recoveryDone);})}>{t.recoveryConfirm}</button>
+        </>}
+      </div>}
+    </section>}
+    {mayMigrate&&<section aria-label={t.legacy}>
       <h2>{t.legacy}</h2>
       <form onSubmit={event=>{event.preventDefault();void run(async()=>{const selected=await result<{id:string;label:string}>('/legacy/sources',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({root:sourceRoot,label:sourceLabel})});setSources([selected]);setSourceId(selected.id);setLegacyPreview(null);});}} style={{display:'grid',gap:8,maxWidth:600}}>
         <label>{t.sourceLabel}<input id="legacy-source-label" required value={sourceLabel} onChange={event=>setSourceLabel(event.target.value)}/></label><label>{t.sourceRoot}<input id="legacy-source-root" required value={sourceRoot} onChange={event=>setSourceRoot(event.target.value)}/></label><button disabled={busy}>{t.selectSource}</button>
@@ -109,6 +130,6 @@ export function CommunityDataManagement() {
           })}>{t.migrate}</button>
         </div>}
       </>}
-    </section>
+    </section>}
   </section>;
 }

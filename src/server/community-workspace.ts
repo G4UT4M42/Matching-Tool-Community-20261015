@@ -16,6 +16,8 @@ import { CommunityDocumentService } from '../community/documents/service.js';
 import { createCommunityDocumentsRouter } from './routes/community-documents.js';
 import { createCommunityAccountingRouter } from './routes/community-accounting.js';
 import { createCommunityPersistenceRouter } from './routes/community-persistence.js';
+import { createCommunityWorkspaceRecoveryRouter } from './routes/community-workspace-recovery.js';
+import { inspectWorkspaceRecovery, prepareWorkspaceRecovery, workspaceRecoveryDocumentIds, workspaceRecoveryPaymentWorkspaceIndex } from '../community/persistence/workspace-recovery.js';
 import type { Exclusive } from '../community/persistence/backup.js';
 import { CredentialVault } from '../community/integrations/vault.js';
 import { IntegrationService } from '../community/integrations/service.js';
@@ -80,6 +82,8 @@ export const COMMUNITY_WORKSPACE_ROUTES:readonly CommunityRouteRule[]=[
   rule('POST','^/accounting/(?:classifications|taxes|dispositions|exclusions)$','finance:annotate'),
   rule('PATCH','^/accounting/exclusions/'+id+'$','finance:annotate'),
   rule('GET','^/community/persistence/(?:current|backups)$','data:backup'),
+  rule('GET','^/community/persistence/workspace-recovery(?:/payment-history)?$','data:restore'),
+  rule('POST','^/community/persistence/workspace-recovery$','data:restore',true),
   rule('GET','^/community/persistence/backups/'+id+'/download$','data:backup'),
   rule('POST','^/community/persistence/backups$','data:backup'),
   rule('POST','^/community/persistence/restore/stage$','data:restore',true),
@@ -88,7 +92,7 @@ export const COMMUNITY_WORKSPACE_ROUTES:readonly CommunityRouteRule[]=[
   rule('POST','^/community/persistence/legacy/sources$','data:migrate',true),
   rule('POST','^/community/persistence/legacy/'+id+'/(?:inspect|stage)$','data:migrate',true),
 ];
-interface RequestContext{token:string;principal:CommunityPrincipal;permission:CommunityPermission;csrf:string|undefined}
+interface RequestContext{token:string;principal:CommunityPrincipal;permission:CommunityPermission;csrf:string|undefined;generation:number}
 export interface WorkspaceOptions{
   runtimeRoot:string;auth:CommunityAuthStore;getState:()=>MatchingState;activate:(state:MatchingState)=>void;
   localLanguageDir?:string;legacySources?:Array<{id:string;label:string;root:string}>;
@@ -106,11 +110,17 @@ export interface WorkspaceOptions{
 export function createCommunityWorkspace(options:WorkspaceOptions){
   if(options.paymentAdapter&&(options.paymentAdapter.provider!=='community-simulated-bank'||options.paymentAdapter.environment!=='mock'))throw new Error('Only the local simulated payment composition is supported');
   const context=new AsyncLocalStorage<RequestContext>();
-  let active=0,exclusiveActive=false;
+  let active=0,exclusiveActive=false,generation=0;
+  let exclusiveOwner:RequestContext|undefined;
   let currentRouter:Router;
-  const can=(principal:unknown,permission:CommunityPermission)=>hasCommunityPermission(principal,options.auth.workspaceId,permission);
+  const can=(principal:unknown,permission:CommunityPermission)=>{
+    const scope=context.getStore();
+    return (!scope||scope.generation===generation&&(!exclusiveActive||exclusiveOwner===scope))&&hasCommunityPermission(principal,options.auth.workspaceId,permission);
+  };
   function requireCurrent(permission?:CommunityPermission):CommunityPrincipal{
     const scope=context.getStore();if(!scope)throw new CanonicalStateError('AUTHENTICATION_REQUIRED','A trusted account request context is required');
+    if(scope.generation!==generation)throw new CanonicalStateError('WORKSPACE_CHANGED','The accounting dataset changed; reload before retrying');
+    if(exclusiveActive&&exclusiveOwner!==scope)throw new CanonicalStateError('WORKSPACE_BUSY','An exclusive data operation owns the accounting dataset');
     const session=options.auth.authenticate(scope.token);
     if(!session||session.principal.subject!==scope.principal.subject||session.principal.workspace_id!==options.auth.workspaceId)throw new CanonicalStateError('AUTHENTICATION_REQUIRED','The account session is no longer active');
     if(!can(session.principal,permission??scope.permission))throw new CanonicalStateError('PERMISSION_REQUIRED','The account no longer has the required workspace permission');
@@ -143,11 +153,11 @@ export function createCommunityWorkspace(options:WorkspaceOptions){
   });
   const withExclusiveAccess:Exclusive=async operation=>{
     requireCurrent();if(exclusiveActive||active>0)throw new CanonicalStateError('WORKSPACE_BUSY','Other accounting operations must finish before backup or restore');
-    exclusiveActive=true;try{return await operation();}finally{exclusiveActive=false;}
+    exclusiveActive=true;exclusiveOwner=context.getStore();try{return await operation();}finally{exclusiveOwner=undefined;exclusiveActive=false;}
   };
   const currentPaymentSession=(principal:PaymentPrincipal)=>{
     const scope=context.getStore();
-    if(!scope)return null;
+    if(!scope||scope.generation!==generation||exclusiveActive&&exclusiveOwner!==scope)return null;
     const active=options.auth.authenticate(scope.token);
     return active&&active.principal.subject===principal.subject&&active.principal.session_id===principal.session_id&&
       active.principal.workspace_id===principal.workspace_id?active:null;
@@ -233,6 +243,42 @@ export function createCommunityWorkspace(options:WorkspaceOptions){
     routes.use(createCommunityAccountingRouter({workspaceId:options.auth.workspaceId,getState:options.getState,can,persistAndActivate:commit}));
     const dataSnapshot=()=>{const state=options.getState();return{sha256:createHash('sha256').update(serializeCommunityState(state)).digest('hex'),transactions:state.transactions.size,documents:state.documents.size,audits:state.audit_events.length};};
     const dataStarts=new Map<string,ReturnType<typeof dataSnapshot>>();
+    const recoveryOwner=(recent:boolean)=>{
+      const actor=requireCurrent('data:restore');
+      if(actor.role!=='owner')throw new CanonicalStateError('PERMISSION_REQUIRED','Only the receiving workspace owner can adopt recovered evidence');
+      if(recent){const scope=context.getStore()!,session=options.auth.authenticate(scope.token);if(!session)throw new CanonicalStateError('AUTHENTICATION_REQUIRED','The recovery session is no longer active');options.auth.requireRecentAuthentication(session);}
+      return actor;
+    };
+    routes.use('/community/persistence/workspace-recovery',createCommunityWorkspaceRecoveryRouter({
+      currentOwner:recoveryOwner,
+      inspect:principal=>withExclusiveAccess(async()=>{
+        const result=await inspectWorkspaceRecovery(options.getState(),join(options.runtimeRoot,'documents'),principal);
+        const actor=recoveryOwner(false);if(actor.subject!==principal.subject||actor.workspace_id!==principal.workspace_id)throw new CanonicalStateError('AUTHENTICATION_REQUIRED','The recovery principal changed');return result;
+      }),
+      confirm:(principal,fingerprint)=>withExclusiveAccess(async()=>{
+        const before=options.getState(),next=await prepareWorkspaceRecovery(before,join(options.runtimeRoot,'documents'),principal,fingerprint);
+        const actor=recoveryOwner(true);if(actor.subject!==principal.subject||actor.workspace_id!==principal.workspace_id)throw new CanonicalStateError('AUTHENTICATION_REQUIRED','The recovery principal changed');
+        commit(before,next,actor.subject);return{adopted:true};
+      }),
+      paymentHistory:principal=>{
+        const state=options.getState(),ids=workspaceRecoveryDocumentIds(state,{workspace_id:principal.workspace_id}),namespaces=workspaceRecoveryPaymentWorkspaceIndex(state),repository=new PaymentRepository(getDb());
+        const sources=[...new Set([...ids].flatMap(id=>namespaces.get(id)??[]).filter(id=>id!==principal.workspace_id))];
+        if(sources.length>100)throw new CanonicalStateError('STORAGE_LIMIT','Recovered payment history exceeds the supported source count');
+        const entries:Array<{batch:NonNullable<ReturnType<PaymentRepository['get']>>;audit:unknown[];read_only:true}>=[];let bytes=0;
+        for(const workspace of sources){
+          const rows=getDb().prepare('SELECT id FROM community_payment_batches WHERE workspace_id=? ORDER BY created_at DESC LIMIT 1001').all(workspace) as Array<{id:string}>;
+          if(rows.length>1000)throw new CanonicalStateError('STORAGE_LIMIT','Recovered payment history exceeds the supported batch count');
+          for(const row of rows){const batch=repository.get(row.id,workspace)!;
+            if(!batch.items.length||!batch.items.every(item=>ids.has(item.documentId)&&namespaces.get(item.documentId)?.includes(workspace)&&state.documents.get(item.documentId)?.file_hash?.toLowerCase()===item.sourceHash.toLowerCase()))continue;
+            const count=getDb().prepare('SELECT count(*) FROM community_payment_events WHERE batch_id=? AND workspace_id=?').pluck().get(batch.id,workspace) as number;
+            if(count>1000)throw new CanonicalStateError('STORAGE_LIMIT','Recovered payment history exceeds the supported event count');
+            const entry={batch,audit:repository.audit(batch.id,workspace),read_only:true as const};bytes+=Buffer.byteLength(JSON.stringify(entry));
+            if(entries.length>=1000||bytes>8*1024*1024)throw new CanonicalStateError('STORAGE_LIMIT','Recovered payment history exceeds the supported display size');entries.push(entry);
+          }
+        }
+        return{items:entries,read_only:true};
+      },
+    }));
     routes.use('/community/persistence',createCommunityPersistenceRouter({
       observe:entry=>{const scope=context.getStore();const actor=requireCurrent();if(!scope||actor.subject!==entry.subject)throw new Error('Data audit actor changed');const after=dataSnapshot(),before=entry.phase==='started'?after:dataStarts.get(entry.id);if(!before)throw new Error('Data audit start missing');options.auth.recordDataOperation(scope.token,{...entry,before,after});if(entry.phase==='started')dataStarts.set(entry.id,before);else dataStarts.delete(entry.id);},
       activeRuntimeRoot:()=>options.runtimeRoot,withExclusiveAccess,may:can,
@@ -240,11 +286,15 @@ export function createCommunityWorkspace(options:WorkspaceOptions){
       legacySources:()=>options.legacySources??[],
       invalidateCheckpoint:()=>{rebuild();},
       safeActivate:async(change,rollback)=>{
-        requireCurrent('data:restore');closeDb();
+        requireCurrent('data:restore');
+        // Retire every older request before touching either data generation.
+        // Only this exclusive restore owner can finish its operational audit.
+        const owner=context.getStore()!;generation++;owner.generation=generation;
+        closeDb();
         try{
           change();options.afterRestoreCutover?.();getDb();recoverStatementImport();const state=loadState();if(!state)throw new Error('Restored accounting state is missing');initializeCanonicalState(state);new PaymentRepository(getDb()).invalidateActionableOnRestore();options.activate(state);
         }catch(error){
-          closeDb();rollback();getDb();recoverStatementImport();const previous=loadState();if(!previous)throw new Error('Prior accounting state could not be reopened');initializeCanonicalState(previous);options.activate(previous);throw error;
+          closeDb();rollback();getDb();recoverStatementImport();const previous=loadState();if(!previous)throw new Error('Prior accounting state could not be reopened');initializeCanonicalState(previous);options.activate(previous);rebuild();throw error;
         }
       },
     }));
@@ -260,7 +310,7 @@ export function createCommunityWorkspace(options:WorkspaceOptions){
     if(!principal||!token||!policy){response.status(403).json({code:'PERMISSION_REQUIRED',error:'A reviewed authenticated workspace operation is required'});return;}
     const persistence=request.path.startsWith('/community/persistence/');
     if(!persistence){if(active>=16){response.status(503).json({code:'WORKSPACE_BUSY'});return;}active++;let ended=false;const finish=()=>{if(!ended){ended=true;active--;}};response.once('finish',finish);response.once('close',finish);}
-    context.run({principal,token,permission:policy.permission,csrf:request.get('X-CSRF-Token')},next);
+    context.run({principal,token,permission:policy.permission,csrf:request.get('X-CSRF-Token'),generation},next);
   });
   router.use((request,response,next)=>currentRouter(request,response,next));
   return{router,commit,withExclusiveAccess,rebuild,requireCurrent,close:async()=>{await portalSessions.close();await options.invoiceBot?.close?.();}};

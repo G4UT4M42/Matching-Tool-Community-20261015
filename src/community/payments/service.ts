@@ -29,7 +29,7 @@ export class CommunityPaymentService<State> {
     this.require(p,'finance:read');
     const state=this.d.accounting.loadState();
     return this.d.accounting.invoiceEvidence(state,p.workspace_id).map(e=>{
-      const c=candidate(e); if(this.repo.hasDocument(p.workspace_id,e.documentId)) { c.issues.push('CANDIDATE_ALREADY_CREATED'); c.eligible=false; } return c;
+      const c=candidate(e); if([p.workspace_id,...(e.paymentWorkspaceIds??[]),...(e.originalWorkspaceId?[e.originalWorkspaceId]:[])].some(workspace=>this.repo.hasDocument(workspace,e.documentId))) { c.issues.push('CANDIDATE_ALREADY_CREATED'); c.eligible=false; } return c;
     });
   }
   createDraft(p:Principal,documentIds:string[],debtorIban:string,debtorName:string):PaymentBatch {
@@ -46,6 +46,7 @@ export class CommunityPaymentService<State> {
     for(const item of b.items) {
       const current=evidence.find(e=>e.documentId===item.documentId);
       if(!current) return fail('SOURCE_EVIDENCE_CHANGED');
+      if([...(current.paymentWorkspaceIds??[]),...(current.originalWorkspaceId?[current.originalWorkspaceId]:[])].some(workspace=>workspace!==p.workspace_id&&this.repo.hasDocument(workspace,item.documentId)))return fail('SOURCE_EVIDENCE_CHANGED');
       const c=candidate(current);
       if(!c.eligible || c.outstandingMinor!==item.amountMinor || current.invoiceId!==item.invoiceId || current.sourceHash!==item.sourceHash || current.creditorName!==item.creditorName || current.creditorIban?.replace(/\s/g,'').toUpperCase()!==item.creditorIban || current.reference!==item.reference || current.dueDate!==item.dueDate || JSON.stringify([...current.matchIds].sort())!==JSON.stringify([...item.matchIds].sort())) return fail('SOURCE_EVIDENCE_CHANGED');
     }

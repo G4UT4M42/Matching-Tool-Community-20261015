@@ -2,6 +2,7 @@ import type { MatchingState } from '../../core/types.js';
 import { documentSettlementConvention } from '../accounting/document-settlement.js';
 import { accountingOf, remainingBalances } from '../accounting/ledger.js';
 import type { InvoiceEvidence, PaymentBatch } from './types.js';
+import {workspaceRecoveryDocumentIds,workspaceRecoveryPaymentWorkspaceIndex} from '../persistence/workspace-recovery.js';
 
 /**
  * Only reviewed, workspace-owned positive supplier invoices are candidates.
@@ -10,8 +11,10 @@ import type { InvoiceEvidence, PaymentBatch } from './types.js';
  */
 export function currentPaymentInvoices(state:MatchingState,workspaceId:string):InvoiceEvidence[]{
   const balances=remainingBalances(state), accounting=accountingOf(state);
+  const adopted=workspaceRecoveryDocumentIds(state,{workspace_id:workspaceId});
+  const paymentWorkspaces=workspaceRecoveryPaymentWorkspaceIndex(state);
   const accepted=[...state.match_groups.values()].filter(group=>['accepted','confirmed','manual'].includes(group.status));
-  return [...state.documents.values()].filter(doc=>doc.meta?.workspace_id===workspaceId)
+  return [...state.documents.values()].filter(doc=>doc.meta?.workspace_id===workspaceId||adopted.has(doc.document_id))
     .filter(doc=>documentSettlementConvention(doc)==='payable-face-v1')
     .filter(doc=>{
       if(doc.meta.document_type!=='credit_note')return true;
@@ -28,6 +31,8 @@ export function currentPaymentInvoices(state:MatchingState,workspaceId:string):I
       const m=doc.meta, string=(key:string):string|null=>typeof m[key]==='string'&&m[key]?m[key] as string:null;
       return {
         documentId:doc.document_id,
+        ...(doc.meta.workspace_id!==workspaceId?{originalWorkspaceId:doc.meta.workspace_id as string}:{}),
+        ...(paymentWorkspaces.has(doc.document_id)?{paymentWorkspaceIds:paymentWorkspaces.get(doc.document_id)!}:{}),
         invoiceId:string('invoice_number')??doc.source_document_ref,
         sourceHash:doc.file_hash??'',
         confirmed:m.document_review_status==='confirmed',
@@ -52,7 +57,8 @@ export function provedPaymentReconciliation(state:MatchingState,workspaceId:stri
   if(!match||!['accepted','confirmed','manual'].includes(match.status)||match.document_ids.length===0)return false;
   const all=new Set(match.document_ids);
   if(!batch.items.every(item=>all.has(item.documentId)))return false;
-  if(batch.items.some(item=>state.documents.get(item.documentId)?.meta.workspace_id!==workspaceId))return false;
+  const adopted=workspaceRecoveryDocumentIds(state,{workspace_id:workspaceId});
+  if(batch.items.some(item=>state.documents.get(item.documentId)?.meta.workspace_id!==workspaceId&&!adopted.has(item.documentId)))return false;
   const evidence=currentPaymentInvoices(state,workspaceId);
   return batch.items.every(item=>evidence.some(e=>e.documentId===item.documentId&&e.allocatedMinor===e.totalMinor));
 }

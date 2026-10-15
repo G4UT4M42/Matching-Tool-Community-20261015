@@ -2,6 +2,10 @@ export type PaymentStatus = 'draft'|'validated'|'reviewed'|'approved'|'submissio
 export type PaymentPermission = 'finance:read'|'payments:prepare'|'payments:approve'|'payments:submit'|'integrations:read'|'integrations:configure'|'integrations:sync';
 export interface Principal { subject: string; workspace_id: string; role: string; session_id: string; authenticated_at: string; reauthenticated_at?: string; permissions: string[] }
 export interface InvoiceEvidence {
+  /** Canonical original workspace for explicitly adopted evidence only. */
+  originalWorkspaceId?: string;
+  /** Exact original/prior adopted namespaces, for read-only history and dedup. */
+  paymentWorkspaceIds?: string[];
   documentId: string; invoiceId: string; sourceHash: string; confirmed: boolean;
   archived: boolean; rejected: boolean; totalMinor: number; allocatedMinor: number;
   currency: string; creditorName: string|null; creditorIban: string|null;

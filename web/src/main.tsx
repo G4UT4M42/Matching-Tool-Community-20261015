@@ -113,7 +113,7 @@ function App() {
             <Route path="/accounts" element={<CommunityAccounts />} />
             <Route path="/documents" element={!account.demo ? <CommunityDocuments permissions={permissions} /> : <p>{access.previewHelp}</p>} />
             <Route path="/accounting" element={!account.demo ? <CommunityAccounting permissions={permissions} locale={language === 'de' ? 'de' : 'en'} /> : <p>{access.previewHelp}</p>} />
-            <Route path="/data" element={!account.demo && account.principal?.permissions.includes('data:backup') ? <CommunityDataManagement /> : <p role="alert">{access.permission}</p>} />
+            <Route path="/data" element={!account.demo && account.principal?.permissions.includes('data:backup') ? <CommunityDataManagement permissions={permissions} owner={account.principal?.role==='owner'} /> : <p role="alert">{access.permission}</p>} />
             <Route path="/integrations" element={!account.demo && account.principal?.permissions.includes('integrations:read') ? <CommunityIntegrations permissions={permissions} /> : <p role="alert">{access.permission}</p>} />
             <Route path="/banking" element={!account.demo && account.principal?.permissions.includes('integrations:read') ? <CommunityBanking permissions={permissions} /> : <p role="alert">{access.permission}</p>} />
             <Route path="/payments" element={!account.demo && mayPayments ? <CommunityPayments permissions={permissions} /> : <p role="alert">{access.permission}</p>} />
