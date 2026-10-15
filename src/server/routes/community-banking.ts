@@ -11,6 +11,7 @@ export function createCommunityBankingRouter(service:CommunityBankingService,csr
   r.get('/capabilities',(_req,res)=>{try{service.status(p(res)!);res.json(service.capabilities())}catch(e){respondError(res,e)}});
   r.get('/accounts',async(_req,res)=>{try{res.json(await service.accounts(p(res)!))}catch(e){respondError(res,e)}});
   r.post('/configure',mutation,async(req,res)=>{try{await service.configure(p(res)!,req.body?.accountRef,req.body?.credential);res.status(204).end()}catch(e){respondError(res,e)}});
+  r.post('/disconnect',mutation,async(_req,res)=>{try{await service.disconnect(p(res)!);res.status(204).end()}catch(e){respondError(res,e)}});
   r.post('/sync',mutation,async(req,res)=>{try{res.json(await service.sync(p(res)!,req.body?.from,req.body?.to))}catch(e){respondError(res,e)}});
   return r;
 }

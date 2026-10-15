@@ -28,7 +28,7 @@ describe('fixed endpoint Enable Banking AIS adapter with synthetic protected cre
     const calls:string[]=[];
     const http=async(input:unknown,init?:RequestInit)=>{
       const url=String(input);calls.push(`${init?.method} ${url}`);expect(url.startsWith('https://api.enablebanking.com/')).toBe(true);expect(init?.method).toBe('GET');
-      const data=url.includes('/sessions/')?{status:'AUTHORIZED',accounts:[account],access:{valid_until:new Date(Date.now()+60000).toISOString()}}:url.includes('/details')?{uid:account,currency:'EUR',name:'Fictional account'}:{transactions:[{transaction_id:'fictional-tx',booking_date:'2026-10-14',transaction_amount:{currency:'EUR',amount:'-12.34'},remittance_information:['Fictional']} ]};
+      const data=url.includes('/sessions/')?{status:'AUTHORIZED',accounts:[account],accounts_data:[{uid:account,identification_hash:'synthetic-stable-account'}],access:{valid_until:new Date(Date.now()+60000).toISOString()}}:url.includes('/details')?{uid:account,currency:'EUR',name:'Fictional account'}:{transactions:[{transaction_id:'fictional-tx',status:'BOOK',credit_debit_indicator:'DBIT',booking_date:'2026-10-14',transaction_amount:{currency:'EUR',amount:'12.34'},remittance_information:['Fictional']} ]};
       return new Response(JSON.stringify(data),{status:200,headers:{'content-type':'application/json'}});
     };
     const adapter=new EnableBankingAisAdapter(http as typeof fetch),secret={applicationId:app,sessionId:session,privateKeyPem};

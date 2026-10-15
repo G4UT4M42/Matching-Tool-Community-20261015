@@ -2,13 +2,19 @@ import type Database from 'better-sqlite3';
 import type { CredentialResolver, PaymentPermission, Principal } from '../payments/types.js';
 
 export interface BankAccountRow { accountRef:string; currency:string; name:string; iban?:string }
-export interface BankTransactionRow { providerId:string; accountRef:string; bookedAt:string; amountMinor:number; currency:string; description:string }
+export interface BankTransactionRow { providerId:string; accountRef:string; accountIdentity?:string; bookedAt:string; amountMinor:number; currency:string; description:string }
 export interface ReadOnlyBankAdapter {
   readonly provider:'enablebanking-ais'; readonly environment:'live'|'mock'; readonly capabilities:readonly ['accounts','transactions'];
   accounts(credential:unknown,accountRef:string):Promise<BankAccountRow[]>;
   transactions(credential:unknown,accountRef:string,from:string,to:string):Promise<BankTransactionRow[]>;
 }
-export interface BankCallbacks { storeCredential(input:{principal:Principal;provider:'enablebanking-ais';environment:'live'|'mock';credential:unknown}):Promise<string>; importTransactions(input:{principal:Principal;transactions:BankTransactionRow[]}):Promise<{imported:number;skipped:number}> }
+export interface BankCallbacks {
+  storeCredential(input:{principal:Principal;provider:'enablebanking-ais';environment:'live'|'mock';credential:unknown}):Promise<string>;
+  removeCredential?(principal:Principal,vaultRef?:string):Promise<void>;
+  /** Synchronously commits the SQL mutation and its audit event together. */
+  commitConnection?(input:{principal:Principal;action:'configure'|'disconnect';accountRef?:string;mutate:()=>void}):void;
+  importTransactions(input:{principal:Principal;transactions:BankTransactionRow[]}):Promise<{imported:number;skipped:number}>;
+}
 const deny=(code:string):never=>{throw new Error(code)};
 export class CommunityBankingService {
   constructor(readonly db:Database.Database,readonly authorize:(p:Principal,permission:PaymentPermission)=>boolean,readonly vault:CredentialResolver,readonly adapter:ReadOnlyBankAdapter,readonly callbacks:BankCallbacks) {}
@@ -19,17 +25,48 @@ export class CommunityBankingService {
     this.require(p,'integrations:configure');
     if(typeof accountRef!=='string' || !/^[A-Za-z0-9_-]{1,100}$/.test(accountRef) || credential===null || credential===undefined) return deny('INVALID_BANK_CONFIGURATION');
     const vaultRef=await this.callbacks.storeCredential({principal:p,provider:this.adapter.provider,environment:this.adapter.environment,credential});
-    if(!vaultRef || !/^[A-Za-z0-9:_-]{1,200}$/.test(vaultRef)) return deny('VAULT_UNAVAILABLE');
-    this.db.prepare('INSERT INTO community_bank_connections(workspace_id,subject,provider,environment,account_ref,vault_ref,configured_at) VALUES (?,?,?,?,?,?,?) ON CONFLICT(workspace_id,subject,provider,environment) DO UPDATE SET account_ref=excluded.account_ref,vault_ref=excluded.vault_ref,configured_at=excluded.configured_at')
-      .run(p.workspace_id,p.subject,this.adapter.provider,this.adapter.environment,accountRef,vaultRef,new Date().toISOString());
+    let previous:string|undefined;
+    try{
+      this.require(p,'integrations:configure');
+      if(!vaultRef || !/^[A-Za-z0-9:_-]{1,200}$/.test(vaultRef)) return deny('VAULT_UNAVAILABLE');
+      const mutate=()=>{
+        this.require(p,'integrations:configure');previous=this.currentConnection(p)?.vault_ref;
+        this.db.prepare('INSERT INTO community_bank_connections(workspace_id,subject,provider,environment,account_ref,vault_ref,configured_at) VALUES (?,?,?,?,?,?,?) ON CONFLICT(workspace_id,subject,provider,environment) DO UPDATE SET account_ref=excluded.account_ref,vault_ref=excluded.vault_ref,configured_at=excluded.configured_at')
+          .run(p.workspace_id,p.subject,this.adapter.provider,this.adapter.environment,accountRef,vaultRef,new Date().toISOString());
+      };
+      if(this.callbacks.commitConnection)this.callbacks.commitConnection({principal:p,action:'configure',accountRef,mutate});else this.db.transaction(mutate).immediate();
+    }catch(error){
+      // A failed recovery may leave an already committed pointer: never delete it.
+      if(this.currentConnection(p)?.vault_ref!==vaultRef)await this.cleanupCredential(p,vaultRef);
+      throw error;
+    }
+    if(previous&&previous!==vaultRef)await this.cleanupCredential(p,previous);
+  }
+  private currentConnection(p:Principal):{account_ref:string;vault_ref:string}|undefined{
+    const row=this.db.prepare('SELECT account_ref,vault_ref FROM community_bank_connections WHERE workspace_id=? AND subject=? AND provider=? AND environment=?').get(p.workspace_id,p.subject,this.adapter.provider,this.adapter.environment) as {account_ref:string;vault_ref:string}|undefined;
+    return row;
   }
   private connection(p:Principal):{account_ref:string;vault_ref:string}{
-    const row=this.db.prepare('SELECT account_ref,vault_ref FROM community_bank_connections WHERE workspace_id=? AND subject=? AND provider=? AND environment=?').get(p.workspace_id,p.subject,this.adapter.provider,this.adapter.environment) as {account_ref:string;vault_ref:string}|undefined;
-    if(!row)return deny('BANK_CONNECTION_REQUIRED');return row;
+    const row=this.currentConnection(p);if(!row)return deny('BANK_CONNECTION_REQUIRED');return row;
+  }
+  private async cleanupCredential(p:Principal,vaultRef:string):Promise<void>{
+    // The durable connection decides success. Cleanup cannot undo or disguise it.
+    try{await this.callbacks.removeCredential?.(p,vaultRef);}catch{/* Unreferenced, protected material remains inaccessible through the service. */}
+  }
+  async disconnect(p:Principal):Promise<void>{
+    this.require(p,'integrations:configure');
+    let previous:string|undefined;
+    const mutate=()=>{
+      this.require(p,'integrations:configure');previous=this.currentConnection(p)?.vault_ref;
+      this.db.prepare('DELETE FROM community_bank_connections WHERE workspace_id=? AND subject=? AND provider=? AND environment=?').run(p.workspace_id,p.subject,this.adapter.provider,this.adapter.environment);
+    };
+    if(this.callbacks.commitConnection)this.callbacks.commitConnection({principal:p,action:'disconnect',mutate});else this.db.transaction(mutate).immediate();
+    if(previous)await this.cleanupCredential(p,previous);
   }
   async accounts(p:Principal):Promise<BankAccountRow[]> {this.require(p,'integrations:read');const c=this.connection(p);const secret=await this.vault.resolve({subject:p.subject,workspaceId:p.workspace_id,provider:this.adapter.provider,environment:this.adapter.environment,vaultRef:c.vault_ref});try{return await this.adapter.accounts(secret,c.account_ref)}catch{return deny('BANK_READ_UNAVAILABLE')}}
   async sync(p:Principal,from:string,to:string):Promise<{imported:number;skipped:number}> {
-    this.require(p,'integrations:sync');if(!/^\d{4}-\d{2}-\d{2}$/.test(from)||!/^\d{4}-\d{2}-\d{2}$/.test(to)||from>to)return deny('INVALID_DATE_RANGE');
+    const date=(value:unknown):value is string=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value))&&new Date(value).toISOString().slice(0,10)===value;
+    this.require(p,'integrations:sync');if(!date(from)||!date(to)||from>to||Date.parse(to)-Date.parse(from)>366*86400000)return deny('INVALID_DATE_RANGE');
     const c=this.connection(p),secret=await this.vault.resolve({subject:p.subject,workspaceId:p.workspace_id,provider:this.adapter.provider,environment:this.adapter.environment,vaultRef:c.vault_ref});
     let transactions:BankTransactionRow[];try{transactions=await this.adapter.transactions(secret,c.account_ref,from,to)}catch{return deny('BANK_READ_UNAVAILABLE')}
     if(transactions.some(t=>!Number.isSafeInteger(t.amountMinor)||!t.providerId||t.accountRef!==c.account_ref))return deny('BANK_DATA_INVALID');
