@@ -173,3 +173,38 @@ was used. Complete installation/upgrade/uninstall test commands now record
 actual elapsed time, deadline, exit and error code in immutable external JSON.
 Large verified installations have a bounded300-second command budget and the
 complete maintenance test has a900-second budget; all data/hash checks remain.
+
+## Reviewed full-source WASM replacement and exact runtime SBOM
+
+The second reviewed descriptor is sharp0.35.5 WASM: manifest
+`222f7ad3b205aefdcf004434fd49525054ba822e39266756d8e2633568bb204c`,
+binary `740521302afc687d45443ce86a9182a6a4ecc8f0dd0cffab70db117764e5efc3`,
+qualification `9507732cd8c9763ea02cc0a35d536a5f285be0d2512dfec91b4434714b768794`.
+It replaces only the versioned WASM file; installed JS glue is byte-identical
+to the measured build.441support files and the binary total360099264bytes.
+Source builds and actual codec tests cover load,PNG,JPEG,WebP,SVG,TIFF,GIF,AVIF
+and ICC. UltraHDR gain-map runtime coverage is explicitly unqualified.
+
+Independent review directly checked28source-built library/copy pairs,25selected
+source libraries and10compiler-runtime archives,10157actual runtime-source
+files, all442payload hashes,415nonarchive files,28archives/51905member headers
+and9072generated payloads. No private-denylist matches remained. It grants
+engineering/privacy admission for these exact bytes, not legal clearance.
+
+Use repeated `--replacement` for canvas and WASM; the integrated synthetic
+harness accepts `MATCHING_ACCEPTANCE_WASM_REPLACEMENT` alongside the existing
+canvas input. Approved support entries may be zero bytes (the WASM bundle
+contains an empty successful stderr log); binaries remain nonempty and proof
+JSON remains bounded, hash-bound and validated. A self-asserted empty evidence
+bundle still cannot pass the fixed-manifest gate.
+
+`compliance/runtime-overlay.cyclonedx.json` binds the actual bundled Node
+executable, reviewed new binaries and source/inventory file hashes. It
+supplements the unchanged npm provenance graph in `sbom.cyclonedx.json` and
+component-specific source inventories/nested SBOMs. The original registry or
+upstream binary hash is never presented as the hash of the replacement. The
+verifier compares overlay runtime hashes to the actual package inventory and
+retains false legal/release claims. An actual maintenance regression modifies
+the runtime SBOM and consistently rehashes its outer entry; verification still
+rejects the incorrect runtime hash. Original bytes are restored before real
+install/upgrade/restart/uninstall checks.

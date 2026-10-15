@@ -51,9 +51,11 @@ function request(server, action, payload) { return fetch(server.origin + '/api/a
 
 test('runtime closure includes runtime tsx and required peers, excludes unused development roots', () => {
   const entry = (name, extra = {}) => ({ ref: name, workspace: 'root', path: 'node_modules/' + name, installed: true, ...extra });
-  const report = { installations: [entry('server'), entry('tsx'), entry('peer'), entry('unused'), entry('other-platform', { installed: false, optional: true })], unresolvedDependencyEdges: [] };
-  const bom = { dependencies: [{ ref: 'server', dependsOn: ['peer', 'other-platform'] }, { ref: 'tsx', dependsOn: [] }] };
+  const report = { installations: [entry('server'), entry('tsx'), entry('peer'), entry('unused'), entry('reviewed-wasm'), entry('wasm-peer'), entry('other-platform', { installed: false, optional: true })], unresolvedDependencyEdges: [] };
+  const bom = { dependencies: [{ ref: 'server', dependsOn: ['peer', 'other-platform'] }, { ref: 'tsx', dependsOn: [] }, {ref:'reviewed-wasm',dependsOn:['wasm-peer']}] };
   assert.deepEqual(runtimeClosure(report, bom, { dependencies: { server: '1' } }).map(e => e.ref), ['peer', 'server', 'tsx']);
+  assert.deepEqual(runtimeClosure(report,bom,{dependencies:{server:'1'}},['reviewed-wasm']).map(e=>e.ref),['peer','reviewed-wasm','server','tsx','wasm-peer']);
+  assert.throws(()=>runtimeClosure(report,bom,{dependencies:{server:'1'}},['other-platform']),/replacement seed is not installed/);
   report.installations.find(e => e.ref === 'peer').installed = false;
   assert.throws(() => runtimeClosure(report, bom, { dependencies: { server: '1' } }), /not installed/);
 });
@@ -88,6 +90,16 @@ test('external development package installs, runs with bundled runtime, upgrades
     assert.equal(existsSync(join(base, 'refused-release')), false);
     results.package = buildPackage({ out: pack, compliance });
     assert.equal(results.package.distributable, false);
+    const overlayPath=join(pack,'compliance/runtime-overlay.cyclonedx.json'),packageManifestPath=join(pack,'community-package.json');
+    const overlayBytes=readFileSync(overlayPath),packageManifestBytes=readFileSync(packageManifestPath),overlay=JSON.parse(overlayBytes);
+    const nodeComponent=overlay.components.find(component=>component['bom-ref']==='runtime:node');
+    assert.equal(nodeComponent.hashes[0].content,sha256(readFileSync(join(pack,'runtime/node.exe'))));
+    // A self-consistent outer file inventory cannot misdescribe the actual shipped runtime.
+    nodeComponent.hashes[0].content='0'.repeat(64);const changedOverlay=Buffer.from(JSON.stringify(overlay));writeFileSync(overlayPath,changedOverlay);
+    const changedManifest=JSON.parse(packageManifestBytes),overlayEntry=changedManifest.files.find(file=>file.path==='compliance/runtime-overlay.cyclonedx.json');overlayEntry.bytes=changedOverlay.length;overlayEntry.sha256=sha256(changedOverlay);writeFileSync(packageManifestPath,JSON.stringify(changedManifest));
+    assert.throws(()=>verifyPackage(pack),/Runtime SBOM overlay differs from actual binary/);
+    writeFileSync(overlayPath,overlayBytes);writeFileSync(packageManifestPath,packageManifestBytes);verifyPackage(pack);
+    results.runtimeOverlayBound=results.runtimeOverlayTamperRejected=true;
     assert.equal(existsSync(join(pack, 'node_modules/vitest')), false);
     assert.equal(existsSync(join(pack, 'node_modules/typescript')), false);
     assert.equal(existsSync(join(pack, 'node_modules/canvas')), false);

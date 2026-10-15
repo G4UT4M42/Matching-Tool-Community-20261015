@@ -4,7 +4,7 @@ import {execFileSync} from 'node:child_process';
 import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { resolve, dirname, join, relative, isAbsolute, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { packageFiles, safeParts, sha256, verifyPackage, reviewedReplacement, checkReplacementIdentity, checkReplacementProof } from './verify-community-package.mjs';
+import { packageFiles, safeParts, sha256, verifyPackage, reviewedReplacement, checkReplacementIdentity, checkReplacementProof, runtimeOverlay } from './verify-community-package.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const inside = (base, file) => { const path = relative(base, file); return path === '' || (!isAbsolute(path) && path !== '..' && !path.startsWith('..' + sep)); };
@@ -23,11 +23,11 @@ function copyTree(from, to, omitNestedDependencies = false) {
     safeParts(item.name); copyTree(join(from, item.name), join(to, item.name), omitNestedDependencies);
   }
 }
-export function runtimeClosure(report, bom, manifest) {
+export function runtimeClosure(report, bom, manifest, additionalSeeds = []) {
   const byRef = new Map(report.installations.map(e => [e.ref, e]));
   const dependencies = new Map(bom.dependencies.map(e => [e.ref, e.dependsOn]));
-  const roots = [...Object.keys(manifest.dependencies ?? {}), 'tsx'];
-  const queue = roots.map(name => report.installations.find(e => e.workspace === 'root' && e.path === 'node_modules/' + name)?.ref);
+  const roots = [...Object.keys(manifest.dependencies ?? {}), 'tsx', ...additionalSeeds];
+  const queue = roots.map(name => { const entry=report.installations.find(e => e.workspace === 'root' && e.path === 'node_modules/' + name);if(additionalSeeds.includes(name)&&!entry?.installed)throw new Error('Reviewed replacement seed is not installed in compliance evidence');return entry?.ref; });
   if (queue.some(e => !e)) throw new Error('Required runtime seed missing from evidence');
   const selected = new Set();
   while (queue.length) {
@@ -67,10 +67,10 @@ export function validateNativeReplacement(folder){
  checkReplacementIdentity(manifest,descriptor);const binaryPath=descriptor.packagePath;
  const installed=readJson(join(root,'node_modules',...manifest.component.split('/'),'package.json'));
  if(installed.name!==manifest.component||installed.version!==manifest.version||manifest.replacedUpstreamSha256!==sha256(readFileSync(join(root,binaryPath))))throw new Error('Replacement is not bound to the installed upstream binary');
- const checked=(entry,maxBytes)=>{safeParts(entry.path);const input=join(folder,...safeParts(entry.path));noLinks(input);const stat=lstatSync(input);if(!stat.isFile()||!Number.isSafeInteger(entry.bytes)||entry.bytes!==stat.size||entry.bytes<1||entry.bytes>maxBytes||!/^[a-f0-9]{64}$/.test(entry.sha256)||sha256(readFileSync(input))!==entry.sha256)throw new Error('Replacement file checksum or bounds mismatch');return input;};
+ const checked=(entry,maxBytes,allowEmpty=false)=>{safeParts(entry.path);const input=join(folder,...safeParts(entry.path));noLinks(input);const stat=lstatSync(input);if(!stat.isFile()||!Number.isSafeInteger(entry.bytes)||entry.bytes!==stat.size||entry.bytes<(allowEmpty?0:1)||entry.bytes>maxBytes||!/^[a-f0-9]{64}$/.test(entry.sha256)||sha256(readFileSync(input))!==entry.sha256)throw new Error('Replacement file checksum or bounds mismatch');return input;};
  const binary=checked(manifest.binary,128*1024*1024);if(readFileSync(binary).subarray(0,descriptor.magic.length/2).toString('hex')!==descriptor.magic||manifest.binary.sha256===manifest.replacedUpstreamSha256)throw new Error('Replacement must be a distinct qualified binary');
  const sourceNames=new Set([manifest.binary.path.toLowerCase()]),destinations=new Set();let total=manifest.binary.bytes;
- for(const file of manifest.files){safeParts(file.packagePath);if(!file.packagePath.startsWith(descriptor.evidencePrefix)||sourceNames.has(file.path.toLowerCase())||destinations.has(file.packagePath.toLowerCase()))throw new Error('Conflicting or unreviewed replacement source destination');checked(file,512*1024*1024);sourceNames.add(file.path.toLowerCase());destinations.add(file.packagePath.toLowerCase());total+=file.bytes;if(total>2*1024*1024*1024)throw new Error('Replacement evidence exceeds package bounds');}
+ for(const file of manifest.files){safeParts(file.packagePath);if(!file.packagePath.startsWith(descriptor.evidencePrefix)||sourceNames.has(file.path.toLowerCase())||destinations.has(file.packagePath.toLowerCase()))throw new Error('Conflicting or unreviewed replacement source destination');checked(file,512*1024*1024,true);sourceNames.add(file.path.toLowerCase());destinations.add(file.packagePath.toLowerCase());total+=file.bytes;if(total>2*1024*1024*1024)throw new Error('Replacement evidence exceeds package bounds');}
  safeParts(manifest.qualification.path);const proof=manifest.files.find(file=>file.path===manifest.qualification.path);if(!proof||proof.sha256!==manifest.qualification.sha256)throw new Error('Replacement qualification is not included and hash-bound');
  const qualification=readJson(join(folder,...safeParts(proof.path)),proof.sha256);
  checkReplacementProof(qualification,descriptor);
@@ -89,7 +89,10 @@ export function buildPackage({ out, compliance, supplement, replacement, mode = 
     safeParts(path); if (sha256(readFileSync(join(root, ...path.split('/')))) !== hash) throw new Error('Compliance evidence is stale for current lockfiles');
   }
   const manifest = readJson(join(root, 'package.json'));
-  const selected = runtimeClosure(report, bom, manifest);
+  const replacementFolders=replacement?(Array.isArray(replacement)?replacement:[replacement]):[];
+  if(replacementFolders.length>2)throw new Error('At most two independently reviewed replacements are supported');
+  const nativeReplacements=replacementFolders.map(folder=>validateNativeReplacement(absolute(folder)));
+  const selected = runtimeClosure(report, bom, manifest, nativeReplacements.map(extra=>extra.manifest.component));
   if (mode !== 'development') throw new Error('Distributable packaging is blocked: ownership, native source/relink and asset provenance obligations remain unresolved. This builder creates development candidates only.');
   for (const line of readFileSync(join(compliance, 'SHA256SUMS'), 'utf8').trim().split(/\r?\n/)) {
     const match = /^([a-f0-9]{64})  (.+)$/.exec(line); if (!match) throw new Error('Invalid legal-bundle checksum manifest');
@@ -109,9 +112,7 @@ export function buildPackage({ out, compliance, supplement, replacement, mode = 
   if (!existsSync(runtimeLicense)) throw new Error('Qualified runtime must retain its upstream LICENSE');
   const extras = (supplement?Array.isArray(supplement)?supplement:[supplement]:[]).map(folder=>validateNativeSupplement(absolute(folder)));
   const extraDestinations=new Set();for(const extra of extras)for(const entry of extra.files){const target=entry.packagePath.toLowerCase();if(extraDestinations.has(target))throw new Error('Conflicting source supplement destinations');extraDestinations.add(target);}
-  const replacementFolders=replacement?(Array.isArray(replacement)?replacement:[replacement]):[];
-  if(replacementFolders.length>2)throw new Error('At most two independently reviewed replacements are supported');
-  const nativeReplacements=replacementFolders.map(folder=>validateNativeReplacement(absolute(folder))),replacementTargets=new Set();
+  const replacementTargets=new Set();
   for(const extra of nativeReplacements){
     if(inside(extra.root,out)||inside(out,extra.root))throw new Error('Replacement evidence and output must be independent');
     if(replacementTargets.has(extra.manifest.packagePath))throw new Error('Duplicate replacement target');replacementTargets.add(extra.manifest.packagePath);
@@ -143,6 +144,7 @@ export function buildPackage({ out, compliance, supplement, replacement, mode = 
   const gates = selected.flatMap(entry => entry.gates.map(gate => ({ ref: entry.ref, gate })));
   const sourceRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8',windowsHide:true}).trim(),sourceDirty=!!execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8',windowsHide:true}).trim();
   if(!/^[a-f0-9]{40}$/.test(sourceRevision))throw new Error('Package source revision unavailable');
+  writeFileSync(join(out,'compliance/runtime-overlay.cyclonedx.json'),JSON.stringify(runtimeOverlay({sourceRevision,applicationVersion:manifest.version,nodeVersion:process.versions.node,nodeSha256:sha256(readFileSync(node)),replacements:nativeReplacements}),null,2)+'\n');
   const packageManifest = { sourceRevision,sourceDirty,format: 'matching-community-package-v1', kind: 'development-candidate', distributable: false, releaseAccepted: false,
     runtime: { node: process.versions.node, abi: process.versions.modules, platform: process.platform, arch: process.arch },
     nativeReplacements:nativeReplacements.map(extra=>({component:extra.manifest.component,manifestPath:extra.descriptor.evidencePrefix+extra.manifestSha256+'/manifest.json',manifestSha256:extra.manifestSha256,binarySha256:extra.manifest.binary.sha256,replacedUpstreamSha256:extra.manifest.replacedUpstreamSha256,sourceBuildQualified:true,legalClearance:false,historicalBinaryReproduced:false,releaseAccepted:false})),

@@ -71,3 +71,11 @@ Check the final archive and installed result, not only the source checkout.
 See [the independent review](INDEPENDENT_REVIEW.md) for known obligations and
 remaining gates. Automated counts, absence of vulnerability advisories and
 successful CI do not provide copyright ownership or redistribution clearance.
+
+
+The development package additionally carries an exact runtime CycloneDX
+overlay. It identifies bundled Node and each separately reviewed source-built
+replacement by actual binary hash, with hash-bound source/notice/build
+inventories. This complements the npm source inventory above; it does not
+replace original attribution or claim that registry-tarball hashes describe
+modified binaries. See PACKAGING.md for exact descriptors and measured scope.
