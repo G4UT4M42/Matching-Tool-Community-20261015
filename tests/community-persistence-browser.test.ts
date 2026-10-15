@@ -30,7 +30,7 @@ async function harness() {
       import React from 'react'; import {createRoot} from 'react-dom/client';
       import {LanguageProvider} from '/src/i18n/locale.tsx';
       import {CommunityDataManagement} from '/src/pages/CommunityDataManagement.tsx';
-      createRoot(document.getElementById('root')).render(React.createElement(LanguageProvider,null,React.createElement(CommunityDataManagement)));
+      createRoot(document.getElementById('root')).render(React.createElement(LanguageProvider,null,React.createElement(CommunityDataManagement,{permissions:['data:restore'],owner:true})));
     </script></body></html>`;
     response.type('html').send(await vite!.transformIndexHtml(request.url, html));
   });
