@@ -1,5 +1,6 @@
 /** Standalone synthetic browser qualification. Run: npx tsx tests/community-documents-browser.mjs */
 import express from 'express';
+import assert from 'node:assert/strict';
 import sharp from 'sharp';
 import puppeteer from 'puppeteer-core';
 import { createServer as createViteServer } from 'vite';
@@ -22,7 +23,7 @@ const svg = `<svg width="1400" height="700" xmlns="http://www.w3.org/2000/svg"><
 await writeFile(fixture, await sharp(Buffer.from(svg)).png().toBuffer());
 let state = { run_id: 'browser-synthetic', transactions: new Map(), documents: new Map(), match_groups: new Map(), exclusion_rules: [], audit_events: [], matched_transaction_ids: new Set(), matched_document_ids: new Set(), excluded_transaction_ids: new Set() };
 const storage = join(working, 'storage');
-const makeDocuments = () => new CommunityDocumentService({ root: storage, localLanguageDir: join(evidence, 'tessdata'), getState: () => state, persistAndActivate: (expected, next) => { if (expected !== state) throw Error('stale'); state = next; } });
+const makeDocuments = () => new CommunityDocumentService({ root: storage, getState: () => state, persistAndActivate: (expected, next) => { if (expected !== state) throw Error('stale'); state = next; } });
 let documents = makeDocuments();
 const portal = express();
 portal.get('/invoices', (_request, response) => response.json([{ source_id: 'PORTAL-001', filename: 'portal-001.png', href: '/invoice/PORTAL-001' }]));
@@ -44,13 +45,14 @@ await new Promise(resolve => apiServer.once('listening', resolve));
 const apiOrigin = `http://127.0.0.1:${apiServer.address().port}`;
 const webRoot = resolve(fileURLToPath(new URL('../web', import.meta.url)));
 const entry = `import React from 'react'; import { createRoot } from 'react-dom/client'; import { LanguageProvider } from '/src/i18n/locale.tsx'; import { CommunityDocuments } from '/src/pages/CommunityDocuments.tsx'; import { CommunityInvoiceBot } from '/src/pages/CommunityInvoiceBot.tsx'; function App(){ const [tab,setTab]=React.useState('documents'); return <LanguageProvider><nav><button onClick={()=>setTab('documents')}>Documents tab</button><button onClick={()=>setTab('bot')}>Bot tab</button></nav>{tab==='documents'?<CommunityDocuments/>:<CommunityInvoiceBot/>}</LanguageProvider> }; createRoot(document.getElementById('root')).render(<App/>);`;
-const vite = await createViteServer({ root: webRoot, cacheDir: join(working, 'vite-cache'), plugins: [{ name: 'synthetic-harness', configureServer(server) { server.middlewares.use('/__community.html', async (_request, response) => { response.setHeader('Content-Type', 'text/html'); response.end(await server.transformIndexHtml('/__community.html', '<html><body><div id="root"></div><script type="module" src="/__community_entry.tsx"></script></body></html>')); }); }, resolveId(id) { if (id === '/__community_entry.tsx') return id; }, load(id) { if (id === '/__community_entry.tsx') return entry; } }], server: { host: '127.0.0.1', port: 0, strictPort: false, proxy: { '/api': apiOrigin } }, logLevel: 'error' });
+const vite = await createViteServer({ root: webRoot, cacheDir: join(working, 'vite-cache'), plugins: [{ name: 'synthetic-harness', configureServer(server) { server.middlewares.use('/__community.html', async (_request, response) => { response.setHeader('Content-Type', 'text/html'); response.end(await server.transformIndexHtml('/__community.html', '<html><head><link rel="icon" href="data:,"></head><body><div id="root"></div><script type="module" src="/__community_entry.tsx"></script></body></html>')); }); }, resolveId(id) { if (id === '/__community_entry.tsx') return id; }, load(id) { if (id === '/__community_entry.tsx') return entry; } }], server: { host: '127.0.0.1', port: 0, strictPort: false, proxy: { '/api': apiOrigin } }, logLevel: 'error' });
 await vite.listen();
 const webOrigin = `http://127.0.0.1:${vite.httpServer.address().port}`;
 let browser;
 try {
   browser = await puppeteer.launch({ executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', userDataDir: profile, headless: true, args: ['--no-sandbox','--disable-gpu','--disable-extensions','--disable-background-networking'] });
   const page = await browser.newPage();
+  const errors=[];page.on('pageerror',error=>errors.push(String(error)));page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});page.on('response',response=>{if(response.status()>=400)errors.push(response.status()+' '+new URL(response.url()).pathname);});
   await page.setViewport({ width: 1280, height: 900 });
   await page.goto(`${webOrigin}/__community.html`, { waitUntil: 'networkidle0' });
   await page.waitForSelector('input[type=file]');
@@ -60,6 +62,7 @@ try {
   await page.getByText?.('synthetic-invoice.png');
   await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.textContent.includes('synthetic-invoice.png'))?.click());
   await page.waitForSelector('input[value="BROWSER-001"]');
+  assert.equal(await page.$eval('#document-field-total_amount',node=>node.value),'120.00');
   const supplierInput = await page.$('input[value="Synthetic Browser Ltd"]');
   await supplierInput.click();
   await page.keyboard.down('Control'); await page.keyboard.press('A'); await page.keyboard.up('Control');
@@ -75,8 +78,8 @@ try {
   await page.evaluate(() => [...document.querySelectorAll('nav button')].find(button => button.textContent === 'Bot tab')?.click());
   await page.waitForFunction(() => document.body.textContent.includes('Local fake invoice portal'));
   await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.textContent.includes('Connect a fresh browser session'))?.click());
-  await page.waitForFunction(() => [...document.querySelectorAll('button')].some(button => button.textContent.includes('Discover invoices')));
-  await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.textContent.includes('Discover invoices'))?.click());
+  await page.waitForFunction(() => [...document.querySelectorAll('button')].some(button => button.textContent.includes('Discover downloaded files')));
+  await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.textContent.includes('Discover downloaded files'))?.click());
   await page.waitForFunction(() => document.body.textContent.includes('portal-001.png'));
   await page.click('input[type=checkbox]');
   await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.textContent.includes('Import selected'))?.click());
@@ -87,7 +90,8 @@ try {
   await page.reload({ waitUntil: 'networkidle0' });
   await page.waitForFunction(() => document.body.textContent.includes('synthetic-invoice.png · confirmed'));
   await page.screenshot({ path: join(evidence, 'documents-reopen.png'), fullPage: true });
-  await writeFile(join(evidence, 'browser-result.json'), JSON.stringify({ status: 'passed', fixture, profile, screenshots: ['documents-upload-review.png','documents-confirmed.png','documents-preview.png','invoice-bot-local-import.png','documents-reopen.png'], financial_documents: state.documents.size }, null, 2));
+  assert.equal(state.documents.size,1);assert.equal([...state.documents.values()][0].total_amount_minor,12000);assert.equal([...state.documents.values()][0].supplier_name,'Corrected Browser Ltd');assert.deepEqual(errors,[]);
+  await writeFile(join(evidence, 'browser-result.json'), JSON.stringify({ status: 'passed', real_packaged_offline_ocr:true, errors, fixture, profile, screenshots: ['documents-upload-review.png','documents-confirmed.png','documents-preview.png','invoice-bot-local-import.png','documents-reopen.png'], financial_documents: state.documents.size }, null, 2));
   console.log('Browser scenario passed', { financial_documents: state.documents.size });
 } finally {
   if (browser) await browser.close();
