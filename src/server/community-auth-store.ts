@@ -163,6 +163,16 @@ export class CommunityAuthStore {
       previous = row.event_hash;
     }
   }
+  securityEvents(token:unknown,before?:number){
+    const session=this.requireSession(token);
+    if(!hasCommunityPermission(session.principal,this.workspaceId,'audit:read'))throw new CommunityAuthError(403,'PERMISSION_REQUIRED','Audit permission is required');
+    if(before!==undefined&&(!Number.isSafeInteger(before)||before<1))throw new CommunityAuthError(400,'AUDIT_CURSOR_INVALID','Use a valid audit cursor');
+    this.verifyAudit();
+    const rows=this.db.prepare('SELECT sequence,event_id,occurred_at,event_type,subject,metadata FROM auth_security_events WHERE sequence<? ORDER BY sequence DESC LIMIT 100').all(before??Number.MAX_SAFE_INTEGER) as Array<{sequence:number;event_id:string;occurred_at:number;event_type:string;subject:string|null;metadata:string}>;
+    const fields=(value:unknown)=>{const result:Record<string,unknown>={};if(value&&typeof value==='object'&&!Array.isArray(value)){const item=value as Record<string,unknown>;if(typeof item.role==='string'&&['owner','bookkeeper','viewer','payment_approver'].includes(item.role))result.role=item.role;if(typeof item.disabled==='boolean')result.disabled=item.disabled;}return result;};
+    return{events:rows.map(row=>{const metadata=JSON.parse(row.metadata) as Record<string,unknown>;return{sequence:row.sequence,audit_id:row.event_id,timestamp:new Date(row.occurred_at).toISOString(),actor_id:row.subject,action:row.event_type,
+      entity_id:typeof metadata.target==='string'?metadata.target:row.subject,before:fields(metadata.before),after:fields(metadata.after??metadata)};}),next_cursor:rows.length===100?rows.at(-1)!.sequence:null};
+  }
   private consumeAttempt(key: string, maximum: number, windowMs = 60000): void {
     this.db.transaction(() => {
       const now = this.now();
@@ -302,7 +312,7 @@ export class CommunityAuthStore {
       }
       this.db.prepare('UPDATE auth_users SET role = ?, disabled = ? WHERE user_id = ?').run(role, disabled ? 1 : 0, userId);
       this.db.prepare('DELETE FROM auth_sessions WHERE user_id = ?').run(userId);
-      this.event('ACCOUNT_UPDATED', owner.principal.subject, { target: userId, role, disabled });
+      this.event('ACCOUNT_UPDATED', owner.principal.subject, { target: userId, role, disabled,before:{role:user.role,disabled:Boolean(user.disabled)},after:{role,disabled:Boolean(disabled)} });
     }).immediate();
   }
   async changePassword(token: unknown, currentPassword: unknown, newPassword: unknown): Promise<AuthSession> {

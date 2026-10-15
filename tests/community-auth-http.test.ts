@@ -143,4 +143,15 @@ describe('P02 authenticated HTTP boundary and role enforcement', () => {
     expect(response.headers.get('referrer-policy')).toBe('no-referrer');
     expect(response.headers.get('cross-origin-resource-policy')).toBe('same-origin');
   });
+  it('serves bounded verified account history with safe before/after fields and no authentication material',async()=>{
+    expect((await call('/auth/audit')).status).toBe(401);
+    const created=await store.createUser(owner.token,{username:'synthetic-audit-target',password,role:'viewer'});
+    expect((await call('/auth/users/'+created.user_id,'PATCH',owner,{role:'bookkeeper'})).status).toBe(200);
+    const response=await call('/auth/audit','GET',viewer);expect(response.status).toBe(200);
+    const data=await response.json() as {events:Array<{action:string;actor_id:string;entity_id:string;before:unknown;after:unknown}>};
+    expect(data.events.length).toBeLessThanOrEqual(100);expect(data.events.find(event=>event.action==='ACCOUNT_UPDATED'&&event.entity_id===created.user_id)).toMatchObject({actor_id:owner.principal.subject,before:{role:'viewer',disabled:false},after:{role:'bookkeeper',disabled:false}});
+    const text=JSON.stringify(data);for(const value of[password,owner.token,viewer.token,owner.csrfToken,setupCode])expect(text).not.toContain(value);expect(text).not.toMatch(/account_fingerprint|password_hash|csrf_nonce|previous_hash|token_hash/);
+    for(const query of['?before=0','?before=invalid','?before=1&forged=1'])expect((await call('/auth/audit'+query,'GET',owner)).status).toBe(400);
+    expect((await call('/auth/audit','POST',owner,{})).status).toBe(405);
+  });
 });

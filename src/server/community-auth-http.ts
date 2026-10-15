@@ -110,6 +110,12 @@ export function createCommunityAuthRouter(store: CommunityAuthStore): Router {
     try { response.json({ users: store.listUsers(session(request, response, false).token) }); }
     catch (error) { sendError(response, error); }
   });
+  router.get('/auth/audit',(request,response)=>{
+    try{
+      if(Object.keys(request.query).some(key=>key!=='before')||request.query.before!==undefined&&(typeof request.query.before!=='string'||!/^\d{1,16}$/.test(request.query.before)))throw new CommunityAuthError(400,'AUDIT_CURSOR_INVALID','Use a valid audit cursor');
+      response.json(store.securityEvents(session(request,response,false).token,request.query.before===undefined?undefined:Number(request.query.before)));
+    }catch(error){sendError(response,error);}
+  });
   router.post('/auth/users', async (request, response) => {
     try {
       const body = strictBody(request, ['username', 'password', 'role']); const current = session(request, response);
