@@ -30,6 +30,7 @@ test('normal owner can configure independent read-only PayPal/Stripe vaults, rev
     await page.waitForFunction(()=>document.querySelector('[data-testid="integration-status"]')?.textContent?.includes('Not configured'));
     assert.equal((await h.read('/community/integrations/paypal/sandbox')).data.configured,false);
     assert.equal((await h.read('/community/integrations/stripe/test')).data.configured,true);
+    h.expectHttpFailure({method:'PUT',path:'/api/community/integrations/paypal/sandbox',status:403,reason:'Missing CSRF token is rejected; HTTP403 and CSRF_TOKEN_REQUIRED are independently asserted'});
     const unauthorized=await page.evaluate(async()=>{const response=await fetch('/api/community/integrations/paypal/sandbox',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({credentials:{clientId:'fake',clientSecret:'fake'}})});return{status:response.status,data:await response.json()};});
     assert.equal(unauthorized.status,403);assert.equal(unauthorized.data.code,'CSRF_TOKEN_REQUIRED');
     const session=(await h.read('/auth/session')).data;
@@ -48,6 +49,7 @@ test('normal owner can configure independent read-only PayPal/Stripe vaults, rev
     await page.reload({waitUntil:'networkidle2'});
     await page.waitForSelector('nav');
     assert.equal(await page.$('nav a[href="/integrations"]'),null,'Viewer must not see a privileged integration link');
+    h.expectHttpFailure({method:'GET',path:'/api/community/integrations/stripe/test',status:403,reason:'Viewer cannot read provider configuration; the direct request is independently asserted HTTP403'});
     const forbidden=await h.read('/community/integrations/stripe/test');
     assert.equal(forbidden.status,403);
     await h.prove({provider_vault_status:true,paypal_sandbox_owner:true,stripe_test_owner:true,independent_disconnect:true,csrf_denial:true,viewer_denial:true,live_provider_requests:false,payment_execution:false});

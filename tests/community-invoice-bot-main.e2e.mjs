@@ -12,6 +12,7 @@ test('owner application exposes assisted portal collection with explicit login b
    const runs=await h.read('/community/invoice-bot/runs');
    assert.equal(runs.status,200);assert.deepEqual(runs.data.items,[]);
    const csrf=(await h.read('/auth/session')).data.csrf_token;
+   h.expectHttpFailure({method:'POST',path:'/api/community/invoice-bot/portals/unqualified/connect',status:400,reason:'Unsupported portal connection fails closed; HTTP400 and UNSUPPORTED_PORTAL are independently asserted'});
    const unsupported=await page.evaluate(async value=>{
       const response=await fetch('/api/community/invoice-bot/portals/unqualified/connect',{
        method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':value},body:'{}'});

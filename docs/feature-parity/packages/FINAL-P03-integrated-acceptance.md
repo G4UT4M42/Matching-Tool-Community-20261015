@@ -246,10 +246,27 @@ empty. Five raw console records include intended409,403,401responses and the
 explicit process interruption. Subsequent review found that the generic4xx
 console filter could also hide unrelated4xx responses. This is an assertion
 gap: no final acceptance is claimed. Exact one-use method/path/status negative
-registrations and strict unexpected-HTTP rejection are being implemented;
+registrations and strict unexpected-HTTP rejection are now qualified;
 final complete installed acceptance must run that stronger gate plus the
 reviewed Windowslibvips replacement and final SBOM sidecars.
 
 Portable WASM qualification/package helpers and the engineering document are
 reviewed source. Both syntax checks and explicit helper self-tests pass;
 actual source/compiler/link/codec evidence remains externally hash-bound.
+
+## Strict browser HTTP observations
+
+The broad4xx filter was replaced by pre-action one-use expectations bound to
+exact method, path including query, and status. Every same-origin error,
+including authentication and static resources, is observed. Extra/unused
+expectations, unrelated URLs/statuses, duplicate console messages and arbitrary
+errors fail. Raw console and response records remain in evidence.
+
+Independent focused qualification:8/8 guards/provider/bot tests and source-mode
+integrated journey1/1 (107187.0427ms). Four registered409/403/403/401 responses
+correlate with four exact-URL console records; zero unregistered responses,
+unused expectations or unexplained console messages. The actual cutover exit86
+and precise empty204 guards remain separately asserted. External evidence:
+`candidate-acceptance/independent-security/http-failures-handoff-01.json` and
+`http-failures-integrated-01/integrated-acceptance/result.json`. This dirty-source
+iteration does not replace final exact-commit installed acceptance.
