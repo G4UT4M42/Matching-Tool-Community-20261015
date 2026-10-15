@@ -47,3 +47,16 @@ authenticity. No financial tests were needed for this standalone collection
 script. All rights/release acceptance fields remain false.
 
 The refreshed snapshot follows removal of unused pdf-parse and its nested native/PDF dependencies. The 134-entry native source/notice supplement is separately hash-validated; source/legal/relink acceptance remains false. Historical schema/checksum results above identify their original invocation; final exact-candidate inventory validation is recorded separately.
+
+## Candidate version refresh
+
+The development candidate is now0.2.0-community-candidate.1. Only application
+version/description and root lock version metadata changed; every dependency
+package/version/integrity edge remained identical. Fresh deterministic inventory
+`compliance-candidate-version-01` records517installations/374installed/143absent,
+381notice occurrences/235distinct texts and52assets. Current root lockSHA256:
+`5fe006d62b570c228513b53ee8a756d244dd155af0c301d2b633f032ad15b7d0`.
+Web lock remains unchanged. Source-controlled SBOM/summary match that invocation.
+This semantic prerelease version and refreshed inventory do not mark software,
+repository or redistribution acceptance. Historical hashes above retain their
+original evidence scope.

@@ -1,7 +1,7 @@
 {
   "name": "matching-tool-community",
-  "version": "0.1.0-developer-preview",
-  "description": "Local-first community transaction reconciliation — synthetic-only developer preview",
+  "version": "0.2.0-community-candidate.1",
+  "description": "Local-first Community reconciliation — private development candidate",
   "type": "module",
   "engines": {
     "node": ">=22 <23"

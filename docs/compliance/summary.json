@@ -1,7 +1,7 @@
 {
   "format": "matching-community-compliance-v1",
   "sourceLockSha256": {
-    "package-lock.json": "8a62f174788392ce04bef1e839472d04550e82f74472356f3209629242473653",
+    "package-lock.json": "5fe006d62b570c228513b53ee8a756d244dd155af0c301d2b633f032ad15b7d0",
     "web/package-lock.json": "8e93fe21fe9b612726062a2643d9d86e48f6e32c606bb00fbb3796c8417529f8"
   },
   "packageInstallations": 517,
