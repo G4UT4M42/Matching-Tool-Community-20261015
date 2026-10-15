@@ -1,3 +1,5 @@
+import {verifyRuntimePath} from '../persistence/backup.js';
+import {safeArchivePath} from '../persistence/zip.js';
 import { createHash, randomUUID } from 'node:crypto';
 import { mkdir, readFile, rename, writeFile, lstat, open, unlink } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
@@ -26,6 +28,8 @@ export interface DocumentServiceOptions {
   getState: () => MatchingState;
   persistAndActivate: (expectedState: MatchingState, nextState: MatchingState, actor: string) => void | Promise<void>;
   localLanguageDir?: string;
+  /** Server-owned scope for historical documents predating workspace metadata. */
+  workspaceId?:string;
 }
 const problem = (code: string, message: string): never => { throw new DocumentInputError(code, message); };
 const scope = (principal: Principal) => {
@@ -62,6 +66,7 @@ export class CommunityDocumentService {
   private readonly indexPath: string;
   private busy: Promise<unknown> = Promise.resolve();
   constructor(private readonly options: DocumentServiceOptions) {
+    if(options.workspaceId!==undefined&&!/^[\w.:-]{1,100}$/.test(options.workspaceId))throw new Error('Invalid configured document workspace');
     this.root = resolve(options.root);
     this.blobs = join(this.root, 'attachments');
     this.indexPath = join(this.root, 'document-index-v1.json');
@@ -111,7 +116,7 @@ export class CommunityDocumentService {
     for (const record of index.records) {
       const doc = financial.get(record.id);
       if (doc && doc.meta.workspace_id === record.workspace_id) {
-        if (doc.file_hash !== record.hash) problem('SOURCE_CONFLICT', 'Document index disagrees with financial evidence');
+        if (doc.file_hash?.toLowerCase() !== record.hash) problem('SOURCE_CONFLICT', 'Document index disagrees with financial evidence');
         if (record.status === 'review') record.status = 'confirmed';
         if (doc.meta.document_review_status === 'archived') { record.status = 'archived'; record.archived_from = 'confirmed'; }
         else if (doc.meta.document_review_status === 'confirmed' && record.status === 'archived') { record.status = 'confirmed'; delete record.archived_from; }
@@ -120,15 +125,30 @@ export class CommunityDocumentService {
     // Reconstruct confirmed records only from verified canonical financial
     // evidence. Missing attachment errors are never mistaken for a missing index.
     for (const doc of financial.values()) {
-      if (index.records.some(record => record.id === doc.document_id) || typeof doc.meta.workspace_id !== 'string' || typeof doc.file_hash !== 'string' || !doc.filename || typeof doc.meta.attachment_path !== 'string') continue;
-      const workspaceHash = createHash('sha256').update(doc.meta.workspace_id).digest('hex');
-      const file = join(this.blobs, workspaceHash, doc.file_hash);
-      const stat = await lstat(file);
-      if (!stat.isFile() || stat.isSymbolicLink() || documentHash(await readFile(file)) !== doc.file_hash) problem('UNSAFE_STORAGE', 'Document attachment recovery failed');
+      const workspaceId=typeof doc.meta.workspace_id==='string'?doc.meta.workspace_id:this.options.workspaceId;
+      if (index.records.some(record => record.id === doc.document_id) || !workspaceId || this.options.workspaceId&&workspaceId!==this.options.workspaceId || typeof doc.file_hash !== 'string' || !/^[a-fA-F0-9]{64}$/.test(doc.file_hash) || !doc.filename) continue;
+      const workspaceHash = createHash('sha256').update(workspaceId).digest('hex'),fileHash=doc.file_hash.toLowerCase();
+      const dir=join(this.blobs,workspaceHash),file = join(dir, fileHash);verifyRuntimePath(this.root,file);
+      // Migration already retains the original under the reviewed documents root.
+      // Build a derived content-addressed copy; canonical source fields stay exact.
+      const originalName=typeof doc.meta.attachment_path==='string'?doc.meta.attachment_path:doc.filename;
+      safeArchivePath(originalName);const original=join(this.root,...originalName.split('/'));verifyRuntimePath(this.root,original);
+      let stat;try{stat=await lstat(file);}catch(error){
+        if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;
+        const source=await lstat(original);if(!source.isFile()||source.isSymbolicLink()||source.size<1||source.size>256*1024*1024)problem('UNSAFE_STORAGE','Historical original is unavailable');
+        const bytes=await readFile(original);if(documentHash(bytes)!==fileHash)problem('UNSAFE_STORAGE','Historical original checksum mismatch');
+        verifyRuntimePath(this.root,dir);await mkdir(dir,{recursive:true});
+        for(const folder of [this.blobs,dir]){const info=await lstat(folder);if(!info.isDirectory()||info.isSymbolicLink())problem('UNSAFE_STORAGE','Attachment directory is unsafe');}
+        try{await writeFile(file,bytes,{flag:'wx',mode:0o600});}catch(writeError){if((writeError as NodeJS.ErrnoException).code!=='EEXIST')throw writeError;}
+        stat=await lstat(file);
+      }
+      if(!stat.isFile()||stat.isSymbolicLink()||stat.size<1||stat.size>256*1024*1024)problem('UNSAFE_STORAGE','Document attachment recovery failed');
+      const originalBytes=await readFile(file);
+      if (documentHash(originalBytes) !== fileHash) problem('UNSAFE_STORAGE', 'Document attachment recovery failed');
       const sourceRefs=Array.isArray(doc.meta.document_source_refs)?structuredClone(doc.meta.document_source_refs) as Array<{source_id:string;kind:DocumentSourceKind}>:[];
       if(sourceRefs.length>100||sourceRefs.some(ref=>!ref||!/^[\w.:-]{1,160}$/.test(ref.source_id)||!['user-supplied','invoice-bot'].includes(ref.kind)))problem('INVALID_STORAGE','Invalid canonical document provenance');
-      const mime = doc.filename.toLowerCase().endsWith('.csv') ? 'text/csv' : doc.filename.toLowerCase().endsWith('.xlsx') ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : doc.filename.toLowerCase().endsWith('.png') ? 'image/png' : doc.filename.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'image/jpeg';
-      index.records.push({ id: doc.document_id, workspace_id: doc.meta.workspace_id, owner_subject: String(doc.meta.owner_subject ?? ''), filename: doc.filename, hash: doc.file_hash, mime, bytes: stat.size, pages: 0,
+      const mime = originalBytes.subarray(0,5).toString()==='%PDF-'?'application/pdf':originalBytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))?'image/png':originalBytes[0]===255&&originalBytes[1]===216&&originalBytes[2]===255?'image/jpeg':doc.filename.toLowerCase().endsWith('.csv')?'text/csv':doc.filename.toLowerCase().endsWith('.xlsx')?'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':'application/octet-stream';
+      index.records.push({ id: doc.document_id, workspace_id: workspaceId, owner_subject: String(doc.meta.owner_subject ?? ''), filename: doc.filename, hash: fileHash, mime, bytes: stat.size, pages: 0,
         status: doc.meta.document_review_status === 'archived' ? 'archived' : 'confirmed', ...(doc.meta.document_review_status === 'archived' ? {archived_from: 'confirmed' as const} : {}), ...(sourceRefs.length?{source_id:sourceRefs[0].source_id,source_kind:sourceRefs[0].kind,source_refs:sourceRefs}:{}),
         fields: { ...(doc.meta.document_type==='credit_note'?{document_type:'credit_note' as const}:{}),invoice_number: String(doc.meta.invoice_number ?? doc.source_document_ref), supplier_name: doc.supplier_name, document_date: doc.document_date, total_amount_minor: doc.total_amount_minor, vat_amount_minor: doc.vat_amount_minor, net_amount_minor: typeof doc.meta.net_amount_minor === 'number' ? doc.meta.net_amount_minor : undefined, currency_code: doc.currency_code, iban: typeof doc.meta.iban === 'string' ? doc.meta.iban : undefined, payment_reference: typeof doc.meta.payment_reference === 'string' ? doc.meta.payment_reference : undefined, due_date: typeof doc.meta.due_date === 'string' ? doc.meta.due_date : undefined },
         recognition: { confidence: 1, raw_text: '', warnings: [] }, created_at: doc.captured_at, history: [{ at: now(), actor: 'system', action: 'index_recovered_from_canonical_state' }] });
@@ -326,9 +346,18 @@ export class CommunityDocumentService {
       const expected = this.options.getState(),next=cloneState(expected); const existing = expected.documents.get(id);
       if (existing && (action === 'archive' || action === 'restore')) {
         const meta: Record<string, unknown> = { ...existing.meta, document_review_status: action === 'archive' ? 'archived' : 'confirmed' };
-        if (action === 'archive') { meta.accounting_status = 'cancelled'; meta.archived_by_documents = true; }
-        else if (meta.archived_by_documents === true) { delete meta.accounting_status; delete meta.archived_by_documents; }
+        if (action === 'archive'&&meta.accounting_status!=='cancelled') {
+          if(meta.archived_previous_accounting_status!==undefined)problem('SOURCE_CONFLICT','Historical archive status requires explicit review');
+          if(meta.accounting_status!==undefined){if(typeof meta.accounting_status!=='string'||meta.accounting_status.length>100)problem('INVALID_STORAGE','Invalid prior accounting status');meta.archived_previous_accounting_status=meta.accounting_status;}
+          meta.accounting_status = 'cancelled'; meta.archived_by_documents = true;
+        }
+        else if(action==='restore'&&meta.archived_by_documents===true){
+          delete meta.accounting_status;delete meta.archived_by_documents;
+          if(meta.archived_previous_accounting_status!==undefined){if(typeof meta.archived_previous_accounting_status!=='string')problem('INVALID_STORAGE','Invalid archived accounting status');meta.accounting_status=meta.archived_previous_accounting_status;delete meta.archived_previous_accounting_status;}
+        }
         next.documents.set(id, { ...existing, meta });
+        const disposition=(value:Record<string,unknown>)=>({accounting_status:value.accounting_status??null,archived_by_documents:value.archived_by_documents??null});
+        if(!same(disposition(existing.meta),disposition(meta)))recordAudit(next,'STATE_COMMITTED','Document',id,{actor_type:'user',actor_id:principal.subject,correlation_id:'document-disposition-'+randomUUID(),reason:'Document accounting disposition '+action,before:disposition(existing.meta),after:disposition(meta)});
       }
       record.history.push({ at: now(), actor: principal.subject, action });
       this.auditReview(next,principal,action,before,record);

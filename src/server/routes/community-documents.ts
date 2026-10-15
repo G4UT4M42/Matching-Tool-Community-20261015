@@ -43,7 +43,7 @@ export function createCommunityDocumentsRouter(service: CommunityDocumentService
     const { record, buffer } = await service.download(principal(response)!, String(request.params.id));
     response.setHeader('Content-Type', record.mime);
     response.setHeader('Content-Length', buffer.length);
-    const extension = record.mime === 'application/pdf' ? 'pdf' : record.mime === 'image/png' ? 'png' : record.mime === 'image/jpeg' ? 'jpg' : record.mime === 'text/csv' ? 'csv' : 'xlsx';
+    const extension = record.mime === 'application/pdf' ? 'pdf' : record.mime === 'image/png' ? 'png' : record.mime === 'image/jpeg' ? 'jpg' : record.mime === 'text/csv' ? 'csv' : record.mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ? 'xlsx' : 'bin';
     response.setHeader('Content-Disposition', `${record.mime === 'application/pdf' || record.mime.startsWith('image/') ? 'inline' : 'attachment'}; filename="document.${extension}"`);
     response.setHeader('Content-Security-Policy', "default-src 'none'; sandbox");
     response.setHeader('X-Content-Type-Options', 'nosniff');

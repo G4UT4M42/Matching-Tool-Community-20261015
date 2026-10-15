@@ -118,7 +118,7 @@ function documentReferences(state:MatchingState,indexBytes?:Buffer):Map<string,{
       ids.add(record.id);const name='documents/attachments/'+sha(record.workspace_id)+'/'+record.hash;
       const canonical=auditedById.get(record.id);if(canonical&&(canonical.workspace_id!==record.workspace_id||canonical.hash!==record.hash||canonical.bytes!==record.bytes))throw new Error('Document index disagrees with immutable review evidence');
       references.set(name,{hash:record.hash,bytes:record.bytes});
-      if(record.status==='confirmed'&&(!state.documents.has(record.id)||state.documents.get(record.id)?.file_hash!==record.hash))throw new Error('Confirmed document index and financial evidence disagree');
+      if(record.status==='confirmed'&&(!state.documents.has(record.id)||state.documents.get(record.id)?.file_hash?.toLowerCase()!==record.hash))throw new Error('Confirmed document index and financial evidence disagree');
     }
     rejectSecrets(index);references.set('documents/document-index-v1.json',{});
   }
@@ -127,7 +127,7 @@ function documentReferences(state:MatchingState,indexBytes?:Buffer):Map<string,{
   for(const record of audited){
     const name='documents/attachments/'+sha(record.workspace_id)+'/'+record.hash;
     references.set(name,{hash:record.hash,bytes:record.bytes});
-    if(record.status==='confirmed'&&(!state.documents.has(record.id)||state.documents.get(record.id)?.file_hash!==record.hash))throw new Error('Confirmed review audit and financial evidence disagree');
+    if(record.status==='confirmed'&&(!state.documents.has(record.id)||state.documents.get(record.id)?.file_hash?.toLowerCase()!==record.hash))throw new Error('Confirmed review audit and financial evidence disagree');
   }
   return references;
 }
