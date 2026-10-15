@@ -1,3 +1,4 @@
+import {applyActiveExclusionsForNewTransactions} from '../community/accounting/ledger.js';
 import { createHash, randomUUID } from 'node:crypto';
 import { existsSync, lstatSync, mkdirSync, readFileSync, unlinkSync } from 'node:fs';
 import { join } from 'node:path';
@@ -115,6 +116,6 @@ export function commitStatementImport(
       reason: 'Explicit offline statement import',
       after: { source, fetched: result.fetched, imported: result.imported, skipped: result.skipped, signed_totals_minor: exactTotals, statement_sha256: transactions[0]?.meta.statement_sha256 },
     });
-    return { state: candidate, result };
+    return { state: applyActiveExclusionsForNewTransactions(input,candidate,actor), result };
   }, hooks);
 }

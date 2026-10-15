@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
 import type { MatchingState } from '../../core/types.js';
-import { AccountingError, acceptAllocations, undoAllocation, classifyTransaction, classifyTax, setPrivateOrExcluded, createSafeExclusionRule, accountingOf } from '../../community/accounting/ledger.js';
+import { AccountingError, acceptAllocations, undoAllocation, classifyTransaction, classifyTax, setPrivateOrExcluded, createSafeExclusionRule, setExclusionRuleEnabled,exclusionRuleView,accountingOf } from '../../community/accounting/ledger.js';
 import { accountingReport, reportCsv } from '../../community/accounting/reports.js';
 import { proposeExactMatches } from '../../core/matching/community-proposals.js';
 import { createManualDecision, reviewDecision, unmatchDecision, MatchDecisionError } from '../../core/matching/decisions.js';
@@ -33,14 +33,14 @@ export function createCommunityAccountingRouter(deps: AccountingRouterDependenci
     run(async (req, res) => {
       const p = principal(res, permission); const expected = deps.getState();
       const next = operation(expected, req.body, p.subject, req);
-      await deps.persistAndActivate(expected, next, p.subject);
+      if(next!==expected)await deps.persistAndActivate(expected, next, p.subject);
       return { revision: accountingOf(next).revision, audit_id: next.audit_events.at(-1)?.audit_id };
     });
   router.get('/accounting', run((_req, res) => {
     principal(res, 'finance:read'); const state = deps.getState();
     return { revision: accountingOf(state).revision, transactions: [...state.transactions.values()], documents: [...state.documents.values()],
       allocations: accountingOf(state).allocations, match_groups: [...state.match_groups.values()], classifications: accountingOf(state).classifications,
-      document_taxes: accountingOf(state).document_taxes };
+      document_taxes: accountingOf(state).document_taxes,exclusion_rules:exclusionRuleView(state) };
   }));
   router.post('/accounting/allocations', mutate('finance:match', (state, body, actor) => acceptAllocations(state, body, actor)));
   router.delete('/accounting/allocations/:id', mutate('finance:match', (state, body, actor, req) => undoAllocation(state, String(req.params.id), (body as { revision?: unknown })?.revision, actor)));
@@ -48,6 +48,7 @@ export function createCommunityAccountingRouter(deps: AccountingRouterDependenci
   router.post('/accounting/taxes', mutate('finance:annotate', (state, body, actor) => classifyTax(state, body, actor)));
   router.post('/accounting/dispositions', mutate('finance:annotate', (state, body, actor) => setPrivateOrExcluded(state, body, actor)));
   router.post('/accounting/exclusions', mutate('finance:annotate', (state, body, actor) => createSafeExclusionRule(state, body, actor)));
+  router.patch('/accounting/exclusions/:id',mutate('finance:annotate',(state,body,actor,req)=>setExclusionRuleEnabled(state,String(req.params.id),body,actor)));
   router.post('/accounting/proposals', run(async (_req, res) => {
     const p = principal(res, 'finance:match'); const expected = deps.getState();
     const result = proposeExactMatches(expected);

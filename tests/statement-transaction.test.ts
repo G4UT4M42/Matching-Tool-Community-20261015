@@ -36,6 +36,13 @@ const normalized = () => parser.parseStatementBuffer(bytes, '.csv', 'sparkasse',
 const snapshot = () => readFileSync(join(runtime, 'state', 'state.json'), 'utf8');
 
 describe('P06 coordinated SQLite and JSON import durability', () => {
+  it('applies active literal exclusions in the same durable commit as a later statement import',async()=>{
+    const ledger=await import('../src/community/accounting/ledger.js'),canonical=await import('../src/storage/canonical-transaction.js');canonical.initializeCanonicalState(state);
+    state=canonical.commitCanonicalState(state,ledger.createSafeExclusionRule(state,{revision:0,field:'description_raw',operator:'contains',value:'Fictional purchase'},'synthetic-user'),'synthetic-user');
+    const result=atomic.commitStatementImport(state,normalized(),'sparkasse','fictional.csv','synthetic-user'),key=[...result.state.transactions.keys()][0];expect(result.state.excluded_transaction_ids.has(key)).toBe(true);expect(store.loadState()).toEqual(result.state);expect(result.state.audit_events.at(-1)?.after?.applied_transaction_ids).toEqual([key]);
+    const restored=canonical.commitCanonicalState(result.state,ledger.setExclusionRuleEnabled(result.state,result.state.exclusion_rules[0].exclusion_id,{revision:ledger.accountingOf(result.state).revision,enabled:false},'synthetic-user'),'synthetic-user');expect(restored.excluded_transaction_ids.has(key)).toBe(false);dbModule.closeDb();dbModule.getDb();expect(store.loadState()).toEqual(restored);
+  });
+
   it('commits both stores, source identities and authenticated audit without mutating the input', () => {
     const committed = atomic.commitStatementImport(state, normalized(), 'sparkasse', 'fictional.csv', 'synthetic-user');
     expect(state.transactions.size).toBe(0);

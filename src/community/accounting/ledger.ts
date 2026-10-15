@@ -171,7 +171,7 @@ export function acceptAllocations(input: MatchingState, body: any, actor: string
   }
   validateAccountingState(state);
   rebuildLinkedIds(state);
-  recordAudit(state, 'ACCOUNTING_ALLOCATED', 'Run', batch, { actor_type: 'user', actor_id: actor, after: { allocations: state.accounting!.allocations.filter(a => a.batch_id === batch) }, reason: body.evidence_ref });
+  recordAudit(state, 'ACCOUNTING_ALLOCATED', 'Run', batch, { actor_type: 'user', actor_id: actor,before:{allocations:[]}, after: { allocations: state.accounting!.allocations.filter(a => a.batch_id === batch) }, reason: body.evidence_ref });
   return state;
 }
 export function undoAllocation(input: MatchingState, allocationId: string, revision: unknown, actor: string): MatchingState {
@@ -192,7 +192,7 @@ export function classifyTransaction(input: MatchingState, body: any, actor: stri
   const entry: TransactionClassification = { transaction_id: body.transaction_id, category: body.category as TransactionClassification['category'], evidence_ref: body.evidence_ref, set_at: new Date().toISOString(), set_by: actor };
   state.accounting!.classifications = state.accounting!.classifications.filter(c => c.transaction_id !== body.transaction_id).concat(entry);
   validateAccountingState(state);
-  recordAudit(state, 'ACCOUNTING_CLASSIFIED', 'Transaction', body.transaction_id, { actor_type: 'user', actor_id: actor, before: before as unknown as Record<string, unknown> | undefined, after: entry as unknown as Record<string, unknown> });
+  recordAudit(state, 'ACCOUNTING_CLASSIFIED', 'Transaction', body.transaction_id, { actor_type: 'user', actor_id: actor, before:{classification:before??null}, after:{classification:entry} });
   return state;
 }
 export function classifyTax(input: MatchingState, body: any, actor: string): MatchingState {
@@ -201,7 +201,7 @@ export function classifyTax(input: MatchingState, body: any, actor: string): Mat
   const entry: DocumentTaxClassification = { document_id: body.document_id, tax_category: body.tax_category as DocumentTaxClassification['tax_category'], rate_numerator: body.rate_numerator as number, rate_denominator: body.rate_denominator as number, vat_minor: body.vat_minor as number, input_tax_eligible: body.input_tax_eligible as boolean, evidence_ref: body.evidence_ref, set_at: new Date().toISOString(), set_by: actor };
   state.accounting!.document_taxes = state.accounting!.document_taxes.filter(c => c.document_id !== body.document_id).concat(entry);
   validateAccountingState(state);
-  recordAudit(state, 'ACCOUNTING_TAX_CLASSIFIED', 'Document', body.document_id, { actor_type: 'user', actor_id: actor, before: before as unknown as Record<string, unknown> | undefined, after: entry as unknown as Record<string, unknown> });
+  recordAudit(state, 'ACCOUNTING_TAX_CLASSIFIED', 'Document', body.document_id, { actor_type: 'user', actor_id: actor, before:{tax:before??null}, after:{tax:entry} });
   return state;
 }
 export function setPrivateOrExcluded(input: MatchingState, body: any, actor: string): MatchingState {
@@ -209,11 +209,103 @@ export function setPrivateOrExcluded(input: MatchingState, body: any, actor: str
   const state = next(input, body.revision); const key = body.transaction_id;
   if (!state.transactions.has(key)) bad('TRANSACTION_NOT_FOUND', 'Transaction not found', 404);
   if (body.disposition !== 'restore' && (state.accounting!.allocations.some(a => a.status === 'accepted' && a.transaction_id === key) || [...state.match_groups.values()].some(g => ['accepted', 'confirmed', 'manual'].includes(g.status) && g.transaction_ids.includes(key)))) bad('ALLOCATION_CONFLICT', 'Undo accepted allocations before excluding a transaction', 409);
-  if (body.disposition === 'excluded') state.excluded_transaction_ids.add(key); else state.excluded_transaction_ids.delete(key);
+  const ownership=exclusionOwnership(input);
+  const ruleOwned=[...ownership.owners.values()].some(ids=>ids.has(key))||input.exclusion_rules.some(rule=>rule.enabled&&(!safeRule(rule)||ruleMatches(input,rule).includes(key)));
+  if (body.disposition === 'excluded'||ruleOwned) state.excluded_transaction_ids.add(key); else state.excluded_transaction_ids.delete(key);
   state.accounting!.classifications = state.accounting!.classifications.filter(c => c.transaction_id !== key);
   if (body.disposition === 'private') state.accounting!.classifications.push({ transaction_id: key, category: 'private', evidence_ref: body.evidence_ref, set_at: new Date().toISOString(), set_by: actor });
   validateAccountingState(state);
-  recordAudit(state, 'ACCOUNTING_DISPOSITION_SET', 'Transaction', key, { actor_type: 'user', actor_id: actor, after: { disposition: body.disposition, evidence_ref: body.evidence_ref } });
+  recordAudit(state, 'ACCOUNTING_DISPOSITION_SET', 'Transaction', key, { actor_type: 'user', actor_id: actor,before:{excluded:input.excluded_transaction_ids.has(key),classification:accountingOf(input).classifications.find(c=>c.transaction_id===key)??null}, after: { disposition: body.disposition, evidence_ref: body.evidence_ref, excluded:state.excluded_transaction_ids.has(key),retained_by_rule:ruleOwned,classification:state.accounting!.classifications.find(c=>c.transaction_id===key)??null } });
+  return state;
+}
+
+const safeRule=(rule:Pick<ExclusionRule,'field'|'operator'|'value'|'source_system'>):boolean=>
+  ['counterparty_name','description_raw','booking_reference','payment_reference'].includes(rule.field)&&
+  ['contains','equals','starts_with'].includes(rule.operator)&&id(rule.value)&&rule.value.length<=200&&
+  (rule.source_system===undefined||['sparkasse','visa','paypal','stripe','enablebanking'].includes(rule.source_system));
+function ruleMatches(state:MatchingState,rule:ExclusionRule,only?:ReadonlySet<string>):string[]{
+  if(!safeRule(rule))bad('UNSUPPORTED_EXCLUSION_RULE','Only reviewed bounded literal rules can be enabled');
+  const field=rule.field as 'counterparty_name'|'description_raw'|'booking_reference'|'payment_reference';
+  const matches=[...state.transactions.values()].filter(tx=>{
+    if(only&&!only.has(tx.transaction_id))return false;
+    if(rule.source_system&&tx.source_system!==rule.source_system)return false;
+    const raw=tx[field]??'';
+    return rule.operator==='equals'?raw===rule.value:rule.operator==='starts_with'?raw.startsWith(rule.value):raw.includes(rule.value);
+  }).map(tx=>tx.transaction_id);
+  if(matches.length>100000)bad('EXCLUSION_RULE_LIMIT','Rule matches exceed the supported review limit');
+  return matches;
+}
+function exclusionOwnership(state:MatchingState):{manual:Map<string,boolean>;owners:Map<string,Set<string>>}{
+  const manual=new Map<string,boolean>(),recorded=new Map<string,Set<string>>();
+  for(const event of state.audit_events){
+    if(event.action==='ACCOUNTING_DISPOSITION_SET'&&event.entity_type==='Transaction'&&['excluded','private','restore'].includes(String(event.after?.disposition)))manual.set(event.entity_id,event.after!.disposition==='excluded');
+    if(event.entity_type!=='ExclusionRule'||event.after?.rule_ownership_version===undefined)continue;
+    const after=event.after,matched=after.matched_transaction_ids,kept=after.manual_transaction_ids;
+    if(after.rule_ownership_version!==1||!Array.isArray(matched)||matched.length>100000||!Array.isArray(kept)||kept.length>100000||!obj(after.rule)||after.rule.exclusion_id!==event.entity_id||typeof after.rule.enabled!=='boolean')bad('EXCLUSION_OWNERSHIP_CONFLICT','Rule ownership evidence is invalid',409);
+    const matching=new Set(matched as string[]);
+    if((matched as unknown[]).some(value=>!id(value))||matching.size!==(matched as string[]).length||(kept as unknown[]).some(value=>!id(value)||!matching.has(value as string))||new Set(kept as string[]).size!==(kept as string[]).length)bad('EXCLUSION_OWNERSHIP_CONFLICT','Rule affected IDs are invalid',409);
+    const preserved=new Set(kept as string[]);
+    for(const key of matched as string[])manual.set(key,preserved.has(key));
+    recorded.set(event.entity_id,new Set(matched as string[]));
+  }
+  const owners=new Map<string,Set<string>>();
+  for(const rule of state.exclusion_rules)if(rule.enabled&&recorded.has(rule.exclusion_id))owners.set(rule.exclusion_id,recorded.get(rule.exclusion_id)!);
+  return{manual,owners};
+}
+/** Apply supported rules to genuinely new imports, with durable ownership for undo. */
+export function applyActiveExclusionsForNewTransactions(before:MatchingState,nextState:MatchingState,actor:string):MatchingState{
+  const newIds=new Set([...nextState.transactions.keys()].filter(key=>!before.transactions.has(key)));
+  if(!newIds.size)return nextState;
+  let state=nextState;
+  for(const originalRule of nextState.exclusion_rules){
+    if(!originalRule.enabled||!safeRule(originalRule))continue;
+    const ownership=exclusionOwnership(state),previous=ownership.owners.get(originalRule.exclusion_id)??new Set<string>();
+    const additions=ruleMatches(state,originalRule,newIds).filter(key=>!previous.has(key));
+    if(!additions.length)continue;
+    allocationGuard(state,additions);
+    if(state===nextState){state=structuredClone(nextState);state.accounting=structuredClone(accountingOf(nextState));state.accounting.revision++;}
+    const matched=[...new Set([...previous,...additions])];if(matched.length>100000)bad('EXCLUSION_RULE_LIMIT','Rule matches exceed the supported review limit');
+    const manual=matched.filter(key=>manuallyExcluded(state,ownership,key)),added=additions.filter(key=>!state.excluded_transaction_ids.has(key)),excludedBefore=matched.filter(key=>state.excluded_transaction_ids.has(key));
+    for(const key of additions)state.excluded_transaction_ids.add(key);
+    recordAudit(state,'STATE_COMMITTED','ExclusionRule',originalRule.exclusion_id,{actor_type:'user',actor_id:actor,correlation_id:randomUUID(),reason:'Exclusion rule applied to newly imported transactions',before:{rule:structuredClone(originalRule),matched_transaction_ids:[...previous],excluded_transaction_ids:excludedBefore},after:{rule:structuredClone(originalRule),rule_ownership_version:1,matched_transaction_ids:matched,manual_transaction_ids:manual,added_transaction_ids:added,released_transaction_ids:[],applied_transaction_ids:additions,excluded_transaction_ids:matched.filter(key=>state.excluded_transaction_ids.has(key))}});
+  }
+  if(state!==nextState)validateAccountingState(state);
+  return state;
+}
+const manuallyExcluded=(state:MatchingState,ownership:ReturnType<typeof exclusionOwnership>,key:string):boolean=>
+  ownership.manual.get(key)??state.excluded_transaction_ids.has(key);
+function allocationGuard(state:MatchingState,keys:string[]):void{
+  const wanted=new Set(keys);
+  if(accountingOf(state).allocations.some(a=>a.status==='accepted'&&wanted.has(a.transaction_id))||[...state.match_groups.values()].some(g=>['accepted','confirmed','manual'].includes(g.status)&&g.transaction_ids.some(key=>wanted.has(key))))bad('ALLOCATION_CONFLICT','Exclusion rule intersects an accepted financial allocation',409);
+}
+export function exclusionRuleView(state:MatchingState){
+  const managed=new Set(state.audit_events.filter(event=>event.action==='ACCOUNTING_EXCLUSION_RULE_CREATED'&&event.entity_type==='ExclusionRule'&&event.after?.rule_ownership_version===1).map(event=>event.entity_id));
+  return state.exclusion_rules.map(rule=>({...rule,can_enable:safeRule(rule),ownership_known:managed.has(rule.exclusion_id)}));
+}
+/** Disable only exclusions with immutable ownership evidence; retain unknown legacy exclusions. */
+export function setExclusionRuleEnabled(input:MatchingState,ruleId:string,body:unknown,actor:string):MatchingState{
+  if(!obj(body)||Object.keys(body).some(key=>!['revision','enabled'].includes(key))||typeof body.enabled!=='boolean')bad('INVALID_REQUEST','Provide a revision and an enabled boolean');
+  const request=body as {revision:unknown;enabled:boolean};
+  const state=next(input,request.revision),rules=state.exclusion_rules.filter(rule=>rule.exclusion_id===ruleId);
+  if(rules.length!==1)bad('EXCLUSION_RULE_NOT_FOUND','Exclusion rule not found',404);
+  const rule=rules[0];
+  if(request.enabled&&!safeRule(rule))bad('UNSUPPORTED_EXCLUSION_RULE','Only reviewed bounded literal rules can be enabled');
+  if(rule.enabled===request.enabled)return input;
+  const before=structuredClone(rule),ownership=exclusionOwnership(input),previous=ownership.owners.get(ruleId)??new Set<string>();
+  const matched=request.enabled?ruleMatches(state,rule):[];
+  if(request.enabled)allocationGuard(state,matched);
+  const manual=matched.filter(key=>manuallyExcluded(input,ownership,key)),added=matched.filter(key=>!input.excluded_transaction_ids.has(key)),released:string[]=[];
+  rule.enabled=request.enabled;
+  for(const key of matched)state.excluded_transaction_ids.add(key);
+  const others=input.exclusion_rules.filter(other=>other.exclusion_id!==ruleId&&other.enabled),unknownOther=others.some(other=>!safeRule(other));
+  const otherMatches=new Set(others.filter(safeRule).flatMap(other=>ruleMatches(input,other)));
+  if(!request.enabled)for(const key of previous){
+    if(manuallyExcluded(input,ownership,key)||unknownOther||otherMatches.has(key))continue;
+    if(state.excluded_transaction_ids.delete(key))released.push(key);
+  }
+  validateAccountingState(state);
+  const affected=new Set([...previous,...matched]);
+  recordAudit(state,'EXCLUSION_TOGGLED','ExclusionRule',ruleId,{actor_type:'user',actor_id:actor,correlation_id:randomUUID(),before:{rule:before,matched_transaction_ids:[...previous],excluded_transaction_ids:[...affected].filter(key=>input.excluded_transaction_ids.has(key))},after:{rule:structuredClone(rule),rule_ownership_version:1,matched_transaction_ids:matched,manual_transaction_ids:manual,added_transaction_ids:added,released_transaction_ids:released,excluded_transaction_ids:[...affected].filter(key=>state.excluded_transaction_ids.has(key)),legacy_exclusions_preserved:!ownership.owners.has(ruleId)&&!request.enabled}});
   return state;
 }
 
@@ -225,25 +317,18 @@ export function createSafeExclusionRule(input: MatchingState, body: any, actor: 
       (body.source_system !== undefined && !['sparkasse', 'visa', 'paypal', 'stripe', 'enablebanking'].includes(String(body.source_system))) ||
       (body.description !== undefined && (typeof body.description !== 'string' || body.description.length > 500))) bad('INVALID_EXCLUSION_RULE', 'Use a bounded literal exclusion rule');
   const state = next(input, body.revision);
-  const field = body.field as 'counterparty_name' | 'description_raw' | 'booking_reference' | 'payment_reference';
+  const field = body.field as ExclusionRule['field'];
   const value = body.value as string;
-  const matches = [...state.transactions.values()].filter(tx => {
-    if (body.source_system && tx.source_system !== body.source_system) return false;
-    const raw = tx[field] ?? '';
-    return body.operator === 'equals' ? raw === value : body.operator === 'starts_with' ? raw.startsWith(value) : raw.includes(value);
-  });
-  for (const tx of matches) {
-    if (state.accounting!.allocations.some(a => a.status === 'accepted' && a.transaction_id === tx.transaction_id) ||
-        [...state.match_groups.values()].some(g => ['accepted', 'confirmed', 'manual'].includes(g.status) && g.transaction_ids.includes(tx.transaction_id))) bad('ALLOCATION_CONFLICT', 'Exclusion rule intersects an accepted financial allocation', 409);
-  }
   const rule: ExclusionRule = { exclusion_id: randomUUID(), created_at: new Date().toISOString(), created_by: actor,
     field, operator: body.operator as ExclusionRule['operator'], value, enabled: true,
     ...(body.source_system ? { source_system: body.source_system as ExclusionRule['source_system'] } : {}),
     ...(body.description ? { description: body.description as string } : {}) };
   state.exclusion_rules.push(rule);
-  for (const tx of matches) state.excluded_transaction_ids.add(tx.transaction_id);
+  const matched=ruleMatches(state,rule),ownership=exclusionOwnership(input),manual=matched.filter(key=>manuallyExcluded(input,ownership,key)),added=matched.filter(key=>!input.excluded_transaction_ids.has(key));
+  allocationGuard(state,matched);
+  for (const key of matched) state.excluded_transaction_ids.add(key);
   validateAccountingState(state);
   recordAudit(state, 'ACCOUNTING_EXCLUSION_RULE_CREATED', 'ExclusionRule', rule.exclusion_id,
-    { actor_type: 'user', actor_id: actor, after: { rule, matched_transaction_ids: matches.map(tx => tx.transaction_id) } });
+    { actor_type: 'user', actor_id: actor,correlation_id:randomUUID(),before:{rule:null,excluded_transaction_ids:matched.filter(key=>input.excluded_transaction_ids.has(key))}, after: { rule:structuredClone(rule),rule_ownership_version:1,matched_transaction_ids:matched,manual_transaction_ids:manual,added_transaction_ids:added,released_transaction_ids:[],excluded_transaction_ids:matched } });
   return state;
 }
