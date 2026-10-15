@@ -29,6 +29,7 @@ export async function mainBrowser(name,{entrypoint='src/server/index.ts',package
     writeFileSync(join(evidence,'installation-result.json'),JSON.stringify(installationObservation,null,2));
     assert.equal(install.status,0,JSON.stringify({error_code:install.error?.code??null,elapsed_ms:installationObservation.elapsed_ms,output:(install.stderr||install.stdout||String(install.error)).slice(-2000)}));
     installedManifest=JSON.parse(readFileSync(join(applicationRoot,'community-package.json'),'utf8'));
+    writeFileSync(join(evidence,'installed-package-manifest.json'),readFileSync(join(applicationRoot,'community-package.json')));
   }
   const port=await freePort(),origin=`http://127.0.0.1:${port}`,setupCode=randomBytes(32).toString('base64url');
   const password='Synthetic main browser owner passphrase 2026';

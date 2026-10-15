@@ -12,7 +12,7 @@ export function acceptancePackage(){
  try{
   const inventory=spawnSync(process.execPath,[join(root,'scripts/create-compliance-inventory.mjs'),'--out',compliance],{cwd:root,encoding:'utf8',windowsHide:true,timeout:120000});
   if(inventory.status!==0)throw new Error('Synthetic acceptance package inventory failed: '+(inventory.stderr||inventory.stdout).slice(-1500));
-  const result=buildPackage({out:packageDirectory,compliance});
+  const result=buildPackage({out:packageDirectory,compliance,replacement:process.env.MATCHING_ACCEPTANCE_NATIVE_REPLACEMENT});
   if(result.distributable!==false||result.releaseAccepted!==false)throw new Error('Unexpected acceptance promotion');
   const manifest=JSON.parse(readFileSync(join(packageDirectory,'community-package.json'),'utf8'));
   return{packageDirectory,result,manifest,close};

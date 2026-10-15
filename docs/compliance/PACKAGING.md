@@ -120,3 +120,31 @@ separate qualification gates; a package manifest does not prove those results.
 ## Prepared source and notice supplements
 
 Repeated `--supplement` arguments add reviewed external source bundles. Each manifest must retain false legal/source/relink acceptance, unchanged notices, bounded files and exact byte counts/SHA256. Inputs and destinations are checked for links, traversal and duplicate/case-conflicting names. Only native/WASM source/notice folders and the specific accompanying PDFKit AFM permission destination are accepted. Original manifest, comparison and retrieval evidence are included under a digest-bound directory. The package manifest and verifier bind every copied source/notice byte. A supplement improves source supply; it cannot promote a development candidate to a distributable.
+
+## Explicit source-built canvas replacement
+
+`--replacement <absolute-qualified-bundle>` optionally replaces only the reviewed
+Windows x64 NAPI canvas binary in the new external package. It never changes the
+checkout or installed development dependencies. The bundle must bind the exact
+upstream component/version/hash, distinct rebuilt binary, complete supplied
+source/build/notice files and a hash-bound successful full-source Skia/image/PDF/
+offline-OCR qualification. Unsafe or conflicting destinations, modified bytes,
+missing checks and promoted legal claims reject before package output creation.
+Admission and packaged verification additionally allow only the independently
+reviewed manifest SHA-256
+`5d791594cb4ed6dba342c85522b928a53cad3151f2d47cc83acb09ecb89052b4`
+and binary SHA-256
+`e113eda0affe2217592fcf3ce690ab6c780e52904d3546ae8be15f6cbc3ca065`.
+Self-asserted matching proof records cannot authorize another bundle. Future
+replacements require a separately reviewed source change to that allowlist.
+
+The resulting manifest distinguishes the frozen rebuilt binary and source proof
+from the original npm inventory. `sourceBuildQualified:true` records engineering
+qualification only. Legal clearance, historical binary reproduction and release
+acceptance remain false. The installer verifies the replacement and every source
+file through the package inventory before and after copying.
+
+The synthetic integrated test can receive an explicit external bundle through
+`MATCHING_ACCEPTANCE_NATIVE_REPLACEMENT`; the ordinary production server has no
+such switch. Final acceptance must run the complete installed journey with the
+actual replacement and retain its package manifest hash.
