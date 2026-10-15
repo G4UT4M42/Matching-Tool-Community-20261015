@@ -2,7 +2,7 @@
 /** Isolated canvas rebuild preparation and qualification. Never changes the candidate runtime. */
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { existsSync, lstatSync, mkdirSync, readFileSync, writeFileSync, copyFileSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, writeFileSync, copyFileSync } from 'node:fs';
 import { resolve, dirname, relative, isAbsolute, join, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
@@ -182,11 +182,18 @@ if (phase==='build') {
   if(existsSync(targetRoot)){if(!existsSync(targetMarker)||JSON.parse(readFileSync(targetMarker,'utf8')).owner!==owner)throw new Error('Existing build target is not owned by this rebuild workspace');}
   else{mkdirSync(targetRoot,{recursive:true});writeFileSync(targetMarker,JSON.stringify({format,owner})+'\n');}
   writeFileSync(join(out,'build-target.json'),JSON.stringify({path:targetRoot,owner})+'\n');
-  Object.assign(env,{CMAKE_GENERATOR:'Ninja',CARGO_TARGET_DIR:targetRoot,CC:'cl',CXX:'cl'});
+  const toolsetRoot=join(vsRoot,'VC','Tools','MSVC');
+  const toolsetVersion=readdirSync(toolsetRoot,{withFileTypes:true}).filter(entry=>entry.isDirectory()&&/^\d+\.\d+\.\d+$/.test(entry.name)).map(entry=>entry.name).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})).at(-1);
+  if(!toolsetVersion)throw new Error('Selected MSVC toolset version is missing');
+  const linker=join(toolsetRoot,toolsetVersion,'bin','Hostx64','x64','link.exe');
+  if(!existsSync(linker))throw new Error('Selected MSVC x64 linker is missing');
+  const cmakeToolchain=join(out,'cmake-static-runtime.cmake');
+  writeFileSync(cmakeToolchain,'set(CMAKE_POLICY_DEFAULT_CMP0091 NEW)\nset(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "isolated static runtime" FORCE)\nset(CMAKE_C_FLAGS_RELEASE "/O2 /Ob2 /DNDEBUG" CACHE STRING "isolated release flags" FORCE)\nset(CMAKE_CXX_FLAGS_RELEASE "/O2 /Ob2 /DNDEBUG" CACHE STRING "isolated release flags" FORCE)\n');
+  Object.assign(env,{CMAKE_GENERATOR:'Ninja',CARGO_TARGET_DIR:targetRoot,CC:'cl',CXX:'cl',CMAKE_TOOLCHAIN_FILE:cmakeToolchain,CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER:linker});
   run('rustc-version',join(out,'tools/rust/bin/rustc.exe'),['-Vv'],{env});run('cargo-version',join(out,'tools/rust/bin/cargo.exe'),['--version'],{env});
   run('cargo-release-offline',join(out,'tools/rust/bin/cargo.exe'),['build','--release','--locked','--offline','--target','x86_64-pc-windows-msvc','-j','2'],{cwd:join(out,'src','canvas'),env,timeout:1200000});
   const binary=join(targetRoot,'x86_64-pc-windows-msvc','release','canvas.dll');
-  writeFileSync(join(out,'build-result.json'),JSON.stringify({rebuiltCanvas:true,binarySha256:hash(readFileSync(binary)),skiaStaticLibrariesRebuiltFromSource:false,newFrozenRustClosure:true,runtimeReplaced:false,releaseAccepted:false},null,2)+'\n');
+  writeFileSync(join(out,'build-result.json'),JSON.stringify({rebuiltCanvas:true,binarySha256:hash(readFileSync(binary)),cmakeToolchainSha256:hash(readFileSync(cmakeToolchain)),msvcToolsetVersion:toolsetVersion,frozenLockSha256:hash(readFileSync(join(out,'Cargo.lock'))),skiaStaticLibrariesRebuiltFromSource:false,newFrozenRustClosure:true,runtimeReplaced:false,releaseAccepted:false},null,2)+'\n');
 }
 if (phase==='qualify') {
   const q=join(out,'qualification');mkdirSync(q,{recursive:true});
