@@ -10,6 +10,7 @@ import { deserializeCommunityState, validateCommunityJsonState } from '../../sto
 import { verifyCanonicalSql } from '../../storage/canonical-sql.js';
 import { PaymentRepository } from '../payments/repository.js';
 import {recoverAuditedDocumentReviews} from '../documents/review-audit.js';
+import {legacyOperationalEvidenceReferences} from './legacy-operational-history.js';
 import { decodeZip, encodeZip, safeArchivePath } from './zip.js';
 import type { MatchingState } from '../../core/types.js';
 
@@ -129,6 +130,7 @@ function documentReferences(state:MatchingState,indexBytes?:Buffer):Map<string,{
     references.set(name,{hash:record.hash,bytes:record.bytes});
     if(record.status==='confirmed'&&(!state.documents.has(record.id)||state.documents.get(record.id)?.file_hash?.toLowerCase()!==record.hash))throw new Error('Confirmed review audit and financial evidence disagree');
   }
+  for(const record of legacyOperationalEvidenceReferences(state))references.set('documents/'+record.path,{hash:record.sha256,bytes:record.bytes});
   return references;
 }
 

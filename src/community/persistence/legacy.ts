@@ -8,7 +8,9 @@ import { communitySchemaDigest, initializeCommunitySqliteV1 } from '../../migrat
 import { upgradeCommunitySchema } from '../../migrations/community-registry.js';
 import { runMigrations } from '../../storage/db.js';
 import { deserializeCommunityState, validateCommunityJsonState } from '../../storage/json-store.js';
-import { verifyCanonicalSql } from '../../storage/canonical-sql.js';
+import { synchronizeCanonicalSql, verifyCanonicalSql } from '../../storage/canonical-sql.js';
+import { serializeCommunityState } from '../../storage/json-store.js';
+import { extractLegacyOperationalHistory, legacyOperationalEvidenceReferences } from './legacy-operational-history.js';
 import { createCommunityBackup, sanitizeHistoricalPaymentEvidence, verifyRuntimePath, type Exclusive } from './backup.js';
 import { stageCommunityRestore } from './restore.js';
 import {safeArchivePath} from './zip.js';
@@ -41,14 +43,15 @@ function scrub(value:unknown,depth=0):unknown{
   if(depth>48)throw new Error('Legacy state nesting exceeds limit');if(Array.isArray(value))return value.map(item=>scrub(item,depth+1));if(!value||typeof value!=='object')return value;
   const out:Record<string,unknown>={};for(const[key,child]of Object.entries(value)){if(['__proto__','constructor','prototype'].includes(key))throw new Error('Unsafe legacy state key');if(!secretKey(key))out[key]=scrub(child,depth+1);}return out;
 }
-function translateDatabase(sourcePath:string,targetPath:string):{mapped:Record<string,number>;omitted:Record<string,number>}{
+function translateDatabase(sourcePath:string,targetPath:string){
   const src=new Database(sourcePath,{readonly:true,fileMustExist:true}),dest=new Database(targetPath);
   try{
     if(src.pragma('integrity_check',{simple:true})!=='ok'||(src.pragma('foreign_key_check') as unknown[]).length)throw new Error('Legacy database integrity failure');
     const sql=sources();dest.pragma('journal_mode=WAL');initializeCommunitySqliteV1(dest,sql,runMigrations);upgradeCommunitySchema(dest,communitySchemaDigest(sql));
     const existing=new Set(src.prepare("SELECT name FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite_%'").pluck().all() as string[]),mapped:Record<string,number>={},omitted:Record<string,number>={};
     const known=new Set([...tableOrder.map(([name])=>name),...authorityTables,...operationalTables]);
-    for(const name of existing){if(!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name))throw new Error('Unsafe legacy table name');const count=Number(src.prepare(`SELECT count(*) FROM "${name}"`).pluck().get());if(!known.has(name)&&count)throw new Error('Unmapped legacy table with persisted data: '+name);if(operationalTables.has(name)&&count&&name!=='schema_migrations'&&name!=='_migration_browser_use')throw new Error('Unsupported legacy operational history requires explicit migration mapping: '+name);if(authorityTables.has(name)||name==='schema_migrations'||name==='_migration_browser_use')omitted[name]=count;}
+    const history=extractLegacyOperationalHistory(src);
+    for(const name of existing){if(!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name))throw new Error('Unsafe legacy table name');const count=Number(src.prepare(`SELECT count(*) FROM "${name}"`).pluck().get());if(!known.has(name)&&count)throw new Error('Unmapped legacy table with persisted data: '+name);if(operationalTables.has(name)&&name!=='schema_migrations'&&name!=='_migration_browser_use')mapped[name]=count;if(authorityTables.has(name)||name==='schema_migrations'||name==='_migration_browser_use')omitted[name]=count;}
     dest.pragma('foreign_keys=OFF');
     dest.transaction(()=>{
       for(const[from,to]of tableOrder){
@@ -73,7 +76,7 @@ function translateDatabase(sourcePath:string,targetPath:string):{mapped:Record<s
       }
     })();dest.pragma('foreign_keys=ON');
     if((dest.pragma('foreign_key_check') as unknown[]).length||dest.pragma('integrity_check',{simple:true})!=='ok')throw new Error('Converted legacy relationship failure');
-    return{mapped,omitted};
+    return{mapped,omitted,history};
   }finally{src.close();dest.close();}
 }
 function layout(root:string){
@@ -108,13 +111,15 @@ function documentSource(root:string,evidence:string,filename:string):string{
 }
 const stateKeys=new Set(['schema_version','format','run_id','transactions','documents','match_groups','exclusion_rules','audit_events','matched_transaction_ids','matched_document_ids','excluded_transaction_ids','accounting']);
 function buildCandidate(sourceRoot:string,candidate:string){
-  const root=resolve(sourceRoot),paths=layout(root),before=legacySourceFingerprint(root),raw=scrub(JSON.parse(normalFile(paths.state).toString('utf8'))) as Record<string,unknown>;
+  const root=resolve(sourceRoot),paths=layout(root),before=legacySourceFingerprint(root),input=JSON.parse(normalFile(paths.state).toString('utf8'));
+  if(Array.isArray(input?.audit_events)&&input.audit_events.some((event:{after?:Record<string,unknown>})=>event?.after?.legacy_operational_history_version!==undefined))throw new Error('Already converted Community operational history requires complete backup/restore, not original V2 conversion');
+  const raw=scrub(input) as Record<string,unknown>;
   for(const[key,value]of Object.entries(raw))if(!stateKeys.has(key)&&value!==null)throw new Error('Unmapped legacy state field: '+key);
   raw.schema_version=raw.accounting===undefined?1:2;raw.format=raw.accounting===undefined?'matching-community-state-v1':'matching-community-state-v2';validateCommunityJsonState(raw);
   mkdirSync(join(candidate,'database'),{recursive:true});mkdirSync(join(candidate,'state'));mkdirSync(join(candidate,'documents'));
   // SQLite opens only this private copy, so even WAL/SHM management cannot alter the source.
   const snapshot=join(candidate,'source-snapshot.db');writeFileSync(snapshot,normalFile(paths.db),{flag:'wx'});if(existsSync(paths.db+'-wal')){verifyRuntimePath(root,paths.db+'-wal');writeFileSync(snapshot+'-wal',normalFile(paths.db+'-wal'),{flag:'wx'});}
-  const mapping=translateDatabase(snapshot,join(candidate,'database','matching.db'));for(const suffix of['','-wal','-shm'])if(existsSync(snapshot+suffix))rmSync(snapshot+suffix);
+  const {history,...mapping}=translateDatabase(snapshot,join(candidate,'database','matching.db'));for(const suffix of['','-wal','-shm'])if(existsSync(snapshot+suffix))rmSync(snapshot+suffix);
   const dest=new Database(join(candidate,'database','matching.db'));let evidenceCount=0;
   try{
     for(const[id,doc]of Object.entries(raw.documents as Record<string,{filename?:string;file_hash?:string;meta?:Record<string,unknown>}>)){
@@ -125,13 +130,35 @@ function buildCandidate(sourceRoot:string,candidate:string){
       dest.prepare('UPDATE documents SET filename=?,file_hash=?,meta=? WHERE document_id=?').run(name,digest,JSON.stringify(doc.meta??{}),id);
       dest.prepare('UPDATE invoice_scans SET stored_filename=?,file_hash=? WHERE document_id=?').run(name,digest,id);evidenceCount++;
     }
-    verifyCanonicalSql(dest,deserializeCommunityState(raw));
+    const state=deserializeCommunityState(raw);verifyCanonicalSql(dest,state);
+    const requirements=new Map<string,typeof history.evidence>();
+    for(const item of history.evidence){const key=JSON.stringify([item.table,item.id]),entries=requirements.get(key)??[];entries.push(item);requirements.set(key,entries);}
+    const copied=new Map<string,number>();let copiedBytes=0;
+    for(const row of history.rows){
+      const evidence=[];
+      for(const item of requirements.get(JSON.stringify([row.table,row.id]))??[]){
+        const bytes=normalFile(documentSource(root,paths.evidence,item.source_path)),digest=sha(bytes);
+        if(!bytes.length||digest!==item.sha256||(item.bytes!==undefined&&item.bytes!==bytes.length))throw new Error('Legacy operational original hash or size mismatch');
+        if(item.mime_type==='image/png'&&!bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))||item.mime_type==='image/jpeg'&&!bytes.subarray(0,3).equals(Buffer.from([255,216,255]))||item.mime_type==='image/webp'&&(bytes.subarray(0,4).toString()!=='RIFF'||bytes.subarray(8,12).toString()!=='WEBP'))throw new Error('Legacy operational image evidence signature mismatch');
+        if(item.document_id){const document=state.documents.get(item.document_id);if(!document||document.file_hash?.toLowerCase()!==digest)throw new Error('Legacy operational document original disagrees');}
+        const path='legacy-evidence/'+digest;
+        if(!copied.has(path)){
+          copiedBytes+=bytes.length;if(copied.size>=1000||copiedBytes>256*1024*1024)throw new Error('Legacy operational originals exceed supported aggregate limit');
+          mkdirSync(join(candidate,'documents','legacy-evidence'),{recursive:true});writeFileSync(join(candidate,'documents',path),bytes,{flag:'wx'});copied.set(path,bytes.length);evidenceCount++;
+        }
+        evidence.push({path,sha256:digest,bytes:bytes.length,...(item.mime_type?{mime_type:item.mime_type}:{})});
+      }
+      const identity=sha(JSON.stringify([row.table,row.id,row.source_sha256]));
+      state.audit_events.push({audit_id:'LEGACY-OPERATIONAL-'+identity,timestamp:row.timestamp,actor_type:'system',actor_id:'legacy-migration',action:'STATE_COMMITTED',entity_type:'Run',entity_id:'LEGACY-OPERATIONAL-'+identity,run_id:state.run_id,reason:'Read-only legacy operational history; no execution authority restored',after:{legacy_operational_history_version:1,...row,evidence}});
+    }
+    legacyOperationalEvidenceReferences(state);
+    if(history.rows.length){synchronizeCanonicalSql(dest,state);Object.assign(raw,JSON.parse(serializeCommunityState(state)));}
   }finally{dest.close();}
   if(legacySourceFingerprint(root)!==before)throw new Error('Legacy source changed during conversion');
   writeFileSync(join(candidate,'state','state.json'),JSON.stringify(raw));
   const totals:Record<string,number>={},statuses:Record<string,number>={};for(const tx of Object.values(raw.transactions as Record<string,{currency_code:string;amount_minor:number}>)){totals[tx.currency_code]=(totals[tx.currency_code]??0)+tx.amount_minor;if(!Number.isSafeInteger(totals[tx.currency_code]))throw new Error('Legacy financial totals exceed exact range');}
   for(const match of Object.values(raw.match_groups as Record<string,{status:string}>))statuses[match.status]=(statuses[match.status]??0)+1;
-  return{mapping,fingerprint:before,source_sha256:sha(normalFile(paths.state)),counts:{transactions:Object.keys(raw.transactions as object).length,documents:Object.keys(raw.documents as object).length,match_groups:Object.keys(raw.match_groups as object).length,audit_events:(raw.audit_events as unknown[]).length},signed_totals_minor_by_currency:totals,match_statuses:statuses,evidence_count:evidenceCount,requires_reconnection:['banking','oauth','payment_provider','invoice_bot'],warnings:['Reusable sessions, release authority and exported payment artifacts are excluded; historical economic payment evidence is retained.']};
+  return{mapping,fingerprint:before,source_sha256:sha(normalFile(paths.state)),counts:{transactions:Object.keys(raw.transactions as object).length,documents:Object.keys(raw.documents as object).length,match_groups:Object.keys(raw.match_groups as object).length,audit_events:(raw.audit_events as unknown[]).length},signed_totals_minor_by_currency:totals,match_statuses:statuses,evidence_count:evidenceCount,operational_history_rows:history.rows.length,requires_reconnection:['banking','oauth','payment_provider','invoice_bot'],warnings:['Reusable sessions, release authority and exported payment artifacts are excluded; historical economic payment evidence is retained.','Known portal/run/file/event/extracted-invoice and AI cost history is preserved as inert audit evidence; unsafe free-form fields are omitted with digests and reasons.']};
 }
 export async function inspectLegacy(sourceRoot:string){
   const candidate=mkdtempSync(join(tmpdir(),'community-legacy-preview-'));try{return{...buildCandidate(sourceRoot,candidate),dry_run:true,activation_allowed:false,source_unchanged:true};}finally{rmSync(candidate,{recursive:true,force:true});}
