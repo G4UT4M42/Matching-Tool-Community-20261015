@@ -2,7 +2,7 @@
   "format": "matching-community-source-map-v1",
   "source_representation": "Canonical Git index blobs (line-ending independent)",
   "scope": "Tracked Community implementation source; legacy v2_source inventory remains a frozen reference, not runtime acceptance.",
-  "source_content_sha256": "55f597da7527958ee34d3c8ee4082b0716ac46f2c0ba58b68a38ee8a189ba79f",
+  "source_content_sha256": "65982d7dc243fffef6e4d8092a51b64bf8192ffa3603a42d5ae5c0cdc471c67c",
   "files": [
     {
       "path": "src/app/cli.ts",
@@ -391,8 +391,8 @@
     },
     {
       "path": "src/community/persistence/backup.ts",
-      "sha256": "e25c8a72dd46668ee035ea98c0083f22bb66bb07fe4cfb5470e6e2dac8384d87",
-      "bytes": 22359,
+      "sha256": "d29d543a5c5888c8dc8f9fb94f682974fa2b40a217f10fb930a31f8ffe113d12",
+      "bytes": 22591,
       "exports": [
         "Exclusive",
         "FinancialSummary",
@@ -408,9 +408,23 @@
       ]
     },
     {
+      "path": "src/community/persistence/legacy-operational-history.ts",
+      "sha256": "cfc4019f06e85080fd36c57f6f5f2a99e99a59b7190aa74a88d4738f55102f54",
+      "bytes": 22203,
+      "exports": [
+        "LegacyOperationalOmission",
+        "LegacyOperationalRow",
+        "LegacyOperationalEvidenceRequirement",
+        "LegacyOperationalExtraction",
+        "LegacyOperationalEvidenceReference",
+        "extractLegacyOperationalHistory",
+        "legacyOperationalEvidenceReferences"
+      ]
+    },
+    {
       "path": "src/community/persistence/legacy.ts",
-      "sha256": "164c7d3f494256a2a6efa3fcfc92614fb69fe9b0defeed8e27af4f2ee2ce9cd5",
-      "bytes": 17556,
+      "sha256": "e215270334c1433233cd806d9de9a240c3bc624bda4d38894668dce4ab439125",
+      "bytes": 20783,
       "exports": [
         "legacySourceFingerprint",
         "inspectLegacy",
@@ -419,8 +433,8 @@
     },
     {
       "path": "src/community/persistence/restore.ts",
-      "sha256": "089de2adf9a0addd0d4fc22c813e32d40c0074e90bd8defa6c730fefac53ed49",
-      "bytes": 11408,
+      "sha256": "393a41e28a0c69b22d0b98c7782067de62cd95e61612a1fb70a554b384971e2e",
+      "bytes": 11696,
       "exports": [
         "RestoreStage",
         "SafeActivate",

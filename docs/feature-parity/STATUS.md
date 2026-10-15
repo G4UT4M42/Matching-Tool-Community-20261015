@@ -2,7 +2,7 @@
 
 Status: IN_PROGRESS. Updated 2026-10-15. This document describes the current isolated candidate; historical counts remain evidence for their own source snapshots.
 
-> Current checkpoint (2026-10-15): candidate0.2.0-community-candidate.1 now includes all11 controlled assisted portal choices, explicit restored-workspace adoption, read-only recovered payment history, conservative unknown-payment deduplication and generation-bound restore/backup isolation. Final recovery module97084264 passes81/81 focused tests; independent compatibility45/45 plus typecheck; independent actual lifecycle3/3. Latest two-owner normal browser passes1/1 in24174.9778ms with backend/frontend build. Contextual matching selectors and EN/DE OCR guidance pass65/65 focused plus actualReact2/2. All three full-source replacement descriptors and four source/SBOM supplements are independently qualified in their stated engineering scopes; combined admission9/9 passes. Final clean-commit complete suites and installed three-replacement journey are next. Prior441-test and two-replacement browser results remain historical scoped baselines. PRIVATE_REPOSITORY_READY, SOFTWARE_ACCEPTED and RELEASE_ACCEPTED remain false pending their respective gates.
+> Current freeze checkpoint (2026-10-15): local contracts are implemented for34of41 work packages;2packages have explicit external account/hosted-CI requirements and5final qualification/release packages retain separate gates. All11 controlled portal choices, explicit workspace recovery, generation isolation and original-preserving operational migration are integrated. New known-history composition passes89/89; independent new-file review38/38 plus envelope/REAL/null-MIME/backup-tamper probes. Expanded source journey passes in105651.872ms with9 historical rows,2linked originals,48 interface combinations and actual exit86/rollback/retry; no unexplained browser errors. Standalone OCR harness now uses packaged languages and passes1/1. Full4867 app run507/508 failed only the old owner fixture, repaired focused1/1; all failed evidence remains. Final clean candidate complete suites and installed3replacement/4supplement journey are recorded in external exact-final run manifests after this immutable freeze. No final PASS is inferred here. Repository/software/release milestones remain false until their own actual gates pass.
 
 ## Source and recovery
 
@@ -51,3 +51,27 @@ No new GitHub repository, push, Actions result, branch protection or release is 
 Independent privacy/source engineering review found no concrete leak in its exact stable snapshot:18 reachable commits,526 index files and676 unique blobs, plus manual triage of175 generic candidates. It does not cover later source, built artifacts or legal/publication approval.
 
 Automatic approval denials are retained in external evidence. The denied evidence move, diagnostic-process cleanup and distinct pathname review are not retried or bypassed. These limits do not prevent unrelated implementation work.
+
+
+## Operational-history closure and immutable final qualification
+
+Commit3819415 closes the known populated Invoice Bot/cost-history conversion gap.
+The strict projection preserves source IDs, relationships, original row hashes,
+REAL bits, typed invoice fields and verified invoice/screenshot originals while
+keeping active legacy tables empty. Migration decision007 records the boundary.
+The supported original-V2 converter never reinterprets already converted Community
+archives; those use complete backup/restore. Unknown populated future structures
+still fail explicitly. No original financial source is rewritten.
+
+The source-only105651.872ms journey is individually passing inside a two-entrypoint
+invocation whose older standalone OCR harness failed. That harness was repaired
+and registered in complete Node discovery, with focused1/1 real OCR/preview/import/
+reopen proof. The earlier508-test app run likewise remains failed507/508; its
+missing explicit owner permission fixture was repaired1/1. Neither failed run is
+renamed as a complete PASS. Final exact-commit results, hashes and the German
+owner report are produced externally against the immutable candidate.
+
+Independent source privacy at4867df0 covers32parent-closed commits/550files/799blobs.
+Its exact intermediate package covers8550payloads,3replacement+4supplement bindings
+and85unique archives; public upstream examples remain explicitly classified.
+The final changed source/package requires its own extension of those reports.

@@ -44,7 +44,7 @@ provider access and remain separately unaccepted.
 
 Invoice Bot opens a new isolated browser profile for explicit user login and
 PDF/image download. It never imports an existing browser session. The user
-selects completed downloads for review. Eight provider workflows are declared;
+selects completed downloads for review. Eleven controlled assisted provider choices are declared, with separately labelled unconfirmed AliExpress receipt capture;
 see [the source inventory](feature-parity/INVOICE_PORTAL_INVENTORY.md).
 
 SEPA drafts and XML export are separate from bank account information. Submission
@@ -56,7 +56,7 @@ An unknown simulated outcome retains its durable claim and cannot be resubmitted
 Use Backup and migration to create/download an attachment-inclusive verified ZIP.
 Restore stages and compares it before explicit activation. Credentials, browser
 sessions, reusable approvals and authentication databases are excluded. Existing
-local account identity remains independent of financial restoration.
+local account identity remains independent of financial restoration. A receiving owner separately inspects and confirms exact recovered originals before adopting them into the new workspace. Existing unresolved payment history continues to block duplicates; old payment batches remain read-only.
 
 The migration wizard accepts offline source layouts `database/matching.db` plus
 `state/state.json`, `data/matching.db` plus `data/state.json`, or `matching.db`

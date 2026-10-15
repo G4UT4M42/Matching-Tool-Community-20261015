@@ -13,11 +13,11 @@ Matching Tool Community is a local TypeScript/Express and React/Vite application
 - Explicit private/excluded classifications and manageable bounded literal rules, exact per-currency reports, reviewed VAT evidence and CSV/JSON exports. See [accounting scope](docs/ACCOUNTING_SCOPE.md).
 - User-configured encrypted PayPal/Stripe read-only API credentials, test/sync/history, stable verified account identities and recoverable historical coverage.
 - Read-only Enable Banking AIS settings, separate SEPA preparation, transaction-bound approval and local simulated submission with durable claims and unknown-outcome handling. Automated tests never execute real transfers.
-- Eight assisted invoice-provider workflows in fresh user-controlled browser sessions, explicit downloaded-file selection and durable document import. See [provider inventory](docs/feature-parity/INVOICE_PORTAL_INVENTORY.md) for exact scope and unqualified providers.
-- Verified backups, staged restore, supported synthetic V2 migration wizard, interruption rollback, and original-source preservation.
+- Eleven assisted invoice-provider choices in fresh user-controlled browser sessions, explicit downloaded-file or unconfirmed receipt selection and durable document import. See [provider inventory](docs/feature-parity/INVOICE_PORTAL_INVENTORY.md) for exact scope and unqualified providers.
+- Verified backups, staged restore, explicit owner-confirmed recovery into a new authentication workspace, supported synthetic V2 migration wizard, interruption rollback, and original-source preservation. Restored payment history remains read-only and unresolved outcomes still block duplicates.
 - English default, selectable German, normal settings/dashboard/audit pages and role-specific controls.
 
-Live provider acceptance is separate from software mock qualification. Actual bank payment initiation remains unavailable. AliExpress/Bambu Lab contracts and consumer-Post parity are unresolved; no unsafe legacy crawler is enabled. This candidate is not an accepted tax-filing or production bookkeeping release.
+Live provider acceptance is separate from software mock qualification. Actual bank payment initiation remains unavailable. All retained providers have controlled collection paths; actual login, regional document availability and supplier tax-invoice support remain provider-specific external qualification. AliExpress receipt images remain unconfirmed evidence. No unsafe legacy crawler is enabled. This candidate is not an accepted tax-filing or production bookkeeping release.
 
 ## Installation and development
 
@@ -45,4 +45,4 @@ See [current status](docs/feature-parity/STATUS.md), [all 21 feature areas](docs
 
 The root MIT license is provisional pending verified first-party rights. [NOTICE](NOTICE), [SBOM/inventory](docs/compliance/README.md), [native/WASM source preparation](docs/compliance/NATIVE_SOURCE_PLAN.md) and [packaging contract](docs/compliance/PACKAGING.md) track third-party obligations. Original upstream notices remain unchanged. Source archives and public legal-text bundles stay external to the privacy-scanned source tree and may be supplied through hash-validated package supplements.
 
-Native corresponding-source/build/relink, ownership and final redistribution review remain separate gates. The builder creates development candidates only and refuses distributable mode. No public publication is authorized. A private source repository may be prepared after privacy/history checks; that milestone does not imply software or release acceptance.
+Three frozen native/WASM replacement builds and four source/SBOM supplements have independent engineering qualification in their recorded scopes. Ownership and final redistribution review remain separate gates; source-build proof does not assert historical binary reproduction or legal clearance. The builder creates development candidates only and refuses distributable mode. No public publication is authorized. A private source repository may be prepared after privacy/history checks; that milestone does not imply software or release acceptance.
