@@ -80,13 +80,13 @@ export function parseRecognizedInvoice(rawText: string, confidence = 1): Recogni
   const warnings: string[] = [];
   const currencyCodes = [...new Set((text.match(/\b(?:EUR|USD|GBP|CHF)\b|€/gi) ?? []).map(x => x === '€' ? 'EUR' : x.toUpperCase()))];
   const currency = currencyCodes.length === 1 ? currencyCodes[0] : undefined;
-  if (!currency) warnings.push('Currency is missing or ambiguous');
+  if (!currency) warnings.push('DOCUMENT_CURRENCY_MISSING_OR_AMBIGUOUS');
   const pick = (labels: string) => lines.map(line => new RegExp(`(?:${labels})\\s*[:#]?\\s*(.+)$`, 'i').exec(line)?.[1]?.trim()).filter((v): v is string => !!v);
   const invoiceNumbers = [...new Set(pick('invoice\\s*(?:no\\.?|number|#)|rechnungs(?:nummer|nr\\.?)'))];
-  if (invoiceNumbers.length !== 1) warnings.push('Invoice number is missing or ambiguous');
+  if (invoiceNumbers.length !== 1) warnings.push('DOCUMENT_INVOICE_NUMBER_MISSING_OR_AMBIGUOUS');
   const dateValues = pick('invoice\\s*date|rechnungsdatum|belegdatum');
   const parsedDates = [...new Set(dateValues.map(value => { try { return statementDate(value); } catch { return undefined; } }).filter((v): v is string => !!v))];
-  if (parsedDates.length !== 1) warnings.push('Invoice date is missing or ambiguous');
+  if (parsedDates.length !== 1) warnings.push('DOCUMENT_DATE_MISSING_OR_AMBIGUOUS');
   const extractMoney = (labels: string) => [...new Set(pick(labels).map(value => {
     const match = /(?:EUR|USD|GBP|CHF|€)?\s*([+-]?(?:\d{1,3}(?:[.,]\d{3})+|\d+)[.,]\d{2})\b/i.exec(value);
     return match && currency ? exactAmount(match[1], currency) : undefined;
@@ -94,9 +94,9 @@ export function parseRecognizedInvoice(rawText: string, confidence = 1): Recogni
   const gross = extractMoney('grand\\s*total|invoice\\s*total|total\\s*due|amount\\s*due|gesamtbetrag|bruttobetrag|rechnungsbetrag');
   const net = extractMoney('subtotal|net\\s*total|netto(?:betrag)?');
   const vat = extractMoney('vat|mwst|umsatzsteuer|mehrwertsteuer');
-  if (gross.length !== 1 || gross[0] <= 0) warnings.push('Gross amount is missing or ambiguous');
-  if (net.length > 1 || vat.length > 1) warnings.push('Net or VAT amount is ambiguous');
-  if (gross.length === 1 && net.length === 1 && vat.length === 1 && net[0] + vat[0] !== gross[0]) warnings.push('Net plus VAT does not equal gross');
+  if (gross.length !== 1 || gross[0] <= 0) warnings.push('DOCUMENT_GROSS_MISSING_OR_AMBIGUOUS');
+  if (net.length > 1 || vat.length > 1) warnings.push('DOCUMENT_NET_OR_VAT_AMBIGUOUS');
+  if (gross.length === 1 && net.length === 1 && vat.length === 1 && net[0] + vat[0] !== gross[0]) warnings.push('DOCUMENT_TOTAL_MISMATCH');
   const supplier = pick('supplier|vendor|lieferant|aussteller');
   const iban = [...new Set((text.match(/\b[A-Z]{2}\d{2}(?:\s?[A-Z0-9]){11,30}\b/g) ?? []).map(x => x.replace(/\s/g, '')))];
   const reference = pick('payment\\s*reference|verwendungszweck|zahlungsreferenz');

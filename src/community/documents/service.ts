@@ -215,7 +215,7 @@ export class CommunityDocumentService {
       let recognition: RecognizedInvoice;
       try { recognition = await recognizeDocument(buffer, inspected.kind, this.options.localLanguageDir); }
       catch (error) {
-        recognition = { confidence: 0, raw_text: '', warnings: [error instanceof DocumentInputError ? error.message : 'Recognition failed; review fields manually'] };
+        recognition = { confidence: 0, raw_text: '', warnings: [error instanceof DocumentInputError ? error.message : 'DOCUMENT_RECOGNITION_FAILED'] };
       }
       const workspaceHash = createHash('sha256').update(principal.workspace_id).digest('hex');
       const dir = join(this.blobs, workspaceHash);

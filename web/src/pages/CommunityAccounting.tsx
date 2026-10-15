@@ -2,10 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { communityAccountingText } from '../i18n/community-accounting';
 import { communityFetch } from '../api';
 import {problemMessage} from '../i18n/community-problems';
+import {formatMinorUnits} from '../format/money';
 
-type Snapshot = { revision: number; transactions: Array<{ transaction_id: string; amount_minor: number; currency_code: string }>;
+type TransactionChoice = {transaction_id:string;amount_minor:number;currency_code:string;source_system?:string;source_account_id?:string;posting_at?:string;booking_reference?:string;payment_reference?:string;source_row_ref?:string;description_raw?:string;counterparty_name?:string};
+type DocumentChoice = {document_id:string;total_amount_minor:number;currency_code:string;source_document_ref?:string;supplier_name?:string;document_date?:string;meta?:Record<string,unknown>};
+type Snapshot = { revision: number; transactions: TransactionChoice[];
   exclusion_rules:Array<{exclusion_id:string;field:string;operator:string;value:string;source_system?:string;enabled:boolean;can_enable:boolean;ownership_known:boolean}>;
-  documents: Array<{ document_id: string; total_amount_minor: number; currency_code: string }>;
+  documents: DocumentChoice[];
   allocations: Array<{ allocation_id: string; transaction_id: string; document_id?: string; kind: string; status: string; transaction_amount_minor: number }>;
   match_groups: Array<{ match_group_id: string; status: string; transaction_ids: string[]; document_ids: string[]; amount_total_minor: number; currency_code: string; reason_codes: string[] }> };
 type Report = { rows: Array<{ transaction_id: string; amount_minor: number; currency_code: string; category: string; remaining_minor: number }>;
@@ -20,6 +23,21 @@ export function CommunityAccounting({ apiBase = '/api', locale = 'en', permissio
   const t = communityAccountingText[locale];
   const labels:Record<string,string>={"payment": "Zahlung", "refund": "Erstattung", "credit_note": "Gutschrift", "fee": "Gebühr", "transfer": "Umbuchung", "income": "Einnahme", "expense": "Ausgabe", "private": "Privat", "unclassified": "Nicht klassifiziert", "output": "Umsatzsteuer", "input": "Vorsteuer", "exempt": "Steuerfrei", "outside_scope": "Nicht steuerbar", "excluded": "Ausgeschlossen", "restore": "Wiederherstellen", "proposed": "Vorgeschlagen", "accepted": "Angenommen", "confirmed": "Bestätigt", "manual": "Manuell", "rejected": "Abgelehnt", "fully_matched": "Vollständig abgeglichen", "partially_matched": "Teilweise abgeglichen", "unmatched": "Nicht abgeglichen", "description_raw": "Beschreibung", "counterparty_name": "Gegenpartei", "booking_reference": "Buchungsreferenz", "payment_reference": "Zahlungsreferenz", "contains": "Enthält", "equals": "Entspricht", "starts_with": "Beginnt mit"};
   const valueLabel=(value:string)=>locale==='de'?(value==='cancelled'?'Storniert':labels[value]??value):value;
+  const choiceText=locale==='de'?{account:'Konto',date:'Datum',reference:'Referenz',invoice:'Rechnung'}:{account:'Account',date:'Date',reference:'Reference',invoice:'Invoice'};
+  const choiceAmount=(minor:number,currency:string)=>{
+    try{return formatMinorUnits(minor,currency,locale);}
+    catch{return `${minor} ${currency} (${locale==='de'?'kleinste Einheiten':'minor units'})`;}
+  };
+  const transactionChoice=(item:TransactionChoice)=>[
+    item.source_system,item.source_account_id&&`${choiceText.account}: ${item.source_account_id}`,
+    item.posting_at&&`${choiceText.date}: ${item.posting_at.slice(0,10)}`,item.counterparty_name,
+    ...[...new Set([item.booking_reference,item.payment_reference,item.source_row_ref].filter((value):value is string=>Boolean(value)))].map(value=>`${choiceText.reference}: ${value}`),
+    item.description_raw,choiceAmount(item.amount_minor,item.currency_code),item.transaction_id,
+  ].filter(Boolean).join(' · ');
+  const documentChoice=(item:DocumentChoice)=>{
+    const invoice=typeof item.meta?.invoice_number==='string'&&item.meta.invoice_number?item.meta.invoice_number:item.source_document_ref;
+    return[item.supplier_name,invoice&&`${choiceText.invoice}: ${invoice}`,item.document_date&&`${choiceText.date}: ${item.document_date.slice(0,10)}`,choiceAmount(item.total_amount_minor,item.currency_code),item.document_id].filter(Boolean).join(' · ');
+  };
   const mayMatch=permissions===undefined||permissions.includes('finance:match'),mayAnnotate=permissions===undefined||permissions.includes('finance:annotate');
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [report, setReport] = useState<Report | null>(null);
@@ -114,8 +132,8 @@ export function CommunityAccounting({ apiBase = '/api', locale = 'en', permissio
       {mayMatch && ['accepted', 'confirmed', 'manual'].includes(group.status) && <button onClick={() => void action(`/accounting/matches/${encodeURIComponent(group.match_group_id)}`, { revision: snapshot.revision, reason: evidence }, 'DELETE')}>{t.undo}</button>}
     </li>)}</ul></section>
     {mayMatch&&<section><h2>{t.allocation}</h2>
-      <label>{t.transaction} <select id="accounting-transactionId" value={transactionId} onChange={e => setTransactionId(e.target.value)}><option value="">—</option>{snapshot?.transactions.map(item => <option key={item.transaction_id} value={item.transaction_id}>{item.transaction_id} · {item.amount_minor} {item.currency_code}</option>)}</select></label>{' '}
-      <label>{t.document} <select id="accounting-documentId" value={documentId} onChange={e => setDocumentId(e.target.value)}><option value="">—</option>{snapshot?.documents.map(item => <option key={item.document_id} value={item.document_id}>{item.document_id} · {item.total_amount_minor} {item.currency_code}</option>)}</select></label>{' '}
+      <label>{t.transaction} <select id="accounting-transactionId" style={{maxWidth:'100%'}} value={transactionId} onChange={e => setTransactionId(e.target.value)}><option value="">—</option>{snapshot?.transactions.map(item => <option key={item.transaction_id} value={item.transaction_id}>{transactionChoice(item)}</option>)}</select></label>{' '}
+      <label>{t.document} <select id="accounting-documentId" style={{maxWidth:'100%'}} value={documentId} onChange={e => setDocumentId(e.target.value)}><option value="">—</option>{snapshot?.documents.map(item => <option key={item.document_id} value={item.document_id}>{documentChoice(item)}</option>)}</select></label>{' '}
       <label>{t.kind} <select id="accounting-kind" value={kind} onChange={e => setKind(e.target.value)}>{['payment', 'refund', 'credit_note', 'fee', 'transfer'].map(item => <option key={item} value={item}>{valueLabel(item)}</option>)}</select></label><br />
       <label>{t.transactionAmount} <input id="accounting-amount" aria-label={t.transactionAmount} type="number" step="1" value={amount} onChange={e => setAmount(e.target.value)} /></label>{' '}
       <label>{t.documentAmount} <input id="accounting-documentAmount" aria-label={t.documentAmount} type="number" step="1" value={documentAmount} onChange={e => setDocumentAmount(e.target.value)} /></label>{' '}

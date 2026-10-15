@@ -4,6 +4,7 @@ import {problemMessage} from '../i18n/community-problems';
 import { minorUnitDecimal } from '../format/money';
 import { useLanguage } from '../i18n/locale';
 import { communityDocumentsText } from '../i18n/community-documents';
+import {documentWarningMessage} from '../i18n/document-warnings';
 
 type Fields = {document_type?:'invoice'|'credit_note'; invoice_number?: string; supplier_name?: string; document_date?: string; total_amount_minor?: number; net_amount_minor?: number; vat_amount_minor?: number; currency_code?: string; payment_reference?: string; iban?: string; due_date?: string };
 type RecordItem = { id: string; filename: string; status: string; hash: string; fields: Fields; recognition: { confidence: number; raw_text: string; warnings: string[] }; history: Array<{ at: string; actor: string; action: string; fields?: Fields }> };
@@ -83,7 +84,7 @@ export function CommunityDocuments({permissions}:{permissions?:readonly string[]
           {mayWrite&&selected.status !== 'archived' && <button disabled={busy} onClick={() => void call(`/${selected.id}/archive`, 'POST')}>{t.archive}</button>}
           {mayWrite&&selected.status === 'archived' && <button disabled={busy} onClick={() => void call(`/${selected.id}/restore`, 'POST')}>{t.restore}</button>}
         </div>
-        <details><summary>{t.evidence} · {Math.round(selected.recognition.confidence * 100)}%</summary><ul>{selected.recognition.warnings.map((warning,index) => <li key={index}>{warning}</li>)}</ul><pre style={{ whiteSpace: 'pre-wrap' }}>{selected.recognition.raw_text}</pre></details>
+        <details><summary>{t.evidence} · {Math.round(selected.recognition.confidence * 100)}%</summary><ul>{selected.recognition.warnings.map((warning,index) => <li key={index}>{documentWarningMessage(warning,language==='de'?'de':'en')}</li>)}</ul><pre style={{ whiteSpace: 'pre-wrap' }}>{selected.recognition.raw_text}</pre></details>
         <details><summary>{t.history}</summary><ol>{selected.history.map((entry,index) => <li key={index}>{entry.at} · {statusLabel(entry.action)} · {entry.actor}{entry.fields && <ul>{Object.entries(entry.fields).map(([key,value]) => <li key={key}>{fieldLabel(key)}: {String(value)}</li>)}</ul>}</li>)}</ol></details>
       </section> : <p>{t.select}</p>}
     </div>
