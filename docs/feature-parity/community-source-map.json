@@ -2,7 +2,7 @@
   "format": "matching-community-source-map-v1",
   "source_representation": "Canonical Git index blobs (line-ending independent)",
   "scope": "Tracked Community implementation source; legacy v2_source inventory remains a frozen reference, not runtime acceptance.",
-  "source_content_sha256": "cefab50d90c367222c8a08cf0c6b037bcd49ddac3f737648a94f6b9ab9a9a4a5",
+  "source_content_sha256": "55f597da7527958ee34d3c8ee4082b0716ac46f2c0ba58b68a38ee8a189ba79f",
   "files": [
     {
       "path": "src/app/cli.ts",
@@ -125,8 +125,8 @@
     },
     {
       "path": "src/community/documents/recognition.ts",
-      "sha256": "9653d1257251ee73c12d7a295f5613170abc6782cf2fb58ea869790583d300c9",
-      "bytes": 12144,
+      "sha256": "507f9699a848f9646acb4b5a09dcc631b12a1266b16cd55ae9ffe4fcdc5fc969",
+      "bytes": 12142,
       "exports": [
         "MAX_DOCUMENT_BYTES",
         "MAX_PAGES",
@@ -156,8 +156,8 @@
     },
     {
       "path": "src/community/documents/service.ts",
-      "sha256": "ac6fa053a0962a455e8d0e7cf21ece2494ebe1e2129a4ba0ac70c45a43499165",
-      "bytes": 35114,
+      "sha256": "45a9b9f31b4280ae3fe4faa7001d8be0b5b7b3c6f96b78530e22d73c7c06d100",
+      "bytes": 36420,
       "exports": [
         "Principal",
         "ReviewFields",
@@ -280,21 +280,24 @@
     },
     {
       "path": "src/community/invoice-bot/assisted-portals.ts",
-      "sha256": "b5c4b57457cc5f46fe3058d38730122bb2fce976f6391efe23303025f087bf22",
-      "bytes": 14426,
+      "sha256": "e4986837ddcbf84b44759c06374a708d2fa3ef6229b5393cdfae4178c182791a",
+      "bytes": 24111,
       "exports": [
         "AssistedPortal",
         "ASSISTED_PORTALS",
         "AssistedBrowserOptions",
+        "protectedReceiptFrame",
         "AssistedPortalSessions"
       ]
     },
     {
       "path": "src/community/invoice-bot/coordinator.ts",
-      "sha256": "ea243e06b0cf5c0e314081ddd7e705e750cf2babb9e7b04900882828c88c6131",
-      "bytes": 11771,
+      "sha256": "ff3fc157c60f54f06e990dedf5d62a7ee6da41fe12559ac1667e9053c89e002d",
+      "bytes": 14858,
       "exports": [
         "PortalInvoice",
+        "ReceiptCaptureTarget",
+        "ReceiptCaptureSelection",
         "PortalAdapter",
         "BrowserSessionCallbacks",
         "BotRun",
@@ -314,8 +317,8 @@
     },
     {
       "path": "src/community/payments/community-evidence.ts",
-      "sha256": "1a12b1b03983e8821544dc06507e51200aabedc701691cf2faeaa4e7e05a958d",
-      "bytes": 3513,
+      "sha256": "252b11e491ddaab2c14da26c1f1d3fae677c199b2cfd604b463278952f574c81",
+      "bytes": 4154,
       "exports": [
         "currentPaymentInvoices",
         "provedPaymentReconciliation"
@@ -340,8 +343,8 @@
     },
     {
       "path": "src/community/payments/service.ts",
-      "sha256": "18cc5073cdc6e2a631ef3bb8f7c4c3b738883aa46de1d161817e95d556197957",
-      "bytes": 12762,
+      "sha256": "0086242c750dcd8ffc847d0a47ea13adaffb805520132a2fbc2d9a9e2add61e8",
+      "bytes": 13124,
       "exports": [
         "PaymentDependencies",
         "CommunityPaymentService"
@@ -357,8 +360,8 @@
     },
     {
       "path": "src/community/payments/types.ts",
-      "sha256": "5b67d43c2cfb474d7330daa94f6cb84a7f4f42c6191d0742a728adafe939e2e1",
-      "bytes": 2491,
+      "sha256": "593182f3e6f55f412275a210ae93c53c2c861c5e465164d354c3ece703afb7c6",
+      "bytes": 2716,
       "exports": [
         "PaymentStatus",
         "PaymentPermission",
@@ -424,6 +427,21 @@
         "stageCommunityRestore",
         "recoverInterruptedRestore",
         "activateCommunityRestore"
+      ]
+    },
+    {
+      "path": "src/community/persistence/workspace-recovery.ts",
+      "sha256": "97084264468fd9bc704cc09ac238fcdbd3d4ba0ad0d652b3bcc641f69c544ff0",
+      "bytes": 18317,
+      "exports": [
+        "WorkspaceRecoveryError",
+        "WorkspaceRecoveryDocument",
+        "WorkspaceRecoveryReview",
+        "workspaceRecoveryDocumentIds",
+        "workspaceRecoveryPaymentWorkspaceIds",
+        "workspaceRecoveryPaymentWorkspaceIndex",
+        "inspectWorkspaceRecovery",
+        "prepareWorkspaceRecovery"
       ]
     },
     {
@@ -1035,8 +1053,8 @@
     },
     {
       "path": "src/import/statement-parser.ts",
-      "sha256": "6e93a0f3a8fe158561ae38024f04b84d7988b1c089c9e9f17dfd672e4cdb2eb6",
-      "bytes": 18233,
+      "sha256": "856347832264652989f5b235a5dc08b4ed34e123dc7170a8bf7e55df67751f68",
+      "bytes": 18997,
       "exports": [
         "MAX_STATEMENT_BYTES",
         "StatementError",
@@ -1958,8 +1976,8 @@
     },
     {
       "path": "src/server/community-workspace.ts",
-      "sha256": "85e37f6a3efdddae95f3c416e5bedf689eb325716ca628cb7d009d6655ea85b5",
-      "bytes": 21449,
+      "sha256": "7dca7be3a781099446bd212939c3a7b9d746d00a7d000ddfc78f585c177725db",
+      "bytes": 27091,
       "exports": [
         "COMMUNITY_WORKSPACE_ROUTES",
         "WorkspaceOptions",
@@ -2031,8 +2049,8 @@
     },
     {
       "path": "src/server/routes/community-invoice-bot.ts",
-      "sha256": "9947d8abe986040a19c381889c59e8b86c7be614338af6f72fa55a02dfbc15f1",
-      "bytes": 3222,
+      "sha256": "1a337b569812e9ba8e94d730be1888239d73de881dd17094f43fa9209e825090",
+      "bytes": 3727,
       "exports": [
         "BotPermission",
         "createCommunityInvoiceBotRouter"
@@ -2055,6 +2073,14 @@
         "PersistencePermission",
         "CommunityPersistenceDependencies",
         "createCommunityPersistenceRouter"
+      ]
+    },
+    {
+      "path": "src/server/routes/community-workspace-recovery.ts",
+      "sha256": "2533fefc0f089ce6db49bc950b27c25063566a33a648e110c71ff3111ff249ef",
+      "bytes": 2220,
+      "exports": [
+        "createCommunityWorkspaceRecoveryRouter"
       ]
     },
     {
@@ -2441,8 +2467,8 @@
     },
     {
       "path": "web/src/i18n/community-invoice-bot.ts",
-      "sha256": "e5d81e2cd72c9ff61d48e3b95979d05bb8f30b03ff4f56f4e9817dff146a7581",
-      "bytes": 1789,
+      "sha256": "4aac68edcd2079d053979de6cf13c2b40264d22270eb4155b5c8f153ddc970f9",
+      "bytes": 5431,
       "exports": [
         "communityInvoiceBotText"
       ]
@@ -2457,18 +2483,26 @@
     },
     {
       "path": "web/src/i18n/community-persistence.ts",
-      "sha256": "8b66fcbdb0b43fc43429118742fd712f30dbe0c7ece59d701084a86fcc4b255f",
-      "bytes": 2507,
+      "sha256": "93d4d4cb9a30d545cf966da9994eb2153c8317e210d322cd0d7120f3e3a3572e",
+      "bytes": 5039,
       "exports": [
         "persistenceText"
       ]
     },
     {
       "path": "web/src/i18n/community-problems.ts",
-      "sha256": "52c83860a44ab3dffa62b546cea233df21e44460c36ddb20db22675b721885ff",
-      "bytes": 8742,
+      "sha256": "5f8923c372366de1cf6d75c5e0e32803d1a4b2fcc29169cf4d42fa43019aac89",
+      "bytes": 9508,
       "exports": [
         "problemMessage"
+      ]
+    },
+    {
+      "path": "web/src/i18n/document-warnings.ts",
+      "sha256": "d895b30d1b965270094302e00a88e6427def5d8860809009f681a84f3ff7f6bf",
+      "bytes": 3431,
+      "exports": [
+        "documentWarningMessage"
       ]
     },
     {
@@ -2503,8 +2537,8 @@
     },
     {
       "path": "web/src/main.tsx",
-      "sha256": "5d2ebcd7aa9b7ee6d77d2f19c6be99e1b95373aea5d161cffe1f0c73562e9d2f",
-      "bytes": 12867,
+      "sha256": "d12851cec3e40c988e5710fdaa27ccfbf8ce41c02e03d607167545d3daac1059",
+      "bytes": 12935,
       "exports": []
     },
     {
@@ -2525,8 +2559,8 @@
     },
     {
       "path": "web/src/pages/CommunityAccounting.tsx",
-      "sha256": "1e84b7a994e5790daf4e2175874e875ee6318a54a0a2f6debb3e95541f276238",
-      "bytes": 18005,
+      "sha256": "1b4140664493e7b824e08b45f8668683592088cc41e87c556b3a7a9c21601a4e",
+      "bytes": 22117,
       "exports": [
         "CommunityAccounting"
       ]
@@ -2557,16 +2591,16 @@
     },
     {
       "path": "web/src/pages/CommunityDataManagement.tsx",
-      "sha256": "119eb7138b66cb4812f402bdae845922989ac6b72a5a01d1cf73830f66ac3363",
-      "bytes": 7834,
+      "sha256": "e7f25b54ceb8cb8207c0abd623d6f9b05e8142e270bdbf96f501edf7fc4bbf87",
+      "bytes": 11523,
       "exports": [
         "CommunityDataManagement"
       ]
     },
     {
       "path": "web/src/pages/CommunityDocuments.tsx",
-      "sha256": "27b559dabc5946cc3bf7e14ba1862b2710e2ca307e402dd58c6523739a6b3b4c",
-      "bytes": 9955,
+      "sha256": "a5a72459a834b92df917070166f7019b31521acb776fecdd9fcf298743698946",
+      "bytes": 10071,
       "exports": [
         "CommunityDocuments"
       ]
@@ -2589,8 +2623,8 @@
     },
     {
       "path": "web/src/pages/CommunityInvoiceBot.tsx",
-      "sha256": "cf937da788490796aea32f8e17f2ca5c265a73fee87e5a1ecb9c30f9ae776812",
-      "bytes": 4808,
+      "sha256": "eedeeeb9adfca99e2ed83f053194263de727d3fa836e751bac969f9693a03b17",
+      "bytes": 7882,
       "exports": [
         "CommunityInvoiceBot"
       ]
@@ -2913,6 +2947,18 @@
       "recent_authentication": false
     },
     {
+      "method": "GET",
+      "pattern": "^\\/community\\/invoice-bot\\/portals\\/[A-Za-z0-9_-]{1,120}\\/receipt-targets$",
+      "permission": "integrations:sync",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community\\/invoice-bot\\/portals\\/[A-Za-z0-9_-]{1,120}\\/capture-receipt$",
+      "permission": "integrations:sync",
+      "recent_authentication": false
+    },
+    {
       "method": "POST",
       "pattern": "^\\/community\\/invoice-bot\\/runs\\/[A-Za-z0-9_-]{1,120}\\/(?:import|cancel)$",
       "permission": "integrations:sync",
@@ -2977,6 +3023,18 @@
       "pattern": "^\\/community\\/persistence\\/(?:current|backups)$",
       "permission": "data:backup",
       "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/community\\/persistence\\/workspace-recovery(?:\\/payment-history)?$",
+      "permission": "data:restore",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community\\/persistence\\/workspace-recovery$",
+      "permission": "data:restore",
+      "recent_authentication": true
     },
     {
       "method": "GET",

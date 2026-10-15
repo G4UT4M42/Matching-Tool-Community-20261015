@@ -38,6 +38,7 @@ export function collectCommunityTests(root, mode) {
 export async function runCommunityTests(mode) {
   if (!process.versions.node.startsWith('22.')) throw new Error('Use the qualified isolated Node 22 runtime for the current native dependency build');
   const files = collectCommunityTests(repository, mode);
+  const deadlineMs=(mode==='node'?30:20)*60*1000;
   if (!files.length) throw new Error('No executable test entrypoints were discovered');
   const runId = process.env.MATCHING_TEST_RUN_ID ?? `run-${Date.now()}`;
   if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$/.test(runId)) throw new Error('Invalid test evidence run identifier');
@@ -52,7 +53,7 @@ export async function runCommunityTests(mode) {
     if (existsSync(manifestPath)) throw new Error('Refusing to replace an existing test evidence manifest');
     const sourceRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:repository,encoding:'utf8',windowsHide:true}).trim(),workingTreeDirty=!!execFileSync('git',['status','--porcelain'],{cwd:repository,encoding:'utf8',windowsHide:true}).trim();
     if(!/^[a-f0-9]{40}$/.test(sourceRevision))throw new Error('Candidate revision is unavailable');
-    writeFileSync(manifestPath, JSON.stringify({ source_revision:sourceRevision,working_tree_dirty:workingTreeDirty,mode, runtime: process.versions.node, abi: process.versions.modules, created_at: new Date().toISOString(), entrypoints: files.map(path => relative(repository, path).replaceAll('\\', '/')) }, null, 2));
+    writeFileSync(manifestPath, JSON.stringify({ source_revision:sourceRevision,working_tree_dirty:workingTreeDirty,mode,deadline_ms:deadlineMs, runtime: process.versions.node, abi: process.versions.modules, created_at: new Date().toISOString(), entrypoints: files.map(path => relative(repository, path).replaceAll('\\', '/')) }, null, 2));
     if (mode === 'app') resultFile = join(destination, `${runId}-vitest.json`);
   }
   const arguments_ = mode === 'app'
@@ -63,10 +64,10 @@ export async function runCommunityTests(mode) {
   let timedOut = false;
   const deadline = setTimeout(() => {
     timedOut = true;
-    console.error('The isolated test command exceeded its 20-minute deadline. This is a failed run, not a skipped test.');
+    console.error(`The isolated test command exceeded its ${deadlineMs/60000}-minute deadline. This is a failed run, not a skipped test.`);
     if (child.pid && process.platform === 'win32') spawnSync('taskkill.exe', ['/PID', String(child.pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore', timeout: 10000 });
     else child.kill('SIGTERM');
-  }, 20 * 60 * 1000);
+  }, deadlineMs);
   try {
     return await new Promise((resolveExit, reject) => {
       child.once('error', reject);
