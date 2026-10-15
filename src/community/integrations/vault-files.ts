@@ -8,6 +8,7 @@ const aclCheck = String.raw`
 $ErrorActionPreference = 'Stop'
 $directory = $env:MATCHING_VAULT_DIRECTORY
 $created = $env:MATCHING_VAULT_NEW -eq 'true'
+$browserSessions = $env:MATCHING_VAULT_LAYOUT -eq 'browser-sessions'
 $item = Get-Item -LiteralPath $directory -Force
 if (!$item.PSIsContainer -or ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)) { throw 'Invalid vault directory' }
 $user = [Security.Principal.WindowsIdentity]::GetCurrent().User
@@ -30,8 +31,12 @@ if ($created) {
   Set-Acl -LiteralPath $directory -AclObject $acl
 }
 foreach ($member in @($item) + @(Get-ChildItem -LiteralPath $directory -Force)) {
-  if (($member.Attributes -band [IO.FileAttributes]::ReparsePoint) -or ($member -ne $item -and !$member.PSIsContainer -and $member.Name -notmatch '^[a-f0-9]{64}\.(credential|checkpoint)$')) { throw 'Invalid vault member' }
-  if ($member -ne $item -and $member.PSIsContainer) { throw 'Nested vault directory not supported' }
+  if ($member.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'Invalid vault member' }
+  if ($member -ne $item) {
+    if ($browserSessions) {
+      if (!$member.PSIsContainer -or $member.Name -notmatch '^session-[A-Za-z0-9]{6}$') { throw 'Invalid browser session directory' }
+    } elseif ($member.PSIsContainer -or $member.Name -notmatch '^[a-f0-9]{64}\.(credential|checkpoint)$') { throw 'Invalid vault member' }
+  }
   $acl = Get-Acl -LiteralPath $member.FullName
   if ($member -eq $item -and !$acl.AreAccessRulesProtected) { throw 'Unexpected inherited vault permissions' }
   $ownerAllowed = $false
@@ -64,19 +69,20 @@ async function directoryChain(directory: string): Promise<void> {
     current = parent;
   }
 }
-function verifyWindowsAcl(directory: string, created: boolean): void {
+function verifyWindowsAcl(directory: string, created: boolean, layout:'vault'|'browser-sessions'): void {
   const names = ['SystemRoot', 'SYSTEMROOT', 'WINDIR', 'SystemDrive', 'USERPROFILE', 'TEMP', 'TMP', 'LOCALAPPDATA'];
   const env: NodeJS.ProcessEnv = {};
   for (const name of names) if (process.env[name]) env[name] = process.env[name];
   env.MATCHING_VAULT_DIRECTORY = directory;
   env.MATCHING_VAULT_NEW = created ? 'true' : 'false';
+  env.MATCHING_VAULT_LAYOUT = layout;
   const check = spawnSync(trustedWindowsPowerShell(), ['-NoLogo', '-NoProfile', '-NonInteractive', '-Command', aclCheck],
     { env, windowsHide: true, encoding: 'utf8', timeout: 15000, maxBuffer: 65536 });
   if (check.error || check.status !== 0 || check.stdout.trim() !== 'COMMUNITY_VAULT_ACL_VERIFIED') {
     throw new Error('UNSAFE_VAULT_STORAGE');
   }
 }
-export async function secureVaultDirectory(directory: string, windowsAcl = true): Promise<void> {
+export async function secureVaultDirectory(directory: string, windowsAcl = true, layout:'vault'|'browser-sessions'='vault'): Promise<void> {
   if (!path.isAbsolute(directory)) throw new Error('UNSAFE_VAULT_STORAGE');
   await directoryChain(directory);
   let created = false;
@@ -88,7 +94,7 @@ export async function secureVaultDirectory(directory: string, windowsAcl = true)
   await directoryChain(directory);
   const info = await lstat(directory);
   if (process.platform === 'win32') {
-    if (windowsAcl) verifyWindowsAcl(directory, created);
+    if (windowsAcl) verifyWindowsAcl(directory, created,layout);
   } else {
     if (created) await chmod(directory, 0o700);
     if (windowsAcl && ((info.mode & 0o077) || (process.getuid && info.uid !== process.getuid()))) {

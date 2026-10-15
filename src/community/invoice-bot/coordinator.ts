@@ -33,27 +33,40 @@ export function assertPortalLocation(origin: string, href: string): void {
   const url = new URL(href, expected);
   if (url.origin !== expected || url.username || url.password || url.protocol !== 'https:' || url.search || url.hash) throw new DocumentInputError('UNSAFE_NAVIGATION', 'Portal navigation left the configured origin or included unsafe query material');
 }
-export async function assertPublicPortalDns(origin: string): Promise<void> {
+export async function publicPortalAddresses(origin: string): Promise<Array<{address:string;family:number}>> {
   const hostname = new URL(safeOrigin(origin)).hostname;
   let addresses: Array<{ address: string; family: number }>;
   try { addresses = await lookup(hostname, { all: true }); }
   catch { throw new DocumentInputError('PORTAL_DNS_FAILED', 'Portal DNS lookup failed'); }
   if (!addresses.length || addresses.some(({ address }) => {
-    if (address.includes(':')) return /^(::|fc|fd|fe8|fe9|fea|feb|2001:db8)/i.test(address) || address.startsWith('::ffff:');
+    if (address.includes(':')) return !/^[23][0-9a-f]{0,3}:/i.test(address)||/^2001:db8:/i.test(address);
     const [a,b] = address.split('.').map(Number);
     return a === 0 || a === 10 || a === 127 || a >= 224 || a === 169 && b === 254 || a === 172 && b >= 16 && b <= 31 || a === 192 && (b === 168 || b === 0) || a === 100 && b >= 64 && b <= 127 || a === 198 && (b === 18 || b === 19);
   })) throw new DocumentInputError('UNSAFE_PORTAL', 'Portal resolves to a private or reserved address');
+  return addresses;
 }
+export async function assertPublicPortalDns(origin:string):Promise<void>{await publicPortalAddresses(origin);}
 export class InvoiceBotCoordinator {
   private readonly adapters = new Map<string, PortalAdapter>();
   private readonly runs = new Map<string, BotRun>();
   private readonly active = new Map<string, AbortController>();
-  constructor(adapters: PortalAdapter[], private readonly sessions: BrowserSessionCallbacks, private readonly documents: CommunityDocumentService, private readonly allowLocalTestAdapter = false) {
+  private readonly timers=new WeakMap<AbortController,ReturnType<typeof setTimeout>>();
+  constructor(adapters: PortalAdapter[], private readonly sessions: BrowserSessionCallbacks, private readonly documents: CommunityDocumentService, private readonly allowLocalTestAdapter = false, private readonly operationTimeoutMs=60000) {
     for (const adapter of adapters) {
       if (!/^[a-z][a-z0-9-]{1,50}$/.test(adapter.id) || this.adapters.has(adapter.id)) throw new Error('Invalid or duplicate portal adapter');
       if (!allowLocalTestAdapter) safeOrigin(adapter.origin);
       this.adapters.set(adapter.id, adapter);
     }
+  }
+  private begin(key:string){const abort=new AbortController();this.active.set(key,abort);const timer=setTimeout(()=>abort.abort(),this.operationTimeoutMs);timer.unref();this.timers.set(abort,timer);return abort;}
+  private finish(key:string,abort:AbortController){clearTimeout(this.timers.get(abort));this.active.delete(key);}
+  private bounded<T>(signal:AbortSignal,work:Promise<T>):Promise<T>{
+    return new Promise<T>((resolve,reject)=>{
+      const cancel=()=>reject(new DocumentInputError('BOT_CANCELLED','Portal operation cancelled or timed out'));
+      if(signal.aborted){cancel();void work.catch(()=>{});return;}
+      signal.addEventListener('abort',cancel,{once:true});
+      work.then(resolve,reject).finally(()=>signal.removeEventListener('abort',cancel));
+    });
   }
   catalog(): Array<{ id: string; label: string; origin: string }> { return [...this.adapters.values()].map(({ id, label, origin }) => ({ id, label, origin })); }
   private adapter(id: string): PortalAdapter { const found = this.adapters.get(id); if (!found) throw new DocumentInputError('UNSUPPORTED_PORTAL', 'Select a configured supported portal'); return found; }
@@ -62,12 +75,12 @@ export class InvoiceBotCoordinator {
   async connect(principal: Principal, adapterId: string): Promise<void> {
     const adapter = this.adapter(adapterId); const key = this.key(principal, adapterId);
     if (this.active.has(key)) throw new DocumentInputError('BOT_BUSY', 'Portal operation is already running');
-    const abort = new AbortController(); this.active.set(key, abort);
+    const abort = this.begin(key);
     try {
       if (!this.allowLocalTestAdapter) await assertPublicPortalDns(adapter.origin);
-      await this.sessions.openFreshSession(principal, adapterId, adapter.origin, abort.signal);
-      await adapter.connect(principal, this.sessions, abort.signal);
-    } finally { this.active.delete(key); }
+      await this.bounded(abort.signal,this.sessions.openFreshSession(principal, adapterId, adapter.origin, abort.signal));
+      await this.bounded(abort.signal,adapter.connect(principal, this.sessions, abort.signal));
+    } finally { this.finish(key,abort); }
   }
   async disconnect(principal: Principal, adapterId: string): Promise<void> {
     this.adapter(adapterId); this.active.get(this.key(principal, adapterId))?.abort();
@@ -77,12 +90,12 @@ export class InvoiceBotCoordinator {
     const adapter = this.adapter(adapterId); const key = this.key(principal, adapterId);
     if (this.active.has(key)) throw new DocumentInputError('BOT_BUSY', 'Portal operation is already running');
     if (!await this.sessions.isConnected(principal, adapterId)) throw new DocumentInputError('BOT_DISCONNECTED', 'Connect a fresh browser session first');
-    const abort = new AbortController(); this.active.set(key, abort);
+    const abort = this.begin(key);
     const run: BotRun = { id: randomUUID(), workspace_id: principal.workspace_id, actor: principal.subject, adapter_id: adapterId, status: 'running', discovered: [], imported: [], started_at: new Date().toISOString() };
     this.runs.set(run.id, run);
     try {
       if (!this.allowLocalTestAdapter) await assertPublicPortalDns(adapter.origin);
-      const found = await adapter.discover(principal, this.sessions, abort.signal);
+      const found = await this.bounded(abort.signal,adapter.discover(principal, this.sessions, abort.signal));
       if (abort.signal.aborted) throw new DocumentInputError('BOT_CANCELLED', 'Discovery cancelled');
       if (found.length > 500) throw new DocumentInputError('BOT_LIMIT', 'Portal returned too many invoices');
       const ids = new Set<string>();
@@ -93,7 +106,7 @@ export class InvoiceBotCoordinator {
       }
       run.discovered = found; run.status = 'discovered';
     } catch (error) { run.status = abort.signal.aborted ? 'cancelled' : 'failed'; run.error = error instanceof DocumentInputError ? error.message : 'Portal discovery failed'; }
-    finally { run.ended_at = new Date().toISOString(); this.active.delete(key); }
+    finally { run.ended_at = new Date().toISOString(); this.finish(key,abort); }
     return run;
   }
   listRuns(principal: Principal) { return [...this.runs.values()].filter(run => run.workspace_id === principal.workspace_id && run.actor === principal.subject); }
@@ -106,7 +119,8 @@ export class InvoiceBotCoordinator {
     const adapter = this.adapter(run.adapter_id);
     const key = this.key(principal, run.adapter_id);
     if (this.active.has(key)) throw new DocumentInputError('BOT_BUSY', 'Portal operation is already running');
-    const abort = new AbortController(); this.active.set(key, abort);
+    if(!await this.sessions.isConnected(principal,run.adapter_id))throw new DocumentInputError('BOT_DISCONNECTED','Connect a fresh browser session first');
+    const abort = this.begin(key);
     try {
       if (!this.allowLocalTestAdapter) await assertPublicPortalDns(adapter.origin);
       for (const sourceId of [...new Set(sourceIds)]) {
@@ -115,14 +129,15 @@ export class InvoiceBotCoordinator {
         if (!invoice) throw new DocumentInputError('INVALID_SELECTION', 'Unknown invoice selection');
         if (run.imported.includes(sourceId)) continue;
         if (!this.allowLocalTestAdapter) assertPortalLocation(adapter.origin, invoice.href);
-        const buffer = await adapter.download(principal, this.sessions, invoice, abort.signal);
+        const buffer = await this.bounded(abort.signal,adapter.download(principal, this.sessions, invoice, abort.signal));
+        if(abort.signal.aborted)throw new DocumentInputError('BOT_CANCELLED','Import cancelled');
         if (!Buffer.isBuffer(buffer) || buffer.length > MAX_DOCUMENT_BYTES) throw new DocumentInputError('FILE_LIMIT', 'Portal invoice exceeds file limit');
-        await this.documents.upload(principal, buffer, invoice.filename, `${adapter.id}:${sourceId}`);
+        await this.documents.upload(principal, buffer, invoice.filename, `${adapter.id}:${sourceId}`, 'invoice-bot');
         run.imported.push(sourceId);
       }
       run.status = 'imported'; run.error = undefined;
     } catch (error) { run.status = abort.signal.aborted ? 'cancelled' : 'failed'; run.error = error instanceof DocumentInputError ? error.message : 'Portal import failed'; }
-    finally { run.ended_at = new Date().toISOString(); this.active.delete(key); }
+    finally { run.ended_at = new Date().toISOString(); this.finish(key,abort); }
     return run;
   }
 }

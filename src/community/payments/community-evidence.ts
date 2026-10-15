@@ -13,6 +13,11 @@ export function currentPaymentInvoices(state:MatchingState,workspaceId:string):I
   const accepted=[...state.match_groups.values()].filter(group=>['accepted','confirmed','manual'].includes(group.status));
   return [...state.documents.values()].filter(doc=>doc.meta?.workspace_id===workspaceId)
     .filter(doc=>documentSettlementConvention(doc)==='payable-face-v1')
+    .filter(doc=>{
+      if(doc.meta.document_type!=='credit_note')return true;
+      if(!Number.isSafeInteger(doc.total_amount_minor)||doc.total_amount_minor>=0)throw new Error('PAYMENT_EVIDENCE_INVALID');
+      return false;
+    })
     .map(doc=>{
       const remaining=balances.document.get(doc.document_id);
       if(remaining===undefined||!Number.isSafeInteger(doc.total_amount_minor)||doc.total_amount_minor<=0)throw new Error('PAYMENT_EVIDENCE_INVALID');

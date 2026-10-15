@@ -37,3 +37,11 @@ it('proposes only workspace-owned, source-backed supplier payables and exact rem
  expect(candidate(evidence).issues).toContain('IBAN_REVIEW_REQUIRED');
  expect(candidate(evidence).issues).toContain('DUE_DATE_REVIEW_REQUIRED');
 });
+
+it('keeps explicit supplier credits out of payable candidates without breaking ordinary invoices',()=>{
+ const state=createEmptyState('SYNTHETIC-CREDIT-PAYMENT');state.documents.set('invoice',doc('invoice'));
+ const credit={...doc('credit',{document_type:'credit_note'}),total_amount_minor:-25};state.documents.set('credit',credit);
+ const records=currentPaymentInvoices(state,workspace);expect(records.map(row=>row.documentId)).toEqual(['invoice']);expect(candidate(records[0]).eligible).toBe(true);
+ state.documents.set('credit',{...credit,total_amount_minor:25});expect(()=>currentPaymentInvoices(state,workspace)).toThrow('PAYMENT_EVIDENCE_INVALID');
+ state.documents.set('credit',{...credit,meta:{...credit.meta,document_type:undefined}});expect(()=>currentPaymentInvoices(state,workspace)).toThrow('PAYMENT_EVIDENCE_INVALID');
+});

@@ -3,9 +3,10 @@ import { parse } from 'csv-parse/sync';
 import XLSX from 'xlsx';
 import { statementDate, statementMinor, validateWorkbookContainer } from '../../import/statement-parser.js';
 import { DocumentInputError } from './recognition.js';
+import {checkedDocumentAmounts,type InvoiceDocumentType} from './amount-contract.js';
 
 export type TableKind = 'income' | 'invoice';
-export interface TableRow { source_id: string; invoice_number: string; supplier_name: string; document_date: string; total_amount_minor: number; net_amount_minor?: number; vat_amount_minor?: number; currency_code: string }
+export interface TableRow { source_id: string; invoice_number: string; supplier_name: string; document_date: string; total_amount_minor: number; net_amount_minor?: number; vat_amount_minor?: number; currency_code: string;document_type?:InvoiceDocumentType }
 const bad = (code: string, message: string): never => { throw new DocumentInputError(code, message); };
 const unsafeCell = (value: unknown): boolean => typeof value === 'string' && /^[\s\uFEFF]*[=+@\t\r\n]/.test(value);
 export function parseDocumentTable(buffer: Buffer, extension: string, kind: TableKind): TableRow[] {
@@ -35,7 +36,7 @@ export function parseDocumentTable(buffer: Buffer, extension: string, kind: Tabl
   } else bad('UNSUPPORTED_CONTENT', 'Only CSV and XLSX tables are supported');
   if (!rows.length || rows.length > 10_000) bad('ROW_LIMIT', 'Table must have 1 to 10,000 rows');
   const required = ['source_id','invoice_number','supplier_name','document_date','total_amount','currency_code'];
-  const allowed = new Set([...required,'net_amount','vat_amount']);
+  const allowed = new Set([...required,'net_amount','vat_amount','document_type']);
   if (rows.some(row => required.some(key => !(key in row)) || Object.keys(row).some(key => !allowed.has(key)) || Object.values(row).some(unsafeCell))) bad('INVALID_COLUMNS', 'Table contains missing, unknown or formula-like cells');
   const ids = new Set<string>();
   return rows.map((row, index) => {
@@ -50,8 +51,8 @@ export function parseDocumentTable(buffer: Buffer, extension: string, kind: Tabl
     const total = statementMinor(row.total_amount, currency, index + 2);
     const net = row.net_amount === '' || row.net_amount === undefined ? undefined : statementMinor(row.net_amount, currency, index + 2);
     const vat = row.vat_amount === '' || row.vat_amount === undefined ? undefined : statementMinor(row.vat_amount, currency, index + 2);
-    if (total <= 0 || net !== undefined && net < 0 || vat !== undefined && vat < 0 || net !== undefined && vat !== undefined && net + vat !== total) bad('INVALID_AMOUNT', `Invalid totals at row ${index + 2}`);
-    return { source_id: sourceId, invoice_number: invoiceNumber, supplier_name: name, document_date: date, total_amount_minor: total, currency_code: currency, ...(net === undefined ? {} : { net_amount_minor: net }), ...(vat === undefined ? {} : { vat_amount_minor: vat }) };
+    const documentType=checkedDocumentAmounts(row.document_type===undefined||row.document_type===''?'invoice':row.document_type,total,net,vat);
+    return { source_id: sourceId, invoice_number: invoiceNumber, supplier_name: name, document_date: date, total_amount_minor: total, currency_code: currency,...(documentType==='credit_note'?{document_type:documentType}:{}), ...(net === undefined ? {} : { net_amount_minor: net }), ...(vat === undefined ? {} : { vat_amount_minor: vat }) };
   });
 }
 export function tableDocumentId(workspace: string, kind: TableKind, sourceId: string): string { return `doc_tab_${createHash('sha256').update(`${workspace}\0${kind}\0${sourceId}`).digest('hex')}`; }

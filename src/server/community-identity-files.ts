@@ -3,6 +3,7 @@ import { dirname, isAbsolute, join, parse, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const identityMembers = new Set(['auth.sqlite', 'auth.sqlite-wal', 'auth.sqlite-shm']);
+const identityDirectories = new Set(['provider-vault','bank-vault','invoice-browsers']);
 const windowsAclScript = String.raw`
 $ErrorActionPreference = 'Stop'
 $directory = $env:MATCHING_AUTH_ACL_DIRECTORY
@@ -24,7 +25,10 @@ if ($env:MATCHING_AUTH_ACL_CREATE -eq 'true') {
 }
 $paths = @($directory)
 foreach ($child in @(Get-ChildItem -LiteralPath $directory -Force)) {
-  if ($child.PSIsContainer -or ($child.Attributes -band [IO.FileAttributes]::ReparsePoint) -or $child.Name -notin @('auth.sqlite','auth.sqlite-wal','auth.sqlite-shm')) { throw 'Unexpected identity store member' }
+  if ($child.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'Unexpected identity store member' }
+  if ($child.PSIsContainer) {
+    if ($child.Name -notin @('provider-vault','bank-vault','invoice-browsers')) { throw 'Unexpected identity directory' }
+  } elseif ($child.Name -notin @('auth.sqlite','auth.sqlite-wal','auth.sqlite-shm')) { throw 'Unexpected identity store member' }
   $paths += $child.FullName
 }
 foreach ($path in $paths) {
@@ -82,7 +86,7 @@ export function preparePrivateIdentityDirectory(runtimeRoot: string): string {
   if (created) mkdirSync(directory, { recursive: true, mode: 0o700 });
   for (const name of readdirSync(directory)) {
     const info = lstatSync(join(directory, name));
-    if (!identityMembers.has(name) || !info.isFile() || info.isSymbolicLink()) throw new Error('Unexpected identity storage member');
+    if (info.isSymbolicLink() || !(info.isFile()&&identityMembers.has(name) || info.isDirectory()&&identityDirectories.has(name))) throw new Error('Unexpected identity storage member');
   }
   verifyLocalPermissions(directory, created);
   return directory;
