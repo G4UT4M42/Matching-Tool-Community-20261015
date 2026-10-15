@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22.23.3'
-      - name: Collect ordinary startup and isolated empty-directory ACL timing
+      - name: Discover bounded ordinary Windows environment and strict ACL behavior
         shell: pwsh
         run: node scripts/diagnose-windows-acl.mjs "$env:RUNNER_TEMP/windows-acl-diagnostics.json"
       - name: Preserve bounded diagnostic JSON
