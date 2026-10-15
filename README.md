@@ -1,66 +1,48 @@
 # Matching Tool Community
 
-**Status: Developer-preview candidate — NOT approved for public publication or real bookkeeping.**
+Status: development candidate. PRIVATE_REPOSITORY_READY=false; SOFTWARE_ACCEPTED=false; RELEASE_ACCEPTED=false. Final exact-commit qualification, private CI and redistribution gates remain open.
 
-Matching Tool Community is an English-first, local-first application for reconciling transactions, invoice evidence and reviewable matching decisions. It combines a TypeScript/Express backend and a React/Vite web UI. A completely separate new Git history protects the owner's earlier private accounting repository.
+Matching Tool Community is a local TypeScript/Express and React/Vite application for account-owned transactions, invoice evidence and reviewed financial reconciliation. It uses an isolated external data directory, local accounts and a loopback listener. A separate sanitized Git history excludes the original private repository ancestry.
 
-## What currently works
+## Supported development workflows
 
-- Local synthetic demo with 4 invented transactions, 2 document records and 2 matching groups.
-- Loopback-only web server; random session access token; no anonymous finance API.
-- Basic transaction/matching views and English main navigation.
-- English and German language selector with fallback support; **many inner pages are not yet fully translated**.
-- Synthetic preview of a versioned offline import of a legacy V2 accounting dataset.
-- WAL-aware SQLite staging, JSON/link reconciliation, attachment SHA-256 checks and credential removal **without activating the result**.
-- Automated Node/Vitest unit, privacy, migration and security smoke tests.
+- First-owner setup, login/logout, workspace roles, password confirmation and session-bound CSRF.
+- Sparkasse/Visa CSV/XLSX preview, explicit import, immutable source identities, duplicate/conflict detection and restart recovery.
+- Document PDF/image upload, real offline English/German OCR, correction, explicit credit notes, confirmation, archive/retrieval and CSV/XLSX tables. Original hashes/bytes and append-only review evidence are retained.
+- Exact matching proposals and manual review, accept/reject/reopen/undo, partial/split/refund/fee/transfer allocations and rational FX.
+- Explicit private/excluded classifications and manageable bounded literal rules, exact per-currency reports, reviewed VAT evidence and CSV/JSON exports. See [accounting scope](docs/ACCOUNTING_SCOPE.md).
+- User-configured encrypted PayPal/Stripe read-only API credentials, test/sync/history, stable verified account identities and recoverable historical coverage.
+- Read-only Enable Banking AIS settings, separate SEPA preparation, transaction-bound approval and local simulated submission with durable claims and unknown-outcome handling. Automated tests never execute real transfers.
+- Eight assisted invoice-provider workflows in fresh user-controlled browser sessions, explicit downloaded-file selection and durable document import. See [provider inventory](docs/feature-parity/INVOICE_PORTAL_INVENTORY.md) for exact scope and unqualified providers.
+- Verified backups, staged restore, supported synthetic V2 migration wizard, interruption rollback, and original-source preservation.
+- English default, selectable German, normal settings/dashboard/audit pages and role-specific controls.
 
-## Disabled until separately verified
+Live provider acceptance is separate from software mock qualification. Actual bank payment initiation remains unavailable. AliExpress/Bambu Lab contracts and consumer-Post parity are unresolved; no unsafe legacy crawler is enabled. This candidate is not an accepted tax-filing or production bookkeeping release.
 
-Real banking connections, payment initiation/release, browser invoice collection, external API import, live backup restore/delete, automatic production migration and activation. The program must not be used for bookkeeping or tax filing at this stage.
+## Installation and development
 
-## Quick start (Windows)
+A development package includes qualified Windows x64 Node22/ABI127, native modules, offline OCR languages and legal evidence. Follow [installation and maintenance](docs/INSTALLATION.md) for fresh install, independent data storage, first-owner setup, upgrade and safe uninstall. No global Node installation is needed for that package.
 
-Requires Node.js 22, npm, and PowerShell.
+For source development, use the qualified Node22 runtime and frozen root/web dependencies:
 
 ```powershell
-npm ci
-npm ci --prefix web
+npm ci --ignore-scripts
+npm rebuild better-sqlite3 sharp esbuild
+npm ci --ignore-scripts --prefix web
 npm run build
-npm run demo:windows
+powershell -NoProfile -File scripts/Start-Community.ps1 -DataDirectory <absolute-independent-data-directory>
 ```
 
-The launcher creates an **external local demo runtime** under the current Windows user's local application data, starts an HTTP server only on `127.0.0.1`, and prints a new random access token in its own local terminal. Open the displayed URL and enter that token in the browser unlock form.
+The launcher binds loopback and displays temporary first-owner setup authorization in its own console. Never copy setup codes, sessions, credentials or financial data into Git, logs or screenshots. Provider credentials are entered through their normal settings pages. A separate synthetic demonstration is available through `npm run demo:windows`; it cannot open an account-owned installation or execute transfers.
 
-Stop the demo normally with Ctrl+C and verify its own server has exited after an abnormal termination. Do not store the generated token in Git, issues or screenshots. The launcher supports Node.js 22 on PATH and an optional separate synthetic profile (for example `-DemoProfile SeparateTest -Port 3434`); it refuses unknown existing databases and storage junctions.
+## Verification
 
-For source development, `npm run typecheck`, `npm test`, `npm run privacy:check` and `npm run audit:production` run the respective quality gates. Bank drivers are always disabled in the preview. The test suite also performs a real synthetic loopback HTTP start/restart test. For Windows-specific negative startup checks, run `powershell -NoProfile -ExecutionPolicy Bypass -File tests/demo-launcher-guard.tests.ps1`.
+Run `npm run typecheck`, `npm test`, `npm run privacy:check` and `npm run audit:production`. `scripts/run-community-tests.mjs app` and `node` enumerate actual test entrypoints and support unique external evidence manifests. The integrated acceptance defaults to a fresh real development-package installation; its explicitly labeled source iteration mode is not installation acceptance.
 
-See [Windows installation and troubleshooting](docs/INSTALLATION.md) and [first-run synthetic test evidence](docs/WINDOWS_DEMO_EVIDENCE.md).
+See [current status](docs/feature-parity/STATUS.md), [all 21 feature areas](docs/feature-parity/02_FEATURE_MATRIX.md), [migration policy](docs/MIGRATION_POLICY.md), [security](SECURITY.md) and [contribution policy](CONTRIBUTING.md). Every regression uses independent synthetic data. Preserve historical migration checksums, original source records and other agents' work.
 
-## Migration contract
+## Source, licensing and release
 
-Future users must be able to upgrade across supported versions without losing transactions, source event IDs, invoice bytes/hashes, match-group references, approval states, audit events or payment history. Schema changes require a versioned migration with synthetic old/new fixtures and rollback evidence in the **same pull request**.
+The root MIT license is provisional pending verified first-party rights. [NOTICE](NOTICE), [SBOM/inventory](docs/compliance/README.md), [native/WASM source preparation](docs/compliance/NATIVE_SOURCE_PLAN.md) and [packaging contract](docs/compliance/PACKAGING.md) track third-party obligations. Original upstream notices remain unchanged. Source archives and public legal-text bundles stay external to the privacy-scanned source tree and may be supplied through hash-validated package supplements.
 
-Offline staging is implemented as a tested foundation, **not as a complete production importer**:
-
-```powershell
-node scripts/import-legacy-v2.mjs --source SYNTHETIC_SOURCE_FOLDER --destination EMPTY_NEW_FOLDER --source-offline-confirmed
-```
-
-The command above performs a dry run. Adding `--stage` writes a separate candidate but never activates it. The original dataset is never modified. **Do not run this against a real installation until the importer, all version edges and the independent financial review have been qualified and approved.** Banking sessions and raw API credentials are deliberately excluded.
-
-See [Migration policy](docs/MIGRATION_POLICY.md), [Offline V2 import contract](docs/LEGACY_IMPORT_SPEC.md), and [Migration decisions](docs/migration-decisions/).
-
-## Contribution policy
-
-Follow [CONTRIBUTING.md](CONTRIBUTING.md). All demo and regression data must be fictional and generated from scratch. Never upload customer invoices, bank numbers, access credentials, browser sessions, real account screenshots or old Git history. Pull requests changing financial persistence must provide complete migration evidence.
-
-The public source tree is subject to automated privacy and npm advisory scans, but those do **not** substitute for independent security, licensing and financial correctness reviews.
-
-## License and release
-
-A provisional [MIT license](LICENSE) is present for owner-authored original code. Third-party redistribution rights and source provenance must be verified before the repository is made public. Austrian SEPA XSD bundles are intentionally excluded pending licensing review.
-
-See [Release status](docs/RELEASE_STATUS.md), [Privacy gate](docs/PRIVACY_RELEASE_GATE.md), [Security](SECURITY.md), and [Localization policy](docs/I18N_POLICY.md).
-
-**No public GitHub release or stable migration is currently authorized.**
+Native corresponding-source/build/relink, ownership and final redistribution review remain separate gates. The builder creates development candidates only and refuses distributable mode. No public publication is authorized. A private source repository may be prepared after privacy/history checks; that milestone does not imply software or release acceptance.

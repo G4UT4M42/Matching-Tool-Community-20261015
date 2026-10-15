@@ -1,0 +1,3177 @@
+{
+  "format": "matching-community-source-map-v1",
+  "source_representation": "Canonical Git index blobs (line-ending independent)",
+  "scope": "Tracked Community implementation source; legacy v2_source inventory remains a frozen reference, not runtime acceptance.",
+  "source_content_sha256": "2c45eb875e7e85b08307849a13fd077b4e557c35096315fe25db69f747ca9657",
+  "files": [
+    {
+      "path": "src/app/cli.ts",
+      "sha256": "d3341ace963c7e4a8c7a0af0447e761c0ca021a93485d0327ff18d27d8396bbd",
+      "bytes": 2743,
+      "exports": []
+    },
+    {
+      "path": "src/app/validate.ts",
+      "sha256": "8b03428b85bf3e5169dbd9b291fe4493eb6abee309d61facbdb70bddcbe1d9e8",
+      "bytes": 8253,
+      "exports": []
+    },
+    {
+      "path": "src/community/accounting/document-settlement.ts",
+      "sha256": "8195127fca7544787d65dbfcc80b2ed1a0c581dbae3a27fa02ac6aef164ee20d",
+      "bytes": 1954,
+      "exports": [
+        "DocumentSettlementConvention",
+        "documentSettlementConvention",
+        "documentSettlementMinor"
+      ]
+    },
+    {
+      "path": "src/community/accounting/ledger.ts",
+      "sha256": "ec006ae3623dbfc51c35b1534f8d58d15e48db93d82d3363112536b9d517858a",
+      "bytes": 32347,
+      "exports": [
+        "AccountingError",
+        "roundRationalHalfAwayFromZero",
+        "accountingOf",
+        "remainingBalances",
+        "validateAccountingState",
+        "acceptAllocations",
+        "undoAllocation",
+        "classifyTransaction",
+        "classifyTax",
+        "setPrivateOrExcluded",
+        "applyActiveExclusionsForNewTransactions",
+        "exclusionRuleView",
+        "setExclusionRuleEnabled",
+        "createSafeExclusionRule"
+      ]
+    },
+    {
+      "path": "src/community/accounting/reports.ts",
+      "sha256": "ccf948c64863f73cfa21d95f558b0c785eabbedab7be963c115fcfcd71e4e3f5",
+      "bytes": 6961,
+      "exports": [
+        "ReportQuery",
+        "validatePeriod",
+        "accountingReport",
+        "reportCsv"
+      ]
+    },
+    {
+      "path": "src/community/banking/canonical-import.ts",
+      "sha256": "2863c17403f519fe26cf417a44475a0c5b085fe4abd741ecd7a7fa55ea72e441",
+      "bytes": 2371,
+      "exports": [
+        "prepareBankImport"
+      ]
+    },
+    {
+      "path": "src/community/banking/enablebanking-ais.ts",
+      "sha256": "e004b4fafc37c58a725a4a9ab921fa0c73418b51f6dd344ccc9ac89bb67b1526",
+      "bytes": 5771,
+      "exports": [
+        "VaultCredential",
+        "checkedBankCredential",
+        "EnableBankingAisAdapter"
+      ]
+    },
+    {
+      "path": "src/community/banking/mock.ts",
+      "sha256": "cef15894132ddb8b81df444667b9b41380b5e6633e31cbcb638a498eb59e8957",
+      "bytes": 1315,
+      "exports": [
+        "localFakeAdapters",
+        "LOCAL_FAKE_BANK_MARKER"
+      ]
+    },
+    {
+      "path": "src/community/banking/service.ts",
+      "sha256": "33fe7c197d03f59642949e2548c0a17e79f63c425043e2c3a1bf2c7fded19571",
+      "bytes": 7404,
+      "exports": [
+        "BankAccountRow",
+        "BankTransactionRow",
+        "ReadOnlyBankAdapter",
+        "BankCallbacks",
+        "CommunityBankingService"
+      ]
+    },
+    {
+      "path": "src/community/banking/vault.ts",
+      "sha256": "ffb9dc9850fa6e280bbcab1e156fa2ecc2cd750146e2e20f5f757d5e17dad41d",
+      "bytes": 4474,
+      "exports": [
+        "BankCredentialVault"
+      ]
+    },
+    {
+      "path": "src/community/documents/amount-contract.ts",
+      "sha256": "11bb3c3550311357391c892fe90482a88c0b68be431283ae80db44b5c220029a",
+      "bytes": 960,
+      "exports": [
+        "InvoiceDocumentType",
+        "checkedDocumentAmounts"
+      ]
+    },
+    {
+      "path": "src/community/documents/ocr-assets.ts",
+      "sha256": "51bf8c41e6b857a513244e68187887a745bad30b4a695bd59f38fee33846d201",
+      "bytes": 2830,
+      "exports": [
+        "OCR_ASSETS",
+        "packagedOcrDirectory"
+      ]
+    },
+    {
+      "path": "src/community/documents/recognition.ts",
+      "sha256": "9653d1257251ee73c12d7a295f5613170abc6782cf2fb58ea869790583d300c9",
+      "bytes": 12144,
+      "exports": [
+        "MAX_DOCUMENT_BYTES",
+        "MAX_PAGES",
+        "MAX_PIXELS",
+        "DocumentKind",
+        "RecognizedInvoice",
+        "DocumentInputError",
+        "documentHash",
+        "inspectDocument",
+        "parseRecognizedInvoice",
+        "recognizeDocument"
+      ]
+    },
+    {
+      "path": "src/community/documents/review-audit.ts",
+      "sha256": "0b28859a21176c3f2f02ad37a0a32a3d5b7af8e868602d7f7046f0ad7ed276a8",
+      "bytes": 11639,
+      "exports": [
+        "ReviewSnapshot",
+        "jsonCopy",
+        "snapshot",
+        "same",
+        "immutableReview",
+        "validateReviewRecord",
+        "recoverAuditedDocumentReviews"
+      ]
+    },
+    {
+      "path": "src/community/documents/service.ts",
+      "sha256": "ac6fa053a0962a455e8d0e7cf21ece2494ebe1e2129a4ba0ac70c45a43499165",
+      "bytes": 35114,
+      "exports": [
+        "Principal",
+        "ReviewFields",
+        "DocumentSourceKind",
+        "DocumentRecord",
+        "DocumentServiceOptions",
+        "CommunityDocumentService"
+      ]
+    },
+    {
+      "path": "src/community/documents/tabular.ts",
+      "sha256": "4cd5b76f8dbf2f2b18322429b9fb1e9a256990ab9ec5df8a0ace696cd7f3e3f8",
+      "bytes": 5790,
+      "exports": [
+        "TableKind",
+        "TableRow",
+        "parseDocumentTable",
+        "tableDocumentId"
+      ]
+    },
+    {
+      "path": "src/community/integrations/canonical-import.ts",
+      "sha256": "48649abdcf921dcb69c592356809c28d7649149d15683563e9e23e38ac2cb860",
+      "bytes": 9107,
+      "exports": [
+        "ProviderImportResult",
+        "prepareProviderImport"
+      ]
+    },
+    {
+      "path": "src/community/integrations/http.ts",
+      "sha256": "3f131971ecb6f57ed1cbb74b924cbf862d8825fede550d1dd7e7a9a0f17a175a",
+      "bytes": 2664,
+      "exports": [
+        "providerTransport",
+        "requestJson"
+      ]
+    },
+    {
+      "path": "src/community/integrations/paypal.ts",
+      "sha256": "2fd61ea5e8f559da688fede63a1c4d8d096a09c8003b9811f257f79fd921a4ec",
+      "bytes": 6360,
+      "exports": [
+        "PayPalClient",
+        "normalizePayPal"
+      ]
+    },
+    {
+      "path": "src/community/integrations/provider-account.ts",
+      "sha256": "71d27b3a9310a188f61c7d07413050c9173cd50e341156ea7aa5213dadd504e9",
+      "bytes": 1090,
+      "exports": [
+        "providerAccountIdentity",
+        "isProviderAccountIdentity"
+      ]
+    },
+    {
+      "path": "src/community/integrations/service.ts",
+      "sha256": "5ebbb55adffa7f7188059988b9e04dcc37717675562b764853c7c0cc4b25f5f0",
+      "bytes": 15228,
+      "exports": [
+        "IntegrationGuards",
+        "IntegrationService"
+      ]
+    },
+    {
+      "path": "src/community/integrations/stripe.ts",
+      "sha256": "f4291743f35b596cb415bad175cbd4d7c11c9c66d687f6347110a000f8d7e807",
+      "bytes": 4088,
+      "exports": [
+        "StripeClient",
+        "normalizeStripe"
+      ]
+    },
+    {
+      "path": "src/community/integrations/types.ts",
+      "sha256": "fd9055497973fc118debb88d8b3461bbf81cbfd8b9ebbbe47c6b9a38d3c74972",
+      "bytes": 4316,
+      "exports": [
+        "Provider",
+        "Environment",
+        "Permission",
+        "Principal",
+        "CanonicalTransaction",
+        "Checkpoint",
+        "CommitBatch",
+        "HttpRequest",
+        "HttpResponse",
+        "Transport",
+        "assertPrincipal",
+        "assertProvider",
+        "assertEnvironment",
+        "asObject",
+        "safeInteger",
+        "decimalMinor",
+        "currencyCode",
+        "publicErrorCode"
+      ]
+    },
+    {
+      "path": "src/community/integrations/vault-files.ts",
+      "sha256": "df450484e1afdecdf1d29eb75255468bf9e2776fbe34e80080f178aa37138b15",
+      "bytes": 6815,
+      "exports": [
+        "trustedWindowsPowerShell",
+        "secureVaultDirectory",
+        "inspectVaultMember",
+        "readVaultMember"
+      ]
+    },
+    {
+      "path": "src/community/integrations/vault.ts",
+      "sha256": "1e2310d44e10b44fbc64596526c9ef711598edafebbe53a132ab5fa0f0c1fbcb",
+      "bytes": 6895,
+      "exports": [
+        "KeyProtector",
+        "WindowsDpapiProtector",
+        "CredentialVault"
+      ]
+    },
+    {
+      "path": "src/community/invoice-bot/assisted-portals.ts",
+      "sha256": "b5c4b57457cc5f46fe3058d38730122bb2fce976f6391efe23303025f087bf22",
+      "bytes": 14426,
+      "exports": [
+        "AssistedPortal",
+        "ASSISTED_PORTALS",
+        "AssistedBrowserOptions",
+        "AssistedPortalSessions"
+      ]
+    },
+    {
+      "path": "src/community/invoice-bot/coordinator.ts",
+      "sha256": "ea243e06b0cf5c0e314081ddd7e705e750cf2babb9e7b04900882828c88c6131",
+      "bytes": 11771,
+      "exports": [
+        "PortalInvoice",
+        "PortalAdapter",
+        "BrowserSessionCallbacks",
+        "BotRun",
+        "assertPortalLocation",
+        "publicPortalAddresses",
+        "assertPublicPortalDns",
+        "InvoiceBotCoordinator"
+      ]
+    },
+    {
+      "path": "src/community/invoice-bot/egress-proxy.ts",
+      "sha256": "df60cf4a10638a96e8175015dd4c155ed64ea9722ca20d621feab1497014e1a5",
+      "bytes": 4218,
+      "exports": [
+        "PortalEgressProxy"
+      ]
+    },
+    {
+      "path": "src/community/payments/community-evidence.ts",
+      "sha256": "1a12b1b03983e8821544dc06507e51200aabedc701691cf2faeaa4e7e05a958d",
+      "bytes": 3513,
+      "exports": [
+        "currentPaymentInvoices",
+        "provedPaymentReconciliation"
+      ]
+    },
+    {
+      "path": "src/community/payments/repository.ts",
+      "sha256": "cff8ad13028918c1a15bf55677a630b79b26366174b7bf828a2a3f46f218e1c8",
+      "bytes": 8118,
+      "exports": [
+        "digest",
+        "PaymentRepository"
+      ]
+    },
+    {
+      "path": "src/community/payments/sepa.ts",
+      "sha256": "27f6e9be0268a11d6e74dacf54c370cf9e13c203266094b1c85c0dc30ec231d5",
+      "bytes": 2822,
+      "exports": [
+        "sepaExport"
+      ]
+    },
+    {
+      "path": "src/community/payments/service.ts",
+      "sha256": "18cc5073cdc6e2a631ef3bb8f7c4c3b738883aa46de1d161817e95d556197957",
+      "bytes": 12762,
+      "exports": [
+        "PaymentDependencies",
+        "CommunityPaymentService"
+      ]
+    },
+    {
+      "path": "src/community/payments/simulated-adapter.ts",
+      "sha256": "c6d7b32c231eb49bebd228f570c634a61b759bd75cf05a12bb4494b6eef0327e",
+      "bytes": 1072,
+      "exports": [
+        "communitySimulatedPaymentAdapter"
+      ]
+    },
+    {
+      "path": "src/community/payments/types.ts",
+      "sha256": "5b67d43c2cfb474d7330daa94f6cb84a7f4f42c6191d0742a728adafe939e2e1",
+      "bytes": 2491,
+      "exports": [
+        "PaymentStatus",
+        "PaymentPermission",
+        "Principal",
+        "InvoiceEvidence",
+        "PaymentItem",
+        "Candidate",
+        "PaymentBatch",
+        "PaymentAdapter",
+        "CredentialResolver",
+        "AccountingCallbacks"
+      ]
+    },
+    {
+      "path": "src/community/payments/validation.ts",
+      "sha256": "f2c19a392c3ac2f8578ffa2815d06fdf12750a3747a879e0abe1290f8f7090f0",
+      "bytes": 3460,
+      "exports": [
+        "normalizeIban",
+        "validIban",
+        "validDate",
+        "validText",
+        "validReference",
+        "candidate",
+        "itemFromCandidate"
+      ]
+    },
+    {
+      "path": "src/community/persistence/backup.ts",
+      "sha256": "e25c8a72dd46668ee035ea98c0083f22bb66bb07fe4cfb5470e6e2dac8384d87",
+      "bytes": 22359,
+      "exports": [
+        "Exclusive",
+        "FinancialSummary",
+        "BackupManifest",
+        "backupBaselineDigest",
+        "verifyRuntimePath",
+        "sanitizeHistoricalPaymentEvidence",
+        "inspectBackupBytes",
+        "verifyBackupDatabase",
+        "createCommunityBackup",
+        "listCommunityBackups",
+        "readCommunityBackup"
+      ]
+    },
+    {
+      "path": "src/community/persistence/legacy.ts",
+      "sha256": "164c7d3f494256a2a6efa3fcfc92614fb69fe9b0defeed8e27af4f2ee2ce9cd5",
+      "bytes": 17556,
+      "exports": [
+        "legacySourceFingerprint",
+        "inspectLegacy",
+        "stageLegacyConversion"
+      ]
+    },
+    {
+      "path": "src/community/persistence/restore.ts",
+      "sha256": "089de2adf9a0addd0d4fc22c813e32d40c0074e90bd8defa6c730fefac53ed49",
+      "bytes": 11408,
+      "exports": [
+        "RestoreStage",
+        "SafeActivate",
+        "stageCommunityRestore",
+        "recoverInterruptedRestore",
+        "activateCommunityRestore"
+      ]
+    },
+    {
+      "path": "src/community/persistence/zip.ts",
+      "sha256": "c3fd4d88a031e356dab9f6a18b4f3d93c0b059e65817ad2fe80ddc4a010b55a6",
+      "bytes": 5424,
+      "exports": [
+        "safeArchivePath",
+        "encodeZip",
+        "decodeZip"
+      ]
+    },
+    {
+      "path": "src/core/ids.ts",
+      "sha256": "fd479e199e761c00f9c536020010597f79d2d3713aacb2cce4b106b1da051341",
+      "bytes": 2563,
+      "exports": [
+        "stableId",
+        "transactionId",
+        "documentId",
+        "matchGroupId",
+        "auditId",
+        "generateRunId",
+        "generateCorrelationId",
+        "exclusionId"
+      ]
+    },
+    {
+      "path": "src/core/ingestion/extracted-invoices.ts",
+      "sha256": "a32b1ec97b19e1c16f9360e8bf3b60308e493a03d5c854b8ea6a9a68af33ef7d",
+      "bytes": 2790,
+      "exports": [
+        "ExtractedInvoiceRawRow",
+        "parseExtractedInvoices"
+      ]
+    },
+    {
+      "path": "src/core/ingestion/income.ts",
+      "sha256": "c74cb355a104a0df06db6454a511b666e39bf3feedfa717a1debc99ad2f90c2f",
+      "bytes": 2375,
+      "exports": [
+        "IncomeRawRow",
+        "parseIncome"
+      ]
+    },
+    {
+      "path": "src/core/ingestion/index.ts",
+      "sha256": "88cf3e7d9f82b3e0fbb76bd6ce413ca98c54d3610212a1562ea0813f2965cd25",
+      "bytes": 547,
+      "exports": []
+    },
+    {
+      "path": "src/core/ingestion/invoices.ts",
+      "sha256": "d4b652771ff3a92e27bbf7087870b75b7be6888172553532fb58fa4200e06fea",
+      "bytes": 1671,
+      "exports": [
+        "InvoiceRawRow",
+        "parseInvoices"
+      ]
+    },
+    {
+      "path": "src/core/ingestion/paypal.ts",
+      "sha256": "7c087820107c03c417361beab4e22ebc434f2795f70d01e362b4f7054e576d2b",
+      "bytes": 1376,
+      "exports": [
+        "PaypalRawRow",
+        "parsePaypal"
+      ]
+    },
+    {
+      "path": "src/core/ingestion/sparkasse.ts",
+      "sha256": "3269a851c317ea00168e9d7307fb9630479fd4dd82eb2d4812df63a0414b985b",
+      "bytes": 3749,
+      "exports": [
+        "SparkasseRawRow",
+        "parseSparkasse"
+      ]
+    },
+    {
+      "path": "src/core/ingestion/stripe.ts",
+      "sha256": "41a708575ee9b8e2bf71cea69fabd4e0b04c2d310645e9612761be2fbb14c6ff",
+      "bytes": 1654,
+      "exports": [
+        "StripeRawRow",
+        "parseStripe"
+      ]
+    },
+    {
+      "path": "src/core/ingestion/visa.ts",
+      "sha256": "4a45b48179849848ba3ba1f2ac58d596ed29131aec8a08b4b67a74946a409317",
+      "bytes": 3031,
+      "exports": [
+        "VisaRawRow",
+        "parseVisa"
+      ]
+    },
+    {
+      "path": "src/core/ingestion/xlsx-reader.ts",
+      "sha256": "57e4c1dfeb966d44ac50313d0fa2f11f43d27715dab651226d52355b96acb7dc",
+      "bytes": 3307,
+      "exports": [
+        "RawRow",
+        "SheetData",
+        "readXlsx",
+        "readSheet",
+        "readFirstSheet"
+      ]
+    },
+    {
+      "path": "src/core/matching/community-proposals.ts",
+      "sha256": "cac6ce3bd69254df9665e513cd30082e99430f4cca03ef7426ee4ba1e031f589",
+      "bytes": 3574,
+      "exports": [
+        "proposeExactMatches"
+      ]
+    },
+    {
+      "path": "src/core/matching/decisions.ts",
+      "sha256": "d466662da0b86672f8335c1a66f99f3dae787d0df0f0968c18e30285154a8915",
+      "bytes": 12632,
+      "exports": [
+        "MatchDecisionError",
+        "DecisionResult",
+        "createManualDecision",
+        "reviewDecision",
+        "unmatchDecision"
+      ]
+    },
+    {
+      "path": "src/core/matching/engine.ts",
+      "sha256": "37fe6c1c4d22a984f7399c825991c4ed2b619a105ce7810fade439c25d5285db",
+      "bytes": 2752,
+      "exports": [
+        "MatchRule",
+        "createMatch",
+        "runMatchingEngine",
+        "findSparkasse",
+        "findUnmatched",
+        "findUnmatchedDocs"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/aliexpress-combo.ts",
+      "sha256": "c0bf2a67e9a9e60ab9ec5382fcd7882d402bbb125019a4e1b4fd041ea7682495",
+      "bytes": 8721,
+      "exports": [
+        "aliexpressComboRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/auto-match-invoice.ts",
+      "sha256": "17788322643c0bd552804e2d1fd760a9af66511965f74e1a579fd8cad7e6e0db",
+      "bytes": 4606,
+      "exports": [
+        "autoMatchInvoiceRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/eust-group.ts",
+      "sha256": "e59bf3e395b10d89d578079bff399f69e5cabac9eaf3c15758b32f28a2839ef6",
+      "bytes": 3058,
+      "exports": [
+        "eustGroupRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/fx-usd-invoice.ts",
+      "sha256": "b85f5b7892ff497dc8cdec68b64c5e847263b80f8b8b3721dc648b37e90724f2",
+      "bytes": 10619,
+      "exports": [
+        "fxUsdInvoiceRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/index.ts",
+      "sha256": "be2d89b7c05f57681275024c8ff8d19da84924e066ebe542a51c78e0e860b579",
+      "bytes": 5256,
+      "exports": [
+        "ALL_RULES"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/paypal-income.ts",
+      "sha256": "5e66af54f88cb70f399efd167d1a2c6b944ebb234372dce4e900210fda82de12",
+      "bytes": 4266,
+      "exports": [
+        "paypalIncomeRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/paypal-internal.ts",
+      "sha256": "bc179e532e125b72d829bb0b58afc708d24b98574dedee0a3c8be21ffe34670b",
+      "bytes": 11479,
+      "exports": [
+        "paypalInternalPairRule",
+        "paypalFxPairRule",
+        "paypalSmallPairRule",
+        "paypalInstantFundingRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/paypal-invoice.ts",
+      "sha256": "e40782ff03af0e419fa5b0fac2b1bb0b2143dec9e075f5c9ca342f223bdb5a06",
+      "bytes": 2223,
+      "exports": [
+        "paypalInvoiceRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/paypal-refund.ts",
+      "sha256": "e78f75c0437a9588ef53dab52cb81b1dc8ec19f62b58f52e53183a2a010e3003",
+      "bytes": 1791,
+      "exports": [
+        "paypalRefundIncomeRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/paypal-split.ts",
+      "sha256": "0f214fd3a1dbbf14ac788d4eb13978bb4ead423f36fda80f92f23d0de4ec82bf",
+      "bytes": 4120,
+      "exports": [
+        "paypalSplitPayRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/psp-fee-summary.ts",
+      "sha256": "99b200b2e037938c8cecf2550f2dec73d1d3ec9829e2f0a5c2a69070901efd2e",
+      "bytes": 3759,
+      "exports": [
+        "stripeFeeMonthlyRule",
+        "paypalFeeMonthlyRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/scan-invoice.ts",
+      "sha256": "7d6de19bec00550cb6833f5241f9165240a43cc46bc31906fac3a62b5f1ef9b9",
+      "bytes": 7292,
+      "exports": [
+        "scanInvoiceRefRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/spk-amazon.ts",
+      "sha256": "51846064e6f41da32081d285dc5b2cce4055ca6ede4d426efa59c0b5572f005b",
+      "bytes": 7403,
+      "exports": [
+        "spkAmazonRefRule",
+        "spkAmazonInvoiceRule",
+        "spkAmazonAmountRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/spk-income.ts",
+      "sha256": "6518ab0934be594ae680e439f095d351d2e0c18e5c065213a7e1eb406d58636f",
+      "bytes": 2478,
+      "exports": [
+        "spkIncomeRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/spk-invoice.ts",
+      "sha256": "901508e39b32c08f3f965628c6359a6be747b9e3a38a685ebb7cb079d5625b84",
+      "bytes": 9205,
+      "exports": [
+        "spkInvoiceRefRule",
+        "spkInvoiceAmountRule",
+        "spkInvoiceDescRefRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/spk-paypal.ts",
+      "sha256": "a21ddf994cf276c111a27621af2ada650889e82e53eeefb9db2ce42fa71ccb2a",
+      "bytes": 5422,
+      "exports": [
+        "spkPaypalRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/spk-stripe.ts",
+      "sha256": "342dd4e1c32b9c653ac564bbd82027d69e022cdc48ae430c73c6a83cfbff29b5",
+      "bytes": 4628,
+      "exports": [
+        "spkStripePayoutRule",
+        "spkStripeFeeRule",
+        "spkStripeRefundRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/spk-visa.ts",
+      "sha256": "b741c0dc29a4f4e5ad3d8a1129ff99e0b4669e7f31e09dce7fcbb9e37a5d888b",
+      "bytes": 1446,
+      "exports": [
+        "spkVisaRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/stripe-income.ts",
+      "sha256": "e8c2d5aa7392e82bb6b9b839d3a6e1ecbfc47a9dda6e8bc9cc08176d940b1bca",
+      "bytes": 2862,
+      "exports": [
+        "stripeIncomeChargeRule",
+        "stripeIncomeRefundRule"
+      ]
+    },
+    {
+      "path": "src/core/matching/rules/visa-invoice.ts",
+      "sha256": "3449f6838f2b1884bc33a22de871fe69c9627890a3ee038029f1ca621662b09e",
+      "bytes": 9224,
+      "exports": [
+        "visaInvoiceAmountRule",
+        "visaFxInvoiceRule",
+        "visaAmazonRule",
+        "visaInvoiceMerchantRule"
+      ]
+    },
+    {
+      "path": "src/core/normalization/amount.ts",
+      "sha256": "ae29acb2cc2de19b751d22cf2efaed790fac2251a14503806d68d203d1609774",
+      "bytes": 2226,
+      "exports": [
+        "toMinor",
+        "fromMinor",
+        "parseGermanNumber",
+        "toCents",
+        "sparkasseAmount",
+        "visaAmount"
+      ]
+    },
+    {
+      "path": "src/core/normalization/dates.ts",
+      "sha256": "b5f582a32553c82927ded8442ce0d975cbee2fde4bab8d094b7458bce4613311",
+      "bytes": 3095,
+      "exports": [
+        "excelSerialToIso",
+        "excelSerialToIsoDateTime",
+        "normalizeDate",
+        "toDateOnly",
+        "daysBetween"
+      ]
+    },
+    {
+      "path": "src/core/normalization/fx.ts",
+      "sha256": "4d1582a92cb95e7b5b6940a2e11e7ee6815b4a6ebd5e348ee35b48600c949c04",
+      "bytes": 2166,
+      "exports": [
+        "parseFxFromVisaDescription",
+        "computeOriginalAmount",
+        "fxAmountsMatch"
+      ]
+    },
+    {
+      "path": "src/core/normalization/index.ts",
+      "sha256": "c7a355069f5feaf4b63f0183b7c25915a654200360d93f326393374cb8caccce",
+      "bytes": 547,
+      "exports": []
+    },
+    {
+      "path": "src/core/normalization/normalize-document.ts",
+      "sha256": "1a7057577cf093b768734ad6c9c1e0d4479c51fad2a50b5d9c32b9fdeb6982cb",
+      "bytes": 3849,
+      "exports": [
+        "normalizeIncomeDocument",
+        "normalizeInvoiceDocument",
+        "normalizeExtractedInvoice"
+      ]
+    },
+    {
+      "path": "src/core/normalization/normalize-transaction.ts",
+      "sha256": "35c9edb6e18b8588a0a7a27be9334d980b07a376f6e5f37a743ec6102a77b4f7",
+      "bytes": 4707,
+      "exports": [
+        "normalizeSparkasse",
+        "normalizeVisa",
+        "normalizePaypal",
+        "normalizeStripe"
+      ]
+    },
+    {
+      "path": "src/core/pipeline.ts",
+      "sha256": "c089eadc23e5126700654d570498d6c1adb361492a38328a8150dd6c268d402d",
+      "bytes": 4400,
+      "exports": [
+        "PipelineInput",
+        "ingestAndNormalize",
+        "txnsBySource",
+        "docsBySource",
+        "isAvailable",
+        "isDocAvailable"
+      ]
+    },
+    {
+      "path": "src/core/reporting/accepted-evidence.ts",
+      "sha256": "955c46044e11d4f33b298e597f1338e218f72e797ea805fb626674a3a346106e",
+      "bytes": 771,
+      "exports": [
+        "isAcceptedMatchGroup",
+        "acceptedDocumentIds"
+      ]
+    },
+    {
+      "path": "src/core/reporting/export-csv.ts",
+      "sha256": "14be9c962ba7d6e793a72cd9838e8755a00cc3b6f6dcf5c98b848ec5d8f662a3",
+      "bytes": 1373,
+      "exports": [
+        "exportCsv"
+      ]
+    },
+    {
+      "path": "src/core/reporting/export-json.ts",
+      "sha256": "701f381d2e5276c3713f38846428bba82a8e72ead3e688f1aa72633935d7345e",
+      "bytes": 304,
+      "exports": [
+        "exportJson"
+      ]
+    },
+    {
+      "path": "src/core/reporting/export-pdf.ts",
+      "sha256": "6a7bf3117a9d374800d9662935cd1ee7c0c4e3c48a36c35ece68ae89c47e3750",
+      "bytes": 10385,
+      "exports": [
+        "generateVatReportPdf",
+        "generateIncomeTaxPdf"
+      ]
+    },
+    {
+      "path": "src/core/reporting/generate-report.ts",
+      "sha256": "6251e118aa74e3a21a67183dfcb250c547f54725d9e0633bacc6aff5c8a7b009",
+      "bytes": 6558,
+      "exports": [
+        "CurrencyTotal",
+        "VatSummary",
+        "ReportWithExtras",
+        "ReportError",
+        "generateReport"
+      ]
+    },
+    {
+      "path": "src/core/reporting/income-tax-report.ts",
+      "sha256": "835ce0e7ee679174f3fe0436a1e416a3e630eb7fdaa611c9d2979e95b6220cd6",
+      "bytes": 14519,
+      "exports": [
+        "IncomeTaxLine",
+        "IncomeTaxCategory",
+        "IncomeTaxReport",
+        "generateIncomeTaxReport"
+      ]
+    },
+    {
+      "path": "src/core/reporting/vat-report.ts",
+      "sha256": "66e801fcdd05311a9d50faf015bb8827d9b2a730a20bf652f31f6d0e0e76ebb6",
+      "bytes": 21733,
+      "exports": [
+        "VatReportLinkedTransaction",
+        "VatReportLine",
+        "VatReportCategory",
+        "VatReportRevenueBucket",
+        "VatReport",
+        "generateVatReport"
+      ]
+    },
+    {
+      "path": "src/core/tax-category.ts",
+      "sha256": "f8f4ab073cdd349fdeb1b35c27ab8518caf3ad31ad087bdbbfaf67d4c932e90c",
+      "bytes": 3163,
+      "exports": [
+        "getTaxCategory"
+      ]
+    },
+    {
+      "path": "src/core/types.ts",
+      "sha256": "0612efedc6ee2a4932a1fbc7467038872e59d909c9bc40250f1988d19995fff1",
+      "bytes": 7418,
+      "exports": [
+        "SourceSystem",
+        "TransactionSourceSystem",
+        "DocumentSourceSystem",
+        "FxInfo",
+        "Transaction",
+        "Document",
+        "LineItem",
+        "MatchStatus",
+        "MatchGroup",
+        "ExclusionRule",
+        "ReportSummary",
+        "ReportItem",
+        "Report",
+        "Disposition",
+        "TransactionDisposition",
+        "DocumentDisposition",
+        "AuditAction",
+        "AuditEvent",
+        "MatchingState",
+        "AllocationKind",
+        "ExactConversion",
+        "CommunityAllocation",
+        "FinancialCategory",
+        "TransactionClassification",
+        "DocumentTaxClassification",
+        "CommunityAccounting"
+      ]
+    },
+    {
+      "path": "src/core/validation.ts",
+      "sha256": "73fa00b220b3b4ae43e43383ef714950ebf96b836b20210fd4d44620313b0792",
+      "bytes": 3334,
+      "exports": [
+        "ValidationError",
+        "validateTransaction",
+        "validateDocument",
+        "validateMatchGroup",
+        "toMinorUnits",
+        "fromMinorUnits"
+      ]
+    },
+    {
+      "path": "src/import/amazon-import.ts",
+      "sha256": "eb95930e05123d78c5d46ecf4809f7436f0341fdb5724df18c1da41a2de4a485",
+      "bytes": 51048,
+      "exports": [
+        "AmazonOrder",
+        "AmazonImportResult",
+        "ParseDebug",
+        "getLastParseDebug",
+        "parseSendungen",
+        "parseErstattungen",
+        "parseAbgleich",
+        "mergeAmazonData",
+        "importAmazonOrders",
+        "OrganizeInvoicesResult",
+        "organizeInvoiceFiles",
+        "importAmazon",
+        "enrichAmazonDocsFromPdfs",
+        "LinkInvoicesResult",
+        "linkInvoicePdfs"
+      ]
+    },
+    {
+      "path": "src/import/bank-import.ts",
+      "sha256": "1f087512a2499cbfdfe924fbec0ea9213cd91aa6967876b4c399d5da15145239",
+      "bytes": 3926,
+      "exports": [
+        "BankImportResult",
+        "importBankTransactions"
+      ]
+    },
+    {
+      "path": "src/import/document-import.ts",
+      "sha256": "86b037b256fff8a97349b30e5781a4b449392c9099a85319d3ca62ec2da65424",
+      "bytes": 4001,
+      "exports": [
+        "DocImportType",
+        "DocImportResult",
+        "importDocumentFile"
+      ]
+    },
+    {
+      "path": "src/import/enablebanking-api.ts",
+      "sha256": "3cc1c3482289a2b94cecf9501dde8f7608a705a425619f5a349d1de0ce4e83c4",
+      "bytes": 8158,
+      "exports": [
+        "getAuthToken",
+        "EbAspsp",
+        "EbAccount",
+        "EbSession",
+        "EbBalance",
+        "EbTransaction",
+        "listAspsps",
+        "startAuth",
+        "createSession",
+        "getSession",
+        "deleteSession",
+        "getBalances",
+        "fetchTransactions",
+        "normalizeEbTransaction"
+      ]
+    },
+    {
+      "path": "src/import/file-import.ts",
+      "sha256": "40b8df6187ea5e5fbadeb8bc4f134fb280aa61ec7f614dae273d52b98869a3fb",
+      "bytes": 7027,
+      "exports": [
+        "FileSourceType",
+        "FileImportResult",
+        "importFile",
+        "storeStatementTransactions"
+      ]
+    },
+    {
+      "path": "src/import/paypal-api.ts",
+      "sha256": "f9fab4f64822739ba2a3e48f2d9b012bc0e4b368398c937128ce3b11acf5507f",
+      "bytes": 7783,
+      "exports": [
+        "PayPalTransactionInfo",
+        "PayPalTransactionDetail",
+        "getPayPalAccessToken",
+        "fetchPayPalTransactions",
+        "normalizePayPalTransaction"
+      ]
+    },
+    {
+      "path": "src/import/paypal-import.ts",
+      "sha256": "9a05f547b21574e58c2431650144f37c26913fec92dec036c0602e740561a954",
+      "bytes": 11877,
+      "exports": [
+        "PayPalImportResult",
+        "importPayPalTransactions",
+        "generateMonthlyFeeSummaries"
+      ]
+    },
+    {
+      "path": "src/import/statement-parser.ts",
+      "sha256": "6e93a0f3a8fe158561ae38024f04b84d7988b1c089c9e9f17dfd672e4cdb2eb6",
+      "bytes": 18233,
+      "exports": [
+        "MAX_STATEMENT_BYTES",
+        "StatementError",
+        "StatementOptions",
+        "currencyPrecision",
+        "statementMinor",
+        "statementDate",
+        "validateWorkbookContainer",
+        "parseStatement",
+        "parseStatementBuffer"
+      ]
+    },
+    {
+      "path": "src/import/stripe-api.ts",
+      "sha256": "2a00c9574b7f6d116113cb3480f22b1f0c0d1c7b6c25759eb2708bcf55dd362f",
+      "bytes": 8211,
+      "exports": [
+        "StripeBalanceTransaction",
+        "StripeCharge",
+        "StripePayout",
+        "StripeRefund",
+        "fetchStripeCharges",
+        "fetchStripePayouts",
+        "fetchStripeFees",
+        "fetchStripeRefunds",
+        "normalizeStripeCharge",
+        "normalizeStripePayout",
+        "normalizeStripeRefund",
+        "normalizeStripeFee"
+      ]
+    },
+    {
+      "path": "src/import/stripe-import.ts",
+      "sha256": "160b9a8b5ffe0249c06bb0b961aaa00f366ffadfe260cf148d21c64251070063",
+      "bytes": 10752,
+      "exports": [
+        "StripeImportResult",
+        "importStripeTransactions",
+        "generateMonthlyFeeSummaries"
+      ]
+    },
+    {
+      "path": "src/invoicebot/ai.ts",
+      "sha256": "0e291081385f84f495c8a038e030864d5213178e7089e61031c973c269528dd8",
+      "bytes": 9840,
+      "exports": [
+        "ModelTier",
+        "BotAiConfig",
+        "BotAiCallResult",
+        "getApiKey",
+        "hasDedicatedKey",
+        "getModel",
+        "getBotAiConfig",
+        "saveBotAiConfig",
+        "deleteBotApiKey",
+        "callBotAi"
+      ]
+    },
+    {
+      "path": "src/invoicebot/browser-use-runner.ts",
+      "sha256": "21f496b3c34d7c7eb6569cfb234d90c7042095fffb7d6e0f40b16e7903fa0567",
+      "bytes": 15801,
+      "exports": [
+        "EventCallback",
+        "runBrowserUseWorker",
+        "checkPythonSetup"
+      ]
+    },
+    {
+      "path": "src/invoicebot/collection-service.ts",
+      "sha256": "117dfee07926636136f77913986a2c8782620887e46748ba255735131a11bb0b",
+      "bytes": 11874,
+      "exports": [
+        "queueRun",
+        "executeRun",
+        "cancelRun",
+        "retryRun"
+      ]
+    },
+    {
+      "path": "src/invoicebot/cost-monitor.ts",
+      "sha256": "b9f86f1d6c3350cb91099ea94207b6e593a3641dff6828e497b8773a131d8fe2",
+      "bytes": 9883,
+      "exports": [
+        "CostSession",
+        "CostEntry",
+        "CostSnapshot",
+        "startSession",
+        "endSession",
+        "ensureSession",
+        "recordCost",
+        "isPaused",
+        "isCallAllowed",
+        "approveContinuation",
+        "getCostLimit",
+        "setCostLimit",
+        "getCostSnapshot",
+        "getSessionHistory",
+        "getSessionEntries"
+      ]
+    },
+    {
+      "path": "src/invoicebot/errors.ts",
+      "sha256": "dd3befb459bb49b826ee939bc92037cc4a5839a6e0b15a3e0144833db2c7c2a6",
+      "bytes": 2538,
+      "exports": [
+        "InvoiceBotError",
+        "PortalNotFoundError",
+        "RunNotFoundError",
+        "InvalidRunStateError",
+        "DuplicateFileError",
+        "OpenclawConnectionError",
+        "BrowserConnectionError",
+        "SessionExpiredError",
+        "PortalLayoutChangedError",
+        "DownloadFailedError",
+        "ExecutorBusyError"
+      ]
+    },
+    {
+      "path": "src/invoicebot/file-store.ts",
+      "sha256": "27d76008b4a00b11e954f158514c6f1c8b8ea7b6f3dfc2a660d8287d07c9e648",
+      "bytes": 5024,
+      "exports": [
+        "ArchiveResult",
+        "hashFile",
+        "canonicalExtension",
+        "buildArchivePath",
+        "findExistingArchivePath",
+        "normalizeFilename",
+        "archiveFile",
+        "getArchiveRoot"
+      ]
+    },
+    {
+      "path": "src/invoicebot/import-bridge.ts",
+      "sha256": "d070fcbb5a3d5a7bc4bab2dd135bb7f1e9f4288564e428375b4ec47a7392d95a",
+      "bytes": 5659,
+      "exports": [
+        "ImportResult",
+        "importCollectedFile",
+        "importRunFiles"
+      ]
+    },
+    {
+      "path": "src/invoicebot/openclaw-client.ts",
+      "sha256": "18e9f6dc3d2ba0452d11333f9afaa0b9209005b4c6b6a1b527869650fc85094a",
+      "bytes": 21922,
+      "exports": [
+        "ExecutorConfig",
+        "setExecutorConfig",
+        "getExecutorConfig",
+        "acquireExecutorLock",
+        "releaseExecutorLock",
+        "isExecutorLocked",
+        "BrowserLaunchStatus",
+        "BrowserLaunchResult",
+        "launchControlledBrowser",
+        "launchVisibleBrowser",
+        "getBrowserStatus",
+        "connectBrowser",
+        "isBrowserReachable",
+        "checkSession",
+        "startCollectionRun",
+        "OpenclawRunReport",
+        "isOpenclawAvailable",
+        "runOpenclawAgent",
+        "resolveOpenclawSiteId",
+        "openclawCollectInvoices",
+        "getOpenclawDownloads",
+        "getRunStatus",
+        "cancelRun",
+        "ensureSession"
+      ]
+    },
+    {
+      "path": "src/invoicebot/orchestrator.ts",
+      "sha256": "830b983ee184729b602dc69c17f081bda96a5171481575c3a4742fc247045f9b",
+      "bytes": 3327,
+      "exports": [
+        "startRun",
+        "executeRunInBackground",
+        "isRunActive",
+        "getActiveRunIds",
+        "resumeStaleRuns"
+      ]
+    },
+    {
+      "path": "src/invoicebot/portal-adapters/aliexpress.ts",
+      "sha256": "7eda08cd1ca0e571f186e6ce888b61976847a0f38deb4dd5f82334146aa7568f",
+      "bytes": 18485,
+      "exports": [
+        "AliExpressAdapter"
+      ]
+    },
+    {
+      "path": "src/invoicebot/portal-adapters/amazon-business.ts",
+      "sha256": "9b7485bb513fbb4f44d8bedaac02abe815a7b329116a46e80d7a16f940ef6f6e",
+      "bytes": 20662,
+      "exports": [
+        "AmazonBusinessAdapter"
+      ]
+    },
+    {
+      "path": "src/invoicebot/portal-adapters/auto-login.ts",
+      "sha256": "df9c48db7301297ea273ea898e43d2edca45039db2b4b598a6220b8a6853bc7b",
+      "bytes": 15552,
+      "exports": [
+        "AutoLoginResult",
+        "attemptAutoLogin",
+        "attemptGoogleSSOLogin"
+      ]
+    },
+    {
+      "path": "src/invoicebot/portal-adapters/bambulab.ts",
+      "sha256": "29c00bb2b1f759afa0a0747d05b4edc706f5ef2a4e837eca1a0d80443f2ce48e",
+      "bytes": 13945,
+      "exports": [
+        "BambuLabAdapter"
+      ]
+    },
+    {
+      "path": "src/invoicebot/portal-adapters/browser-use.ts",
+      "sha256": "ab4888e65b4933f6316d17f2fbcd0ec6aa14c18dc7e7c4d306cbc280049af781",
+      "bytes": 2944,
+      "exports": [
+        "BrowserUseAdapter"
+      ]
+    },
+    {
+      "path": "src/invoicebot/portal-adapters/chatgpt.ts",
+      "sha256": "98ffe9dbf7b1e13844b69ade0b00c39c28602b4a40e255d090722b91edbe08fa",
+      "bytes": 13905,
+      "exports": [
+        "ChatGPTAdapter"
+      ]
+    },
+    {
+      "path": "src/invoicebot/portal-adapters/fiverr.ts",
+      "sha256": "7e86085973665f3c1ce7b523297632654bcf124f96f61c039e21df10f532cafe",
+      "bytes": 13596,
+      "exports": [
+        "FiverrAdapter"
+      ]
+    },
+    {
+      "path": "src/invoicebot/portal-adapters/google-cloud.ts",
+      "sha256": "d6a3b78c101eec3b702c8906c29ac9101ea128a43c657338722f88251e280644",
+      "bytes": 9168,
+      "exports": [
+        "GoogleCloudAdapter"
+      ]
+    },
+    {
+      "path": "src/invoicebot/portal-adapters/google-one.ts",
+      "sha256": "67f3dd72667767cbfb4358ce353442ca3c7edf80bbea3fbe00eb84917438cb6f",
+      "bytes": 11092,
+      "exports": [
+        "GoogleOneAdapter"
+      ]
+    },
+    {
+      "path": "src/invoicebot/portal-adapters/index.ts",
+      "sha256": "e06cae59161f3647b321477ed881a68411b00cd34de92b76c8fdc8f57f8319f5",
+      "bytes": 1671,
+      "exports": [
+        "getAdapter",
+        "getSupportedPortalTypes"
+      ]
+    },
+    {
+      "path": "src/invoicebot/portal-adapters/openai.ts",
+      "sha256": "fcd7330c741cee7a79e8182cf1e1d6418abe4b179173a7df54f5ddbfbe0fde95",
+      "bytes": 17330,
+      "exports": [
+        "OpenAIAdapter"
+      ]
+    },
+    {
+      "path": "src/invoicebot/portal-adapters/post-at.ts",
+      "sha256": "5787e099291f52608d2e23c9ec8119ecd5669c501b206f26a6a7e18d9ea64a00",
+      "bytes": 17363,
+      "exports": [
+        "PostAtAdapter"
+      ]
+    },
+    {
+      "path": "src/invoicebot/portal-adapters/spotify.ts",
+      "sha256": "a90e4837797e6feddebb1c85bd9cb46d9b8714c438c5e22748948357afcc645f",
+      "bytes": 11418,
+      "exports": [
+        "SpotifyAdapter"
+      ]
+    },
+    {
+      "path": "src/invoicebot/repository.ts",
+      "sha256": "66c43951aec10846b0e53137dd9244ac3763f6be3c0534928c210cf0a73c52b2",
+      "bytes": 22102,
+      "exports": [
+        "createPortal",
+        "getPortal",
+        "listPortals",
+        "updatePortal",
+        "createRun",
+        "getRun",
+        "listRuns",
+        "isValidTransition",
+        "updateRunStatus",
+        "createFile",
+        "getFile",
+        "getFilesBySha256",
+        "listFilesByRun",
+        "updateFileImportStatus",
+        "createEvent",
+        "listEventsByRun",
+        "createProfile",
+        "getProfileForPortal",
+        "updateProfileStatus",
+        "updateProfileVerified",
+        "createArtifact",
+        "listArtifactsByRun",
+        "createExtractedInvoice",
+        "updateExtractedInvoiceStatus",
+        "listExtractedInvoicesByRun",
+        "findExtractedInvoiceBySha256",
+        "updateRunCost",
+        "incrementRunCounters"
+      ]
+    },
+    {
+      "path": "src/invoicebot/types.ts",
+      "sha256": "283d031d699966833ba2f5dad798dcdcf740149dbfaa34086215a791fe9e33d7",
+      "bytes": 6853,
+      "exports": [
+        "PortalType",
+        "AdapterType",
+        "RunStrategy",
+        "LoginStrategy",
+        "PortalState",
+        "ReviewPolicy",
+        "RunMode",
+        "OpenclawProfile",
+        "SessionMode",
+        "PortalConfig",
+        "CollectionRunStatus",
+        "RunStats",
+        "CollectionRun",
+        "ImportStatus",
+        "CollectedFile",
+        "EventLevel",
+        "BotEvent",
+        "CreatePortalParams",
+        "CreateRunParams",
+        "OpenclawFileResult",
+        "OpenclawRunResult",
+        "SessionCheckResult",
+        "PortalAdapter",
+        "BrowserProfile",
+        "ArtifactType",
+        "RunArtifact",
+        "ExtractedInvoiceImportStatus",
+        "ExtractedInvoice",
+        "WorkerEventType",
+        "WorkerEvent"
+      ]
+    },
+    {
+      "path": "src/invoicerec/classify.ts",
+      "sha256": "b7bbeaec866fbe9ca549d79e37d5b5dc447bd76854c3d2e2a333b2791a162dd8",
+      "bytes": 1635,
+      "exports": [
+        "classifyFile"
+      ]
+    },
+    {
+      "path": "src/invoicerec/extract-ai.ts",
+      "sha256": "f53dd76ed4e7a4dbb52095dba1a74e8b1ab669839e769757c7a4257e5606b6ef",
+      "bytes": 16409,
+      "exports": [
+        "AiTokenUsage",
+        "AiExtractionResult",
+        "extractWithAi",
+        "listOpenRouterModels"
+      ]
+    },
+    {
+      "path": "src/invoicerec/extract-ocr.ts",
+      "sha256": "c4f37f36d749c8ce3e842e2e80e9e2760e37b1789fc6cf27d1c49e9ac5c3815e",
+      "bytes": 6827,
+      "exports": [
+        "OcrResult",
+        "OcrOrientation",
+        "OcrWord",
+        "extractOcrWords",
+        "scoreOcrResult",
+        "ocrImage",
+        "resetOcrWorker",
+        "terminateOcr"
+      ]
+    },
+    {
+      "path": "src/invoicerec/extract-pdf-text.ts",
+      "sha256": "282d16066c7cadd234aa2b84de96737352fe76786c8af2e6f918a007f0b86016",
+      "bytes": 3021,
+      "exports": [
+        "PdfTextResult",
+        "extractPdfText"
+      ]
+    },
+    {
+      "path": "src/invoicerec/generate-invoice.ts",
+      "sha256": "956c2004fd170071f0b09c68020046a697d89955c8249e288a646b35e933eea5",
+      "bytes": 14265,
+      "exports": [
+        "InvoiceData",
+        "getNextGPlayInvoiceNumber",
+        "generateGooglePlayInvoice",
+        "EigenbelegData",
+        "generateEigenbeleg",
+        "createEigenbeleg",
+        "createGooglePlayInvoice"
+      ]
+    },
+    {
+      "path": "src/invoicerec/ids.ts",
+      "sha256": "f0cc550cfeab54f0a33bb1223e7d284e72d4dccbeef3142ed266527c22113c0b",
+      "bytes": 688,
+      "exports": [
+        "scanId",
+        "templateId",
+        "editId"
+      ]
+    },
+    {
+      "path": "src/invoicerec/parse-fields.ts",
+      "sha256": "ff1c4a14404449ea5e4717af3c104a54282331c6f206d1c41f5a0d75cb8a7209",
+      "bytes": 35316,
+      "exports": [
+        "detectCarrierEustSplit",
+        "parseFields"
+      ]
+    },
+    {
+      "path": "src/invoicerec/pdf-to-image.ts",
+      "sha256": "208e9afae1e2b3cdb44589ca7d15ff515ccd5e5081997655394e6816a32b0683",
+      "bytes": 4827,
+      "exports": [
+        "PageImage",
+        "pdfToImages"
+      ]
+    },
+    {
+      "path": "src/invoicerec/pipeline.ts",
+      "sha256": "0d2e04d5d8d5b2d9dfa28d4bf3bc1b752166fc86bbc56fcdd228e89c1ab0b97d",
+      "bytes": 27049,
+      "exports": [
+        "shouldUsePdfTextLayer",
+        "processFile",
+        "normalizeOcrWords",
+        "processBatch"
+      ]
+    },
+    {
+      "path": "src/invoicerec/preprocess.ts",
+      "sha256": "49c90fe31c9601e991c7bcda436f26a75ca600a8adec1e068253e981402c3da8",
+      "bytes": 2359,
+      "exports": [
+        "preprocessForOcr",
+        "createThumbnail"
+      ]
+    },
+    {
+      "path": "src/invoicerec/store.ts",
+      "sha256": "09ee7e4ecfb973ece7da1866e4c35a2f6c46625f80803721843d16256e4ab75f",
+      "bytes": 17102,
+      "exports": [
+        "insertScan",
+        "updateScanStatus",
+        "updateScanDocumentId",
+        "updateScanTemplateId",
+        "getScan",
+        "getScanByHash",
+        "listScans",
+        "deleteScan",
+        "upsertFields",
+        "getFields",
+        "upsertTemplate",
+        "getTemplate",
+        "listTemplates",
+        "incrementTemplateUseCount",
+        "deleteTemplate",
+        "insertReviewEdit",
+        "getReviewEdits",
+        "CreatedDocument",
+        "CreateResult",
+        "createDocumentFromScan"
+      ]
+    },
+    {
+      "path": "src/invoicerec/template-learn.ts",
+      "sha256": "b88fca8e856358fa86fa29436547026857ac088ab37a248958755af7563686cd",
+      "bytes": 5751,
+      "exports": [
+        "layoutFingerprint",
+        "learnTemplate"
+      ]
+    },
+    {
+      "path": "src/invoicerec/template-match.ts",
+      "sha256": "228b8ab4d1c85f382ae04097bd4cf8dcd60f35749503f0514e681290d089280f",
+      "bytes": 7425,
+      "exports": [
+        "TemplateMatchResult",
+        "findMatchingTemplate",
+        "extractTextFromRegion",
+        "applyTemplate",
+        "parseSpatialValue"
+      ]
+    },
+    {
+      "path": "src/invoicerec/types.ts",
+      "sha256": "2c05995887e56ac5dbf63ee3ff59d11b4c94faa63262253d1896eca63156b31d",
+      "bytes": 3524,
+      "exports": [
+        "FileType",
+        "ExtractionMethod",
+        "ScanStatus",
+        "InvoiceScan",
+        "TaxLine",
+        "ExtractedLineItem",
+        "FieldRegion",
+        "StoredOcrWord",
+        "ExtractionSource",
+        "FieldConfidence",
+        "ExtractedFields",
+        "ValidationResult",
+        "ValidationIssue",
+        "TemplateFieldPattern",
+        "TemplatePatterns",
+        "InvoiceTemplate",
+        "ReviewEdit",
+        "PipelineResult"
+      ]
+    },
+    {
+      "path": "src/invoicerec/validate.ts",
+      "sha256": "3857f395b5fddbd3d88c9dc83200be2ed85c5493a050f29f4ba01637752341fb",
+      "bytes": 5976,
+      "exports": [
+        "validateFields"
+      ]
+    },
+    {
+      "path": "src/invoicerec/vendor-override.ts",
+      "sha256": "1bd2a3e7a244971005c32f4f4edbb83a05b686bbf4c16817e65c28185a91e965",
+      "bytes": 3742,
+      "exports": [
+        "applyVendorOverride"
+      ]
+    },
+    {
+      "path": "src/migration/offline-v2.mjs",
+      "sha256": "5b2755ec2a61795d630ea46a2288d2554ba9ebae28c89a165166e0cf866402ac",
+      "bytes": 14289,
+      "exports": [
+        "totalsAndReferences",
+        "stageLegacyV2"
+      ]
+    },
+    {
+      "path": "src/migration/synthetic-dry-run.mjs",
+      "sha256": "ae40ed4998acbbff8b35d969de82678798c76d10357d1cabe957df6b63c07e28",
+      "bytes": 3848,
+      "exports": [
+        "dryRunSyntheticBundle"
+      ]
+    },
+    {
+      "path": "src/migration/verify-offline-stage.mjs",
+      "sha256": "dca285950ab36b2529bdda8201f1deef15491af4f8f99d1dd2fa42bf7273d0c3",
+      "bytes": 5725,
+      "exports": [
+        "verifyLegacyStage"
+      ]
+    },
+    {
+      "path": "src/migrations/000-legacy-stage.mjs",
+      "sha256": "e11997f24cefe0ed5fadd3706d8dced91a619d1380925bafa1036a0f074daa78",
+      "bytes": 284,
+      "exports": [
+        "migrationId",
+        "fromVersion",
+        "toVersion"
+      ]
+    },
+    {
+      "path": "src/migrations/001-community-sqlite-baseline.ts",
+      "sha256": "21fa27808c2419f8cba17e05db1a25b5276db032b8cbb6a99b7c2d30593e75a3",
+      "bytes": 4084,
+      "exports": [
+        "COMMUNITY_SQLITE_VERSION",
+        "COMMUNITY_SQLITE_MIGRATION_ID",
+        "communitySchemaDigest",
+        "communityPhysicalSchemaDigest",
+        "verifyCommunitySqliteV1",
+        "initializeCommunitySqliteV1"
+      ]
+    },
+    {
+      "path": "src/migrations/002-statement-journal-capability.ts",
+      "sha256": "9cf70cee2434d16c260518ca2aee78ea8466a2e5d2cfd11ed6e4ebcf95592125",
+      "bytes": 3710,
+      "exports": [
+        "COMMUNITY_SQLITE_CURRENT_VERSION",
+        "COMMUNITY_SQLITE_V2_ID",
+        "STATEMENT_JOURNAL_CAPABILITY",
+        "COMMUNITY_SQLITE_V2_CHECKSUM",
+        "verifyCommunitySqliteV2",
+        "upgradeCommunitySqliteV1ToV2"
+      ]
+    },
+    {
+      "path": "src/migrations/003-community-payments.ts",
+      "sha256": "c3702f3d19ba4711dcc40790a4cf85c045654b62618f7af6fcfc060777822170",
+      "bytes": 3033,
+      "exports": [
+        "upCommunityPayments003"
+      ]
+    },
+    {
+      "path": "src/migrations/004-community-canonical-state.ts",
+      "sha256": "f526d80ebc32d22cef7fad3a37a260f38a63259e18089fe8c8a439bb49d135f9",
+      "bytes": 1416,
+      "exports": [
+        "CANONICAL_STATE_CAPABILITY",
+        "CANONICAL_STATE_DDL",
+        "CANONICAL_STATE_MIGRATION_CHECKSUM",
+        "upCommunityCanonicalState004"
+      ]
+    },
+    {
+      "path": "src/migrations/community-registry.ts",
+      "sha256": "53655dd2d2065a25c861cbd54d1256e7660d12079248b7d6f5b9ba62a5d73b8c",
+      "bytes": 5253,
+      "exports": [
+        "COMMUNITY_SCHEMA_VERSION",
+        "PAYMENT_SCHEMA_CAPABILITY",
+        "PAYMENT_MIGRATION_ID",
+        "CANONICAL_MIGRATION_ID",
+        "PAYMENT_MIGRATION_CHECKSUM",
+        "verifyCommunitySchema",
+        "upgradeCommunitySchema"
+      ]
+    },
+    {
+      "path": "src/observability/audit.ts",
+      "sha256": "52452cd681d249b4db1b81fc476eda28b3316af908e21d1fc305af947bbe9925",
+      "bytes": 1434,
+      "exports": [
+        "recordAudit"
+      ]
+    },
+    {
+      "path": "src/observability/logger.ts",
+      "sha256": "f543c6880d2c0901fad5a951a35cc2ee6dea564d58631bdc902769f6a7c0d779",
+      "bytes": 1401,
+      "exports": [
+        "LogLevel",
+        "EventType",
+        "LogContext",
+        "createLogContext",
+        "log"
+      ]
+    },
+    {
+      "path": "src/payments/automation-service.ts",
+      "sha256": "ef30e52e5680427bf8eb455f699430c24de95cd22dfba0d80662f420b94705a3",
+      "bytes": 14504,
+      "exports": [
+        "PaymentAutomationStatus",
+        "PaymentAutomationServiceError",
+        "getPaymentAutomationService"
+      ]
+    },
+    {
+      "path": "src/payments/browser/george-adapter.ts",
+      "sha256": "a4b00583e30be107c32396bc4a95f6b42c89b7d1ee2c6da1338520ec6541a209",
+      "bytes": 51760,
+      "exports": [
+        "GeorgePaymentController",
+        "createGeorgePaymentController"
+      ]
+    },
+    {
+      "path": "src/payments/browser/george-auth-prompt.ts",
+      "sha256": "6ef2e5db39fe1136719aa68c6f52ff650a1fa87b666f39e4943337ffa63b2954",
+      "bytes": 2068,
+      "exports": [
+        "GeorgeAuthPromptKind",
+        "buildGeorgeAuthPromptMessage",
+        "notifyGeorgeAuthRequired"
+      ]
+    },
+    {
+      "path": "src/payments/browser/george-page-driver.ts",
+      "sha256": "09a0fe54476135a56a637fbbb9589869e59b0070fd01c4bac37bec22ead30422",
+      "bytes": 33653,
+      "exports": [
+        "PuppeteerGeorgePageDriver",
+        "createGeorgePageDriver"
+      ]
+    },
+    {
+      "path": "src/payments/browser/types.ts",
+      "sha256": "a79cc913fe66b50258fabaaaff3bed806635534f6aff37e6c1a8b53fe6d3117f",
+      "bytes": 2476,
+      "exports": [
+        "GEORGE_USER_NUMBER",
+        "AutomationPhase",
+        "ObservedAccount",
+        "PackageIdentity",
+        "ObservedPackageStatus",
+        "GeorgeUrlClass",
+        "ReleaseConfirmation",
+        "ObservedPackage",
+        "GeorgePageDriver",
+        "GeorgeAutomationError"
+      ]
+    },
+    {
+      "path": "src/payments/candidates.ts",
+      "sha256": "06e76f2deb1b9b48e6773ef06c82c97e84eeaee4c840797de9cd413064d805d2",
+      "bytes": 11621,
+      "exports": [
+        "PaymentSummary",
+        "buildPaymentCandidate",
+        "refreshPaymentCandidate",
+        "paymentSummary"
+      ]
+    },
+    {
+      "path": "src/payments/eligibility.ts",
+      "sha256": "12fa02783919a60a0e4d184ea798b87fbaa7a6731257c2dd36e13204d5da5062",
+      "bytes": 2045,
+      "exports": [
+        "classifyPaymentEligibility"
+      ]
+    },
+    {
+      "path": "src/payments/repository.ts",
+      "sha256": "5576e1123e570caee0b3d6297f1eb2af91b475c51455060e22e99e032a720965",
+      "bytes": 48825,
+      "exports": [
+        "PaymentBatchStatus",
+        "PaymentCandidateWriteInput",
+        "PaymentCandidate",
+        "PaymentBatchItem",
+        "PaymentBatch",
+        "PaymentStatusEvent",
+        "PaymentSelectionRepositoryResult",
+        "AtomicExportArtifact",
+        "AtomicExportResult",
+        "PaymentAutomationRun",
+        "PaymentAutomationReleaseConfirmationSnapshot",
+        "PaymentAutomationReleaseSafety",
+        "PaymentRepository"
+      ]
+    },
+    {
+      "path": "src/payments/sepa-assertions.ts",
+      "sha256": "b908ff52ea88b536240e40c8bf4a7e33607778e3cbc092b0e335f9d06a8fb652",
+      "bytes": 15722,
+      "exports": [
+        "PSA_ASSERTION_COUNT",
+        "PSA_ASSERTION_MANIFEST_SHA256",
+        "PsaAssertionManifestEntry",
+        "PSA_ASSERTION_MANIFEST",
+        "XmlNode",
+        "parseSepaXmlSecure",
+        "PsaAssertionHandler",
+        "PsaAssertionIdentity",
+        "psaAssertionKey",
+        "createPsaAssertionRegistryForTest",
+        "verifyAssertionCoverage",
+        "validatePsaAssertions"
+      ]
+    },
+    {
+      "path": "src/payments/sepa.ts",
+      "sha256": "7cccfcd992c21a1138437474e99221589b5ed1eab9294b371c84099b3ce3af49",
+      "bytes": 23908,
+      "exports": [
+        "PAIN_001_001_09_NAMESPACE",
+        "PINNED_XSD_SHA256",
+        "PINNED_XSD_PATH",
+        "SepaGenerationContext",
+        "SepaArtifact",
+        "XsdValidationResult",
+        "XsdValidationProcess",
+        "XsdValidationRunner",
+        "XsdValidationOptions",
+        "verifyPinnedPsaSchemas",
+        "validateAgainstPinnedXsd",
+        "verifySepaRoundTrip",
+        "SepaGenerator"
+      ]
+    },
+    {
+      "path": "src/payments/service.ts",
+      "sha256": "17b830b408093d8dca4c05e77600a8e3108f9ee5d5dd69926b95107c26683e9a",
+      "bytes": 14384,
+      "exports": [
+        "PaymentDomainError",
+        "PaymentSelectionAccepted",
+        "PaymentSelectionRejected",
+        "PaymentSelectionResult",
+        "PaymentBatchView",
+        "PaymentService"
+      ]
+    },
+    {
+      "path": "src/payments/types.ts",
+      "sha256": "8368686c082847958b498dcd8f789354a0e8bc2cddbf0d5c08e4a4040a6f63c3",
+      "bytes": 1851,
+      "exports": [
+        "FixedDebtor",
+        "FIXED_DEBTOR",
+        "PaymentObligation",
+        "PaymentCandidateInput",
+        "PaymentDraftInput",
+        "PaymentValidationIssue",
+        "PaymentEligibilityInput",
+        "PaymentEligibility"
+      ]
+    },
+    {
+      "path": "src/payments/validation.ts",
+      "sha256": "3dd7538260cd2b0ec50a0f7d6b4d3a6c40e2846d4d99f9627ac4eba21124a602",
+      "bytes": 4266,
+      "exports": [
+        "normalizeIban",
+        "isValidIban",
+        "SEPA_IBAN_COUNTRY_CODES",
+        "isSepaIban",
+        "validatePaymentDraft"
+      ]
+    },
+    {
+      "path": "src/server/application.ts",
+      "sha256": "558b0ba36549cc90e16bc0b497791b0bdbca3eed5168faa2ce2e3b258dd161ca",
+      "bytes": 7358,
+      "exports": [
+        "CommunityApplicationOptions",
+        "createCommunityApplication"
+      ]
+    },
+    {
+      "path": "src/server/community-auth-http.ts",
+      "sha256": "a848d8381e15496ec911ea5c486fcb6d1f15a1943e189da2f1e55639ba4cf078",
+      "bytes": 12843,
+      "exports": [
+        "createCommunityTransportGuard",
+        "sessionTokenFromRequest",
+        "createCommunityAuthRouter",
+        "CommunityRouteRule",
+        "REVIEWED_ACCOUNT_ROUTES",
+        "createCommunityAccountGuard"
+      ]
+    },
+    {
+      "path": "src/server/community-auth-store.ts",
+      "sha256": "19c49e3bd76ddbc1c33e96cf8572b15d0d07724cbc740f1648d573e48144f76f",
+      "bytes": 28397,
+      "exports": [
+        "CommunityAuthError",
+        "AuthSession",
+        "CommunityAuthOptions",
+        "CommunityAuthStore"
+      ]
+    },
+    {
+      "path": "src/server/community-demo-state.ts",
+      "sha256": "58105512b30ddbb55fc8b38ca5384ebe6e24d02936a4dde19d17602f0d6aa34d",
+      "bytes": 3267,
+      "exports": [
+        "createCommunityDemoState"
+      ]
+    },
+    {
+      "path": "src/server/community-guard.ts",
+      "sha256": "01fc85a1a7c9acb309d2124a8839c93e3cf04ea3d88510484f5c82d6a03e2f8e",
+      "bytes": 4256,
+      "exports": [
+        "createCommunityGuard",
+        "hasAllowedOrigin"
+      ]
+    },
+    {
+      "path": "src/server/community-identity-files.ts",
+      "sha256": "6733d9f1b60ae6d3a046b96a2585887a0cd32fc3eae843a54de6bddd3b886594",
+      "bytes": 5906,
+      "exports": [
+        "preparePrivateIdentityDirectory"
+      ]
+    },
+    {
+      "path": "src/server/community-permissions.ts",
+      "sha256": "e0f5fbfc0e4cf670bf2a5a7a15b84e2bef732df701189ff6d125acd6e472ce28",
+      "bytes": 3412,
+      "exports": [
+        "COMMUNITY_PERMISSIONS",
+        "CommunityPermission",
+        "CommunityRole",
+        "CommunityPrincipal",
+        "permissionsForRole",
+        "hasCommunityPermission",
+        "requireCommunityPermission"
+      ]
+    },
+    {
+      "path": "src/server/community-workspace.ts",
+      "sha256": "85e37f6a3efdddae95f3c416e5bedf689eb325716ca628cb7d009d6655ea85b5",
+      "bytes": 21449,
+      "exports": [
+        "COMMUNITY_WORKSPACE_ROUTES",
+        "WorkspaceOptions",
+        "createCommunityWorkspace"
+      ]
+    },
+    {
+      "path": "src/server/host.ts",
+      "sha256": "adcde289aff950a270d8cd8b0d3955d309424ab3c2ab21997ca336db3a55eaef",
+      "bytes": 555,
+      "exports": [
+        "resolveHttpHost"
+      ]
+    },
+    {
+      "path": "src/server/index.ts",
+      "sha256": "7ad0c67bd0c8a0c7bb9363a900fda29633e4a4d8a72b5fe25264af68b5c48b32",
+      "bytes": 915,
+      "exports": []
+    },
+    {
+      "path": "src/server/routes/api.ts",
+      "sha256": "3adc02ba47abdf160a727d0bcf794dae85b09264dd90b4a71c901ca3fe308ba3",
+      "bytes": 182584,
+      "exports": [
+        "createApiRouter"
+      ]
+    },
+    {
+      "path": "src/server/routes/community-accounting.ts",
+      "sha256": "a9871d1641a94f6b6b56e0d2d8c564d52422586f3eeb46b8d5b0901523967b8e",
+      "bytes": 7411,
+      "exports": [
+        "AccountingPermission",
+        "AccountingPrincipal",
+        "AccountingRouterDependencies",
+        "createCommunityAccountingRouter"
+      ]
+    },
+    {
+      "path": "src/server/routes/community-banking.ts",
+      "sha256": "25c20136e619aea19511865c5de8690419b72027a3fbb416a9105fbe9f38f1fb",
+      "bytes": 1765,
+      "exports": [
+        "createCommunityBankingRouter"
+      ]
+    },
+    {
+      "path": "src/server/routes/community-documents.ts",
+      "sha256": "ce5c3514dfd1cbac9b4e86b76e23619349ef7b9da10c43cce2f4ed3af9125834",
+      "bytes": 5852,
+      "exports": [
+        "DocumentPermission",
+        "createCommunityDocumentsRouter"
+      ]
+    },
+    {
+      "path": "src/server/routes/community-integrations.ts",
+      "sha256": "e0bc38d968a137dcf451c1e61cf3b01101b08b7ff72fad451854449f9447237b",
+      "bytes": 8394,
+      "exports": [
+        "PermissionPredicate",
+        "IntegrationOperation",
+        "IntegrationHistoryScope",
+        "IntegrationOperationEntry",
+        "IntegrationRouterCallbacks",
+        "createCommunityIntegrationsRouter"
+      ]
+    },
+    {
+      "path": "src/server/routes/community-invoice-bot.ts",
+      "sha256": "9947d8abe986040a19c381889c59e8b86c7be614338af6f72fa55a02dfbc15f1",
+      "bytes": 3222,
+      "exports": [
+        "BotPermission",
+        "createCommunityInvoiceBotRouter"
+      ]
+    },
+    {
+      "path": "src/server/routes/community-payments.ts",
+      "sha256": "cbf5ca41c8af52b481bafcc6cff0fc4c8f96d9fbbac5c18304bea14b1abcba55",
+      "bytes": 3731,
+      "exports": [
+        "createCommunityPaymentsRouter"
+      ]
+    },
+    {
+      "path": "src/server/routes/community-persistence.ts",
+      "sha256": "3204d040a5a498384f3b63d1a09b97d707ad85252a24a81eaf6cabc296cfd74b",
+      "bytes": 9371,
+      "exports": [
+        "CommunityPrincipal",
+        "PersistencePermission",
+        "CommunityPersistenceDependencies",
+        "createCommunityPersistenceRouter"
+      ]
+    },
+    {
+      "path": "src/server/routes/invoicebot.ts",
+      "sha256": "c1fc403ed74b8daf4470af3fabf927b8010bd0b277ff0929ca04a9506c5a1197",
+      "bytes": 20778,
+      "exports": [
+        "createInvoiceBotRouter"
+      ]
+    },
+    {
+      "path": "src/server/routes/match-decisions.ts",
+      "sha256": "322023895c5cfaaca47d4b31a9b98e1205341d7fc32c63e048468cb00625df8e",
+      "bytes": 2982,
+      "exports": [
+        "createMatchDecisionRouter"
+      ]
+    },
+    {
+      "path": "src/server/routes/payments.ts",
+      "sha256": "c04252f6f85131b41055d4deb53941c413a3b74c5b25ab91eb398300cb75843a",
+      "bytes": 12149,
+      "exports": [
+        "createPaymentsRouter"
+      ]
+    },
+    {
+      "path": "src/server/routes/statement-import.ts",
+      "sha256": "425fcf650cc43c505c68bcd25f23d9e1a8bc612b08ea32f06b003307af7060f2",
+      "bytes": 3839,
+      "exports": [
+        "createStatementImportRouter"
+      ]
+    },
+    {
+      "path": "src/server/routes/statement-preview.ts",
+      "sha256": "3d546e13cadea6718e8c0f6dd255bc50d23495caa1a607ee1935d8592927ccb7",
+      "bytes": 8441,
+      "exports": [
+        "createStatementPreviewRouter"
+      ]
+    },
+    {
+      "path": "src/server/settings-security.ts",
+      "sha256": "aedf8406587b07b3026d8abcb2d2099d1aae434c088b580473b192492ed5d472",
+      "bytes": 579,
+      "exports": [
+        "settingForHttp"
+      ]
+    },
+    {
+      "path": "src/storage/backup.ts",
+      "sha256": "549591f57f0c9d368583b9fab989a12b9b975348bdea3bcb1dfc5cab0161bc53",
+      "bytes": 7237,
+      "exports": [
+        "BackupInfo",
+        "createBackup",
+        "listBackups",
+        "restoreBackup",
+        "deleteBackup"
+      ]
+    },
+    {
+      "path": "src/storage/canonical-sql.ts",
+      "sha256": "127f44d8a38986b4452eee7f6e73560c024f2a5f20a6e742693dd0dbde7dd33d",
+      "bytes": 10461,
+      "exports": [
+        "canonicalProjections",
+        "verifyCanonicalSql",
+        "synchronizeCanonicalSql",
+        "verifyCanonicalTransition"
+      ]
+    },
+    {
+      "path": "src/storage/canonical-transaction.ts",
+      "sha256": "2ee8f7e1d0727586d89ff19b8f21f4d4ea0f3cfbff520bc871c9fd7a0a19cdb3",
+      "bytes": 10520,
+      "exports": [
+        "CanonicalPhase",
+        "CanonicalHooks",
+        "CanonicalStateError",
+        "canonicalJournalPending",
+        "initializeCanonicalState",
+        "recoverCanonicalTransaction",
+        "commitCanonicalMutation",
+        "commitCanonicalState"
+      ]
+    },
+    {
+      "path": "src/storage/db.ts",
+      "sha256": "2379a39364d566c732256c5d4e67beedc2d12003eb1d39fad6df9ca3ce643957",
+      "bytes": 6548,
+      "exports": [
+        "getDb",
+        "runMigrations",
+        "closeDb",
+        "getDbPath"
+      ]
+    },
+    {
+      "path": "src/storage/disposition.ts",
+      "sha256": "73c6fbd51d462b9ebde7c49c6c7f65407f5b61bd670fbd859a3c4a6e0a2a156e",
+      "bytes": 4434,
+      "exports": [
+        "DispositionSummary",
+        "getDispositionSummary",
+        "setDisposition",
+        "setDispositionBatch",
+        "getTransactionsByDisposition",
+        "autoMarkPrivateVendors",
+        "setDocumentDisposition"
+      ]
+    },
+    {
+      "path": "src/storage/json-store.ts",
+      "sha256": "ad089f682b8496bb0b90a0770e669006337bfd884e419bc2a73107da588d056a",
+      "bytes": 9327,
+      "exports": [
+        "COMMUNITY_JSON_STATE_VERSION",
+        "COMMUNITY_JSON_STATE_FORMAT",
+        "COMMUNITY_ACCOUNTING_JSON_STATE_VERSION",
+        "COMMUNITY_ACCOUNTING_JSON_STATE_FORMAT",
+        "validateCommunityJsonState",
+        "writeStateFileAtomically",
+        "serializeCommunityState",
+        "saveState",
+        "loadState",
+        "deserializeCommunityState",
+        "createEmptyState"
+      ]
+    },
+    {
+      "path": "src/storage/paths.ts",
+      "sha256": "9a4155c674abda978dfa09bc2bb91d440dc468849f18409c5a25276575184189",
+      "bytes": 4274,
+      "exports": [
+        "AccountingRuntimeMode",
+        "RuntimePathCategory",
+        "AccountingPaths",
+        "resolveAccountingPaths",
+        "resolveRuntimePath"
+      ]
+    },
+    {
+      "path": "src/storage/settings.ts",
+      "sha256": "2321398fb3ded2b1096b447ef2154a7d4b13a762ed9ebc4fcf64c0a973c32477",
+      "bytes": 618,
+      "exports": [
+        "getSetting",
+        "setSetting",
+        "deleteSetting"
+      ]
+    },
+    {
+      "path": "src/storage/sqlite-online-backup.ts",
+      "sha256": "cac796fbc184680d6cd44b10657109eb648484b8ccc63e7f2e4f6250290281d8",
+      "bytes": 8416,
+      "exports": [
+        "ApplicationConsistencyCheck",
+        "SqliteValidation",
+        "AccountingSqliteBackupV1",
+        "RestoreValidation",
+        "validateSqliteDatabase",
+        "createSqliteOnlineBackup",
+        "restoreAndValidateSqliteBackup"
+      ]
+    },
+    {
+      "path": "src/storage/sqlite-store.ts",
+      "sha256": "60aae2420e9d394bf8fd5dce2ec46115f207c14ce84e98e133b7f75c7278e53a",
+      "bytes": 15051,
+      "exports": [
+        "saveStateToDb",
+        "loadStateFromDb"
+      ]
+    },
+    {
+      "path": "src/storage/statement-transaction.ts",
+      "sha256": "0c165704d26079e7c72475d4aab2b3fa2b185b82cf8f71df44bc3bf1808f2512",
+      "bytes": 7905,
+      "exports": [
+        "StatementCommitPhase",
+        "StatementCommitHooks",
+        "statementRecoveryPending",
+        "recoverStatementImport",
+        "commitStatementImport"
+      ]
+    },
+    {
+      "path": "src/storage/trash.ts",
+      "sha256": "96d137f29e7d8d23db636a9c0f6c19420e3b4d48fab0fb3f3ecd0708d46c13c6",
+      "bytes": 2419,
+      "exports": [
+        "TrashItem",
+        "moveToTrash",
+        "listTrash",
+        "getTrashItem",
+        "deleteFromTrash",
+        "emptyTrash",
+        "restoreFromTrash"
+      ]
+    },
+    {
+      "path": "web/src/api.ts",
+      "sha256": "47eecca7272bd5b9161f90fb44c2a933da5ddb790071583e1f7e0e4e5c52f505",
+      "bytes": 31440,
+      "exports": [
+        "setCommunityAccessToken",
+        "getCommunityAccessToken",
+        "setCommunityCsrfToken",
+        "communityFetch",
+        "PaymentBatchStatus",
+        "PaymentValidationIssue",
+        "PaymentBatchItem",
+        "PaymentBatch",
+        "PaymentBatchView",
+        "PaymentSelectionEntry",
+        "PaymentSelectionRejection",
+        "PaymentBatchCreation",
+        "PaymentItemPatch",
+        "PaymentXmlDownload",
+        "PaymentAutomationPhase",
+        "PaymentAutomationStatus",
+        "PaymentReleaseConfirmation",
+        "PaymentApiError",
+        "paymentApiErrorMessage",
+        "createPaymentBatch",
+        "getPaymentBatch",
+        "updatePaymentItem",
+        "reviewPaymentBatch",
+        "cancelPaymentBatch",
+        "importPaymentBatchToGeorge",
+        "getPaymentAutomationStatus",
+        "requestPaymentBatchRelease",
+        "downloadPaymentBatchXml",
+        "api"
+      ]
+    },
+    {
+      "path": "web/src/components/CommunityAccountAccess.tsx",
+      "sha256": "a2bd80d5be8482bb266b379d9c3fd1bf236b0cba970dfb94857c4658dedad22c",
+      "bytes": 16592,
+      "exports": [
+        "AccountPrincipal",
+        "useCommunityAccount",
+        "accountLabels",
+        "accountError",
+        "accountJson",
+        "CommunityAccountAccess"
+      ]
+    },
+    {
+      "path": "web/src/components/matching/MatchingGovernance.tsx",
+      "sha256": "a9367f1fcd48488377bda6c559ba41e7c939eca94cf6dcba79466867b7ec706f",
+      "bytes": 26874,
+      "exports": [
+        "MatchingGovernance"
+      ]
+    },
+    {
+      "path": "web/src/components/payments/PaymentReview.tsx",
+      "sha256": "00e6a63f96760e1380741d18f712c60787f8211211b67363a23a78c52e614db1",
+      "bytes": 40480,
+      "exports": [
+        "PaymentReviewProps",
+        "PaymentReview"
+      ]
+    },
+    {
+      "path": "web/src/components/payments/payment-automation-release.ts",
+      "sha256": "a8a4f1764251e3e35a17daf28551a3ec1e29295c9013e454f117acbaae0b63c9",
+      "bytes": 2698,
+      "exports": [
+        "PaymentReleaseBatchSnapshot",
+        "PaymentAutomationReleaseDecision",
+        "paymentAutomationManualGuidance",
+        "exactPaymentReleaseConfirmation",
+        "paymentAutomationReleaseDecision"
+      ]
+    },
+    {
+      "path": "web/src/components/payments/payment-drafts.ts",
+      "sha256": "0b20b3d7c852f5df0470d6f1a22c8a38cee640a0807cefd94660e1d3d069b9ab",
+      "bytes": 1353,
+      "exports": [
+        "ItemDraft",
+        "draftFromPaymentItem",
+        "mergePaymentDrafts"
+      ]
+    },
+    {
+      "path": "web/src/components/payments/payment-operation-guard.ts",
+      "sha256": "80045a2cbba16f4a1e2b283b2263283b2be5b68cfa981391b410dfa59a850c7f",
+      "bytes": 1600,
+      "exports": [
+        "PaymentOperationToken",
+        "isPaymentOperationPreconditionSatisfied",
+        "PaymentOperationGuard"
+      ]
+    },
+    {
+      "path": "web/src/components/shared.tsx",
+      "sha256": "7bd2587013bf920026bbf6f185c07bbb07237e82c1351a5ca0187d6dc74441a0",
+      "bytes": 18858,
+      "exports": [
+        "colors",
+        "Card",
+        "StatCard",
+        "Badge",
+        "StatusBadge",
+        "SourceBadge",
+        "Amount",
+        "Table",
+        "Pagination",
+        "Button",
+        "SearchInput",
+        "Select",
+        "FileLink",
+        "formatDate",
+        "formatDateTime",
+        "PageSizeProvider",
+        "usePageSize",
+        "PageSizeSelect",
+        "WorkingPeriod",
+        "WorkingYearProvider",
+        "useWorkingYear",
+        "workingPeriodDates",
+        "WorkingYearSelect",
+        "TooltipProvider",
+        "useTooltips",
+        "TooltipToggle",
+        "Tip",
+        "CopyValue"
+      ]
+    },
+    {
+      "path": "web/src/format/money.ts",
+      "sha256": "2545170272a1bbe201bc8334ea26b8418a2129cdeea162ab3e0463f6bdcd34b3",
+      "bytes": 1608,
+      "exports": [
+        "minorUnitDecimal",
+        "formatMinorUnits"
+      ]
+    },
+    {
+      "path": "web/src/i18n/catalog.en.mjs",
+      "sha256": "1bc95f83dac02a9eaae14f370e7b93ed0ae9e76d04d060430e3edbbe9c205635",
+      "bytes": 1136,
+      "exports": [
+        "en"
+      ]
+    },
+    {
+      "path": "web/src/i18n/community-accounting.ts",
+      "sha256": "5357e87522e4e0f7c4d2cca384176558a71e19c02552c33728843246621e0eee",
+      "bytes": 4055,
+      "exports": [
+        "communityAccountingText"
+      ]
+    },
+    {
+      "path": "web/src/i18n/community-banking.ts",
+      "sha256": "77a298c1d14f8491727c1d81922973c50b6e51e3318e4a4e4400271bbf4e3c25",
+      "bytes": 1956,
+      "exports": [
+        "bankingText"
+      ]
+    },
+    {
+      "path": "web/src/i18n/community-documents.ts",
+      "sha256": "d1703afd8af7ee83f32a8d8c7089635688fc613149f1de892b46e67cdcde9950",
+      "bytes": 1787,
+      "exports": [
+        "communityDocumentsText"
+      ]
+    },
+    {
+      "path": "web/src/i18n/community-integrations.ts",
+      "sha256": "80d66e2e7ee389df66d669c06f1788c0e022b7adb314a2cd422ad371a981b51e",
+      "bytes": 1857,
+      "exports": [
+        "integrationMessages"
+      ]
+    },
+    {
+      "path": "web/src/i18n/community-invoice-bot.ts",
+      "sha256": "e5d81e2cd72c9ff61d48e3b95979d05bb8f30b03ff4f56f4e9817dff146a7581",
+      "bytes": 1789,
+      "exports": [
+        "communityInvoiceBotText"
+      ]
+    },
+    {
+      "path": "web/src/i18n/community-payments.ts",
+      "sha256": "e4dc01fdbc5777a596217ca357be658c12687d0d272982f89a963339d316743d",
+      "bytes": 2427,
+      "exports": [
+        "paymentText"
+      ]
+    },
+    {
+      "path": "web/src/i18n/community-persistence.ts",
+      "sha256": "8b66fcbdb0b43fc43429118742fd712f30dbe0c7ece59d701084a86fcc4b255f",
+      "bytes": 2507,
+      "exports": [
+        "persistenceText"
+      ]
+    },
+    {
+      "path": "web/src/i18n/community-problems.ts",
+      "sha256": "52c83860a44ab3dffa62b546cea233df21e44460c36ddb20db22675b721885ff",
+      "bytes": 8742,
+      "exports": [
+        "problemMessage"
+      ]
+    },
+    {
+      "path": "web/src/i18n/index.mjs",
+      "sha256": "3585f9549d2c02086350c7f83e2b130f7da17a7aa8dd236df7661e62a7b2ad08",
+      "bytes": 2148,
+      "exports": [
+        "registerLocale",
+        "createI18n",
+        "defaultI18n"
+      ]
+    },
+    {
+      "path": "web/src/i18n/locale.tsx",
+      "sha256": "d77ca1fd51f372c2b4f6d8a85704c94a00835b99cec19c73ca55b0d41a41a64c",
+      "bytes": 4893,
+      "exports": [
+        "LocaleCode",
+        "registerLocale",
+        "LanguageProvider",
+        "useLanguage"
+      ]
+    },
+    {
+      "path": "web/src/i18n/match-review.ts",
+      "sha256": "0a67417c67d9792532bba369f3035b81f94cc4a0bb8a4d13f987a2f2e13ea243",
+      "bytes": 3803,
+      "exports": [
+        "matchReviewEn",
+        "matchReviewDe"
+      ]
+    },
+    {
+      "path": "web/src/main.tsx",
+      "sha256": "5d2ebcd7aa9b7ee6d77d2f19c6be99e1b95373aea5d161cffe1f0c73562e9d2f",
+      "bytes": 12867,
+      "exports": []
+    },
+    {
+      "path": "web/src/pages/AuditTrail.tsx",
+      "sha256": "01cf421ce14fd27c88c3882291e4197414b8b2064f2785e42f817a1476ee5dda",
+      "bytes": 1516,
+      "exports": [
+        "AuditTrail"
+      ]
+    },
+    {
+      "path": "web/src/pages/BankImport.tsx",
+      "sha256": "655c17b88d6b93cff5ea29bd29bf34200e5c75e54dcc11f6f210b722b9375cad",
+      "bytes": 13065,
+      "exports": [
+        "BankImport"
+      ]
+    },
+    {
+      "path": "web/src/pages/CommunityAccounting.tsx",
+      "sha256": "1e84b7a994e5790daf4e2175874e875ee6318a54a0a2f6debb3e95541f276238",
+      "bytes": 18005,
+      "exports": [
+        "CommunityAccounting"
+      ]
+    },
+    {
+      "path": "web/src/pages/CommunityAccounts.tsx",
+      "sha256": "b95108444b37871c9ce6bd231fc597962f6108736d6e00d5ddad04fb1aff7b4f",
+      "bytes": 7213,
+      "exports": [
+        "CommunityAccounts"
+      ]
+    },
+    {
+      "path": "web/src/pages/CommunityAudit.tsx",
+      "sha256": "927e8251ef1854ee8a04e61f2ddb3e2cdf83bf672e00667731e60cd5fb1509a4",
+      "bytes": 2739,
+      "exports": [
+        "CommunityAudit"
+      ]
+    },
+    {
+      "path": "web/src/pages/CommunityBanking.tsx",
+      "sha256": "cc03415f56e4c27cbd5c727776eb815885316d3dda86ed9c9eee26e29bcc3f4a",
+      "bytes": 4666,
+      "exports": [
+        "CommunityBanking"
+      ]
+    },
+    {
+      "path": "web/src/pages/CommunityDataManagement.tsx",
+      "sha256": "119eb7138b66cb4812f402bdae845922989ac6b72a5a01d1cf73830f66ac3363",
+      "bytes": 7834,
+      "exports": [
+        "CommunityDataManagement"
+      ]
+    },
+    {
+      "path": "web/src/pages/CommunityDocuments.tsx",
+      "sha256": "27b559dabc5946cc3bf7e14ba1862b2710e2ca307e402dd58c6523739a6b3b4c",
+      "bytes": 9955,
+      "exports": [
+        "CommunityDocuments"
+      ]
+    },
+    {
+      "path": "web/src/pages/CommunityHome.tsx",
+      "sha256": "b1c5251bcd001a9406526563075cafbe9a82a47c7e06a043fe26c00688bd6535",
+      "bytes": 5879,
+      "exports": [
+        "CommunityHome"
+      ]
+    },
+    {
+      "path": "web/src/pages/CommunityIntegrations.tsx",
+      "sha256": "5805b861a8a3e52ddf7daa2a0bdeec690bd3b9c544f490c6f01fc756436f555d",
+      "bytes": 7009,
+      "exports": [
+        "CommunityIntegrations"
+      ]
+    },
+    {
+      "path": "web/src/pages/CommunityInvoiceBot.tsx",
+      "sha256": "cf937da788490796aea32f8e17f2ca5c265a73fee87e5a1ecb9c30f9ae776812",
+      "bytes": 4808,
+      "exports": [
+        "CommunityInvoiceBot"
+      ]
+    },
+    {
+      "path": "web/src/pages/CommunityPayments.tsx",
+      "sha256": "9bf932ae314941ca9dbe48edc556c70bbd461861973e5d5885f89eec460b713b",
+      "bytes": 10143,
+      "exports": [
+        "CommunityPayments"
+      ]
+    },
+    {
+      "path": "web/src/pages/CommunitySettings.tsx",
+      "sha256": "6b709da0f97ac85b9e4168722640ba9d687a84ccae5c1e5b2c2397471e946152",
+      "bytes": 1635,
+      "exports": [
+        "CommunitySettings"
+      ]
+    },
+    {
+      "path": "web/src/pages/CommunityStatementReview.tsx",
+      "sha256": "02a76ffdd3015b1dc56822b605e16deb492c74db630c8ee50c6c1527e5f88594",
+      "bytes": 9244,
+      "exports": [
+        "StatementReviewRequest",
+        "CommunityStatementReview"
+      ]
+    },
+    {
+      "path": "web/src/pages/Dashboard.tsx",
+      "sha256": "caf829e00575bc0e402558ec7e7646cb17ba450f37a8bd8edfc156ca7b554174",
+      "bytes": 9391,
+      "exports": [
+        "Dashboard"
+      ]
+    },
+    {
+      "path": "web/src/pages/Einkuenfte.tsx",
+      "sha256": "c29b4988227c1443577ee1a4547e16af1855c2e215733f9c6baaadebb1756187",
+      "bytes": 28743,
+      "exports": [
+        "Einkuenfte"
+      ]
+    },
+    {
+      "path": "web/src/pages/Exclusions.tsx",
+      "sha256": "890ef488bcc34c756a53f6fb615adf7c0baccce0c6e0b463448e02e95cdf0042",
+      "bytes": 4068,
+      "exports": [
+        "Exclusions"
+      ]
+    },
+    {
+      "path": "web/src/pages/Import.tsx",
+      "sha256": "23c03ec9f190d4d29c47a2f1129bbc8001abdcbc51754aa2a3e67768de552fb7",
+      "bytes": 19587,
+      "exports": [
+        "Import"
+      ]
+    },
+    {
+      "path": "web/src/pages/IncomeTaxReport.tsx",
+      "sha256": "59d4e6ab097b037dc181ddd27b41410319e4e109bf63c73047728f65ab9bf70d",
+      "bytes": 39505,
+      "exports": [
+        "IncomeTaxReport"
+      ]
+    },
+    {
+      "path": "web/src/pages/InvoiceBot.tsx",
+      "sha256": "a7bce4365467e7937fe15cfb9a662e5c699c87208243552ba5d55c31b5d23d58",
+      "bytes": 51753,
+      "exports": [
+        "InvoiceBot"
+      ]
+    },
+    {
+      "path": "web/src/pages/InvoiceRecognition.tsx",
+      "sha256": "f44e148479448c4116293331fb06097c02cc729392a1ee7793b91f9ffbbe0cb1",
+      "bytes": 101810,
+      "exports": [
+        "InvoiceRecognition"
+      ]
+    },
+    {
+      "path": "web/src/pages/ManualMatch.tsx",
+      "sha256": "8c0fb3ed5ac6d84bc3243594a931bf5d5558cc7c881bbe08562f5c41a5682035",
+      "bytes": 6738,
+      "exports": [
+        "ManualMatch"
+      ]
+    },
+    {
+      "path": "web/src/pages/Matches.tsx",
+      "sha256": "71c0955573adb83968852c8f472d7644b27eb64405fa7c467a1ea98e410012f5",
+      "bytes": 8239,
+      "exports": [
+        "Matches"
+      ]
+    },
+    {
+      "path": "web/src/pages/Matching.tsx",
+      "sha256": "cbd0b1c720be1fa0b7b7581ded212b3abc2b69ec9845bf0d586baeb318798577",
+      "bytes": 29844,
+      "exports": [
+        "Matching"
+      ]
+    },
+    {
+      "path": "web/src/pages/Rechnungen.tsx",
+      "sha256": "661892d3c3acb908bd48334b8ed1c9558508edd5eff4ce7a4cabac25c1abe532",
+      "bytes": 52638,
+      "exports": [
+        "Rechnungen"
+      ]
+    },
+    {
+      "path": "web/src/pages/Reports.tsx",
+      "sha256": "8c746aa2c10351e83476da12618f06491c9b283ae1e153768ebc569172c6df86",
+      "bytes": 8948,
+      "exports": [
+        "Reports"
+      ]
+    },
+    {
+      "path": "web/src/pages/ReviewQueue.tsx",
+      "sha256": "cf0943ac95cacf9b4578ea4928c77d1a58cc7494ca263043be718910069c5486",
+      "bytes": 1512,
+      "exports": [
+        "ReviewQueue"
+      ]
+    },
+    {
+      "path": "web/src/pages/Settings.tsx",
+      "sha256": "da1ae8a1e0cb01cf000a419abf3b8aa27b27036ae3be56890ec36c502b2accaf",
+      "bytes": 17556,
+      "exports": [
+        "Settings"
+      ]
+    },
+    {
+      "path": "web/src/pages/Transactions.tsx",
+      "sha256": "4ea6800355ddece695f7067ae83239c961cf58011ba3327f9d227296b297dfa6",
+      "bytes": 86441,
+      "exports": [
+        "Transactions"
+      ]
+    },
+    {
+      "path": "web/src/pages/VatReport.tsx",
+      "sha256": "3b423a44bb4ebf911a77560b7f4a78c7a06c3345bb39f224ad462c362782ea9d",
+      "bytes": 31517,
+      "exports": [
+        "VatReport"
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "method": "GET",
+      "pattern": "^\\/community\\/documents\\/?$",
+      "permission": "documents:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/community\\/documents\\/[A-Za-z0-9_-]{1,120}(?:\\/content)?$",
+      "permission": "documents:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community\\/documents\\/upload$",
+      "permission": "documents:write",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community\\/documents\\/import\\/(?:income|invoice)$",
+      "permission": "documents:write",
+      "recent_authentication": false
+    },
+    {
+      "method": "PUT",
+      "pattern": "^\\/community\\/documents\\/[A-Za-z0-9_-]{1,120}\\/fields$",
+      "permission": "documents:write",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community\\/documents\\/[A-Za-z0-9_-]{1,120}\\/(?:confirm|reject|archive|restore)$",
+      "permission": "documents:write",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/community\\/integrations\\/(?:paypal\\/(?:sandbox|live)|stripe\\/(?:test|live))$",
+      "permission": "integrations:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/community\\/integrations\\/(?:paypal\\/(?:sandbox|live)|stripe\\/(?:test|live))\\/history$",
+      "permission": "integrations:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "PUT",
+      "pattern": "^\\/community\\/integrations\\/(?:paypal\\/(?:sandbox|live)|stripe\\/(?:test|live))$",
+      "permission": "integrations:configure",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community\\/integrations\\/(?:paypal\\/(?:sandbox|live)|stripe\\/(?:test|live))\\/test$",
+      "permission": "integrations:configure",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community\\/integrations\\/(?:paypal\\/(?:sandbox|live)|stripe\\/(?:test|live))\\/sync$",
+      "permission": "integrations:sync",
+      "recent_authentication": false
+    },
+    {
+      "method": "DELETE",
+      "pattern": "^\\/community\\/integrations\\/(?:paypal\\/(?:sandbox|live)|stripe\\/(?:test|live))$",
+      "permission": "integrations:configure",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/community-payments\\/(?:candidates|batches)$",
+      "permission": "finance:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/community-banking\\/(?:status|capabilities|accounts)$",
+      "permission": "integrations:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community-banking\\/(?:configure|disconnect)$",
+      "permission": "integrations:configure",
+      "recent_authentication": true
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community-banking\\/sync$",
+      "permission": "integrations:sync",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/community-payments\\/batches\\/[A-Za-z0-9_-]{1,120}(?:\\/sepa)?$",
+      "permission": "finance:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community-payments\\/batches$",
+      "permission": "payments:prepare",
+      "recent_authentication": false
+    },
+    {
+      "method": "PATCH",
+      "pattern": "^\\/community-payments\\/batches\\/[A-Za-z0-9_-]{1,120}\\/debtor$",
+      "permission": "payments:prepare",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community-payments\\/batches\\/[A-Za-z0-9_-]{1,120}\\/(?:validate|review|cancel|reconciled)$",
+      "permission": "payments:prepare",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community-payments\\/batches\\/[A-Za-z0-9_-]{1,120}\\/approve$",
+      "permission": "payments:approve",
+      "recent_authentication": true
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community-payments\\/batches\\/[A-Za-z0-9_-]{1,120}\\/(?:confirmation|submit|provider-status)$",
+      "permission": "payments:submit",
+      "recent_authentication": true
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/community\\/invoice-bot\\/(?:portals|runs)$",
+      "permission": "integrations:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/community\\/invoice-bot\\/runs\\/[A-Za-z0-9_-]{1,120}$",
+      "permission": "integrations:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/community\\/invoice-bot\\/portals\\/[A-Za-z0-9_-]{1,120}\\/status$",
+      "permission": "integrations:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community\\/invoice-bot\\/portals\\/[A-Za-z0-9_-]{1,120}\\/(?:connect|disconnect)$",
+      "permission": "integrations:configure",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community\\/invoice-bot\\/portals\\/[A-Za-z0-9_-]{1,120}\\/discover$",
+      "permission": "integrations:sync",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community\\/invoice-bot\\/runs\\/[A-Za-z0-9_-]{1,120}\\/(?:import|cancel)$",
+      "permission": "integrations:sync",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/accounting$",
+      "permission": "finance:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/accounting\\/reports(?:\\/export\\.(?:json|csv))?$",
+      "permission": "reports:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/accounting\\/audit$",
+      "permission": "audit:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/accounting\\/(?:allocations|proposals|matches)$",
+      "permission": "finance:match",
+      "recent_authentication": false
+    },
+    {
+      "method": "DELETE",
+      "pattern": "^\\/accounting\\/allocations\\/[A-Za-z0-9_-]{1,120}$",
+      "permission": "finance:match",
+      "recent_authentication": false
+    },
+    {
+      "method": "PATCH",
+      "pattern": "^\\/accounting\\/matches\\/[A-Za-z0-9_-]{1,120}\\/status$",
+      "permission": "finance:match",
+      "recent_authentication": false
+    },
+    {
+      "method": "DELETE",
+      "pattern": "^\\/accounting\\/matches\\/[A-Za-z0-9_-]{1,120}$",
+      "permission": "finance:match",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/accounting\\/(?:classifications|taxes|dispositions|exclusions)$",
+      "permission": "finance:annotate",
+      "recent_authentication": false
+    },
+    {
+      "method": "PATCH",
+      "pattern": "^\\/accounting\\/exclusions\\/[A-Za-z0-9_-]{1,120}$",
+      "permission": "finance:annotate",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/community\\/persistence\\/(?:current|backups)$",
+      "permission": "data:backup",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/community\\/persistence\\/backups\\/[A-Za-z0-9_-]{1,120}\\/download$",
+      "permission": "data:backup",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community\\/persistence\\/backups$",
+      "permission": "data:backup",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community\\/persistence\\/restore\\/stage$",
+      "permission": "data:restore",
+      "recent_authentication": true
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community\\/persistence\\/restore\\/[A-Za-z0-9_-]{1,120}\\/activate$",
+      "permission": "data:restore",
+      "recent_authentication": true
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/community\\/persistence\\/legacy\\/sources$",
+      "permission": "data:migrate",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community\\/persistence\\/legacy\\/sources$",
+      "permission": "data:migrate",
+      "recent_authentication": true
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community\\/persistence\\/legacy\\/[A-Za-z0-9_-]{1,120}\\/(?:inspect|stage)$",
+      "permission": "data:migrate",
+      "recent_authentication": true
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/community\\/session$",
+      "permission": "finance:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/summary$",
+      "permission": "finance:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/transactions(?:\\/[A-Za-z0-9_.-]+)?$",
+      "permission": "finance:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/documents(?:\\/[A-Za-z0-9_.-]+)?$",
+      "permission": "documents:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/matches(?:\\/[A-Za-z0-9_.-]+)?$",
+      "permission": "finance:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/review-queue$",
+      "permission": "finance:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/exclusions$",
+      "permission": "finance:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/audit$",
+      "permission": "audit:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/report\\/(?:summary|json|csv|vat|income-tax)$",
+      "permission": "reports:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/matches$",
+      "permission": "finance:match",
+      "recent_authentication": false
+    },
+    {
+      "method": "PATCH",
+      "pattern": "^\\/matches\\/[A-Za-z0-9_.-]+\\/status$",
+      "permission": "finance:match",
+      "recent_authentication": false
+    },
+    {
+      "method": "DELETE",
+      "pattern": "^\\/matches\\/[A-Za-z0-9_.-]+$",
+      "permission": "finance:match",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/import\\/upload$",
+      "permission": "finance:import",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/import\\/(?:preview|commit|discard)$",
+      "permission": "finance:import",
+      "recent_authentication": false
+    }
+  ],
+  "normal_ui": [
+    {
+      "route": "/",
+      "component": "CommunityHome",
+      "source": "web/src/pages/CommunityHome.tsx"
+    },
+    {
+      "route": "/accounts",
+      "component": "CommunityAccounts",
+      "source": "web/src/pages/CommunityAccounts.tsx"
+    },
+    {
+      "route": "/import",
+      "component": "CommunityStatementReview",
+      "source": "web/src/pages/CommunityStatementReview.tsx"
+    },
+    {
+      "route": "/documents",
+      "component": "CommunityDocuments",
+      "source": "web/src/pages/CommunityDocuments.tsx"
+    },
+    {
+      "route": "/accounting",
+      "component": "CommunityAccounting",
+      "source": "web/src/pages/CommunityAccounting.tsx"
+    },
+    {
+      "route": "/integrations",
+      "component": "CommunityIntegrations",
+      "source": "web/src/pages/CommunityIntegrations.tsx"
+    },
+    {
+      "route": "/banking",
+      "component": "CommunityBanking",
+      "source": "web/src/pages/CommunityBanking.tsx"
+    },
+    {
+      "route": "/payments",
+      "component": "CommunityPayments",
+      "source": "web/src/pages/CommunityPayments.tsx"
+    },
+    {
+      "route": "/invoice-bot",
+      "component": "CommunityInvoiceBot",
+      "source": "web/src/pages/CommunityInvoiceBot.tsx"
+    },
+    {
+      "route": "/data",
+      "component": "CommunityDataManagement",
+      "source": "web/src/pages/CommunityDataManagement.tsx"
+    },
+    {
+      "route": "/audit",
+      "component": "CommunityAudit",
+      "source": "web/src/pages/CommunityAudit.tsx"
+    },
+    {
+      "route": "/settings",
+      "component": "CommunitySettings",
+      "source": "web/src/pages/CommunitySettings.tsx"
+    }
+  ],
+  "limitations": [
+    "Export names are a lexical index, not a complete call graph.",
+    "Regex permission registration is not evidence of successful runtime behavior.",
+    "Older V2 source and route inventories retain their original reference hashes.",
+    "Final candidate suites and integrated browser evidence qualify behavior separately."
+  ],
+  "release_accepted": false
+}

@@ -10,8 +10,12 @@
     ],
     "design": "Inventory branches, dirty tracked files and process metadata. Isolate from active work; preserve the security integration and primary uncommitted changes. Compare again before merge. Accept only when baseline hashes, ownership and conflicts are recorded.",
     "status": "IN_PROGRESS",
-    "commit": null,
-    "evidence": []
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "baseline-recovered-vitest.json",
+      "recovered source/hash manifest",
+      "quarantined local-root ancestry checks"
+    ]
   },
   {
     "id": "P01-W01",
@@ -27,9 +31,12 @@
       "src/core"
     ],
     "design": "Map every V2 route, exported capability and UI action to request validation, authorization, handler, storage, external provider, audit and tests. Hash equality can establish identical source, never working product behavior. Resolve every unmapped route individually.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "community-source-map.json",
+      "integrated-interface-source-07/integrated-acceptance/result.json"
+    ]
   },
   {
     "id": "P02-W01",
@@ -44,9 +51,13 @@
       "web/src/main.tsx"
     ],
     "design": "Provision the first owner using an installation-bound bootstrap capability, hash passwords with a reviewed memory-hard KDF, use expiring server-side sessions and HttpOnly SameSite cookies. No open registration into another owner dataset. Test bootstrap replay, login/logout, session expiry, throttling and isolation of two independently created installations. Remote exposure requires an independently qualified TLS deployment.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "account-audit-commit-01.json",
+      "data-operation-audit-01.json",
+      "independent-security/data-audit-independent-review.txt"
+    ]
   },
   {
     "id": "P02-W02",
@@ -61,9 +72,13 @@
       "tests/community-guard.test.ts"
     ],
     "design": "Replace preview-only decisions with explicit registered capability contracts. Compare full origin including scheme and port, enforce method/schema/resource restrictions and safe errors. Keep unqualified legacy handlers inaccessible; add real authorized handlers rather than opening a prefix. Test hostile origins, host rebinding, encoded aliases, unknown methods, missing/wrong authentication and invalid resources.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "account-audit-commit-01.json",
+      "data-operation-audit-01.json",
+      "independent-security/data-audit-independent-review.txt"
+    ]
   },
   {
     "id": "P03-W01",
@@ -78,9 +93,13 @@
       "src/storage/paths.ts"
     ],
     "design": "Separate metadata from secret material; use a Windows DPAPI-wrapped encryption key or a reviewed supplied key on other supported systems. Bind ciphertext to owner/integration/environment using authenticated encryption. Exclude secrets from backups and migration. Test tampering, wrong owner/key, deletion, replacement, restart, HTTP masking and log redaction.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "bank-audit-agent/tests.json",
+      "provider-ui-race-01.json",
+      "independent-security/provider-account-identity-history-02.stdout.txt"
+    ]
   },
   {
     "id": "P03-W02",
@@ -95,9 +114,13 @@
       "web/src/api.ts"
     ],
     "design": "Provide configure/test/connect/reconnect/disconnect for user-supplied PayPal, Stripe, banking, OCR and Invoice Bot configuration. Return metadata/status only; clear password inputs after saving. Distinguish test/live, missing provider registration, revoked permissions and local deletion versus remote revocation. No source edits required for configuration.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "bank-audit-agent/tests.json",
+      "provider-ui-race-01.json",
+      "independent-security/provider-account-identity-history-02.stdout.txt"
+    ]
   },
   {
     "id": "P04-W01",
@@ -110,9 +133,12 @@
       "src/import/paypal-api.ts"
     ],
     "design": "Use official client-credentials token acquisition for user-owned REST applications; do not collect PayPal passwords or promise generic OAuth account login. Fixed official hosts, bounded requests, no redirect credential forwarding, token caching/expiration, transaction-search permissions, pagination and reporting date-window validation. Retry only safe reads with limits and handle 401/403/429/timeouts explicitly.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "independent-security/provider-account-identity-history-02.stdout.txt",
+      "integrated-interface-source-07/integrated-acceptance/result.json"
+    ]
   },
   {
     "id": "P04-W02",
@@ -127,9 +153,12 @@
       "src/core/ingestion/paypal.ts"
     ],
     "design": "Normalize gross/fee/net, refunds, currencies and external event identities. Persist checkpoints only after committed pages; repeat synchronization without new economic events. Test revoked permission, interrupted paging, FX components, duplicate rows, fee sign, refund links and invoice reconciliation against independent expected totals.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "independent-security/provider-account-identity-history-02.stdout.txt",
+      "integrated-interface-source-07/integrated-acceptance/result.json"
+    ]
   },
   {
     "id": "P05-W01",
@@ -142,9 +171,12 @@
       "src/import/stripe-api.ts"
     ],
     "design": "Prefer user-owned restricted read-only API keys. Validate test/live mode; never describe a key as OAuth. Connect OAuth requires separately registered platform capability. Fixed official host, bounded read-only requests, permission errors, pagination, rate limits, retries and no secrets in errors. Test invalid/revoked keys and interrupted pagination.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "independent-security/provider-account-identity-history-02.stdout.txt",
+      "committed-app-01-vitest.json"
+    ]
   },
   {
     "id": "P05-W02",
@@ -159,9 +191,12 @@
       "src/core/ingestion/stripe.ts"
     ],
     "design": "Preserve balance transaction, charge/refund/dispute and payout identities. A payout is a settlement transfer, not additional revenue. Use provider minor units, reconcile gross minus fee to net and group payout components by currency. Cover partial refunds, multiple pages, repeated sync and unavailable payout-component evidence.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "independent-security/provider-account-identity-history-02.stdout.txt",
+      "committed-app-01-vitest.json"
+    ]
   },
   {
     "id": "P06-W01",
@@ -178,9 +213,13 @@
       "src/core/normalization/amount.ts"
     ],
     "design": "Accept reviewed CSV/XLSX formats, reject malformed/oversized/encrypted/macro or formula-bearing financial inputs, validate dates and amounts before any write. Preserve bank reference, account and currency. Remove fuzzy description/amount/date deduplication that drops legitimate distinct events. Reference-less overlapping statements require explicit ambiguity handling, not invented certainty. Test two identical-price distinct purchases, same reference in two accounts, currency, locale decimals, invalid leap dates, repeated files and all-or-nothing failure.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "statement-active-rule-01.json",
+      "bank-audit-agent/tests.json",
+      "bank-portal-integrated-vitest.json"
+    ]
   },
   {
     "id": "P06-W02",
@@ -197,9 +236,13 @@
       "web/src/pages/BankImport.tsx"
     ],
     "design": "Stage uploads in a controlled external temporary directory; expose normalized preview without mutation and an explicit commit. Bind preview to owner, hash and revision; reject stale/replayed changes. Commit transaction rows and audit consistently, retain matching decisions, clean temporary files and reconcile JSON/SQLite on failure/restart. Test browser upload, unsupported extensions, path traversal, size limits, failed commit and reimport.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "statement-active-rule-01.json",
+      "bank-audit-agent/tests.json",
+      "bank-portal-integrated-vitest.json"
+    ]
   },
   {
     "id": "P06-W03",
@@ -215,9 +258,13 @@
       "web/src/pages/BankImport.tsx"
     ],
     "design": "Register local accounts independently of owner-specific labels. Bank connectivity uses the supported provider consent flow, state/nonce validation and user-owned configuration. Do not expose a signing key or bank session. Qualify account selection, consent denial/expiry, callbacks, duplicate sync and reconnect in a mock provider and authorized sandbox.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "statement-active-rule-01.json",
+      "bank-audit-agent/tests.json",
+      "bank-portal-integrated-vitest.json"
+    ]
   },
   {
     "id": "P07-W01",
@@ -233,9 +280,13 @@
       "web/src/pages/Rechnungen.tsx"
     ],
     "design": "Validate supported PDF/image signatures and limits; persist immutable bytes under content-derived opaque names outside the repository. Bind document IDs to authorized records rather than arbitrary filenames. Record SHA-256, reject duplicate bytes without losing links, supply safe preview/download and transactional metadata persistence. Test traversal, malformed types, duplicates, restart and unchanged downloaded bytes.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "document-migration-commit-01.json",
+      "legacy-document-cancellation-after-01.json",
+      "independent-security/legacy-document-binding-functional-review.txt"
+    ]
   },
   {
     "id": "P07-W02",
@@ -251,9 +302,13 @@
       "src/invoicerec/pdf-to-image.ts"
     ],
     "design": "Run supported PDF text extraction and image OCR with bounded pages/pixels/time, cancellable workers and no arbitrary filesystem paths. Extract invoice/supplier/date/currency/gross/net/VAT with confidence and source evidence, not fabricated values. Use independently rendered synthetic invoices; test corrupt PDFs, image bombs, timeouts, manual review and resource cleanup.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "document-migration-commit-01.json",
+      "legacy-document-cancellation-after-01.json",
+      "independent-security/legacy-document-binding-functional-review.txt"
+    ]
   },
   {
     "id": "P07-W03",
@@ -270,9 +325,13 @@
       "src/storage/trash.ts"
     ],
     "design": "Provide editable recognized fields with validation, explicit confirmation, evidence-linked matching and reversible deletion. Preserve immutable source bytes and correction history. Test correcting VAT, rejected recognition, linked-document deletion, restore and persistence across restart.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "document-migration-commit-01.json",
+      "legacy-document-cancellation-after-01.json",
+      "independent-security/legacy-document-binding-functional-review.txt"
+    ]
   },
   {
     "id": "P08-W01",
@@ -288,9 +347,12 @@
       "web/src/pages/Matches.tsx"
     ],
     "design": "Separate proposals from accepted decisions; implement accept/reject/undo/manual creation without mutating state before successful persistence. Validate unique existing IDs, currency and allocation, prevent double allocation and record before/after/actor/reason. Rejected proposals release reservations but retain history. Test malformed payloads, duplicates, conflicting matches, persistence failure and restart.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "independent-security/rule-lifecycle-qualification.txt",
+      "integrated-interface-source-07/integrated-acceptance/result.json"
+    ]
   },
   {
     "id": "P08-W02",
@@ -307,9 +369,12 @@
       "web/src/pages/ManualMatch.tsx"
     ],
     "design": "Review each V2 rule against generated independent expected ledgers. Cover one-to-one, one-to-many, many-to-one, split/partial payments, refunds, fees, supplier/customer rules, exclusions and private transactions. Foreign-currency matching requires explicit rate/provenance and validated per-currency allocations; never sum unlike currencies or silently autoaccept a rule proposal.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "independent-security/rule-lifecycle-qualification.txt",
+      "integrated-interface-source-07/integrated-acceptance/result.json"
+    ]
   },
   {
     "id": "P09-W01",
@@ -325,9 +390,13 @@
       "tests/report-evidence.test.ts"
     ],
     "design": "Review remediation source fixes without importing private Git history. Only eligible accepted decisions support deductions; missing or uncertain evidence is not deductible. Keep excluded/private transactions separate, refunds signed and currencies separate. Test exact period totals, proposals/rejections, missing VAT, manual corrections and historical provenance. Jurisdiction assumptions must be labeled and independently reviewed.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "independent-security/rule-lifecycle-qualification.txt",
+      "committed-app-01-vitest.json",
+      "integrated-interface-source-07/integrated-acceptance/result.json"
+    ]
   },
   {
     "id": "P09-W02",
@@ -344,9 +413,13 @@
       "web/src/pages/IncomeTaxReport.tsx"
     ],
     "design": "Enable authorized reports and exports with validated periods, safe CSV cells, linked source evidence and explicit currency totals. UI locale never changes values or identifiers. Test CSV formula injection, invalid dates, PDF export bounds, empty periods and export/view reconciliation.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "independent-security/rule-lifecycle-qualification.txt",
+      "committed-app-01-vitest.json",
+      "integrated-interface-source-07/integrated-acceptance/result.json"
+    ]
   },
   {
     "id": "P10-W01",
@@ -361,9 +434,13 @@
       "src/server/routes/invoicebot.ts"
     ],
     "design": "Account for every existing V2 provider adapter individually: discovery, authentication, invoice selection, download, persistence, duplicates and status. Identify approved APIs versus browser login, permission requirements and unsupported cases. A provider-specific external blocker does not excuse missing adapter code or mock tests.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "application-ui-refactor/",
+      "integrated-interface-source-07/integrated-acceptance/result.json",
+      "Invoice Bot app/egress suites in committed-app-01-vitest.json"
+    ]
   },
   {
     "id": "P10-W02",
@@ -380,9 +457,13 @@
       "web/src/pages/InvoiceBot.tsx"
     ],
     "design": "Use isolated user-controlled browser sessions, supported interactive login and explicit provider authorization. Never reuse personal browser profiles, bypass MFA/CAPTCHA or retry non-idempotent actions blindly. Qualify realistic local mock portals, scheduling persistence, cancellation, timeout, duplicate invoices, expiry and disconnect. Live provider tests need separately supplied account access.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "application-ui-refactor/",
+      "integrated-interface-source-07/integrated-acceptance/result.json",
+      "Invoice Bot app/egress suites in committed-app-01-vitest.json"
+    ]
   },
   {
     "id": "P11-W01",
@@ -400,9 +481,13 @@
       "web/src/pages/PaymentReview.tsx"
     ],
     "design": "Expose candidate review and editable draft batches without triggering money movement. Validate recipient, IBAN checksum, amount/currency/purpose/date and duplicate candidates. Generate supported SEPA with explicit revision/hash, control sums and redistributable schema provenance. Test zero/negative amounts, invalid IBAN, stale revision, duplicate invoices, XML escaping and fictional browser approval.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "committed-app-01-vitest.json",
+      "integrated-installed-01/integrated-acceptance/result.json",
+      "integrated-interface-source-07/integrated-acceptance/result.json"
+    ]
   },
   {
     "id": "P11-W02",
@@ -419,9 +504,13 @@
       "src/payments/browser"
     ],
     "design": "Keep prepare/review/approve/submit/acknowledge/reconcile states separate. Require fresh approval bound to exact batch hash/recipient/amount, provider SCA and idempotency. A timeout after submission becomes unknown and must not auto-resubmit. Demo cannot call real submission. Qualify local mock submission, stale approval, replay, MFA pause, ambiguous acknowledgment and reconciliation; real-money activation requires independent security approval.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "committed-app-01-vitest.json",
+      "integrated-installed-01/integrated-acceptance/result.json",
+      "integrated-interface-source-07/integrated-acceptance/result.json"
+    ]
   },
   {
     "id": "P12-W01",
@@ -438,9 +527,13 @@
       "tests/json-state-migration.test.ts"
     ],
     "design": "Version every SQLite/JSON store and attachments, preserve checked migration history and checksums, reject unknown/newer schemas. Add executable forward edges and skipped-version fixtures whenever formats change; do not reinterpret old data. Test tampered checksums, interruption, incompatible versions and exact relationship/financial preservation.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "document-migration-commit-01.json",
+      "independent-security/data-audit-independent-review.txt",
+      "integrated-interface-source-07/integrated-acceptance/result.json"
+    ]
   },
   {
     "id": "P12-W02",
@@ -456,9 +549,13 @@
       "src/storage/paths.ts"
     ],
     "design": "Quiesce mutations and create a logical SQLite/WAL/JSON/documents/audit snapshot with manifest and hashes. Validate staged restore fully before an atomic activation and retain previous data for rollback. Never overwrite open DB files. Exclude secrets. Test corruption, missing attachments, disk full, crash at each boundary, restart and exact signed totals.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "document-migration-commit-01.json",
+      "independent-security/data-audit-independent-review.txt",
+      "integrated-interface-source-07/integrated-acceptance/result.json"
+    ]
   },
   {
     "id": "P13-W01",
@@ -474,9 +571,13 @@
       "tests/offline-legacy-import.test.mjs"
     ],
     "design": "Map all transaction/accounts/source IDs/documents/hashes/matches/proposals/rejections/rules/classifications/audit/payment-history/report periods and metadata. Explicitly remove credentials, sessions, cookies and approvals. Preserve source byte hashes and never open real data. Test fully synthetic historical formats, missing references, record counts, per-currency totals, unsupported fields and safe refusal.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "document-migration-commit-01.json",
+      "integrated-interruption-source-04/integrated-acceptance/result.json",
+      "integrated-interface-source-07/integrated-acceptance/result.json"
+    ]
   },
   {
     "id": "P13-W02",
@@ -492,9 +593,13 @@
       "web/src/api.ts"
     ],
     "design": "Implement Inspect -> Backup -> Dry Run -> Compare -> Confirm -> Migrate -> Verify -> Activate with a source-immutable staged dataset and reconnect checklist. Bind confirmation to a verified plan digest; recover interrupted staging and atomic cutover. Test browser flow, changed source between dry run/commit, rollback, skipped upgrades and no secret transfer.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "document-migration-commit-01.json",
+      "integrated-interruption-source-04/integrated-acceptance/result.json",
+      "integrated-interface-source-07/integrated-acceptance/result.json"
+    ]
   },
   {
     "id": "P14-W01",
@@ -514,9 +619,13 @@
       "web/src/main.tsx"
     ],
     "design": "Inventory every page/control/error/confirmation label and use centralized English-default/German-selectable translations. Enable backend workflows through real UI controls, not developer-only endpoints. Do not translate persisted identifiers or alter financial values. Test every route/action and missing translation keys in both locales.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "integrated-interface-source-07/integrated-acceptance/result.json",
+      "provider-ui-race-01.json",
+      "independent-security/rule-lifecycle-qualification.txt"
+    ]
   },
   {
     "id": "P14-W02",
@@ -530,9 +639,13 @@
       "web/src/components"
     ],
     "design": "Add meaningful labels, keyboard operation, responsive layouts, upload progress, loading/error/empty states and destructive confirmations. Test narrow and desktop views, keyboard-only critical workflows and failure recovery with no lost input or accidental double submission.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "integrated-interface-source-07/integrated-acceptance/result.json",
+      "provider-ui-race-01.json",
+      "independent-security/rule-lifecycle-qualification.txt"
+    ]
   },
   {
     "id": "P15-W01",
@@ -547,9 +660,13 @@
       "tests"
     ],
     "design": "Generate transactions/invoices/accounts, PayPal/Stripe fees/refunds/FX, duplicate imports, partial/split payments, accepted/rejected proposals, tax exceptions, fictional SEPA, unknown payment outcomes, historical schemas and corrupt files from an explicit seed. Publish independent expected counts/hashes/per-currency totals. Never derive examples from owner records.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "committed-app-01-vitest.json",
+      "recovered-browser/",
+      "integrated-interface-source-07/integrated-acceptance/result.json"
+    ]
   },
   {
     "id": "P15-W02",
@@ -564,9 +681,13 @@
       "scripts/Start-Community-Demo.ps1"
     ],
     "design": "Mark synthetic runtimes, isolate them from personal data and forbid any live provider or payment action. Reset only a verified demo profile after explicit UI confirmation; preserve non-demo paths and refuse junctions/unknown databases. Test reset, foreign root, restart, stale credentials and environment switching.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "committed-app-01-vitest.json",
+      "recovered-browser/",
+      "integrated-interface-source-07/integrated-acceptance/result.json"
+    ]
   },
   {
     "id": "P16-W01",
@@ -586,9 +707,13 @@
       "docs/feature-parity/evidence"
     ],
     "design": "Execute all 40 user-specified acceptance steps against a fresh synthetic runtime, real built UI and controlled provider fixtures. Capture meaningful screenshots and exact outputs; stop only own child processes. Verify totals and source hashes before/after restart/backup/migration. A successful launch or unit test is not E2E parity.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "committed-app-01-vitest.json",
+      "independent-security/data-audit-independent-review.txt",
+      "candidate-packaging-source-binding-01.log"
+    ]
   },
   {
     "id": "P16-W02",
@@ -603,9 +728,13 @@
       "scripts"
     ],
     "design": "Run authorization/resource isolation, parser/file attacks, corrupted snapshots, forced failures, aborted imports and concurrent mutation tests. Record dataset size, latency percentiles, peak memory and cleanup; set justified thresholds before measurement. Classify each failure without weakening financial/security assertions.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "committed-app-01-vitest.json",
+      "independent-security/data-audit-independent-review.txt",
+      "candidate-packaging-source-binding-01.log"
+    ]
   },
   {
     "id": "P16-W03",
@@ -623,9 +752,13 @@
       "docs/feature-parity/09_INTEGRATION_MATRIX.md"
     ],
     "design": "Run separately labeled PayPal sandbox/Stripe test-mode/provider authorization checks using independently supplied accounts only. Mock success is not provider success. Missing credentials block live/sandbox evidence only, not local implementation. Record exact scopes, mode and nonsecret result; never execute real transfers.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "BLOCKED_EXTERNAL",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "committed-app-01-vitest.json",
+      "independent-security/data-audit-independent-review.txt",
+      "candidate-packaging-source-binding-01.log"
+    ]
   },
   {
     "id": "P17-W01",
@@ -639,9 +772,14 @@
       "docs/PRIVACY_RELEASE_GATE.md"
     ],
     "design": "Inspect distributable current source/assets/builds and every proposed public Git blob for owner identity, real financial data, private paths, credentials and session material. Do not echo findings values. Earlier Community history has an unresolved identity warning: create a new source-only reviewed history for release, never push current or private V2 ancestry.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "compliance-post-pdfparse-removal/",
+      "supplemental-native-02/manifest.json",
+      "supplemental-wasm-02/manifest.json",
+      "independent-security/ review reports"
+    ]
   },
   {
     "id": "P17-W02",
@@ -658,9 +796,14 @@
       "docs/THIRD_PARTY_LICENSE_REVIEW.md"
     ],
     "design": "Inventory exact dependency versions/URLs/licenses, font/icon/PDF/XLSX/browser/SDK/binary and schema rights. Generate SBOM, notices, attributions and provenance. Review root MIT applicability only for owner-authored code; unknown source or redistribution rights block public publication. Do not treat a vulnerability scan as a rights review.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "compliance-post-pdfparse-removal/",
+      "supplemental-native-02/manifest.json",
+      "supplemental-wasm-02/manifest.json",
+      "independent-security/ review reports"
+    ]
   },
   {
     "id": "P18-W01",
@@ -677,9 +820,13 @@
       "README.md"
     ],
     "design": "Provide guided setup, runtime detection, private external storage, owner creation, demo, integration setup, upgrades, backup and safe uninstall. Use no developer machine paths. Test clean installation on the required Windows environment, missing runtime, port conflict, spaces/non-ASCII paths, reboot/restart, upgrade and preservation of user data.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "packaging-validation.json",
+      "candidate-packaging-source-binding-01.log",
+      "committed-app-01-vitest.json"
+    ]
   },
   {
     "id": "P18-W02",
@@ -695,9 +842,13 @@
       "docs/MIGRATION_POLICY.md"
     ],
     "design": "Gate build/types/unit/financial/API/security/privacy/secrets/localization/schema/migration/restore/dependencies/licenses and artifact inspection in CI. Historical fixtures and recovery tests accompany persistence changes. Review and reconcile primary worktree CI changes without overwriting them. Verify actual GitHub runs rather than only YAML presence.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "packaging-validation.json",
+      "candidate-packaging-source-binding-01.log",
+      "committed-app-01-vitest.json"
+    ]
   },
   {
     "id": "P19-W01",
@@ -713,9 +864,13 @@
       "docs/feature-parity/11_RELEASE_CHECKLIST.md"
     ],
     "design": "Reinspect every worktree and active owner, reconcile competing source changes, merge only reviewed branches, rerun all mandatory tests on the exact integrated tree and record evidence hashes. All F01-F21 must be software-qualified with precise external exceptions; no mandatory feature quietly excluded.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "safe source root0f3ba348",
+      "implementation commits through2f7d0a8",
+      "committed-app-01-vitest.json"
+    ]
   },
   {
     "id": "P19-W02",
@@ -732,8 +887,12 @@
       "docs/RELEASE_STATUS.md"
     ],
     "design": "Create independent reviewed source-only release artifacts and SHA-256 list, then a separate private GitHub repository using authorized access. Verify private visibility, CI and branch protection. Never force-push existing repositories or expose original history. Public visibility requires explicit owner approval. Deliver German factual report with open blockers, installation/demo and exact test evidence.",
-    "status": "NOT_STARTED",
-    "commit": null,
-    "evidence": []
+    "status": "IN_PROGRESS",
+    "commit": "2f7d0a821057bb80404c2161719aa7a4706a7633",
+    "evidence": [
+      "safe source root0f3ba348",
+      "implementation commits through2f7d0a8",
+      "committed-app-01-vitest.json"
+    ]
   }
 ]
