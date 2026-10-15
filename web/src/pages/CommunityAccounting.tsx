@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { communityAccountingText } from '../i18n/community-accounting';
 import { communityFetch } from '../api';
 import {problemMessage} from '../i18n/community-problems';
@@ -11,6 +11,9 @@ type Snapshot = { revision: number; transactions: Array<{ transaction_id: string
 type Report = { rows: Array<{ transaction_id: string; amount_minor: number; currency_code: string; category: string; remaining_minor: number }>;
   documents: Array<{ document_id: string; total_amount_minor: number; currency_code: string; reconciliation: string; remaining_minor: number; tax_category: string; vat_minor: number }>;
   totals_by_currency: Record<string, Record<string, number>>; vat_by_currency: Record<string, { output_minor: number; eligible_input_minor: number; unclassified_documents: number }> };
+class AccountingRequestError extends Error {
+  constructor(message:string,readonly code?:string,readonly status?:number){super(message);}
+}
 
 /** Mount under an authenticated workspace; the server supplies all identity and permission checks. */
 export function CommunityAccounting({ apiBase = '/api', locale = 'en', permissions }: { apiBase?: string; locale?: 'en' | 'de'; permissions?: readonly string[] }) {
@@ -21,6 +24,17 @@ export function CommunityAccounting({ apiBase = '/api', locale = 'en', permissio
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [report, setReport] = useState<Report | null>(null);
   const [error, setError] = useState('');
+  const [busy,setBusy]=useState(false),[reloadRequired,setReloadRequired]=useState(false);
+  const writing=useRef(false);
+  const recoveryText=locale==='de'?{
+    saved:'Die Änderung wurde gespeichert. Die Anzeige konnte nicht aktualisiert werden. Vor weiteren Änderungen aktualisieren; nicht erneut speichern.',
+    unknown:'Das Ergebnis ist unklar. Aktualisieren und die gespeicherten Zuordnungen prüfen, bevor Sie erneut speichern.',
+    reload:'Vor weiteren Änderungen bitte aktualisieren.',
+  }:{
+    saved:'The change was saved, but the view could not refresh. Refresh before making further changes; do not save again.',
+    unknown:'The outcome is uncertain. Refresh and inspect saved allocations before retrying.',
+    reload:'Refresh before making further changes.',
+  };
   const [transactionId, setTransactionId] = useState(''); const [documentId, setDocumentId] = useState('');
   const [kind, setKind] = useState('payment'); const [amount, setAmount] = useState(''); const [documentAmount, setDocumentAmount] = useState('');
   const [draftLegs, setDraftLegs] = useState<object[]>([]);
@@ -33,14 +47,39 @@ export function CommunityAccounting({ apiBase = '/api', locale = 'en', permissio
   const request = async (path: string, init?: RequestInit) => {
     const response = await communityFetch(`${apiBase}${path}`, { credentials: 'same-origin', ...init,
       headers: { 'Content-Type': 'application/json', ...init?.headers } });
-    if (!response.ok) { const body = await response.json().catch(() => ({})); throw new Error(problemMessage(body,locale,`${t.error}: ${response.status}`)); }
+    if (!response.ok) { const body = await response.json().catch(() => ({})); throw new AccountingRequestError(problemMessage(body,locale,`${t.error}: ${response.status}`),typeof body.code==='string'?body.code:undefined,response.status); }
     return response.json();
   };
   const refresh = async () => setSnapshot(await request('/accounting'));
   const loadReport = async () => setReport(await request(`/accounting/reports?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`));
+  const reload = async () => {
+    if(writing.current)return;
+    try{setError('');await refresh();setReloadRequired(false);}
+    catch(cause){setError(cause instanceof Error?cause.message:t.error);}
+  };
   const action = async (path: string, body: unknown, method = 'POST') => {
-    try { setError(''); await request(path, { method, body: JSON.stringify(body) }); await refresh(); await loadReport(); }
-    catch (cause) { setError(cause instanceof Error ? cause.message : t.error); }
+    if(writing.current)return false;
+    if(reloadRequired){setError(recoveryText.reload);return false;}
+    writing.current=true;setBusy(true);setError('');
+    try{
+      try{await request(path,{method,body:JSON.stringify(body)});}
+      catch(cause){
+        if(cause instanceof AccountingRequestError){
+          let message=cause.message;
+          if(cause.code==='STALE_REVISION'||cause.code==='REVISION_CONFLICT'){
+            try{await refresh();}catch{setReloadRequired(true);message+=' '+recoveryText.reload;}
+          }
+          else if(cause.status!==undefined&&cause.status>=500){setReloadRequired(true);message+=' '+recoveryText.unknown;}
+          setError(message);
+        }else{setReloadRequired(true);setError(recoveryText.unknown);}
+        return false;
+      }
+      // The mutation is confirmed. A failed follow-up read cannot turn it into
+      // a rejected save or leave the submitted draft available for replay.
+      try{await refresh();await loadReport();}
+      catch{setReloadRequired(true);setError(recoveryText.saved);}
+      return true;
+    }finally{writing.current=false;setBusy(false);}
   };
   useEffect(() => { void refresh().catch(cause => setError(String(cause))); }, [apiBase]);
   const currentLeg = () => {
@@ -50,7 +89,10 @@ export function CommunityAccounting({ apiBase = '/api', locale = 'en', permissio
     return { kind, transaction_id: transactionId, transaction_amount_minor: Number(amount),
       ...(['fee', 'transfer'].includes(kind) ? {} : { document_id: documentId, document_amount_minor: Number(documentAmount), ...(conversion ? { conversion } : {}) }) };
   };
-  const submitAllocation = () => { void action('/accounting/allocations', { revision: snapshot?.revision, evidence_ref: evidence, allocations: [...draftLegs, currentLeg()] }); setDraftLegs([]); };
+  const submitAllocation = async () => {
+    const saved=await action('/accounting/allocations',{revision:snapshot?.revision,evidence_ref:evidence,allocations:[...draftLegs,currentLeg()]});
+    if(saved){setDraftLegs([]);setAmount('');setDocumentAmount('');}
+  };
   const exportFile = async (format: 'csv' | 'json') => {
     try {
       setError(''); const response = await communityFetch(`${apiBase}/accounting/reports/export.${format}?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`, { credentials: 'same-origin' });
@@ -61,7 +103,8 @@ export function CommunityAccounting({ apiBase = '/api', locale = 'en', permissio
   };
   return <section style={{ maxWidth: 1100, margin: 'auto', padding: 20, fontFamily: 'system-ui' }}>
     <h1>{t.title}</h1>{error && <p role="alert" style={{ color: '#a00' }}>{error}</p>}
-    <button onClick={() => void refresh()}>{t.refresh}</button>{' '}
+    <fieldset disabled={busy} style={{border:0,padding:0,margin:0,minWidth:0}}>
+    <button onClick={() => void reload()}>{t.refresh}</button>{' '}
     {mayMatch&&<button onClick={() => void action('/accounting/proposals', {})}>{t.proposals}</button>}
     <section><h2>{t.matches}</h2><ul>{snapshot?.match_groups.map(group => <li key={group.match_group_id} data-match-id={group.match_group_id}>
       {group.match_group_id}: {valueLabel(group.status)} · {group.transaction_ids.join(', ')} → {group.document_ids.join(', ')} · {group.amount_total_minor} {group.currency_code} · {group.reason_codes.join(', ')}{' '}
@@ -79,7 +122,7 @@ export function CommunityAccounting({ apiBase = '/api', locale = 'en', permissio
       <label>{t.evidence} <input id="accounting-evidence" aria-label={t.evidence} value={evidence} onChange={e => setEvidence(e.target.value)} /></label><br />
       <details><summary>{t.conversion}</summary><label>{t.numerator} <input id="accounting-fx-numerator" type="number" value={fxNumerator} onChange={e => setFxNumerator(e.target.value)} /></label><label>{t.denominator} <input id="accounting-fx-denominator" type="number" value={fxDenominator} onChange={e => setFxDenominator(e.target.value)} /></label><label>{t.source} <input id="accounting-fx-source" value={fxSource} onChange={e => setFxSource(e.target.value)} /></label></details>
       <button onClick={() => setDraftLegs(items => [...items, currentLeg()])}>{t.addLeg}</button>{' '}
-      <button onClick={submitAllocation}>{t.save} {t.allocation}</button>
+      <button disabled={reloadRequired} onClick={()=>void submitAllocation()}>{t.save} {t.allocation}</button>
       {draftLegs.length > 0 && <p>{draftLegs.length} {t.pendingLegs} <button onClick={() => setDraftLegs([])}>{t.clear}</button></p>}
       <ul>{snapshot?.allocations.filter(a => a.status === 'accepted').map(a => <li key={a.allocation_id} data-allocation-id={a.allocation_id}>{valueLabel(a.kind)}: {a.transaction_id} → {a.document_id ?? '—'} · {a.transaction_amount_minor} <button onClick={() => void action(`/accounting/allocations/${encodeURIComponent(a.allocation_id)}`, { revision: snapshot.revision }, 'DELETE')}>{t.undo}</button></li>)}</ul>
     </section>}
@@ -119,5 +162,6 @@ export function CommunityAccounting({ apiBase = '/api', locale = 'en', permissio
         <table><thead><tr><th>{t.document}</th><th>{t.status}</th><th>{t.currency}</th><th>{t.documentAmount}</th><th>{t.balances}</th><th>{t.vat}</th></tr></thead><tbody>{report.documents.map(row => <tr key={row.document_id} data-report-document={row.document_id}><td>{row.document_id}</td><td>{valueLabel(row.reconciliation)}</td><td>{row.currency_code}</td><td>{row.total_amount_minor}</td><td>{row.remaining_minor}</td><td>{row.vat_minor}</td></tr>)}</tbody></table>
       </>}
     </section>
+    </fieldset>
   </section>;
 }

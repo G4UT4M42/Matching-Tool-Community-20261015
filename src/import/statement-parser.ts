@@ -196,7 +196,19 @@ export function parseStatementBuffer(buffer: Buffer, extension: string, source: 
       amount = incoming !== 0 ? incoming : -Math.abs(outgoing);
       if (!blank(signed) && statementMinor(signed, currency, row) !== amount) throw new StatementError('AMBIGUOUS_AMOUNT', 'Signed amount disagrees with debit or credit', row);
     } else amount = statementMinor(signed, currency, row);
-    const date = statementDate(pick(values, ['Buchungsdatum', 'Buchungstag', 'Valutadatum', 'Datum', 'Wertstellungsdatum', 'Transaktionsdatum', 'Date']), row);
+    // Booking, value and card transaction dates describe different events.
+    // Keep ambiguity checks within one semantic field, not across these fields.
+    const optionalDate = (names: string[]) => {
+      const value = pick(values, names);
+      return blank(value) ? undefined : statementDate(value, row);
+    };
+    const bookingDate = optionalDate(['Buchungsdatum', 'Buchungstag']);
+    const valueDate = optionalDate(['Valutadatum', 'Wertstellungsdatum']);
+    const transactionDate = optionalDate(['Transaktionsdatum']);
+    const genericDate = optionalDate(['Datum', 'Date']);
+    const date = (source === 'visa'
+      ? bookingDate ?? transactionDate ?? genericDate ?? valueDate
+      : bookingDate ?? genericDate ?? valueDate ?? transactionDate) ?? statementDate(undefined, row);
     const rowAccount = text(pick(values, ['Konto', 'Kontonummer', 'Account', 'Account ID']), row, 200);
     if (options.accountId !== undefined && (typeof options.accountId !== 'string' || !options.accountId.trim() || options.accountId.length > 200 || /[\u0000-\u001f]/.test(options.accountId))) throw new StatementError('INVALID_ACCOUNT', 'A valid local account identifier is required');
     if (rowAccount && options.accountId && rowAccount !== options.accountId.trim()) throw new StatementError('ACCOUNT_CONFLICT', 'Statement account differs from the selected account', row);
@@ -212,10 +224,11 @@ export function parseStatementBuffer(buffer: Buffer, extension: string, source: 
     return {
       transaction_id: 'TXN-' + hash(JSON.stringify([source, account, rowReference])).slice(0, 32),
       source_system: source, source_account_id: account, source_row_ref: rowReference,
-      posting_at: date, amount_minor: amount, currency_code: currency, description_raw: description,
+      posting_at: date, ...(valueDate ? { value_at: valueDate } : {}), amount_minor: amount, currency_code: currency, description_raw: description,
       counterparty_name: counterparty || undefined, counterparty_iban: iban || undefined,
       booking_reference: reference || undefined, payment_reference: payment || undefined, tags: [],
-      meta: { statement_sha256: digest, statement_row: index + 1, statement_fingerprint: fingerprint, source_reference_present: Boolean(reference), currency_precision: precision },
+      meta: { statement_sha256: digest, statement_row: index + 1, statement_fingerprint: fingerprint, source_reference_present: Boolean(reference), currency_precision: precision,
+        ...(transactionDate ? { statement_transaction_at: transactionDate } : {}) },
     };
   });
 }
