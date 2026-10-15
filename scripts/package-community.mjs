@@ -4,7 +4,7 @@ import {execFileSync} from 'node:child_process';
 import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { resolve, dirname, join, relative, isAbsolute, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { packageFiles, safeParts, sha256, verifyPackage, reviewedReplacement, checkReplacementIdentity, checkReplacementProof, runtimeOverlay } from './verify-community-package.mjs';
+import { packageFiles, safeParts, sha256, verifyPackage, reviewedReplacement, checkReplacementIdentity, checkReplacementProof, replacementCompanions, runtimeOverlay } from './verify-community-package.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const inside = (base, file) => { const path = relative(base, file); return path === '' || (!isAbsolute(path) && path !== '..' && !path.startsWith('..' + sep)); };
@@ -67,6 +67,7 @@ export function validateNativeReplacement(folder){
  checkReplacementIdentity(manifest,descriptor);const binaryPath=descriptor.packagePath;
  const installed=readJson(join(root,'node_modules',...manifest.component.split('/'),'package.json'));
  if(installed.name!==manifest.component||installed.version!==manifest.version||manifest.replacedUpstreamSha256!==sha256(readFileSync(join(root,binaryPath))))throw new Error('Replacement is not bound to the installed upstream binary');
+ for(const file of replacementCompanions(descriptor)){const input=join(root,...safeParts(file.path));noLinks(input);const stat=lstatSync(input);if(!stat.isFile()||stat.size!==file.bytes||sha256(readFileSync(input))!==file.sha256)throw new Error('Installed replacement companion differs from qualified unchanged binary');}
  const checked=(entry,maxBytes,allowEmpty=false)=>{safeParts(entry.path);const input=join(folder,...safeParts(entry.path));noLinks(input);const stat=lstatSync(input);if(!stat.isFile()||!Number.isSafeInteger(entry.bytes)||entry.bytes!==stat.size||entry.bytes<(allowEmpty?0:1)||entry.bytes>maxBytes||!/^[a-f0-9]{64}$/.test(entry.sha256)||sha256(readFileSync(input))!==entry.sha256)throw new Error('Replacement file checksum or bounds mismatch');return input;};
  const binary=checked(manifest.binary,128*1024*1024);if(readFileSync(binary).subarray(0,descriptor.magic.length/2).toString('hex')!==descriptor.magic||manifest.binary.sha256===manifest.replacedUpstreamSha256)throw new Error('Replacement must be a distinct qualified binary');
  const sourceNames=new Set([manifest.binary.path.toLowerCase()]),destinations=new Set();let total=manifest.binary.bytes;
@@ -90,7 +91,7 @@ export function buildPackage({ out, compliance, supplement, replacement, mode = 
   }
   const manifest = readJson(join(root, 'package.json'));
   const replacementFolders=replacement?(Array.isArray(replacement)?replacement:[replacement]):[];
-  if(replacementFolders.length>2)throw new Error('At most two independently reviewed replacements are supported');
+  if(replacementFolders.length>3)throw new Error('At most three independently reviewed replacements are supported');
   const nativeReplacements=replacementFolders.map(folder=>validateNativeReplacement(absolute(folder)));
   const selected = runtimeClosure(report, bom, manifest, nativeReplacements.map(extra=>extra.manifest.component));
   if (mode !== 'development') throw new Error('Distributable packaging is blocked: ownership, native source/relink and asset provenance obligations remain unresolved. This builder creates development candidates only.');

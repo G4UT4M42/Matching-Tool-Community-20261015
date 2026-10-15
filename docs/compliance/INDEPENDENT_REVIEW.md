@@ -75,3 +75,27 @@ Adobe's historical Core 14 archive endpoint returned HTTP 404. PDFBox's notice
 is corroborating upstream redistribution evidence; it does not by itself prove
 the exact PDFKit files' chain of provenance. No claim of completed rights
 clearance is made.
+
+## Engineering resolutions after the initial review
+
+The table above records initial findings, not final package acceptance. Subsequent
+work supplies the unchanged Adobe AFM permission and upstream provenance evidence
+in supplemental-native02, complete source/notices/build/relink evidence for the
+reviewed canvas02, full-source WASM01 and native Windows libvips01, and detailed
+independently reviewed WASM/Node inventories. PACKAGING.md and the component
+qualification documents identify exact manifests, binary hashes and remaining
+limits. The earlier canvas01 failed binary privacy and is revoked.
+
+Native libvips independent review covers467BOM components,4558 unchanged notices
+and all378 frozen Cargo variants; actual load plus PNG/JPEG/WebP/SVG/AVIF checks
+pass with the exact unchanged companion/binding. WASM supplement03 independently
+validates447unique BOM references and required dependency closure. Node01 binds
+the actual executable and22source declarations/24reported component keys, with
+runtime-only CLDR/TZ distinguished. None claims historical binary reproduction,
+untraced static archive-member linkage, owner copyright authority or legal
+clearance. Final installed delivery and exact-candidate verification remain open.
+
+The SheetJS direct403 and application ownership/license choice remain precise
+external provenance/rights gates; no failed endpoint was bypassed. Installed
+source/license text and lock integrity are retained, without asserting a fresh
+authenticated tarball retrieval. Redistribution is still disabled.

@@ -160,7 +160,7 @@ This packaging input is absent from the production server.
 The verifier contains the fixed reviewed descriptors and remains self-contained;
 the installer bootstrap still hashes its complete file. The builder imports
 those same descriptors from the existing verifier. Repeated `--replacement`
-arguments are bounded to two distinct reviewed targets, checked before output
+arguments are bounded to three distinct reviewed targets, checked before output
 creation. Duplicate targets and source/supplement collisions reject. Each
 component requires its own exact manifest/binary allowlist and measured proof;
 self-asserted source-build claims cannot admit a component.
@@ -208,3 +208,30 @@ retains false legal/release claims. An actual maintenance regression modifies
 the runtime SBOM and consistently rehashes its outer entry; verification still
 rejects the incorrect runtime hash. Original bytes are restored before real
 install/upgrade/restart/uninstall checks.
+
+## Reviewed native Windows libvips and detailed component inventories
+
+The third fixed replacement is Windows sharp0.35.5 libvips8.18.7, exact
+manifest32e5abf93be6355db6af64ac5cf2d837ac47848bea05146a46f57a53bf5e37ff
+and core2c843d083a0bc59a4114366fc79d8b5e5faf6472062f472a2ce9ad91e4dc06fc.
+Only the C DLL changes. Builder and verifier require the measured original
+C++ companion and Sharp binding hashes and sizes. The proof requires six
+load/codec checks, exact loaded-file identities and directory assertions,
+full-source rebuild/version facts and false legal/release/historical claims.
+See LIBVIPS_RELINK_QUALIFICATION.md for sources, recipes and scope.
+
+`MATCHING_ACCEPTANCE_LIBVIPS_REPLACEMENT` supplies this third bundle only to the
+synthetic acceptance packager. No production application switch is added.
+All three replacement descriptors are fixed, frozen and separately admitted.
+Actual admission of all three plus four supplements passes; focused metadata
+regression9/9 passes. Final installed application qualification remains separate.
+
+Detailed final component inventories accompany the existing source supplements:
+WASM SBOM supplement03 manifesta361d7a30c5fd2100815b0b3c2d22524790d4b17b22871609adcd301b3cf0830
+(18files,8646850bytes) and Node SBOM supplement01
+manifest92e5887bbfc91c895d9ac4c3fe77570090c9da2748b2fabd8ec57414bd878457
+(19files,1437278bytes). Both passed independent hash/source/license/schema/privacy
+review. Earlier WASM SBOM01/02 are retained failed iterations, not final inputs.
+Original notices and source archives are unchanged. These inventories supplement
+the exact runtime overlay; they do not confer rights or imply static archive
+member linkage that was not measured.

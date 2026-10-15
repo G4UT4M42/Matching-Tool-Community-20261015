@@ -5,8 +5,17 @@ import {tmpdir} from 'node:os';
 import {join,dirname,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {validateNativeReplacement} from '../scripts/package-community.mjs';
-import {sha256,reviewedReplacement} from '../scripts/verify-community-package.mjs';
+import {sha256,reviewedReplacement,checkReplacementProof,checkReplacementCompanions} from '../scripts/verify-community-package.mjs';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+test('reviewed native core requires exact original companions and measured source/load/codecs proof',()=>{
+ const descriptor=reviewedReplacement('32e5abf93be6355db6af64ac5cf2d837ac47848bea05146a46f57a53bf5e37ff');
+ const companions=[{path:'node_modules/@img/sharp-win32-x64/lib/libvips-cpp-8.18.7.dll',sha256:'25001dbd05305a0a29119ab49933622c70b4a20ea12ef1d5d20ca40181db53bf',bytes:333312},{path:'node_modules/@img/sharp-win32-x64/lib/sharp-win32-x64-0.35.5.node',sha256:'971048779f9c8598df14641dfc03c625885c93f473a788e65ca2deb50d0b083e',bytes:443904}];
+ const proof={result:'PASS',observedNativeVersion:'8.18.7',binarySha256:'2c843d083a0bc59a4114366fc79d8b5e5faf6472062f472a2ce9ad91e4dc06fc',fullLibrarySourceRebuild:true,checks:{native_load:true,png:true,jpeg:true,webp:true,avif:true,svg:true},loaded:[{name:'libvips-42.dll',sha256:'2c843d083a0bc59a4114366fc79d8b5e5faf6472062f472a2ce9ad91e4dc06fc',bytes:19018752,loadedFromQualifiedDirectory:true},...companions.map(file=>({name:file.path.split('/').at(-1),sha256:file.sha256,bytes:file.bytes,loadedFromQualifiedDirectory:true}))],unchangedOriginalCppCompanion:true,sourceBuiltCppCompanion:false,unchangedOriginalSharpBinding:true,syntheticOnly:true,runtimeReplaced:false,legalClearance:false,releaseAccepted:false,historicalBinaryReproduced:false};
+ checkReplacementProof(proof,descriptor);checkReplacementCompanions(descriptor,companions);
+ for(const mutate of [q=>q.observedNativeVersion='8.18.77',q=>q.fullLibrarySourceRebuild=false,q=>q.sourceBuiltCppCompanion=true,q=>q.unchangedOriginalSharpBinding=false,q=>q.loaded.pop(),q=>q.loaded.push(q.loaded[0]),q=>q.loaded[1].loadedFromQualifiedDirectory=false,q=>q.loaded[2].sha256='0'.repeat(64),q=>q.checks.avif=false,q=>q.legalClearance=true]){const q=structuredClone(proof);mutate(q);assert.throws(()=>checkReplacementProof(q,descriptor));}
+ for(const mutate of [files=>files.pop(),files=>files.push(files[0]),files=>files[0].sha256='0'.repeat(64),files=>files[1].bytes++,files=>files[0].path='runtime/node.exe']){const files=structuredClone(companions);mutate(files);assert.throws(()=>checkReplacementCompanions(descriptor,files),/companion/);}
+ const bytes=readFileSync(join(root,'docs/compliance/libvips-replacement-manifest.json'));assert.equal(sha256(bytes),'32e5abf93be6355db6af64ac5cf2d837ac47848bea05146a46f57a53bf5e37ff');
+});
 function fixture(){
  const folder=mkdtempSync(join(tmpdir(),'community-replacement-metadata-')),packagePath='node_modules/@napi-rs/canvas-win32-x64-msvc/skia.win32-x64-msvc.node';
  const add=(path,content)=>{const file=join(folder,path);mkdirSync(dirname(file),{recursive:true});const bytes=Buffer.from(content);writeFileSync(file,bytes);return{path,bytes:bytes.length,sha256:sha256(bytes)};};

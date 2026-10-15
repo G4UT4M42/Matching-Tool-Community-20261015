@@ -1,0 +1,1052 @@
+{
+  "format": "matching-community-native-replacement-v1",
+  "component": "@img/sharp-win32-x64",
+  "version": "0.35.5",
+  "packagePath": "node_modules/@img/sharp-win32-x64/lib/libvips-42.dll",
+  "binary": {
+    "path": "binary/libvips-42.dll",
+    "bytes": 19018752,
+    "sha256": "2c843d083a0bc59a4114366fc79d8b5e5faf6472062f472a2ce9ad91e4dc06fc"
+  },
+  "replacedUpstreamSha256": "06dab07cc386748513337a31672b1d5269fbc770a14ff403080575665bf0813f",
+  "sourceBuildQualified": true,
+  "fullLibrarySourceRebuild": true,
+  "binaryPrivacyQualified": true,
+  "qualification": {
+    "path": "proof/qualification.json",
+    "sha256": "4adfbad8b1a7d15dc56fc2ff1237a5bd81e067226b74ddff2d5843cdef5dc021"
+  },
+  "files": [
+    {
+      "path": "notices/gvdb-COPYING.txt",
+      "packagePath": "compliance/libvips-replacement/notices/gvdb-COPYING.txt",
+      "bytes": 26445,
+      "sha256": "bdbcdaa7858872393e9d6b216bbdc8a23e99d98dd6cdb7cda19458025b9e19fc"
+    },
+    {
+      "path": "notices/libvips-LICENSE.txt",
+      "packagePath": "compliance/libvips-replacement/notices/libvips-LICENSE.txt",
+      "bytes": 26530,
+      "sha256": "dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551"
+    },
+    {
+      "path": "notices/original-source-notices.index.json",
+      "packagePath": "compliance/libvips-replacement/notices/original-source-notices.index.json",
+      "bytes": 1750215,
+      "sha256": "b87eabbdc025ceabda8345fe2a8d7701090bfc2cf6d9d72bbc034438a907c16a"
+    },
+    {
+      "path": "notices/original-source-notices.tar.gz",
+      "packagePath": "compliance/libvips-replacement/notices/original-source-notices.tar.gz",
+      "bytes": 3536797,
+      "sha256": "3f159be03149f69ade95c3d974bef89b76e2136469d77dc720ec3acc090052ec"
+    },
+    {
+      "path": "proof/binary-privacy.json",
+      "packagePath": "compliance/libvips-replacement/proof/binary-privacy.json",
+      "bytes": 234,
+      "sha256": "45199ea38bbadde248a183a8e953c7b115dfde6e8ed395a22a2d96568fb7e574"
+    },
+    {
+      "path": "proof/container-resource-proof.json",
+      "packagePath": "compliance/libvips-replacement/proof/container-resource-proof.json",
+      "bytes": 286,
+      "sha256": "29eab952f5881b2bbd10018d37c95e1e8123818abbadcde9df269b67187bd7ba"
+    },
+    {
+      "path": "proof/cyclonedx-schema-validation.json",
+      "packagePath": "compliance/libvips-replacement/proof/cyclonedx-schema-validation.json",
+      "bytes": 812,
+      "sha256": "d27ec0277254011758a451476493d5327e2f9a3242d59f956a56e87d71b87dba"
+    },
+    {
+      "path": "proof/frozen-librsvg-and-std-vendor.json",
+      "packagePath": "compliance/libvips-replacement/proof/frozen-librsvg-and-std-vendor.json",
+      "bytes": 241,
+      "sha256": "ad28b6daeae8f83d43935c432d51bb217eeb6f3634bb81d2435bb94231aa9369"
+    },
+    {
+      "path": "proof/full-artifact-privacy.json",
+      "packagePath": "compliance/libvips-replacement/proof/full-artifact-privacy.json",
+      "bytes": 438,
+      "sha256": "14ec70675a6f636f1d450a803ff773ebe9c73ab51490c8b0960f85d08f2c00b5"
+    },
+    {
+      "path": "proof/glib-fallback-byte-comparison.json",
+      "packagePath": "compliance/libvips-replacement/proof/glib-fallback-byte-comparison.json",
+      "bytes": 162,
+      "sha256": "c9d91d457fc038154bb7bf6087fefca58dbdfccd3550db6f0bb85f96fc85499f"
+    },
+    {
+      "path": "proof/glib-subproject-inputs.json",
+      "packagePath": "compliance/libvips-replacement/proof/glib-subproject-inputs.json",
+      "bytes": 3706,
+      "sha256": "df6ba68d7042cf6733416d3f4bb842504326ef7c50c0a461bca6529a65492ea8"
+    },
+    {
+      "path": "proof/librsvg-Cargo.lock",
+      "packagePath": "compliance/libvips-replacement/proof/librsvg-Cargo.lock",
+      "bytes": 86466,
+      "sha256": "e79e2a2735a0b5b151bb4133becd3008223fabedd34a8b787a872edab9854941"
+    },
+    {
+      "path": "proof/librsvg-full-source.log",
+      "packagePath": "compliance/libvips-replacement/proof/librsvg-full-source.log",
+      "bytes": 669305,
+      "sha256": "87fd69431c5ae18742ff34515403a8b859a21f1965203d1bb77a6e665deeac3e"
+    },
+    {
+      "path": "proof/librsvg-registry-packages.json",
+      "packagePath": "compliance/libvips-replacement/proof/librsvg-registry-packages.json",
+      "bytes": 100029,
+      "sha256": "3a61f046670e39e22b2dc3b005c3bed79c2562fdaf220d243ab55b53d6f5e2e9"
+    },
+    {
+      "path": "proof/librsvg-vendor-inventory.json",
+      "packagePath": "compliance/libvips-replacement/proof/librsvg-vendor-inventory.json",
+      "bytes": 272159,
+      "sha256": "8a1d4ad05e5a37b3bb71d52dbde5b2ee31f015852345a48e5b93dd1b7c4325cc"
+    },
+    {
+      "path": "proof/mxe-frozen-source.json",
+      "packagePath": "compliance/libvips-replacement/proof/mxe-frozen-source.json",
+      "bytes": 350,
+      "sha256": "c288f89a7d18f0688ee06a873e97b7969d3d665e9b3ffaf23a36f3157e3dadb4"
+    },
+    {
+      "path": "proof/offline-recipe-patch.json",
+      "packagePath": "compliance/libvips-replacement/proof/offline-recipe-patch.json",
+      "bytes": 232,
+      "sha256": "4ebe77790533a39ec59afe4ce24ba03752dce1cf1ad34700da3585e8fe419873"
+    },
+    {
+      "path": "proof/optional-msvc-companion/build-result.json",
+      "packagePath": "compliance/libvips-replacement/proof/optional-msvc-companion/build-result.json",
+      "bytes": 1494,
+      "sha256": "e3fb05f443a3ed70a7b0170160ea8dd7cdc3a674ef0073c45a6a3c461f11786d"
+    },
+    {
+      "path": "proof/optional-msvc-companion/pe-import-closure.json",
+      "packagePath": "compliance/libvips-replacement/proof/optional-msvc-companion/pe-import-closure.json",
+      "bytes": 7011,
+      "sha256": "f1d8c89ec2711fc856d5a83548f0acc4caaabe257cffadf5c91ed76b1835d654"
+    },
+    {
+      "path": "proof/optional-msvc-companion/qualification.json",
+      "packagePath": "compliance/libvips-replacement/proof/optional-msvc-companion/qualification.json",
+      "bytes": 1204,
+      "sha256": "efa037baa0569a924a17550861398386afeef230477004f0d7c867698f76fe25"
+    },
+    {
+      "path": "proof/optional-msvc-companion/synthetic/synthetic.avif",
+      "packagePath": "compliance/libvips-replacement/proof/optional-msvc-companion/synthetic/synthetic.avif",
+      "bytes": 287,
+      "sha256": "1190ac3a72b456db6a8ce318aa8acddb5d7fb4aa23c2cbdf5b6ba2aa8c1257d8"
+    },
+    {
+      "path": "proof/optional-msvc-companion/synthetic/synthetic.jpeg",
+      "packagePath": "compliance/libvips-replacement/proof/optional-msvc-companion/synthetic/synthetic.jpeg",
+      "bytes": 270,
+      "sha256": "997a6b6528da04b34d32574513c828478a20fefe9def1cb62b8bb5b7408fa29d"
+    },
+    {
+      "path": "proof/optional-msvc-companion/synthetic/synthetic.png",
+      "packagePath": "compliance/libvips-replacement/proof/optional-msvc-companion/synthetic/synthetic.png",
+      "bytes": 99,
+      "sha256": "ce3dc79f9413af841b197075bc550d6821e43b8d2492053e5acfdf88f4f94bfc"
+    },
+    {
+      "path": "proof/optional-msvc-companion/synthetic/synthetic.svg",
+      "packagePath": "compliance/libvips-replacement/proof/optional-msvc-companion/synthetic/synthetic.svg",
+      "bytes": 114,
+      "sha256": "20d88ea7773be7ac6c0a7d3c86663b5f1b75c45f65f50fdddd4bcb8b391d885e"
+    },
+    {
+      "path": "proof/optional-msvc-companion/synthetic/synthetic.webp",
+      "packagePath": "compliance/libvips-replacement/proof/optional-msvc-companion/synthetic/synthetic.webp",
+      "bytes": 68,
+      "sha256": "23d1fbae0f98d867d95fda81c7b5fbf27e0f68621455847cfb76f1cdb4e1c8ab"
+    },
+    {
+      "path": "proof/original-notice-byte-kind-verification.json",
+      "packagePath": "compliance/libvips-replacement/proof/original-notice-byte-kind-verification.json",
+      "bytes": 676,
+      "sha256": "e619b3a69befc8ca70c582d3b7ab0fa01003b5c3ecdbcc18c23b46a28f19a514"
+    },
+    {
+      "path": "proof/pe-export-comparison.json",
+      "packagePath": "compliance/libvips-replacement/proof/pe-export-comparison.json",
+      "bytes": 521,
+      "sha256": "f317b1ee15b6e59029dded73c3ae10cd4c22a1af4df57dbc3d38f68187c4db44"
+    },
+    {
+      "path": "proof/pe-import-closure.json",
+      "packagePath": "compliance/libvips-replacement/proof/pe-import-closure.json",
+      "bytes": 7011,
+      "sha256": "6d159bb70a17d38bf33cdfc69d11c79280f4ea4fbc7b7d5b213c70222be31182"
+    },
+    {
+      "path": "proof/portable-input-preparation.json",
+      "packagePath": "compliance/libvips-replacement/proof/portable-input-preparation.json",
+      "bytes": 295,
+      "sha256": "6d8f8b7643e743973a8117e62193f7f4647498717967ac2b4c202483cedb87dc"
+    },
+    {
+      "path": "proof/qualification.json",
+      "packagePath": "compliance/libvips-replacement/proof/qualification.json",
+      "bytes": 1204,
+      "sha256": "4adfbad8b1a7d15dc56fc2ff1237a5bd81e067226b74ddff2d5843cdef5dc021"
+    },
+    {
+      "path": "proof/replacement.cyclonedx.json",
+      "packagePath": "compliance/libvips-replacement/proof/replacement.cyclonedx.json",
+      "bytes": 1420961,
+      "sha256": "29948d963b86bb6f3059f9f83ab59678655ef16b23f8660718ccf58777e7af94"
+    },
+    {
+      "path": "proof/runtime-version-comparison.json",
+      "packagePath": "compliance/libvips-replacement/proof/runtime-version-comparison.json",
+      "bytes": 1478,
+      "sha256": "3a60ca511342471fec65e55a05bc944e886adcbaf598c95ec7bf05b622a9322a"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-0.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-0.toml",
+      "bytes": 10042,
+      "sha256": "45e36114b9fbeb1a778c470ea4e3a6e31b9ac2029de0d9a7077abac757ec0b29"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-1.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-1.toml",
+      "bytes": 14441,
+      "sha256": "e07856c72dac82fc2d127b55ee2de39b69682e18db4b2a57956102f033306589"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-10.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-10.toml",
+      "bytes": 415,
+      "sha256": "54b34a16b695037c58ca3a3c42a63771a2547c97b7bb3bde2e749eddc7a0e2f3"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-11.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-11.toml",
+      "bytes": 416,
+      "sha256": "34dfb5cc5c2c031cd175d51737f5a0ca6dae5fcb5eb09b046e5e1b4a96e4710f"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-12.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-12.toml",
+      "bytes": 3084,
+      "sha256": "6dda59a0e48ef090d0db2d935fc9ed0bd497e1efc554c4262058921c9ce2c20b"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-13.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-13.toml",
+      "bytes": 1153,
+      "sha256": "87403a5921e3354360a8c4a0cff335399972ec4659eebe5ac7d6379e627cc74b"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-14.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-14.toml",
+      "bytes": 18161,
+      "sha256": "cff5805ec83c9a5ffc99ec1ec0c08ca6b46e4682a55c2db8f9813504263b25f0"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-15.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-15.toml",
+      "bytes": 12177,
+      "sha256": "3306acd8914467f0ec03c52a4a5dc60e94a01b8f123b4ce7e8234f6e423bdb66"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-16.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-16.toml",
+      "bytes": 406,
+      "sha256": "7b23220c994971e1ef93c3a13c78476fb35043e701a2e9c3f80567af3d94a9c3"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-17.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-17.toml",
+      "bytes": 24729,
+      "sha256": "3bddb04a5cd4ee4b4f45de88c49f57af71ed19a2d4882ba48f160c4adea7a5cb"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-18.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-18.toml",
+      "bytes": 10351,
+      "sha256": "febb4b203c1abb0db1adbb9ad441f8b466977e3e7426be1cfc158c50a8f8b9aa"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-19.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-19.toml",
+      "bytes": 421,
+      "sha256": "c9db45e4236589a56f6787112e74024575fe00fd4d99dbe1ded7e741b6692f03"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-2.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-2.toml",
+      "bytes": 5120,
+      "sha256": "b6d614d7df3ae38f3e46b96ca66ada1f093e99eded429605272766d19ece48f2"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-20.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-20.toml",
+      "bytes": 18493,
+      "sha256": "718cdd290a7ed54fa011baeabe23779746318ec79e6f02918b423fce8bdc05b9"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-21.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-21.toml",
+      "bytes": 2756,
+      "sha256": "9243fdd1625c3921ed5edafadd6ce234676806b4afa5805c64e4cd891b78b532"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-22.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-22.toml",
+      "bytes": 136,
+      "sha256": "310568f0d3714c3485288793f7b17bf3d0590f57002317e2392977026f24fb20"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-23.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-23.toml",
+      "bytes": 1054,
+      "sha256": "d53db1ee767b815f28463ae70ce0de3bce6e4e57f0f47bd1d01c9a89ada255c4"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-24.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-24.toml",
+      "bytes": 406,
+      "sha256": "3e44ced212a9e7ddc0a5450bcebb48ec67f32a058529856458efa36415554e53"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-25.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-25.toml",
+      "bytes": 3661,
+      "sha256": "f309ad15b2b17d7ff090e11005112ad2ed04495da92d8d11f758adb69c87d273"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-26.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-26.toml",
+      "bytes": 2120,
+      "sha256": "54b66d3eabcf4993f06c5b556ab1df0082dd14985529e301124590280dbe0554"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-27.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-27.toml",
+      "bytes": 647,
+      "sha256": "a0a50f25383e957fe4ba192b8fb606c7803edc11da07bccdc05310a88866a451"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-28.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-28.toml",
+      "bytes": 645,
+      "sha256": "2bf51f26a3e08cacff990712efba2d5c7aee264caa9d94444819e376b8e53aba"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-29.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-29.toml",
+      "bytes": 6996,
+      "sha256": "b4289efdedc4946dcee2fc3b3f41a133c1e6ab3a3e7874f2d193d7eb6100e034"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-3.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-3.toml",
+      "bytes": 37665,
+      "sha256": "32cee37c91a4a4714ccd2b38441b6f5c4feec811fde83a37bd868b9328be404e"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-30.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-30.toml",
+      "bytes": 160,
+      "sha256": "fa5139d78af5847162dccabfb31b62518282c46654b32243001da4ee9011cc30"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-31.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-31.toml",
+      "bytes": 556,
+      "sha256": "26922b9384045e5a3d496f21ec7c355da585d0caa1d13b887b634527d36fc450"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-32.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-32.toml",
+      "bytes": 3943,
+      "sha256": "fb54669c183e9cf3da6b4dbc3a6808ac69a3808a28c3804cee81a2e1c7fdea1b"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-33.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-33.toml",
+      "bytes": 649,
+      "sha256": "8d5e977b28dd9a78f624f67df190d7f1c32e43100d83a102e6c8df2eab298775"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-34.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-34.toml",
+      "bytes": 405,
+      "sha256": "cc335892128a13fb1431213f65cfd3281ff098cf47b97882ca097f0206d7e0b0"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-35.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-35.toml",
+      "bytes": 4459,
+      "sha256": "d9d389f697d6f65e733e23f087555a88605f8f4da4a20eb060c1d20836257617"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-36.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-36.toml",
+      "bytes": 1678,
+      "sha256": "e424d35ee38f92630f5f28b4007dc2cd72d0ff479c9891edf6bd27c5ec3b5829"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-4.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-4.toml",
+      "bytes": 29185,
+      "sha256": "6ffb0d0946f89093cb2310a300029163585e60c1cf2dc04b529b1336d1fa3f7e"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-5.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-5.toml",
+      "bytes": 1294,
+      "sha256": "1799c8c70616f79419fe788fefa5febba6072a97a804cab91775ec0e52dfe26a"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-6.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-6.toml",
+      "bytes": 27056,
+      "sha256": "b1464c88eec2007bddd1885839a33e36b1a15c41bd1d63831b3f474d1fff2dc6"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-7.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-7.toml",
+      "bytes": 408,
+      "sha256": "59d558240fdb0c8e1c4dae287282e004c8cb360aab0445ec670e43e73e3ba92f"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-8.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-8.toml",
+      "bytes": 3395,
+      "sha256": "eb6254fd40f2eae936fb29e834bd2021dcb7bc4d8f030e4633190b822117f760"
+    },
+    {
+      "path": "proof/rust-locks/rust-src-lock-9.toml",
+      "packagePath": "compliance/libvips-replacement/proof/rust-locks/rust-src-lock-9.toml",
+      "bytes": 610,
+      "sha256": "1b68a566573d37c8acf2fa55975cc2035751210c2907d5d24b2dafbce98b51f4"
+    },
+    {
+      "path": "proof/rust-std-vendor-inventory.json",
+      "packagePath": "compliance/libvips-replacement/proof/rust-std-vendor-inventory.json",
+      "bytes": 6141,
+      "sha256": "0402734edc561ba0ce563c79760fba5d277c2644579cee9a1495f82f4927d5a8"
+    },
+    {
+      "path": "proof/source-build/built-library-inventory.json",
+      "packagePath": "compliance/libvips-replacement/proof/source-build/built-library-inventory.json",
+      "bytes": 10884,
+      "sha256": "0e639af7601f15edf458553a399246bab8d5cac0bf180355f7393088498b9fef"
+    },
+    {
+      "path": "proof/source-build/cargo-config.toml",
+      "packagePath": "compliance/libvips-replacement/proof/source-build/cargo-config.toml",
+      "bytes": 764,
+      "sha256": "f6d2e2b19803394ff5550414c97449267727158f4cf3d837bc45dfd3ee4b5bf7"
+    },
+    {
+      "path": "proof/source-build/full-source-build.json",
+      "packagePath": "compliance/libvips-replacement/proof/source-build/full-source-build.json",
+      "bytes": 532,
+      "sha256": "849d8bf4b6e5ed000d2fe86e8b4a8e2fbef7f0e945c0e8a00cb283315811e02e"
+    },
+    {
+      "path": "proof/source-build/installed-target-build-stamps.json",
+      "packagePath": "compliance/libvips-replacement/proof/source-build/installed-target-build-stamps.json",
+      "bytes": 529,
+      "sha256": "2d372f8269ad8f841da79c70f2b02a1777529e5df9cfb9e0fb4a419689683588"
+    },
+    {
+      "path": "proof/source-build/mxe-source-build.log",
+      "packagePath": "compliance/libvips-replacement/proof/source-build/mxe-source-build.log",
+      "bytes": 6582,
+      "sha256": "0f722dab47b96b28b216d07d6574998281df01bf720b0ac89ed2b4041aa9d1bb"
+    },
+    {
+      "path": "proof/source-build/toolchain.json",
+      "packagePath": "compliance/libvips-replacement/proof/source-build/toolchain.json",
+      "bytes": 2591,
+      "sha256": "cd8753765d00de9c09f554b32ffe60b130808d1fdff7873ad5ceb59acd2c7bde"
+    },
+    {
+      "path": "proof/source-build/vips-packaging/ChangeLog",
+      "packagePath": "compliance/libvips-replacement/proof/source-build/vips-packaging/ChangeLog",
+      "bytes": 169904,
+      "sha256": "fbfceb3a1fe8ed02db905e50103519188115cc246ae707ec53df755f430a35b1"
+    },
+    {
+      "path": "proof/source-build/vips-packaging/LICENSE",
+      "packagePath": "compliance/libvips-replacement/proof/source-build/vips-packaging/LICENSE",
+      "bytes": 26530,
+      "sha256": "dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551"
+    },
+    {
+      "path": "proof/source-build/vips-packaging/README.md",
+      "packagePath": "compliance/libvips-replacement/proof/source-build/vips-packaging/README.md",
+      "bytes": 10176,
+      "sha256": "e173c8181f47e84df8ae2b7932030d059b73862747bd069fd5cb9e17810466fc"
+    },
+    {
+      "path": "proof/source-build/vips-packaging/versions.json",
+      "packagePath": "compliance/libvips-replacement/proof/source-build/vips-packaging/versions.json",
+      "bytes": 596,
+      "sha256": "e2611d5d854815a8b33c8a3d2ec649511a9596ccf16844e8eae7cf81e79881c4"
+    },
+    {
+      "path": "proof/source-license-inventory.json",
+      "packagePath": "compliance/libvips-replacement/proof/source-license-inventory.json",
+      "bytes": 2127779,
+      "sha256": "e277c938dd7470739ab39fb8e75863539b66a65c473b6f69319c67fda75eede0"
+    },
+    {
+      "path": "proof/source-package-versions.json",
+      "packagePath": "compliance/libvips-replacement/proof/source-package-versions.json",
+      "bytes": 17516,
+      "sha256": "788f732b44ecbdb9f49c6d26321e7124af8e60395f0240dfec8975e771f8c630"
+    },
+    {
+      "path": "proof/synthetic/synthetic.avif",
+      "packagePath": "compliance/libvips-replacement/proof/synthetic/synthetic.avif",
+      "bytes": 287,
+      "sha256": "1190ac3a72b456db6a8ce318aa8acddb5d7fb4aa23c2cbdf5b6ba2aa8c1257d8"
+    },
+    {
+      "path": "proof/synthetic/synthetic.jpeg",
+      "packagePath": "compliance/libvips-replacement/proof/synthetic/synthetic.jpeg",
+      "bytes": 270,
+      "sha256": "997a6b6528da04b34d32574513c828478a20fefe9def1cb62b8bb5b7408fa29d"
+    },
+    {
+      "path": "proof/synthetic/synthetic.png",
+      "packagePath": "compliance/libvips-replacement/proof/synthetic/synthetic.png",
+      "bytes": 99,
+      "sha256": "ce3dc79f9413af841b197075bc550d6821e43b8d2492053e5acfdf88f4f94bfc"
+    },
+    {
+      "path": "proof/synthetic/synthetic.svg",
+      "packagePath": "compliance/libvips-replacement/proof/synthetic/synthetic.svg",
+      "bytes": 114,
+      "sha256": "20d88ea7773be7ac6c0a7d3c86663b5f1b75c45f65f50fdddd4bcb8b391d885e"
+    },
+    {
+      "path": "proof/synthetic/synthetic.webp",
+      "packagePath": "compliance/libvips-replacement/proof/synthetic/synthetic.webp",
+      "bytes": 68,
+      "sha256": "23d1fbae0f98d867d95fda81c7b5fbf27e0f68621455847cfb76f1cdb4e1c8ab"
+    },
+    {
+      "path": "proof/upstream-cairo-ci-privacy-classification.json",
+      "packagePath": "compliance/libvips-replacement/proof/upstream-cairo-ci-privacy-classification.json",
+      "bytes": 473,
+      "sha256": "935780eaee26a21833eab5d2ade5edaf653e9bc209f572192648b739ba6647e9"
+    },
+    {
+      "path": "proof/vips-full-source.log",
+      "packagePath": "compliance/libvips-replacement/proof/vips-full-source.log",
+      "bytes": 237555,
+      "sha256": "ef14f7f6ca0f1de8cac329d69f9a0698d00606e8d3650d849de7079f6448b973"
+    },
+    {
+      "path": "README.md",
+      "packagePath": "compliance/libvips-replacement/README.md",
+      "bytes": 5120,
+      "sha256": "eb163ad2e35883729b667d15d95f6ec525526b579250fdc9ba120483c91715f7"
+    },
+    {
+      "path": "recipes/build-msvc-companion.py",
+      "packagePath": "compliance/libvips-replacement/recipes/build-msvc-companion.py",
+      "bytes": 3706,
+      "sha256": "71856a27cb92a823f7ffde21dfc2e7132b6924b2d781a3fec525ca41c6c691bd"
+    },
+    {
+      "path": "recipes/compare-pe-exports.py",
+      "packagePath": "compliance/libvips-replacement/recipes/compare-pe-exports.py",
+      "bytes": 1779,
+      "sha256": "772c98855e963828370613ffa08f0c13a1340306f66e428dd5701af242c772f4"
+    },
+    {
+      "path": "recipes/container/collect-mxe-result.py",
+      "packagePath": "compliance/libvips-replacement/recipes/container/collect-mxe-result.py",
+      "bytes": 2705,
+      "sha256": "fcc43a338b486b27d0999e3da909961619acdec4f9d018e560bc9ad1171a9c11"
+    },
+    {
+      "path": "recipes/container/run-mxe-container.py",
+      "packagePath": "compliance/libvips-replacement/recipes/container/run-mxe-container.py",
+      "bytes": 4952,
+      "sha256": "38feaef1dd8bcb89be0a1fe315fc2e4eec7ed9e18caea3aae3729597bbbf42e8"
+    },
+    {
+      "path": "recipes/container/stage-cargo-config.py",
+      "packagePath": "compliance/libvips-replacement/recipes/container/stage-cargo-config.py",
+      "bytes": 472,
+      "sha256": "bbef6dfa9846e2933c4c79dc82c2ef72496c61d1b751d163d8985fad176d5886"
+    },
+    {
+      "path": "recipes/container/stage-glib-inputs.py",
+      "packagePath": "compliance/libvips-replacement/recipes/container/stage-glib-inputs.py",
+      "bytes": 676,
+      "sha256": "5ff7b61c60b8d799fa0de4b181d8e8626cc51a9264edb4c9eac4a02acf4da966"
+    },
+    {
+      "path": "recipes/inspect-pe-closure.py",
+      "packagePath": "compliance/libvips-replacement/recipes/inspect-pe-closure.py",
+      "bytes": 2746,
+      "sha256": "cb3c4ae53333256f96f3b25f3b3e7e9edb02d7913020ec8c26b97c921c3cc50a"
+    },
+    {
+      "path": "recipes/qualify-source-core.cjs",
+      "packagePath": "compliance/libvips-replacement/recipes/qualify-source-core.cjs",
+      "bytes": 3600,
+      "sha256": "8697da1293b406489d490ecc28163186a83d5c996b71185bcd7861448ec352da"
+    },
+    {
+      "path": "recipes/rebuild-from-bundle.py",
+      "packagePath": "compliance/libvips-replacement/recipes/rebuild-from-bundle.py",
+      "bytes": 3673,
+      "sha256": "8d566b55f3733ed3ac551d39ea3648df6a6be3aec0403d0aac3b80349549bd59"
+    },
+    {
+      "path": "SHA256SUMS",
+      "packagePath": "compliance/libvips-replacement/SHA256SUMS",
+      "bytes": 21026,
+      "sha256": "d5a3c29b1c2ea9356739b8fc1b3e574ab1abbcb05d5df2fe4dbdab89781eab4b"
+    },
+    {
+      "path": "sources/build-win64-mxe.tar.gz",
+      "packagePath": "compliance/libvips-replacement/sources/build-win64-mxe.tar.gz",
+      "bytes": 65766,
+      "sha256": "f52864572e6df6e549016369fdb2705aa195a837bd7bc8c52e45f42b59ef97a7"
+    },
+    {
+      "path": "sources/frozen-librsvg-and-std-vendor.tar.gz",
+      "packagePath": "compliance/libvips-replacement/sources/frozen-librsvg-and-std-vendor.tar.gz",
+      "bytes": 52615570,
+      "sha256": "a52bf1dba80b75ca51a68ebae63136bb01030c2050894d5011fd66143fdd0b61"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/gi-docgen.wrap",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/gi-docgen.wrap",
+      "bytes": 211,
+      "sha256": "e1baa25ea3e44e2a854e870592368b45e9fac205cae4c3c60e193709c0857a8f"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/gtk-doc.wrap",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/gtk-doc.wrap",
+      "bytes": 100,
+      "sha256": "272b13dcf9e4ba1b9aa1727ebeb59e043716c0f555ca6957a6211b163b94cee6"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/gvdb/.gitignore",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/gvdb/.gitignore",
+      "bytes": 33,
+      "sha256": "d6948349e5cc750a0b1e70e76ff22251454ef0fe26e5ac77dbfe2aa2fcdae423"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/gvdb/COPYING",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/gvdb/COPYING",
+      "bytes": 26445,
+      "sha256": "bdbcdaa7858872393e9d6b216bbdc8a23e99d98dd6cdb7cda19458025b9e19fc"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/gvdb/gvdb/gvdb-builder.c",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/gvdb/gvdb/gvdb-builder.c",
+      "bytes": 17029,
+      "sha256": "a44c7c1523e2c62933722fb6c748bae9d22068d0e5b67c7413fe8285a296ba76"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/gvdb/gvdb/gvdb-builder.h",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/gvdb/gvdb/gvdb-builder.h",
+      "bytes": 3882,
+      "sha256": "39172f8d999ede0183e75c9e2f4d51897c144876318a5726738987bd566be817"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/gvdb/gvdb/gvdb-format.h",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/gvdb/gvdb/gvdb-format.h",
+      "bytes": 2169,
+      "sha256": "fa9fee33ac4d368e3485047a207ec33dfca76605376826423ad43ff75ce52b97"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/gvdb/gvdb/gvdb-reader.c",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/gvdb/gvdb/gvdb-reader.c",
+      "bytes": 20630,
+      "sha256": "e13a00e8ec0f92c085d9f381323513c445877e03e76fbb95928b3fd1d442721c"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/gvdb/gvdb/gvdb-reader.h",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/gvdb/gvdb/gvdb-reader.h",
+      "bytes": 3900,
+      "sha256": "3ffa65a3cf491b9783548d4279e8f88db98b059c7e111682b537b7eb17230ec1"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/gvdb/gvdb/tests/gvdb.c",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/gvdb/gvdb/tests/gvdb.c",
+      "bytes": 4545,
+      "sha256": "7ee21f706af4356bba2a281e7eeae5c0f0525bf263d9115baa3291ef8f0cf07b"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/gvdb/gvdb/tests/meson.build",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/gvdb/gvdb/tests/meson.build",
+      "bytes": 240,
+      "sha256": "9158d076d367f97a79bf7d62bad1e4605ca4c2528ed18faba4fcd955393b4378"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/gvdb/gvdb.doap",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/gvdb/gvdb.doap",
+      "bytes": 1708,
+      "sha256": "8cde92f180b814ef3df92a7799d279b32e34fa70a12657edab42072857bbf3d9"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/gvdb/LICENSES/LGPL-2.1-or-later.txt",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/gvdb/LICENSES/LGPL-2.1-or-later.txt",
+      "bytes": 26001,
+      "sha256": "5749785c8bdefafcb5d798270ed0a967036fe2ca63dcedade1627565dfef81d2"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/gvdb/meson.build",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/gvdb/meson.build",
+      "bytes": 464,
+      "sha256": "38a33f574b74af09896311c1668653ae80f87e905fe364f03f65e6d535c77a46"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/gvdb/meson.options",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/gvdb/meson.options",
+      "bytes": 180,
+      "sha256": "543e1c36daa897ef0bcae85db779e2fcd7d6a2dbe727993cd5388dace6f3793b"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/gvdb/README.md",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/gvdb/README.md",
+      "bytes": 1225,
+      "sha256": "f9ac3c82c4e4eb28d351482c3f0c748fe278a29e9d71f1b36e15d20b12108c73"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/gvdb.wrap",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/gvdb.wrap",
+      "bytes": 163,
+      "sha256": "d669f93cb531a04d719dcc5b790838452c918eea0a6134ae2bf17b470eb7838c"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/libffi.wrap",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/libffi.wrap",
+      "bytes": 609,
+      "sha256": "1d56093bbe4d8158295c1be7b0fd62a9818b5e7d771ab55e3e0c057b10e9e99b"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/packagecache/pcre2-10.46.tar.bz2",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/packagecache/pcre2-10.46.tar.bz2",
+      "bytes": 2035354,
+      "sha256": "15fbc5aba6beee0b17aecb04602ae39432393aba1ebd8e39b7cabf7db883299f"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/packagecache/pcre2_10.46-1_patch.zip",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/packagecache/pcre2_10.46-1_patch.zip",
+      "bytes": 4003,
+      "sha256": "761d16c89b9c13812842916b7ee970650ee7c1810f83bc567351faf7365b66be"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/packagefiles/pcre2/fix-build-on-apple-platforms.patch",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/packagefiles/pcre2/fix-build-on-apple-platforms.patch",
+      "bytes": 2351,
+      "sha256": "3027d48451bc2cbd5686ae39b476e8b6effa3a24f1021e4f08ee706d1d7e0ba5"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/pcre2.wrap",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/pcre2.wrap",
+      "bytes": 796,
+      "sha256": "a790b22a6f8e2c21404fec9795209d6d0fb760fe40981adc332d3222dfe4553f"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/proxy-libintl.wrap",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/proxy-libintl.wrap",
+      "bytes": 417,
+      "sha256": "ca5a4e2734f8f82ed211d9c3e62560ebe68670533902f42aad961313029b0c46"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/sysprof.wrap",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/sysprof.wrap",
+      "bytes": 134,
+      "sha256": "84414f4b755314900c9f68b0471a30aaf201599a500b38fd687d1f02b4d439ae"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/glib-subprojects/zlib.wrap",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/glib-subprojects/zlib.wrap",
+      "bytes": 551,
+      "sha256": "6aa5c2e03aedf723af8574cb5f85bdbe14380cff9d5646f14e08dda7d343b026"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/gvdb.tar.gz",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/gvdb.tar.gz",
+      "bytes": 24716,
+      "sha256": "069a00aa1fc893f18423602f4e095583be5a220429f6e8a58d70511490b4b019"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/pcre2-10.46.tar.bz2",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/pcre2-10.46.tar.bz2",
+      "bytes": 2035354,
+      "sha256": "15fbc5aba6beee0b17aecb04602ae39432393aba1ebd8e39b7cabf7db883299f"
+    },
+    {
+      "path": "sources/glib-frozen-inputs/pcre2_10.46-1_patch.zip",
+      "packagePath": "compliance/libvips-replacement/sources/glib-frozen-inputs/pcre2_10.46-1_patch.zip",
+      "bytes": 4003,
+      "sha256": "761d16c89b9c13812842916b7ee970650ee7c1810f83bc567351faf7365b66be"
+    },
+    {
+      "path": "sources/mxe-frozen-image-source.tar.gz",
+      "packagePath": "compliance/libvips-replacement/sources/mxe-frozen-image-source.tar.gz",
+      "bytes": 2666461,
+      "sha256": "434717d9d3dea75e214c1a7da4d9fa5fc36d1a57709919c04dd9d94edcb18e0c"
+    },
+    {
+      "path": "sources/pkg/cairo-1.18.6.tar.xz_1c767308174337a74694da0f3ec069c271452163a1ef4540964c50c301f157d4",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/cairo-1.18.6.tar.xz_1c767308174337a74694da0f3ec069c271452163a1ef4540964c50c301f157d4",
+      "bytes": 32725456,
+      "sha256": "1c767308174337a74694da0f3ec069c271452163a1ef4540964c50c301f157d4"
+    },
+    {
+      "path": "sources/pkg/cargo-c-0.10.25.tar.gz_8054b12ae8b64259e7b63e40368406dd6b6510d5d92b658152b361c5d816a5de",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/cargo-c-0.10.25.tar.gz_8054b12ae8b64259e7b63e40368406dd6b6510d5d92b658152b361c5d816a5de",
+      "bytes": 41486,
+      "sha256": "8054b12ae8b64259e7b63e40368406dd6b6510d5d92b658152b361c5d816a5de"
+    },
+    {
+      "path": "sources/pkg/cgif-0.5.4.tar.gz_83a70a15bc2da41f081a44ebc58ee48e2e1d524a6d3fdb4a24064afa08d5ad4d",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/cgif-0.5.4.tar.gz_83a70a15bc2da41f081a44ebc58ee48e2e1d524a6d3fdb4a24064afa08d5ad4d",
+      "bytes": 40028,
+      "sha256": "83a70a15bc2da41f081a44ebc58ee48e2e1d524a6d3fdb4a24064afa08d5ad4d"
+    },
+    {
+      "path": "sources/pkg/cmake-3.31.12.tar.gz_5f3fd5a54dfa65602bdbed64f981a72673cc19f2d304cc2955cf0dfa0cfd8272",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/cmake-3.31.12.tar.gz_5f3fd5a54dfa65602bdbed64f981a72673cc19f2d304cc2955cf0dfa0cfd8272",
+      "bytes": 11715065,
+      "sha256": "5f3fd5a54dfa65602bdbed64f981a72673cc19f2d304cc2955cf0dfa0cfd8272"
+    },
+    {
+      "path": "sources/pkg/expat-2.8.5.tar.bz2_952c03c33a6b337f12dae7a9b0f9dee86f867550d35c994d6bdaaddd37dc8454",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/expat-2.8.5.tar.bz2_952c03c33a6b337f12dae7a9b0f9dee86f867550d35c994d6bdaaddd37dc8454",
+      "bytes": 678656,
+      "sha256": "952c03c33a6b337f12dae7a9b0f9dee86f867550d35c994d6bdaaddd37dc8454"
+    },
+    {
+      "path": "sources/pkg/fontconfig-2.18.3.tar.bz2_8d28f79d2017cbe1fbb7da84b2502c86421b4f45860234d2f4ab5b35564c8d01",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/fontconfig-2.18.3.tar.bz2_8d28f79d2017cbe1fbb7da84b2502c86421b4f45860234d2f4ab5b35564c8d01",
+      "bytes": 544066,
+      "sha256": "8d28f79d2017cbe1fbb7da84b2502c86421b4f45860234d2f4ab5b35564c8d01"
+    },
+    {
+      "path": "sources/pkg/freetype-2.14.3.tar.xz_36bc4f1cc413335368ee656c42afca65c5a3987e8768cc28cf11ba775e785a5f",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/freetype-2.14.3.tar.xz_36bc4f1cc413335368ee656c42afca65c5a3987e8768cc28cf11ba775e785a5f",
+      "bytes": 2670220,
+      "sha256": "36bc4f1cc413335368ee656c42afca65c5a3987e8768cc28cf11ba775e785a5f"
+    },
+    {
+      "path": "sources/pkg/fribidi-1.0.17.tar.xz_6949dcde27d41cebad1fd741fcafc36d55a1020d2d872d4a6eb3914caabbada2",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/fribidi-1.0.17.tar.xz_6949dcde27d41cebad1fd741fcafc36d55a1020d2d872d4a6eb3914caabbada2",
+      "bytes": 1203284,
+      "sha256": "6949dcde27d41cebad1fd741fcafc36d55a1020d2d872d4a6eb3914caabbada2"
+    },
+    {
+      "path": "sources/pkg/glib-2.90.0.tar.xz_17d15cac2af80a33271127408e0abc2748eb297c595c2a26409e81e14e7d1b8f",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/glib-2.90.0.tar.xz_17d15cac2af80a33271127408e0abc2748eb297c595c2a26409e81e14e7d1b8f",
+      "bytes": 5830480,
+      "sha256": "17d15cac2af80a33271127408e0abc2748eb297c595c2a26409e81e14e7d1b8f"
+    },
+    {
+      "path": "sources/pkg/harfbuzz-14.5.0.tar.xz_b7132e148358a45185c9feafd049dbaf243649d3c44414b3534d9c95d18592b9",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/harfbuzz-14.5.0.tar.xz_b7132e148358a45185c9feafd049dbaf243649d3c44414b3534d9c95d18592b9",
+      "bytes": 20262956,
+      "sha256": "b7132e148358a45185c9feafd049dbaf243649d3c44414b3534d9c95d18592b9"
+    },
+    {
+      "path": "sources/pkg/highway-1.4.0.tar.gz_36f672ab48ddb3c8555e9e89e16fe400cd7d16c6eb455a1a3d0c146a63ababdc",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/highway-1.4.0.tar.gz_36f672ab48ddb3c8555e9e89e16fe400cd7d16c6eb455a1a3d0c146a63ababdc",
+      "bytes": 3691557,
+      "sha256": "36f672ab48ddb3c8555e9e89e16fe400cd7d16c6eb455a1a3d0c146a63ababdc"
+    },
+    {
+      "path": "sources/pkg/lcms2-2.19.1.tar.gz_bfc54f7bab59fbc921012014a8032e4cba4abd46db47d46b76416a8c0b2815c8",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/lcms2-2.19.1.tar.gz_bfc54f7bab59fbc921012014a8032e4cba4abd46db47d46b76416a8c0b2815c8",
+      "bytes": 5728743,
+      "sha256": "bfc54f7bab59fbc921012014a8032e4cba4abd46db47d46b76416a8c0b2815c8"
+    },
+    {
+      "path": "sources/pkg/libaom-3.15.1.tar.gz_8ca0c52746174603500f0adb6f2a215d69c9ca2aab2acb3caa06fb791d8d01bf",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/libaom-3.15.1.tar.gz_8ca0c52746174603500f0adb6f2a215d69c9ca2aab2acb3caa06fb791d8d01bf",
+      "bytes": 6623477,
+      "sha256": "8ca0c52746174603500f0adb6f2a215d69c9ca2aab2acb3caa06fb791d8d01bf"
+    },
+    {
+      "path": "sources/pkg/libarchive-3.8.9.tar.xz_888c934f9d95648ecb9163dc8e23ab80a476ecb81a8f1154704a227b5b676dde",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/libarchive-3.8.9.tar.xz_888c934f9d95648ecb9163dc8e23ab80a476ecb81a8f1154704a227b5b676dde",
+      "bytes": 6617696,
+      "sha256": "888c934f9d95648ecb9163dc8e23ab80a476ecb81a8f1154704a227b5b676dde"
+    },
+    {
+      "path": "sources/pkg/libexif-0.6.26.tar.xz_4a055ed6575e61ca46c3172be3c753cc16c9becd0f99ec71d58dd0e471476c0c",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/libexif-0.6.26.tar.xz_4a055ed6575e61ca46c3172be3c753cc16c9becd0f99ec71d58dd0e471476c0c",
+      "bytes": 1335488,
+      "sha256": "4a055ed6575e61ca46c3172be3c753cc16c9becd0f99ec71d58dd0e471476c0c"
+    },
+    {
+      "path": "sources/pkg/libffi-3.8.0.tar.gz_7da3e2d9a171eb0a038f592ecad3ff2bb2550f3496d87b3b29ad0cf4430c0db4",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/libffi-3.8.0.tar.gz_7da3e2d9a171eb0a038f592ecad3ff2bb2550f3496d87b3b29ad0cf4430c0db4",
+      "bytes": 1581626,
+      "sha256": "7da3e2d9a171eb0a038f592ecad3ff2bb2550f3496d87b3b29ad0cf4430c0db4"
+    },
+    {
+      "path": "sources/pkg/libheif-1.23.5.tar.gz_fd9036064c4432f0550d15072ddf34956a248279ee9aeaff0fba3fa0f77d8f1a",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/libheif-1.23.5.tar.gz_fd9036064c4432f0550d15072ddf34956a248279ee9aeaff0fba3fa0f77d8f1a",
+      "bytes": 2276803,
+      "sha256": "fd9036064c4432f0550d15072ddf34956a248279ee9aeaff0fba3fa0f77d8f1a"
+    },
+    {
+      "path": "sources/pkg/libimagequant-2.4.1.tar.gz_47d2a84b7b1052975c9d50a3d4e3cacbf57b43d84a4c3131210848ead9964dfb",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/libimagequant-2.4.1.tar.gz_47d2a84b7b1052975c9d50a3d4e3cacbf57b43d84a4c3131210848ead9964dfb",
+      "bytes": 45792,
+      "sha256": "47d2a84b7b1052975c9d50a3d4e3cacbf57b43d84a4c3131210848ead9964dfb"
+    },
+    {
+      "path": "sources/pkg/libpng-1.6.58.tar.xz_28eb403f51f0f7405249132cecfe82ea5c0ef97f1b32c5a65828814ae0d34775",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/libpng-1.6.58.tar.xz_28eb403f51f0f7405249132cecfe82ea5c0ef97f1b32c5a65828814ae0d34775",
+      "bytes": 1070096,
+      "sha256": "28eb403f51f0f7405249132cecfe82ea5c0ef97f1b32c5a65828814ae0d34775"
+    },
+    {
+      "path": "sources/pkg/librsvg-2.63.2.tar.xz_852b18e1a00b8605528825a27dc7748bff2a5dd254028f59dc22a34ea57e81b6",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/librsvg-2.63.2.tar.xz_852b18e1a00b8605528825a27dc7748bff2a5dd254028f59dc22a34ea57e81b6",
+      "bytes": 6768408,
+      "sha256": "852b18e1a00b8605528825a27dc7748bff2a5dd254028f59dc22a34ea57e81b6"
+    },
+    {
+      "path": "sources/pkg/libtool-2.6.2.tar.xz_2ef1067c16c97db930fd740cc9bc3d3ba9a583804ae5ac42cc3e8719e49e191e",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/libtool-2.6.2.tar.xz_2ef1067c16c97db930fd740cc9bc3d3ba9a583804ae5ac42cc3e8719e49e191e",
+      "bytes": 1093564,
+      "sha256": "2ef1067c16c97db930fd740cc9bc3d3ba9a583804ae5ac42cc3e8719e49e191e"
+    },
+    {
+      "path": "sources/pkg/libwebp-1.6.0.tar.gz_e4ab7009bf0629fd11982d4c2aa83964cf244cffba7347ecd39019a9e38c4564",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/libwebp-1.6.0.tar.gz_e4ab7009bf0629fd11982d4c2aa83964cf244cffba7347ecd39019a9e38c4564",
+      "bytes": 4296070,
+      "sha256": "e4ab7009bf0629fd11982d4c2aa83964cf244cffba7347ecd39019a9e38c4564"
+    },
+    {
+      "path": "sources/pkg/libxml2-2.15.4.tar.xz_98087fd181d9070724f3fbc65c7377db03038eb92bd882374daff44940138821",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/libxml2-2.15.4.tar.xz_98087fd181d9070724f3fbc65c7377db03038eb92bd882374daff44940138821",
+      "bytes": 3177444,
+      "sha256": "98087fd181d9070724f3fbc65c7377db03038eb92bd882374daff44940138821"
+    },
+    {
+      "path": "sources/pkg/llvm-mingw-20261006.tar.gz_c2420cffca252535942318334c28aa79514671f6df2e02b403f8198d39e0ba31",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/llvm-mingw-20261006.tar.gz_c2420cffca252535942318334c28aa79514671f6df2e02b403f8198d39e0ba31",
+      "bytes": 71034,
+      "sha256": "c2420cffca252535942318334c28aa79514671f6df2e02b403f8198d39e0ba31"
+    },
+    {
+      "path": "sources/pkg/llvm-project-23.1.3.src.tar.xz_c44186a7762ed28954be72e5ff6df9808e0779d4f1bf014ecc4e7e211d31ee34",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/llvm-project-23.1.3.src.tar.xz_c44186a7762ed28954be72e5ff6df9808e0779d4f1bf014ecc4e7e211d31ee34",
+      "bytes": 179220548,
+      "sha256": "c44186a7762ed28954be72e5ff6df9808e0779d4f1bf014ecc4e7e211d31ee34"
+    },
+    {
+      "path": "sources/pkg/meson-1.12.1.tar.gz_ab0a6ca09f8ef70c564c8241fb5a23957886a0b53fb58412b5e07eaf07dba743",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/meson-1.12.1.tar.gz_ab0a6ca09f8ef70c564c8241fb5a23957886a0b53fb58412b5e07eaf07dba743",
+      "bytes": 2524665,
+      "sha256": "ab0a6ca09f8ef70c564c8241fb5a23957886a0b53fb58412b5e07eaf07dba743"
+    },
+    {
+      "path": "sources/pkg/mingw-w64-mingw-w64-a3d9399.tar.gz_0cae4b30ae06a3ec315918452b7eb5a151b662f2e96f95215aea576f28a3d53f",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/mingw-w64-mingw-w64-a3d9399.tar.gz_0cae4b30ae06a3ec315918452b7eb5a151b662f2e96f95215aea576f28a3d53f",
+      "bytes": 15805477,
+      "sha256": "0cae4b30ae06a3ec315918452b7eb5a151b662f2e96f95215aea576f28a3d53f"
+    },
+    {
+      "path": "sources/pkg/mozjpeg-0826579.tar.gz_375d19302f09dfa267651dcfd3ddb62862ab3a488862b6168ce755bb1a925860",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/mozjpeg-0826579.tar.gz_375d19302f09dfa267651dcfd3ddb62862ab3a488862b6168ce755bb1a925860",
+      "bytes": 2442626,
+      "sha256": "375d19302f09dfa267651dcfd3ddb62862ab3a488862b6168ce755bb1a925860"
+    },
+    {
+      "path": "sources/pkg/nasm-3.02.tar.xz_87336eba53b4acfe917424ab5d500d2b0054d9f5148d35c2273ccf2cfb712f0d",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/nasm-3.02.tar.xz_87336eba53b4acfe917424ab5d500d2b0054d9f5148d35c2273ccf2cfb712f0d",
+      "bytes": 1531636,
+      "sha256": "87336eba53b4acfe917424ab5d500d2b0054d9f5148d35c2273ccf2cfb712f0d"
+    },
+    {
+      "path": "sources/pkg/ninja-1.13.2.tar.gz_974d6b2f4eeefa25625d34da3cb36bdcebe7fbce40f4c16ac0835fd1c0cbae17",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/ninja-1.13.2.tar.gz_974d6b2f4eeefa25625d34da3cb36bdcebe7fbce40f4c16ac0835fd1c0cbae17",
+      "bytes": 292385,
+      "sha256": "974d6b2f4eeefa25625d34da3cb36bdcebe7fbce40f4c16ac0835fd1c0cbae17"
+    },
+    {
+      "path": "sources/pkg/pango-1.58.2.tar.xz_342385b6ca3b7c73455d7c80a13b7dbe4489e00bc3bd4c5bd6ed4dce421e374a",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/pango-1.58.2.tar.xz_342385b6ca3b7c73455d7c80a13b7dbe4489e00bc3bd4c5bd6ed4dce421e374a",
+      "bytes": 1918112,
+      "sha256": "342385b6ca3b7c73455d7c80a13b7dbe4489e00bc3bd4c5bd6ed4dce421e374a"
+    },
+    {
+      "path": "sources/pkg/pixman-0.46.4.tar.gz_d09c44ebc3bd5bee7021c79f922fe8fb2fb57f7320f55e97ff9914d2346a591c",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/pixman-0.46.4.tar.gz_d09c44ebc3bd5bee7021c79f922fe8fb2fb57f7320f55e97ff9914d2346a591c",
+      "bytes": 827198,
+      "sha256": "d09c44ebc3bd5bee7021c79f922fe8fb2fb57f7320f55e97ff9914d2346a591c"
+    },
+    {
+      "path": "sources/pkg/pkgconf-da179fd.tar.gz_91b2e5d7ce06583d5920c373b61d7d6554cd085cbd61ed176c7ff7ff3032523d",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/pkgconf-da179fd.tar.gz_91b2e5d7ce06583d5920c373b61d7d6554cd085cbd61ed176c7ff7ff3032523d",
+      "bytes": 62154,
+      "sha256": "91b2e5d7ce06583d5920c373b61d7d6554cd085cbd61ed176c7ff7ff3032523d"
+    },
+    {
+      "path": "sources/pkg/proxy-libintl-0.5.tar.gz_f7a1cbd7579baaf575c66f9d99fb6295e9b0684a28b095967cfda17857595303",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/proxy-libintl-0.5.tar.gz_f7a1cbd7579baaf575c66f9d99fb6295e9b0684a28b095967cfda17857595303",
+      "bytes": 13056,
+      "sha256": "f7a1cbd7579baaf575c66f9d99fb6295e9b0684a28b095967cfda17857595303"
+    },
+    {
+      "path": "sources/pkg/rustc-nightly-src.tar.xz_2d24a5ab48e2a75267bd52e6ab62630a8e581ee8449279aa36614620c84eca93",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/rustc-nightly-src.tar.xz_2d24a5ab48e2a75267bd52e6ab62630a8e581ee8449279aa36614620c84eca93",
+      "bytes": 263564008,
+      "sha256": "2d24a5ab48e2a75267bd52e6ab62630a8e581ee8449279aa36614620c84eca93"
+    },
+    {
+      "path": "sources/pkg/tiff-4.7.2.tar.xz_4996f0c4f93094719b1ca5c6279b20e588773ba8a247533e486416fb662ddb88",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/tiff-4.7.2.tar.xz_4996f0c4f93094719b1ca5c6279b20e588773ba8a247533e486416fb662ddb88",
+      "bytes": 2409652,
+      "sha256": "4996f0c4f93094719b1ca5c6279b20e588773ba8a247533e486416fb662ddb88"
+    },
+    {
+      "path": "sources/pkg/uhdr-2.0.2.tar.gz_aa8d193bb887c348c419780511dd03b374f4e07af8812b6d3f80c8537cf1ef2c",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/uhdr-2.0.2.tar.gz_aa8d193bb887c348c419780511dd03b374f4e07af8812b6d3f80c8537cf1ef2c",
+      "bytes": 1518872,
+      "sha256": "aa8d193bb887c348c419780511dd03b374f4e07af8812b6d3f80c8537cf1ef2c"
+    },
+    {
+      "path": "sources/pkg/vips-8.18.7.tar.xz_5baaead3b0bb20ffdb9e9ff09aa9fda08620923df77b63b436654cb5e0b3bf94",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/vips-8.18.7.tar.xz_5baaead3b0bb20ffdb9e9ff09aa9fda08620923df77b63b436654cb5e0b3bf94",
+      "bytes": 25425084,
+      "sha256": "5baaead3b0bb20ffdb9e9ff09aa9fda08620923df77b63b436654cb5e0b3bf94"
+    },
+    {
+      "path": "sources/pkg/zlib-ng-2.3.3.tar.gz_f9c65aa9c852eb8255b636fd9f07ce1c406f061ec19a2e7d508b318ca0c907d1",
+      "packagePath": "compliance/libvips-replacement/sources/pkg/zlib-ng-2.3.3.tar.gz_f9c65aa9c852eb8255b636fd9f07ce1c406f061ec19a2e7d508b318ca0c907d1",
+      "bytes": 2447397,
+      "sha256": "f9c65aa9c852eb8255b636fd9f07ce1c406f061ec19a2e7d508b318ca0c907d1"
+    },
+    {
+      "path": "sources/source-catalog.json",
+      "packagePath": "compliance/libvips-replacement/sources/source-catalog.json",
+      "bytes": 36393,
+      "sha256": "dadaaf506d7c02330c991221fcf90fc41c72b9a3def7601287ff8b586e35ad8a"
+    }
+  ],
+  "legalClearance": false,
+  "releaseAccepted": false,
+  "historicalBinaryReproduced": false,
+  "evidencePrefix": "compliance/libvips-replacement/",
+  "sourceArtifactPrivacyReview": "Single unchanged public upstream CI profile fixture; exact archive/member classification preserved for independent review"
+}

@@ -20,6 +20,17 @@ const reviewedReplacements = new Map([
     binarySha256: '740521302afc687d45443ce86a9182a6a4ecc8f0dd0cffab70db117764e5efc3',
     upstreamSha256: '22f22b41516f08077500b3472fc1c4ee55f9686cbb90cef361b71f0bee94a440',
     evidencePrefix: 'compliance/wasm-replacement/', kind: 'wasm', magic: '0061736d'
+  })],
+  ['32e5abf93be6355db6af64ac5cf2d837ac47848bea05146a46f57a53bf5e37ff', Object.freeze({
+    component: '@img/sharp-win32-x64', version: '0.35.5',
+    packagePath: 'node_modules/@img/sharp-win32-x64/lib/libvips-42.dll',
+    binarySha256: '2c843d083a0bc59a4114366fc79d8b5e5faf6472062f472a2ce9ad91e4dc06fc', binaryBytes: 19018752,
+    upstreamSha256: '06dab07cc386748513337a31672b1d5269fbc770a14ff403080575665bf0813f',
+    evidencePrefix: 'compliance/libvips-replacement/', kind: 'libvips', magic: '4d5a',
+    cppPath: 'node_modules/@img/sharp-win32-x64/lib/libvips-cpp-8.18.7.dll',
+    cppSha256: '25001dbd05305a0a29119ab49933622c70b4a20ea12ef1d5d20ca40181db53bf', cppBytes: 333312,
+    bindingPath: 'node_modules/@img/sharp-win32-x64/lib/sharp-win32-x64-0.35.5.node',
+    bindingSha256: '971048779f9c8598df14641dfc03c625885c93f473a788e65ca2deb50d0b083e', bindingBytes: 443904
   })]
 ]);
 export function reviewedReplacement(manifestSha256) {
@@ -29,12 +40,23 @@ export function reviewedReplacement(manifestSha256) {
 }
 export function checkReplacementIdentity(native, descriptor) {
   if (native.format !== 'matching-community-native-replacement-v1' || native.component !== descriptor.component || native.version !== descriptor.version || native.packagePath !== descriptor.packagePath || native.binary?.sha256 !== descriptor.binarySha256 || native.replacedUpstreamSha256 !== descriptor.upstreamSha256 || native.sourceBuildQualified !== true || native.legalClearance !== false || native.releaseAccepted !== false || native.historicalBinaryReproduced !== false || !Array.isArray(native.files) || native.files.length < 3 || native.files.length > 4096) throw new Error('Invalid replacement engineering identity or legal claim');
+  if(descriptor.kind==='libvips'&&(native.fullLibrarySourceRebuild!==true||native.binaryPrivacyQualified!==true||native.binary.bytes!==descriptor.binaryBytes))throw new Error('Native replacement source/privacy qualification is missing');
 }
 export function checkReplacementProof(qualification, descriptor) {
-  const checks = descriptor.kind === 'canvas' ? ['native_load','png','jpeg','webp','font','pdf_render','offline_ocr'] : ['wasm_load','png','jpeg','webp','svg','tiff','gif','avif','icc'];
+  const checks = descriptor.kind === 'canvas' ? ['native_load','png','jpeg','webp','font','pdf_render','offline_ocr'] : descriptor.kind === 'libvips' ? ['native_load','png','jpeg','webp','avif','svg'] : ['wasm_load','png','jpeg','webp','svg','tiff','gif','avif','icc'];
   if (qualification.result !== 'PASS' || qualification.binarySha256 !== descriptor.binarySha256 || checks.some(key => qualification.checks?.[key] !== true)) throw new Error('Replacement functional/source qualification missing');
   if (descriptor.kind === 'canvas' && (qualification.sourceSkiaRebuilt !== true || qualification.offlineOcr?.expected !== 'COMMUNITY 12345' || qualification.offlineOcr?.observed !== 'COMMUNITY 12345')) throw new Error('Replacement canvas source/OCR qualification missing');
   if (descriptor.kind === 'wasm' && qualification.fullLibrarySourceRebuild !== true) throw new Error('Replacement full library source qualification missing');
+  if (descriptor.kind === 'libvips') {
+    const expected=[{name:'libvips-42.dll',sha256:descriptor.binarySha256,bytes:descriptor.binaryBytes},...replacementCompanions(descriptor).map(file=>({name:file.path.split('/').at(-1),sha256:file.sha256,bytes:file.bytes}))];
+    if(qualification.fullLibrarySourceRebuild!==true||qualification.observedNativeVersion!=='8.18.7'||qualification.unchangedOriginalCppCompanion!==true||qualification.sourceBuiltCppCompanion!==false||qualification.unchangedOriginalSharpBinding!==true||qualification.syntheticOnly!==true||qualification.runtimeReplaced!==false||qualification.legalClearance!==false||qualification.releaseAccepted!==false||qualification.historicalBinaryReproduced!==false||!Array.isArray(qualification.loaded)||qualification.loaded.length!==expected.length||expected.some(file=>qualification.loaded.filter(item=>item.name===file.name&&item.sha256===file.sha256&&item.bytes===file.bytes&&item.loadedFromQualifiedDirectory===true).length!==1))throw new Error('Replacement native source, loaded-path or unchanged companion qualification missing');
+  }
+}
+export function replacementCompanions(descriptor) {
+  return descriptor.kind==='libvips'?[{path:descriptor.cppPath,sha256:descriptor.cppSha256,bytes:descriptor.cppBytes},{path:descriptor.bindingPath,sha256:descriptor.bindingSha256,bytes:descriptor.bindingBytes}]:[];
+}
+export function checkReplacementCompanions(descriptor,files) {
+  for(const file of replacementCompanions(descriptor))if(files.filter(entry=>entry.path===file.path&&entry.sha256===file.sha256&&entry.bytes===file.bytes).length!==1||files.filter(entry=>entry.path===file.path).length!==1)throw new Error('Packaged replacement companion differs from qualified unchanged binary');
 }
 /** Exact installed binary/source overlay supplements the unchanged upstream npm inventory. */
 export function runtimeOverlay({sourceRevision,applicationVersion,nodeVersion,nodeSha256,replacements}) {
@@ -87,7 +109,7 @@ export function verifyPackage(folder) {
   if (expected.length !== new Set(expected).size || JSON.stringify([...expected].sort()) !== JSON.stringify([...observed].sort())) throw new Error('Package manifest does not cover exact file set');
   // Approve exact replacement descriptors/manifests before reading arbitrary package payloads.
   if(manifest.nativeReplacements&&!Array.isArray(manifest.nativeReplacements))throw new Error('Invalid native replacements');
-  if((manifest.nativeReplacements??[]).length>2)throw new Error('At most two independently reviewed replacements are supported');
+  if((manifest.nativeReplacements??[]).length>3)throw new Error('At most three independently reviewed replacements are supported');
   const replacementTargets=new Set(),allReplacementEvidence=new Set(),verifiedReplacements=[];
   for(const replacement of manifest.nativeReplacements??[]){
     const descriptor=reviewedReplacement(replacement.manifestSha256);
@@ -96,6 +118,7 @@ export function verifyPackage(folder) {
     if(replacement.manifestPath!==descriptor.evidencePrefix+replacement.manifestSha256+'/manifest.json'||!expected.includes(replacement.manifestPath))throw new Error('Replacement manifest is not bound to package');
     const nativeFile=join(root,replacement.manifestPath);if(lstatSync(nativeFile).size>20*1024*1024)throw new Error('Replacement manifest exceeds bounds');const nativeBytes=readFileSync(nativeFile);if(nativeBytes.length>20*1024*1024||sha256(nativeBytes)!==replacement.manifestSha256)throw new Error('Replacement manifest checksum or bounds mismatch');const native=JSON.parse(nativeBytes.toString('utf8'));checkReplacementIdentity(native,descriptor);
     const binary=manifest.files.find(file=>file.path===descriptor.packagePath);if(!binary||binary.sha256!==descriptor.binarySha256||binary.bytes!==native.binary.bytes)throw new Error('Packaged replacement binary differs from qualification');
+    checkReplacementCompanions(descriptor,manifest.files);
     const evidencePaths=new Set();
     for(const file of native.files){safeParts(file.packagePath);if(!file.packagePath.startsWith(descriptor.evidencePrefix)||evidencePaths.has(file.packagePath.toLowerCase())||allReplacementEvidence.has(file.packagePath.toLowerCase()))throw new Error('Invalid replacement evidence path');evidencePaths.add(file.packagePath.toLowerCase());allReplacementEvidence.add(file.packagePath.toLowerCase());const stored=manifest.files.find(entry=>entry.path===file.packagePath);if(!stored||stored.sha256!==file.sha256||stored.bytes!==file.bytes)throw new Error('Replacement source or notice differs from evidence');}
     const proof=native.files.find(file=>file.path===native.qualification.path);if(!proof||proof.sha256!==native.qualification.sha256)throw new Error('Packaged replacement qualification is missing');
