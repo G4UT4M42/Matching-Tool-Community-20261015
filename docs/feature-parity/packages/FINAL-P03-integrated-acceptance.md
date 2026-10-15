@@ -226,3 +226,30 @@ all severities (`npm-audit-f96dac5-01.result.json`); raw CLI notices retained.
 A new native Windows fullsource libvips core also passes actual loaded-path/hash
 and PNG/JPEG/WebP/SVG/AVIF with unchanged companion/binding; bundling and separate
 independent review remain active, so no native descriptor is admitted yet.
+
+## Installed reviewed two-component journey and stricter error gate
+
+`candidate-installed-reviewed-two-01.log` passes one actual integrated journey
+in362203.1457ms (total362905.8618ms). Fresh install93099ms with300000ms
+deadline,exit0.8331files,226runtimepackages;manifestSHA256
+c7f3e1b8f1f5ed148b2ea993b5a4fad4ad21cf88308273f0fcb0f8db04b7ba40.
+Exact source55959e8130078866bd921f987a74376fd7bde7c8,dirty=true because of
+then-untracked compliance helper/doc work. Exact installed manifest, raw
+browser/result records and screenshots remain in
+`installed-reviewed-two-01-browser/integrated-acceptance/`.
+
+This run loads the independently reviewed neutral canvas02 and fullsource
+WASM01. It covers real OCR, exact financial workflows, synthetic providers,
+portal import, approvals/unknown outcome, backup/restart/restore, full legacy
+cutover exit86/rollback/retry and48 interface combinations. Page errors are
+empty. Five raw console records include intended409,403,401responses and the
+explicit process interruption. Subsequent review found that the generic4xx
+console filter could also hide unrelated4xx responses. This is an assertion
+gap: no final acceptance is claimed. Exact one-use method/path/status negative
+registrations and strict unexpected-HTTP rejection are being implemented;
+final complete installed acceptance must run that stronger gate plus the
+reviewed Windowslibvips replacement and final SBOM sidecars.
+
+Portable WASM qualification/package helpers and the engineering document are
+reviewed source. Both syntax checks and explicit helper self-tests pass;
+actual source/compiler/link/codec evidence remains externally hash-bound.
