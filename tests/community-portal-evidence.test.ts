@@ -13,18 +13,32 @@ import {createEmptyState} from '../src/storage/json-store.js';
 const owner={subject:'USR-SYN-RECEIPT',workspace_id:'WS-SYN-RECEIPT'},signal=()=>new AbortController().signal;
 const html='<link rel="icon" href="data:,"><style>body{margin:0;background:rgb(31,73,109);color:white;font:22px sans-serif}main{padding:24px}</style><main>Fictional order receipt SYN-RECEIPT<br>Not a tax invoice<br>EUR 4.25</main>';
 async function fixture(receiptSelectionLeaseMs=60000){
+ const executablePath=[process.env.MATCHING_TEST_BROWSER,'C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'].find(p=>p&&existsSync(p));expect(executablePath).toBeTruthy();
  let releasePending:()=>void=()=>{};
  const server=createServer((request,response)=>{if(request.url==='/favicon.ico'){response.statusCode=204;response.end();return;}response.setHeader('Content-Type','text/html');if(request.url==='/p/order/pending'){releasePending=()=>response.end(html);return;}response.end(request.url==='/p/order/credential-frame'?html+'<iframe src="/login"></iframe>':request.url==='/p/order/embedded-credential-frame'?html+'<iframe src="/mini_login.html"></iframe>':request.url==='/p/order/opaque-frame'?html+'<iframe srcdoc="<p>Opaque synthetic page</p>"></iframe>':request.url?.startsWith('/login')||request.url==='/mini_login.html'?'<link rel="icon" href="data:,"><form><input type="password" autocomplete="off"></form>':html);});
  await new Promise<void>(ok=>server.listen(0,'127.0.0.1',ok));const origin='http://127.0.0.1:'+(server.address() as {port:number}).port;
  const root=await mkdtemp(join(tmpdir(),'matching-receipt-synthetic-')),browsers:Browser[]=[];
- const executablePath=[process.env.MATCHING_TEST_BROWSER,'C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'].find(p=>p&&existsSync(p));expect(executablePath).toBeTruthy();
  const sessions=new AssistedPortalSessions(join(root,'sessions'),{receiptSelectionLeaseMs,portals:[{id:'synthetic-receipt',label:'Synthetic receipt',url:origin+'/p/order/index.html',domains:['127.0.0.1'],help:origin,receiptPaths:['/p/order/']}],checkOrigin:async value=>{if(value!==origin)throw new Error('UNEXPECTED_ORIGIN');},launch:async(profile,proxy)=>{const browser=await puppeteer.launch({executablePath,headless:true,userDataDir:profile,args:['--proxy-server='+proxy,'--proxy-bypass-list=<-loopback>','--disable-quic','--force-webrtc-ip-handling-policy=disable_non_proxied_udp']});browsers.push(browser);return browser;}});
  let state=createEmptyState('SYNTHETIC_RECEIPT'),allowed=true;
  const guard=()=>{if(!allowed)throw new Error('SYNTHETIC_PERMISSION_REVOKED');};
  const documents=new CommunityDocumentService({root:join(root,'documents'),getState:()=>state,persistAndActivate:(_before,next)=>{guard();state=next;}});
  const bot=new InvoiceBotCoordinator(sessions.adapters(),sessions,documents,true,60000,guard);
- await bot.connect(owner,'synthetic-receipt');const page=(await browsers[0].pages())[0];
- return {root,origin,page,sessions,documents,bot,guard,state:()=>state,revoke:()=>{allowed=false;},allow:()=>{allowed=true;},releasePending:()=>releasePending(),async stagedCount(){const dirs=await readdir(join(root,'sessions'));return (await Promise.all(dirs.map(d=>readdir(join(root,'sessions',d,'downloads'))))).flat().length;},async close(){releasePending();await sessions.close();server.closeAllConnections();await new Promise<void>(ok=>server.close(()=>ok()));await rm(root,{recursive:true,force:true,maxRetries:5,retryDelay:100});}};
+ let closing:Promise<void>|undefined;
+ const close=()=>closing??=(async()=>{
+   releasePending();
+   try{await sessions.close();}
+   finally{
+     try{server.closeAllConnections();await new Promise<void>(ok=>server.close(()=>ok()));}
+     finally{await rm(root,{recursive:true,force:true,maxRetries:5,retryDelay:100});}
+   }
+ })();
+ try{
+   await bot.connect(owner,'synthetic-receipt');const page=(await browsers[0].pages())[0];
+   return {root,origin,page,sessions,documents,bot,guard,state:()=>state,revoke:()=>{allowed=false;},allow:()=>{allowed=true;},releasePending:()=>releasePending(),async stagedCount(){const dirs=await readdir(join(root,'sessions'));return (await Promise.all(dirs.map(d=>readdir(join(root,'sessions',d,'downloads'))))).flat().length;},close};
+ }catch(error){
+   try{await close();}catch{console.error('Synthetic receipt fixture cleanup failed after setup failure');}
+   throw error;
+ }
 }
 describe('explicit owned receipt evidence',()=>{
  it('retains all11 controlled portals and distinguishes consumer Post, ELLA and Ali receipt support',()=>{
