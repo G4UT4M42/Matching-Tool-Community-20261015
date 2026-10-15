@@ -1,4 +1,4 @@
-import { spawn, spawnSync } from 'node:child_process';
+import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import { existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -50,7 +50,9 @@ export async function runCommunityTests(mode) {
     mkdirSync(destination, { recursive: true });
     const manifestPath = join(destination, `${runId}-${mode}-manifest.json`);
     if (existsSync(manifestPath)) throw new Error('Refusing to replace an existing test evidence manifest');
-    writeFileSync(manifestPath, JSON.stringify({ mode, runtime: process.versions.node, abi: process.versions.modules, created_at: new Date().toISOString(), entrypoints: files.map(path => relative(repository, path).replaceAll('\\', '/')) }, null, 2));
+    const sourceRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:repository,encoding:'utf8',windowsHide:true}).trim(),workingTreeDirty=!!execFileSync('git',['status','--porcelain'],{cwd:repository,encoding:'utf8',windowsHide:true}).trim();
+    if(!/^[a-f0-9]{40}$/.test(sourceRevision))throw new Error('Candidate revision is unavailable');
+    writeFileSync(manifestPath, JSON.stringify({ source_revision:sourceRevision,working_tree_dirty:workingTreeDirty,mode, runtime: process.versions.node, abi: process.versions.modules, created_at: new Date().toISOString(), entrypoints: files.map(path => relative(repository, path).replaceAll('\\', '/')) }, null, 2));
     if (mode === 'app') resultFile = join(destination, `${runId}-vitest.json`);
   }
   const arguments_ = mode === 'app'

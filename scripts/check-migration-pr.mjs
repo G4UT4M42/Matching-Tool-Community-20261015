@@ -23,7 +23,7 @@ try {
   process.exit(2);
 }
 const changed = (pattern) => files.some(f => pattern.test(f));
-const relevant = changed(/^(src\/(storage|migration|migrations|payments|import|core\/matching|core\/reporting)\/|src\/core\/types\.|.*schema[^/]*\.sql$|docs\/contracts\/|web\/src\/api\.)/i);
+const relevant = changed(/^(src\/(storage|migration|migrations|payments|import|core\/matching|core\/reporting|community\/(?:accounting|documents|integrations|banking|payments|persistence))\/|src\/server\/(?:community-(?:workspace|auth-store)\.ts|routes\/community-[^/]+\.ts)|src\/core\/types\.|.*schema[^/]*\.sql$|docs\/contracts\/|web\/src\/api\.)/i);
 const decisions = files.filter(f => /^docs\/migration-decisions\/[a-z0-9._-]+\.md$/i.test(f)
   && !f.endsWith('/TEMPLATE.md'));
 let failures = [];

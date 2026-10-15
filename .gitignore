@@ -39,6 +39,7 @@ profiles/
 .env.*
 !.env.example
 *.tsbuildinfo
+/candidate-acceptance/
 .DS_Store
 
 # Austrian banking schemas require separate redistribution review

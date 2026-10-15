@@ -10,36 +10,57 @@ permissions:
 
 jobs:
   privacy-and-build:
-    name: Privacy, migration, build, tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
+    name: Windows privacy, migration, build and acceptance
+    runs-on: windows-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      MATCHING_TEST_EVIDENCE_ROOT: ${{ runner.temp }}/community-evidence
+      MATCHING_MAIN_BROWSER_EVIDENCE_DIR: ${{ runner.temp }}/community-evidence/browser
+      MATCHING_PACKAGING_EVIDENCE: ${{ runner.temp }}/community-evidence/packaging
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, verified upstream ref
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: '22'
+          node-version: '22.23.3'
           cache: npm
       - name: Install audited sources without arbitrary post-install scripts
         run: |
           npm ci --ignore-scripts
-          npm rebuild better-sqlite3 canvas sharp esbuild
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          npm rebuild better-sqlite3 sharp esbuild
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
           npm ci --prefix web --ignore-scripts
       - name: Check private data and prohibited artifacts
-        run: node scripts/check-public-tree.mjs
+        run: node scripts/check-public-tree.mjs --index-all
       - name: Require migration evidence for persistence changes
         if: github.event_name == 'pull_request'
         run: node scripts/check-migration-pr.mjs --base origin/main
-      - name: Unit and migration tests
-        run: npm test
       - name: Backend and frontend build
         run: npm run build
+      - name: Complete application and migration tests
+        run: node scripts/run-community-tests.mjs app
+      - name: Actual built browser, Windows installation and policy tests
+        run: node scripts/run-community-tests.mjs node
+      - name: Deterministic license inventory and SBOM
+        run: |
+          node scripts/create-compliance-inventory.mjs --self-test
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          node scripts/create-compliance-inventory.mjs --out "${{ runner.temp }}/community-compliance"
       - name: No production-level critical or high npm advisories
         run: npm audit --omit=dev --audit-level=high
       - name: No unlicensed banking XSD bundles
         run: |
-          if find src/payments/xsd -type f -name '*.xsd' 2>/dev/null | grep -q .; then
-            echo "Unreviewed XSD must not enter the public source tree"
-            exit 1
-          fi
+          $files = Get-ChildItem -LiteralPath src/payments/xsd -Filter *.xsd -File -ErrorAction SilentlyContinue
+          if ($files) { throw 'Unreviewed banking XSD must not enter source' }
+      - name: Preserve exact-commit synthetic verification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: community-verification-${{ github.sha }}
+          path: ${{ runner.temp }}/community-evidence
+          if-no-files-found: warn

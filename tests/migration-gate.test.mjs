@@ -90,3 +90,7 @@ test('financial file path in changed files is rejected', () => {
     assert.equal(check(root).status, 1);
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
+
+for(const path of ['src/community/accounting/ledger.ts','src/community/persistence/restore.ts','src/server/community-workspace.ts','src/server/routes/community-documents.ts'])test('persisted Community contract requires a decision: '+path,()=>{
+ const root=baseline();try{write(root,path,'// Synthetic persisted contract change\n');commit(root);const result=check(root);assert.equal(result.status,1);assert.match(result.stderr,/without a migration decision/);}finally{rmSync(root,{recursive:true,force:true});}
+});

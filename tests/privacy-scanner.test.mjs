@@ -41,6 +41,16 @@ test('scanner checks its own distributable source and an out-of-tree blocklist',
     rmSync(f.parent, { recursive: true, force: true });
   }
 });
+
+test('full index scan includes unchanged committed blobs rather than only the staged diff',()=>{
+  const f=fixture();try{
+    writeFileSync(join(f.root,'README.md'),f.sentinel);git(f.root,'add','README.md');
+    git(f.root,'-c','user.name=Synthetic Review','-c','user.email=review@example.org','commit','-qm','Synthetic private fixture');
+    writeFileSync(join(f.root,'README.md'),'Clean working copy');
+    assert.equal(run(f,['--staged','--require-private-blocklist']).status,0);
+    const full=run(f,['--index-all','--require-private-blocklist']);assert.equal(full.status,1);assert.match(full.stderr,/private-review-term/);assert.ok(!full.stderr.includes(f.sentinel));
+  }finally{rmSync(f.parent,{recursive:true,force:true});}
+});
 test('staged scan reads Git index rather than a later clean working-tree rewrite', () => {
   const f = fixture();
   try {
@@ -77,4 +87,13 @@ test('scanner rejects financial artifacts even when contents look harmless', () 
   } finally {
     rmSync(f.parent, { recursive: true, force: true });
   }
+});
+
+test('scanner rejects private cloud billing and generated project references without disclosing them',()=>{
+  const f=fixture();try{
+    for(const value of [['ABCDEF','123456','987654'].join('-'),'gen-lang-'+'client-'+'1234567890']){
+      writeFileSync(join(f.root,'README.md'),'cloud reference: '+value+'\n');git(f.root,'add','README.md');
+      const scan=run(f,['--staged']);assert.equal(scan.status,1);assert.match(scan.stderr,/cloud-account-reference/);assert.ok(!scan.stderr.includes(value));
+    }
+  }finally{rmSync(f.parent,{recursive:true,force:true});}
 });
