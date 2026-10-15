@@ -23,6 +23,7 @@ jobs:
           "MATCHING_TEST_EVIDENCE_ROOT=$evidence" | Add-Content -LiteralPath $env:GITHUB_ENV -Encoding utf8
           "MATCHING_MAIN_BROWSER_EVIDENCE_DIR=$(Join-Path $evidence 'browser')" | Add-Content -LiteralPath $env:GITHUB_ENV -Encoding utf8
           "MATCHING_PACKAGING_EVIDENCE=$(Join-Path $evidence 'packaging')" | Add-Content -LiteralPath $env:GITHUB_ENV -Encoding utf8
+          "MATCHING_COMPONENT_BROWSER_EVIDENCE_ROOT=$(Join-Path $env:RUNNER_TEMP 'community-component-evidence')" | Add-Content -LiteralPath $env:GITHUB_ENV -Encoding utf8
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, verified upstream ref
         with:
           fetch-depth: 0
@@ -66,5 +67,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: community-verification-${{ github.sha }}
-          path: ${{ runner.temp }}/community-evidence
+          path: |
+            ${{ runner.temp }}/community-evidence
+            ${{ runner.temp }}/community-component-evidence/*/*.png
+            ${{ runner.temp }}/community-component-evidence/*/*result.json
+            ${{ runner.temp }}/community-component-evidence/*/failure.json
           if-no-files-found: warn

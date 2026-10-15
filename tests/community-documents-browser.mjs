@@ -1,6 +1,7 @@
 /** Standalone synthetic browser qualification. Run: npx tsx tests/community-documents-browser.mjs */
 import express from 'express';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import sharp from 'sharp';
 import puppeteer from 'puppeteer-core';
 import { createServer as createViteServer } from 'vite';
@@ -48,11 +49,32 @@ const entry = `import React from 'react'; import { createRoot } from 'react-dom/
 const vite = await createViteServer({ root: webRoot, cacheDir: join(working, 'vite-cache'), plugins: [{ name: 'synthetic-harness', configureServer(server) { server.middlewares.use('/__community.html', async (_request, response) => { response.setHeader('Content-Type', 'text/html'); response.end(await server.transformIndexHtml('/__community.html', '<html><head><link rel="icon" href="data:,"></head><body><div id="root"></div><script type="module" src="/__community_entry.tsx"></script></body></html>')); }); }, resolveId(id) { if (id === '/__community_entry.tsx') return id; }, load(id) { if (id === '/__community_entry.tsx') return entry; } }], server: { host: '127.0.0.1', port: 0, strictPort: false, proxy: { '/api': apiOrigin } }, logLevel: 'error' });
 await vite.listen();
 const webOrigin = `http://127.0.0.1:${vite.httpServer.address().port}`;
-let browser;
+let browser,page;
+const errors=[],requests=[],safeErrors=[];
+const safeError=(kind,error)=>({kind,name:/^[A-Za-z][A-Za-z0-9]{0,79}$/.test(String(error?.name??''))?error.name:'Error',message_prefix_sha256:createHash('sha256').update(String(error).slice(0,2000)).digest('hex')});
+const recordSafeError=(kind,error)=>{if(safeErrors.length<20)safeErrors.push(safeError(kind,error));};
+const clickWhenEnabled=async(text,mode='includes',selector='button')=>{
+  await page.waitForFunction((text,mode,selector)=>[...document.querySelectorAll(selector)].some(button=>(mode==='exact'?button.textContent===text:button.textContent?.includes(text))&&!button.matches(':disabled')),{},text,mode,selector);
+  await page.evaluate((text,mode,selector)=>{
+    const button=[...document.querySelectorAll(selector)].find(button=>(mode==='exact'?button.textContent===text:button.textContent?.includes(text))&&!button.matches(':disabled'));
+    if(!button)throw new Error('Enabled synthetic button disappeared');
+    button.click();
+  },text,mode,selector);
+};
 try {
   browser = await puppeteer.launch({ executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', userDataDir: profile, headless: true, args: ['--no-sandbox','--disable-gpu','--disable-extensions','--disable-background-networking'] });
-  const page = await browser.newPage();
-  const errors=[];page.on('pageerror',error=>errors.push(String(error)));page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});page.on('response',response=>{if(response.status()>=400)errors.push(response.status()+' '+new URL(response.url()).pathname);});
+  page = await browser.newPage();
+  page.on('pageerror',error=>{errors.push(String(error));recordSafeError('page',error);});
+  page.on('console',message=>{if(message.type()==='error'){errors.push(message.text());recordSafeError('console',message.text());}});
+  page.on('response',response=>{
+    const url=new URL(response.url());
+    if(url.origin===webOrigin&&url.pathname.startsWith('/api/')){
+      const method=response.request().method();
+      requests.push({method:['GET','POST','PUT','PATCH','DELETE','HEAD','OPTIONS'].includes(method)?method:'OTHER',path:url.pathname.slice(0,300),status:response.status()});
+      if(requests.length>100)requests.shift();
+    }
+    if(response.status()>=400)errors.push(response.status()+' '+url.pathname);
+  });
   await page.setViewport({ width: 1280, height: 900 });
   await page.goto(`${webOrigin}/__community.html`, { waitUntil: 'networkidle0' });
   await page.waitForSelector('input[type=file]');
@@ -60,39 +82,48 @@ try {
   await page.waitForFunction(() => document.body.textContent.includes('synthetic-invoice.png'), { timeout: 30000 });
   await page.screenshot({ path: join(evidence, 'documents-upload-review.png'), fullPage: true });
   await page.getByText?.('synthetic-invoice.png');
-  await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.textContent.includes('synthetic-invoice.png'))?.click());
+  await clickWhenEnabled('synthetic-invoice.png');
   await page.waitForSelector('input[value="BROWSER-001"]');
   assert.equal(await page.$eval('#document-field-total_amount',node=>node.value),'120.00');
   const supplierInput = await page.$('input[value="Synthetic Browser Ltd"]');
   await supplierInput.click();
   await page.keyboard.down('Control'); await page.keyboard.press('A'); await page.keyboard.up('Control');
   await supplierInput.type('Corrected Browser Ltd');
-  await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.textContent.includes('Save corrections'))?.click());
+  await clickWhenEnabled('Save corrections');
   await page.waitForFunction(() => [...document.querySelectorAll('dd')].some(item => item.textContent === 'Corrected Browser Ltd'), { timeout: 15000 });
-  await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.textContent.includes('Confirm invoice'))?.click());
+  await clickWhenEnabled('Confirm invoice');
   await page.waitForFunction(() => document.body.textContent.includes('synthetic-invoice.png · confirmed'), { timeout: 15000 });
   await page.screenshot({ path: join(evidence, 'documents-confirmed.png'), fullPage: true });
-  await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.textContent === 'Preview')?.click());
+  await clickWhenEnabled('Preview','exact');
   await page.waitForSelector('img[alt="synthetic-invoice.png"]');
   await page.screenshot({ path: join(evidence, 'documents-preview.png'), fullPage: true });
-  await page.evaluate(() => [...document.querySelectorAll('nav button')].find(button => button.textContent === 'Bot tab')?.click());
+  await clickWhenEnabled('Bot tab','exact','nav button');
   await page.waitForFunction(() => document.body.textContent.includes('Local fake invoice portal'));
-  await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.textContent.includes('Connect a fresh browser session'))?.click());
+  await clickWhenEnabled('Connect a fresh browser session');
   await page.waitForFunction(() => [...document.querySelectorAll('button')].some(button => button.textContent.includes('Discover downloaded files')));
-  await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.textContent.includes('Discover downloaded files'))?.click());
+  await clickWhenEnabled('Discover downloaded files');
   await page.waitForFunction(() => document.body.textContent.includes('portal-001.png'));
   await page.click('input[type=checkbox]');
-  await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.textContent.includes('Import selected'))?.click());
+  await clickWhenEnabled('Import selected');
   await page.waitForFunction(() => document.body.textContent.includes('imported'));
   await page.screenshot({ path: join(evidence, 'invoice-bot-local-import.png'), fullPage: true });
   documents = makeDocuments();
-  await page.evaluate(() => [...document.querySelectorAll('nav button')].find(button => button.textContent === 'Documents tab')?.click());
+  await clickWhenEnabled('Documents tab','exact','nav button');
   await page.reload({ waitUntil: 'networkidle0' });
   await page.waitForFunction(() => document.body.textContent.includes('synthetic-invoice.png · confirmed'));
   await page.screenshot({ path: join(evidence, 'documents-reopen.png'), fullPage: true });
   assert.equal(state.documents.size,1);assert.equal([...state.documents.values()][0].total_amount_minor,12000);assert.equal([...state.documents.values()][0].supplier_name,'Corrected Browser Ltd');assert.deepEqual(errors,[]);
-  await writeFile(join(evidence, 'browser-result.json'), JSON.stringify({ status: 'passed', real_packaged_offline_ocr:true, errors, fixture, profile, screenshots: ['documents-upload-review.png','documents-confirmed.png','documents-preview.png','invoice-bot-local-import.png','documents-reopen.png'], financial_documents: state.documents.size }, null, 2));
+  await writeFile(join(evidence, 'browser-result.json'), JSON.stringify({ status: 'passed', real_packaged_offline_ocr:true, errors, synthetic_only:true, screenshots: ['documents-upload-review.png','documents-confirmed.png','documents-preview.png','invoice-bot-local-import.png','documents-reopen.png'], financial_documents: state.documents.size }, null, 2));
   console.log('Browser scenario passed', { financial_documents: state.documents.size });
+} catch(error) {
+  let buttons=[],button_capture_ok=false,screenshot_capture_ok=false;
+  if(page&&!page.isClosed()){
+    try{buttons=await page.evaluate(()=>[...document.querySelectorAll('button')].slice(0,50).map(button=>({label:(button.textContent??'').replace(/\s+/g,' ').trim().slice(0,120),own_disabled:button.disabled,effective_disabled:button.matches(':disabled')})));button_capture_ok=true;}catch{}
+    try{await page.screenshot({path:join(evidence,'failure.png'),fullPage:false,type:'png'});screenshot_capture_ok=true;}catch{}
+  }
+  const failure={result:'FAIL',synthetic_only:true,error:safeError('scenario',error),requests,buttons,error_count:errors.length,errors:safeErrors,button_capture_ok,screenshot_capture_ok};
+  try{await writeFile(join(evidence,'failure.json'),JSON.stringify(failure,null,2));}catch{console.error('Synthetic failure evidence could not be written');}
+  throw error;
 } finally {
   if (browser) await browser.close();
   await vite.close();
