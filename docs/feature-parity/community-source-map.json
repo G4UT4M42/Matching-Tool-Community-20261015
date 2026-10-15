@@ -2,7 +2,7 @@
   "format": "matching-community-source-map-v1",
   "source_representation": "Canonical Git index blobs (line-ending independent)",
   "scope": "Tracked Community implementation source; legacy v2_source inventory remains a frozen reference, not runtime acceptance.",
-  "source_content_sha256": "2c45eb875e7e85b08307849a13fd077b4e557c35096315fe25db69f747ca9657",
+  "source_content_sha256": "cefab50d90c367222c8a08cf0c6b037bcd49ddac3f737648a94f6b9ab9a9a4a5",
   "files": [
     {
       "path": "src/app/cli.ts",
@@ -2581,8 +2581,8 @@
     },
     {
       "path": "web/src/pages/CommunityIntegrations.tsx",
-      "sha256": "5805b861a8a3e52ddf7daa2a0bdeec690bd3b9c544f490c6f01fc756436f555d",
-      "bytes": 7009,
+      "sha256": "2cb79f1be7d82378db16d2a40d0f2f1ddf3d425ff8eb31458401deca93003216",
+      "bytes": 10780,
       "exports": [
         "CommunityIntegrations"
       ]

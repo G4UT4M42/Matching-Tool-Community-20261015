@@ -148,3 +148,10 @@ The synthetic integrated test can receive an explicit external bundle through
 `MATCHING_ACCEPTANCE_NATIVE_REPLACEMENT`; the ordinary production server has no
 such switch. Final acceptance must run the complete installed journey with the
 actual replacement and retain its package manifest hash.
+
+For the complete source-supply artifact, the same synthetic test accepts
+`MATCHING_ACCEPTANCE_SUPPLEMENTS` as a JSON array of at most four explicit
+external source-supplement directories. It passes those through the ordinary
+strict package builder, performs a real installation, and retains the exact
+installed package manifest bytes alongside screenshots and financial evidence.
+This packaging input is absent from the production server.
