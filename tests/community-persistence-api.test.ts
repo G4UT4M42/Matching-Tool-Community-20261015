@@ -19,12 +19,12 @@ async function fixture() {
     matched_transaction_ids: [], matched_document_ids: [], excluded_transaction_ids: [],
   }));
   const app = express(); app.use(express.json());
-  app.use((request, response, next) => { if (request.headers['x-test-subject'] === 'owner') response.locals.communityPrincipal = { subject: 'synthetic-owner' }; next(); });
+  app.use((request, response, next) => { const user=request.headers['x-test-subject'];if (user === 'owner'||user==='second-owner') response.locals.communityPrincipal = { subject: 'synthetic-'+user,workspace_id:'synthetic-workspace' }; next(); });
   app.use('/api/community/persistence', createCommunityPersistenceRouter({
     activeRuntimeRoot: () => root,
     withExclusiveAccess: run => run(),
     safeActivate: async (change, rollback) => { closeDb?.(); try { change(); } catch (error) { rollback(); throw error; } },
-    may: principal => principal.subject === 'synthetic-owner',
+    may: principal => ['synthetic-owner','synthetic-second-owner'].includes(principal.subject),
     invalidateCheckpoint: () => {}, inspectCurrent: () => ({ synthetic: true }),
   }));
   server = app.listen(0, '127.0.0.1');
@@ -39,6 +39,37 @@ afterEach(async () => {
   delete process.env.MATCHING_RUNTIME_MODE; delete process.env.MATCHING_RUNTIME_ROOT; vi.resetModules();
 });
 describe('authenticated persistence router', () => {
+  it('selects a bounded local source per account without exposing paths or reading source contents',async()=>{
+    const base=await fixture(),legacy=mkdtempSync(join(tmpdir(),'community-legacy-selection-'));
+    try{
+      mkdirSync(join(legacy,'database'));mkdirSync(join(legacy,'state'));
+      // Selection validates metadata only. Inspect is the explicit content-reading step.
+      writeFileSync(join(legacy,'database','matching.db'),'NOT-A-DATABASE');writeFileSync(join(legacy,'state','state.json'),'NOT-JSON');
+      const headers={'x-test-subject':'owner','content-type':'application/json'};
+      const select=(body:unknown)=>fetch(base+'/legacy/sources',{method:'POST',headers,body:JSON.stringify(body)});
+      expect((await fetch(base+'/legacy/sources',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({root:legacy,label:'Synthetic'})})).status).toBe(401);
+      for(const path of [root,join(root,'state'),join(root,'..legacy'),join(root,'..'),'relative/path','\\\\remote\\share'])expect((await select({root:path,label:'Synthetic'})).status).toBe(422);
+      expect((await select({root:legacy,label:'Synthetic',forged:true})).status).toBe(422);
+      const response=await select({root:legacy,label:'Independent synthetic source'});expect(response.status).toBe(201);
+      const selected=await response.json() as {id:string;label:string};expect(selected.id).toMatch(/^[a-f0-9-]{36}$/);expect(Object.keys(selected).sort()).toEqual(['id','label']);
+      const list=await(await fetch(base+'/legacy/sources',{headers})).text();expect(list).not.toContain(legacy);expect(JSON.parse(list).sources).toEqual([selected]);
+      const otherHeaders={...headers,'x-test-subject':'second-owner'};expect((await(await fetch(base+'/legacy/sources',{headers:otherHeaders})).json()).sources).toEqual([]);
+      expect((await fetch(base+'/legacy/'+selected.id+'/inspect',{method:'POST',headers:otherHeaders})).status).toBe(422);
+      const next=await(await select({root:legacy,label:'Replacement selection'})).json() as {id:string};expect(next.id).not.toBe(selected.id);
+      expect((await fetch(base+'/legacy/'+selected.id+'/inspect',{method:'POST',headers})).status).toBe(422);
+      rmSync(join(legacy,'state','state.json'));expect((await fetch(base+'/legacy/'+next.id+'/inspect',{method:'POST',headers})).status).toBe(422);
+    }finally{rmSync(legacy,{recursive:true,force:true});}
+  });
+  it('selects each supported legacy layout through normal API metadata validation and rejects ambiguity',async()=>{
+    const base=await fixture(),sources=mkdtempSync(join(tmpdir(),'community-legacy-layout-selection-'));try{
+      const headers={'x-test-subject':'owner','content-type':'application/json'};
+      for(const names of [['database/matching.db','state/state.json'],['data/matching.db','data/state.json'],['matching.db','state.json']]){
+        const folder=join(sources,String(names[0].length));mkdirSync(folder);for(const name of names){const file=join(folder,...name.split('/'));mkdirSync(join(file,'..'),{recursive:true});writeFileSync(file,'SYNTHETIC-UNREAD-CONTENT');}
+        const select=()=>fetch(base+'/legacy/sources',{method:'POST',headers,body:JSON.stringify({root:folder,label:'Synthetic legacy layout'})});expect((await select()).status).toBe(201);
+        if(names[0]!=='matching.db'){writeFileSync(join(folder,'matching.db'),'SYNTHETIC');writeFileSync(join(folder,'state.json'),'SYNTHETIC');expect((await select()).status).toBe(422);}
+      }
+    }finally{rmSync(sources,{recursive:true,force:true});}
+  });
   it('requires a trusted principal and serves a generated ZIP through bounded IDs', async () => {
     const base = await fixture();
     expect((await fetch(base + '/backups')).status).toBe(401);

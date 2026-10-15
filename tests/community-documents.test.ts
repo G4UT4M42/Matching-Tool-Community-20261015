@@ -94,7 +94,7 @@ describe('Community documents', () => {
     expect(() => parseDocumentTable(Buffer.from('source_id,invoice_number,supplier_name,document_date,total_amount,currency_code\nS,INV-1,Seller,2026-10-14,1.001,EUR'), '.csv', 'invoice')).toThrow();
   });
   it('retains review evidence on financial persistence failure', async () => {
-    const failed = new CommunityDocumentService({ root, getState: () => state, persistAndActivate: () => { throw Error('interrupted'); } });
+    const failed = new CommunityDocumentService({ root, getState: () => state, persistAndActivate: (_before,next) => { if(next.documents.size>state.documents.size)throw Error('interrupted'); state=next; } });
     const record = (await failed.upload(alice, await pdf('Invoice number: FAIL-1\nSupplier: Synthetic\nInvoice date: 2026-10-14\nGrand total: EUR 1.00'), 'failure.pdf')).record;
     await failed.correct(alice, record.id, { invoice_number: 'FAIL-1', supplier_name: 'Synthetic', document_date: '2026-10-14', total_amount: '1.00', currency_code: 'EUR' });
     await expect(failed.confirm(alice, record.id)).rejects.toThrow('interrupted');

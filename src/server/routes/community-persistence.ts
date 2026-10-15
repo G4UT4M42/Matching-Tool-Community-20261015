@@ -1,7 +1,9 @@
 import { Router, raw, type Request, type Response } from 'express';
-import { resolve } from 'node:path';
+import { resolve,isAbsolute,relative,join,sep } from 'node:path';
+import { lstatSync,existsSync } from 'node:fs';
+import { randomUUID } from 'node:crypto';
 import { activateCommunityRestore, stageCommunityRestore, type SafeActivate } from '../../community/persistence/restore.js';
-import { createCommunityBackup, listCommunityBackups, readCommunityBackup, type Exclusive } from '../../community/persistence/backup.js';
+import { createCommunityBackup, listCommunityBackups, readCommunityBackup, verifyRuntimePath, type Exclusive } from '../../community/persistence/backup.js';
 import { inspectLegacy, stageLegacyConversion } from '../../community/persistence/legacy.js';
 
 export interface CommunityPrincipal { subject: string; workspace_id?: string }
@@ -26,6 +28,21 @@ function sendError(response: Response, error: unknown): void {
 }
 export function createCommunityPersistenceRouter(deps: CommunityPersistenceDependencies): Router {
   const router = Router();
+  const selections=new Map<string,{id:string;label:string;root:string}>();
+  const selectionKey=(p:CommunityPrincipal)=>JSON.stringify([p.workspace_id??'',p.subject]);
+  const choices=(p:CommunityPrincipal)=>[...(deps.legacySources?.()??[]),...(selections.has(selectionKey(p))?[selections.get(selectionKey(p))!]:[])];
+  const contains=(parent:string,child:string)=>{const path=relative(parent,child);return !path||path!=='..'&&!path.startsWith('..'+sep)&&!isAbsolute(path);};
+  const selectedRoot=(raw:string)=>{
+    if(!isAbsolute(raw)||raw.length>1024||/[\x00-\x1f]/.test(raw)||raw.startsWith('\\\\'))throw new Error('Invalid local legacy source');
+    const root=resolve(raw),active=resolve(deps.activeRuntimeRoot());if(contains(active,root)||contains(root,active))throw new Error('Invalid legacy source overlap with active runtime');
+    try{
+      verifyRuntimePath(root,root);if(!lstatSync(root).isDirectory())throw new Error();
+      const layouts=[['database/matching.db','state/state.json'],['data/matching.db','data/state.json'],['matching.db','state.json']].filter(layout=>layout.every(name=>existsSync(join(root,...name.split('/')))));
+      if(layouts.length!==1)throw new Error();
+      for(const name of layouts[0]){const path=join(root,...name.split('/'));verifyRuntimePath(root,path);const stat=lstatSync(path);if(!stat.isFile()||stat.isSymbolicLink())throw new Error();}
+    }catch{throw new Error('Invalid legacy source layout or linked directory');}
+    return root;
+  };
   const gate = (permission: PersistencePermission) => (_request: Request, response: Response, next: () => void) => {
     const identity = principal(response);
     if (!identity) { response.status(401).json({ code: 'AUTH_REQUIRED' }); return; }
@@ -69,26 +86,30 @@ export function createCommunityPersistenceRouter(deps: CommunityPersistenceDepen
       response.json({ activated: true, manifest });
     } catch (error) { sendError(response, error); }
   });
-  const source = (id: string) => {
+  const source = (id: string,p:CommunityPrincipal) => {
     if (!/^[A-Za-z0-9_-]{1,64}$/.test(id)) throw new Error('Invalid legacy source identifier');
-    const item = deps.legacySources?.().find(candidate => candidate.id === id);
-    if (!item) throw new Error('Legacy source is not selected by the local server');
-    const root = resolve(item.root), active = resolve(deps.activeRuntimeRoot());
-    if (root === active || root.startsWith(active + '\\') || active.startsWith(root + '\\')) throw new Error('Legacy source overlaps active runtime');
-    return root;
+    const item = choices(p).find(candidate => candidate.id === id);
+    if (!item) throw new Error('Invalid legacy source selection');
+    return selectedRoot(item.root);
   };
+  router.post('/legacy/sources',gate('data:migrate'),(request,response)=>{
+    try{
+      const body=request.body;if(!body||typeof body!=='object'||Array.isArray(body)||Object.keys(body).some(key=>!['root','label'].includes(key))||typeof body.root!=='string'||typeof body.label!=='string'||!body.label.trim()||body.label.length>120||/[\x00-\x1f]/.test(body.label))throw new Error('Invalid legacy source selection');
+      const root=selectedRoot(body.root),item={id:randomUUID(),label:body.label.trim(),root};selections.set(selectionKey(principal(response)!),item);response.status(201).json({id:item.id,label:item.label});
+    }catch(error){sendError(response,error);}
+  });
   router.get('/legacy/sources', gate('data:migrate'), (_request, response) => {
-    response.json({ sources: (deps.legacySources?.() ?? []).map(({ id, label }) => ({ id, label })) });
+    response.json({ sources: choices(principal(response)!).map(({ id, label }) => ({ id, label })) });
   });
   router.post('/legacy/:id/inspect', gate('data:migrate'), async (request, response) => {
-    try { response.json(await inspectLegacy(source(String(request.params.id)))); }
+    try { response.json(await inspectLegacy(source(String(request.params.id),principal(response)!))); }
     catch (error) { sendError(response, error); }
   });
   router.post('/legacy/:id/stage', gate('data:migrate'), async (request, response) => {
     try {
       const fingerprint = request.body?.fingerprint;
       if (typeof fingerprint !== 'string' || !/^[a-f0-9]{64}$/.test(fingerprint)) throw new Error('Invalid legacy dry run confirmation');
-      const legacy = source(String(request.params.id));
+      const legacy = source(String(request.params.id),principal(response)!);
       const { before, result } = await deps.withExclusiveAccess(async () => {
         const held: Exclusive = run => run();
         const before = await createCommunityBackup(resolve(deps.activeRuntimeRoot()), held);

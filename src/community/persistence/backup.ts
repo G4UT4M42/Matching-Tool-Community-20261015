@@ -9,6 +9,7 @@ import { COMMUNITY_SCHEMA_VERSION, verifyCommunitySchema } from '../../migration
 import { deserializeCommunityState, validateCommunityJsonState } from '../../storage/json-store.js';
 import { verifyCanonicalSql } from '../../storage/canonical-sql.js';
 import { PaymentRepository } from '../payments/repository.js';
+import {recoverAuditedDocumentReviews} from '../documents/review-audit.js';
 import { decodeZip, encodeZip, safeArchivePath } from './zip.js';
 import type { MatchingState } from '../../core/types.js';
 
@@ -50,13 +51,44 @@ function rejectSecrets(value:unknown,depth=0):void{
   }
 }
 function hasTable(db:Database.Database,name:string):boolean{return Boolean(db.prepare("SELECT 1 FROM sqlite_schema WHERE type='table' AND name=?").get(name));}
+/** Retain bounded economic evidence; unknown provider payloads require explicit review. */
+export function sanitizeHistoricalPaymentEvidence(text:unknown):string|null{
+  if(text===null||text===undefined)return null;
+  if(typeof text!=='string'||text.length>65536)throw new Error('Unreviewed historical payment evidence size');
+  const scalarKeys=new Set(['id','batchid','itemid','candidateid','documentid','scanid','reference','packagereference','confirmationnumber','messageid','importfilename','artifactsha256','xmlsha256','status','previousstatus','newstatus','itemstatus','approvalstatus','reason','reasoncode','errorcode','actor','occurredat','createdat','updatedat','reviewedat','approvedat','approvedby','releasedat','exportedat','requestedexecutiondate','amountminor','controlsumminor','itemcount','revision','currency','currencycode','creditorname','creditoriban','debtorname','debtoriban','iban','name','label','accountholder','accountlabel','remittanceinformation','structuredcreditorreference','invoicenumber','duedate','active','synthetic']);
+  for(const key of ['debtoraccountlabel','debtoraccountholder','georgepackagereference','classification'])scalarKeys.add(key);
+  const nestedKeys=new Set(['account','expectedaccount','observedaccount','items','before','after','counts','totals']);
+  const secret=(key:string)=>/password|passwd|secret|credential|cookie|authorization|bearer|privatekey|apikey|token|session|confirmationcode|approvalcapability|releaseconfirmation|releaseclick|releaserequest|releaseretry|exportartifactdata|exportartifactpath|otp|mfacode/.test(key);
+  const visit=(value:unknown,depth:number):unknown=>{
+    if(depth>8)throw new Error('Historical payment evidence nesting exceeds limit');
+    if(Array.isArray(value)){if(value.length>1000)throw new Error('Historical payment evidence array exceeds limit');return value.map(item=>{if(!item||typeof item!=='object'||Array.isArray(item))throw new Error('Unreviewed historical payment evidence array');return visit(item,depth+1);});}
+    if(!value||typeof value!=='object')throw new Error('Unreviewed historical payment evidence structure');
+    const entries=Object.entries(value);if(entries.length>64)throw new Error('Historical payment evidence fields exceed limit');
+    const out:Record<string,unknown>={};
+    for(const[key,child]of entries){
+      const normalized=key.replace(/[^a-zA-Z0-9]/g,'').toLowerCase();
+      if(secret(normalized))continue;
+      if(nestedKeys.has(normalized)){out[key]=visit(child,depth+1);continue;}
+      if(!scalarKeys.has(normalized)||['__proto__','prototype','constructor'].includes(key))throw new Error('Unreviewed historical payment evidence field');
+      if(child===null||typeof child==='boolean'||typeof child==='number'&&Number.isSafeInteger(child)){out[key]=child;continue;}
+      if(typeof child!=='string'||child.length>300||!/^[-\p{L}\p{N}\s_.:/+@,()']*$/u.test(child)||/[\x00-\x1f\x7f]|Bearer\s|PRIVATE KEY|password\s*[:=]|secret\s*[:=]/i.test(child))throw new Error('Unreviewed historical payment evidence value');
+      out[key]=child;
+    }
+    return out;
+  };
+  let parsed:unknown;try{parsed=JSON.parse(text);}catch{throw new Error('Invalid historical payment evidence JSON');}
+  return JSON.stringify(visit(parsed,0));
+}
 function scrubSnapshot(db:Database.Database):void{
   const oldTriggers=db.prepare("SELECT name,sql FROM sqlite_schema WHERE type='trigger' AND tbl_name='payment_status_events' ORDER BY name").all() as Array<{name:string;sql:string}>;
   db.transaction(()=>{
     db.prepare('DELETE FROM invoice_bot_profiles').run();db.prepare("UPDATE invoice_bot_portals SET credential_ref=NULL,login_strategy='manual',active=0").run();
     db.prepare('DELETE FROM payment_automation_runs').run();db.prepare('UPDATE payment_batches SET export_artifact_data=NULL,export_artifact_path=NULL').run();
     for(const trigger of oldTriggers){if(!['trg_payment_status_events_no_update','trg_payment_status_events_no_delete'].includes(trigger.name)||!trigger.sql)throw new Error('Unreviewed legacy payment event trigger');db.exec(`DROP TRIGGER "${trigger.name}"`);}
-    db.prepare('UPDATE payment_status_events SET george_evidence_json=NULL,before_json=NULL,after_json=NULL').run();
+    const updateEvidence=db.prepare('UPDATE payment_status_events SET george_evidence_json=?,before_json=?,after_json=? WHERE event_id=?');
+    for(const row of db.prepare('SELECT event_id,george_evidence_json,before_json,after_json FROM payment_status_events').all() as Array<{event_id:string;george_evidence_json:string|null;before_json:string|null;after_json:string|null}>){
+      updateEvidence.run(sanitizeHistoricalPaymentEvidence(row.george_evidence_json),sanitizeHistoricalPaymentEvidence(row.before_json),sanitizeHistoricalPaymentEvidence(row.after_json),row.event_id);
+    }
     for(const trigger of oldTriggers)db.exec(trigger.sql);
     for(const row of db.prepare('SELECT key,value FROM settings').all() as Array<{key:string;value:string}>){
       if(/password|secret|credential|cookie|token|session|approval|auth|key/i.test(row.key))db.prepare('DELETE FROM settings WHERE key=?').run(row.key);
@@ -70,6 +102,7 @@ function scrubSnapshot(db:Database.Database):void{
 /** Managed invoice metadata plus content-addressed blobs, never browser profiles. */
 function documentReferences(state:MatchingState,indexBytes?:Buffer):Map<string,{hash?:string;bytes?:number}>{
   const references=new Map<string,{hash?:string;bytes?:number}>();
+  const audited=recoverAuditedDocumentReviews(state.audit_events),auditedById=new Map(audited.map(record=>[record.id,record]));
   for(const doc of state.documents.values()){
     const attachment=typeof doc.meta?.attachment_path==='string'?doc.meta.attachment_path:doc.filename;
     if(!attachment){if(doc.file_hash)throw new Error('Missing referenced document');continue;}
@@ -83,10 +116,18 @@ function documentReferences(state:MatchingState,indexBytes?:Buffer):Map<string,{
     for(const record of index.records){
       if(!record||typeof record.id!=='string'||ids.has(record.id)||typeof record.workspace_id!=='string'||!/^[\w.:-]{1,100}$/.test(record.workspace_id)||!/^[a-f0-9]{64}$/.test(record.hash)||!Number.isSafeInteger(record.bytes)||record.bytes<1||record.bytes>MAX_FILE||!['review','confirmed','rejected','archived'].includes(record.status))throw new Error('Invalid document index record');
       ids.add(record.id);const name='documents/attachments/'+sha(record.workspace_id)+'/'+record.hash;
+      const canonical=auditedById.get(record.id);if(canonical&&(canonical.workspace_id!==record.workspace_id||canonical.hash!==record.hash||canonical.bytes!==record.bytes))throw new Error('Document index disagrees with immutable review evidence');
       references.set(name,{hash:record.hash,bytes:record.bytes});
       if(record.status==='confirmed'&&(!state.documents.has(record.id)||state.documents.get(record.id)?.file_hash!==record.hash))throw new Error('Confirmed document index and financial evidence disagree');
     }
     rejectSecrets(index);references.set('documents/document-index-v1.json',{});
+  }
+  // Unconfirmed review records are durable accounting evidence too. A missing
+  // or stale derived index cannot remove their original blobs from a backup.
+  for(const record of audited){
+    const name='documents/attachments/'+sha(record.workspace_id)+'/'+record.hash;
+    references.set(name,{hash:record.hash,bytes:record.bytes});
+    if(record.status==='confirmed'&&(!state.documents.has(record.id)||state.documents.get(record.id)?.file_hash!==record.hash))throw new Error('Confirmed review audit and financial evidence disagree');
   }
   return references;
 }
@@ -147,10 +188,20 @@ export async function createCommunityBackup(runtimeRoot:string,withExclusiveAcce
         // A self-contained archive must not create WAL/SHM sidecars merely when verified.
         db.pragma('journal_mode = DELETE');
       }finally{db.close();}
-      const files=new Map<string,Buffer>([['database/matching.db',regular(snapshot)],['state/state.json',stateBytes]]);
       const indexPath=join(root,'documents','document-index-v1.json');verifyRuntimePath(root,indexPath);
       const index=existsSync(indexPath)?regular(indexPath):undefined;
-      for(const[name,expected]of documentReferences(state,index)){
+      const references=documentReferences(state,index);
+      // Preflight the complete set before allocating any attachment buffers.
+      // Reserve room for manifest and ZIP records in the 512 MiB archive limit.
+      if(references.size+3>4096)throw new Error('Backup file count exceeds limit');
+      let total=stateBytes.length+lstatSync(snapshot).size;
+      for(const name of references.keys()){
+        const path=join(root,...name.split('/'));verifyRuntimePath(root,path);const stat=lstatSync(path);
+        if(!stat.isFile()||stat.isSymbolicLink()||stat.size>MAX_FILE)throw new Error('Unsafe or oversized persistence file');
+        total+=stat.size;if(total>510*1024*1024)throw new Error('Backup aggregate size exceeds limit');
+      }
+      const files=new Map<string,Buffer>([['database/matching.db',regular(snapshot)],['state/state.json',stateBytes]]);
+      for(const[name,expected]of references){
         const path=join(root,...name.split('/'));verifyRuntimePath(root,path);const bytes=regular(path);
         if(expected.hash&&sha(bytes)!==expected.hash.toLowerCase()||expected.bytes!==undefined&&bytes.length!==expected.bytes)throw new Error('Document hash or size mismatch');files.set(name,bytes);
       }

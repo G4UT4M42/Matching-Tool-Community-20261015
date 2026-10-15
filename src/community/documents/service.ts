@@ -4,6 +4,7 @@ import { dirname, join, resolve } from 'node:path';
 import type { Document, MatchingState } from '../../core/types.js';
 import { currencyPrecision, statementDate, statementMinor } from '../../import/statement-parser.js';
 import { DocumentInputError, documentHash, inspectDocument, recognizeDocument, type RecognizedInvoice } from './recognition.js';
+import {jsonCopy,snapshot,same,immutableReview,validateReviewRecord,recoverAuditedDocumentReviews} from './review-audit.js';
 import { recordAudit } from '../../observability/audit.js';
 import {checkedDocumentAmounts,type InvoiceDocumentType} from './amount-contract.js';
 import { parseDocumentTable, tableDocumentId, type TableKind } from './tabular.js';
@@ -96,7 +97,17 @@ export class CommunityDocumentService {
       if (!record || typeof record.id !== 'string' || ids.has(record.id) || typeof record.workspace_id !== 'string' || !/^[\w.:-]{1,100}$/.test(record.workspace_id) || !/^[a-f0-9]{64}$/.test(record.hash) || !Number.isSafeInteger(record.bytes) || record.bytes < 1 || record.bytes > 256 * 1024 * 1024 || !['review','confirmed','rejected','archived'].includes(record.status) || !Array.isArray(record.history) || !record.fields) problem('INVALID_STORAGE', 'Invalid document index record');
       ids.add(record.id);
     }
-    const financial = this.options.getState().documents;
+    const state=this.options.getState();
+    // The index is a cache. Canonical append-only review events also cover
+    // unconfirmed records, without introducing financial documents prematurely.
+    const recovered=recoverAuditedDocumentReviews(state.audit_events);
+    for(const record of recovered){
+      const position=index.records.findIndex(item=>item.id===record.id),cached=index.records[position];
+      if(cached&&!same(immutableReview(cached),immutableReview(record)))problem('SOURCE_CONFLICT','Document index disagrees with audited evidence');
+      if(!cached||!same(cached,record))await this.verifyAttachment(record);
+      if(position<0)index.records.push(record);else index.records[position]=record;
+    }
+    const financial = state.documents;
     for (const record of index.records) {
       const doc = financial.get(record.id);
       if (doc && doc.meta.workspace_id === record.workspace_id) {
@@ -124,6 +135,18 @@ export class CommunityDocumentService {
     }
     // Reads return a recovered view; only serialized mutations replace the index.
     return index;
+  }
+  private async verifyAttachment(record:DocumentRecord):Promise<void>{
+    const dir=join(this.blobs,createHash('sha256').update(record.workspace_id).digest('hex'));
+    for(const path of [this.blobs,dir]){const info=await lstat(path);if(!info.isDirectory()||info.isSymbolicLink())problem('UNSAFE_STORAGE','Attachment recovery directory is unsafe');}
+    const file=join(dir,record.hash),info=await lstat(file);
+    if(!info.isFile()||info.isSymbolicLink()||info.size!==record.bytes||documentHash(await readFile(file))!==record.hash)problem('UNSAFE_STORAGE','Document attachment recovery failed');
+  }
+  private auditReview(next:MatchingState,principal:Principal,operation:string,before:DocumentRecord|undefined,record:DocumentRecord):void{
+    validateReviewRecord(record);
+    const baseline=!next.audit_events.some(event=>event.entity_type==='Document'&&event.entity_id===record.id&&event.after?.document_review_version===1);
+    const event=recordAudit(next,'STATE_COMMITTED','Document',record.id,{actor_type:'user',actor_id:principal.subject,correlation_id:'document-review-'+randomUUID(),reason:'Document '+operation,before:{review:before?snapshot(before):null},after:{document_review_version:1,operation,review:snapshot(record),history_entry:jsonCopy(record.history.at(-1)!),...(baseline?{baseline:jsonCopy({recognition:record.recognition,history:record.history.slice(0,-1)})}:{})}});
+    if(Buffer.byteLength(JSON.stringify(event.after))>8*1024*1024)problem('STORAGE_LIMIT','Document review audit exceeds supported size');
   }
   private async writeIndex(index: Index): Promise<void> {
     const bytes = Buffer.from(JSON.stringify(index)); if (bytes.length > 64 * 1024 * 1024) problem('STORAGE_LIMIT', 'Document index exceeds supported size');
@@ -156,12 +179,15 @@ export class CommunityDocumentService {
       if (prior) {
         if (sourceId && (prior.source_id === sourceId||prior.source_refs?.some(ref=>ref.source_id===sourceId)) && prior.hash !== hash) problem('SOURCE_CONFLICT', 'An existing source identifier contains different document bytes');
         if(sourceId&&!prior.source_refs?.some(ref=>ref.source_id===sourceId&&ref.kind===sourceKind)){
+          const before=jsonCopy(prior);
           if((prior.source_refs?.length??0)>=100)problem('SOURCE_LIMIT','Too many document source observations');
           prior.source_refs=[...(prior.source_refs??[]),{source_id:sourceId,kind:sourceKind}];
           prior.history.push({at:now(),actor:principal.subject,action:'source_observed:'+sourceKind});
-          const expected=this.options.getState();if(expected.documents.has(prior.id)){
-            const next=cloneState(expected);const canonical=next.documents.get(prior.id)!;const portalRefs=prior.source_refs.filter(ref=>ref.kind==='invoice-bot').map(ref=>ref.source_id);canonical.meta={...canonical.meta,document_source_refs:structuredClone(prior.source_refs),...(portalRefs.length?{portal_source_id:portalRefs[0],portal_source_refs:portalRefs}:{})};recordAudit(next,'STATE_COMMITTED','Document',prior.id,{actor_type:'user',actor_id:principal.subject,reason:'Additional document source observed',after:{source_id:sourceId,source_kind:sourceKind,attachment_hash:hash}});await this.options.persistAndActivate(expected,next,principal.subject);
+          const expected=this.options.getState(),next=cloneState(expected);if(expected.documents.has(prior.id)){
+            const canonical=next.documents.get(prior.id)!;const portalRefs=prior.source_refs.filter(ref=>ref.kind==='invoice-bot').map(ref=>ref.source_id);next.documents.set(prior.id,{...canonical,meta:{...canonical.meta,document_source_refs:structuredClone(prior.source_refs),...(portalRefs.length?{portal_source_id:portalRefs[0],portal_source_refs:portalRefs}:{})}});
           }
+          this.auditReview(next,principal,'source_observed:'+sourceKind,before,prior);
+          await this.options.persistAndActivate(expected,next,principal.subject);
           await this.writeIndex(index);
         }
         return {record:prior,duplicate:true};
@@ -192,6 +218,9 @@ export class CommunityDocumentService {
         recognition, created_at: now(), history: [{ at: now(), actor: principal.subject, action: 'uploaded' }],
       };
       index.records.push(record);
+      const expected=this.options.getState(),next=cloneState(expected);
+      this.auditReview(next,principal,'uploaded',undefined,record);
+      await this.options.persistAndActivate(expected,next,principal.subject);
       await this.writeIndex(index);
       return { record, duplicate: false };
     });
@@ -229,6 +258,7 @@ export class CommunityDocumentService {
         if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
         await writeFile(file, buffer, { flag: 'wx', mode: 0o600 });
       }
+      for(const record of created)this.auditReview(next,principal,'imported',undefined,record);
       await this.options.persistAndActivate(expected, next, principal.subject);
       index.records.push(...created); await this.writeIndex(index);
       return { imported: created.length, duplicates, records: created };
@@ -251,7 +281,11 @@ export class CommunityDocumentService {
     return this.lock(async () => {
       const index = await this.readIndex(); const record = this.find(index, principal, id);
       if (record.status !== 'review') problem('INVALID_STATUS', 'Only review documents can be edited');
+      if(same(record.fields,fields))return record;
+      const before=jsonCopy(record),expected=this.options.getState(),next=cloneState(expected);
       record.fields = fields; record.history.push({ at: now(), actor: principal.subject, action: 'corrected', fields: { ...fields } });
+      this.auditReview(next,principal,'corrected',before,record);
+      await this.options.persistAndActivate(expected,next,principal.subject);
       await this.writeIndex(index); return record;
     });
   }
@@ -261,13 +295,14 @@ export class CommunityDocumentService {
       const index = await this.readIndex(); const record = this.find(index, principal, id);
       if (record.status === 'confirmed') return record;
       if (record.status !== 'review') problem('INVALID_STATUS', 'Document is not under review');
+      const before=jsonCopy(record);
       const fields = validFields({ document_type:record.fields.document_type,invoice_number: record.fields.invoice_number, supplier_name: record.fields.supplier_name, document_date: record.fields.document_date, total_amount: minorText(record.fields.total_amount_minor, record.fields.currency_code), net_amount: minorText(record.fields.net_amount_minor, record.fields.currency_code), vat_amount: minorText(record.fields.vat_amount_minor, record.fields.currency_code), currency_code: record.fields.currency_code, payment_reference: record.fields.payment_reference, iban: record.fields.iban, due_date: record.fields.due_date });
       const expected = this.options.getState(); const next = cloneState(expected);
       const document: Document = { document_id: record.id, source_system: 'upload', source_document_ref: record.source_id ?? fields.invoice_number!, captured_at: record.created_at, document_date: fields.document_date!, total_amount_minor: fields.total_amount_minor!, currency_code: fields.currency_code!, supplier_name: fields.supplier_name, vat_amount_minor: fields.vat_amount_minor, file_hash: record.hash, filename: record.filename, meta: { workspace_id: principal.workspace_id, owner_subject: record.owner_subject, ...(record.source_refs?{document_source_refs:structuredClone(record.source_refs)}:{}), ...(record.source_refs?.some(ref=>ref.kind==='invoice-bot') ? {portal_source_id:record.source_refs.find(ref=>ref.kind==='invoice-bot')!.source_id,portal_source_refs:record.source_refs.filter(ref=>ref.kind==='invoice-bot').map(ref=>ref.source_id)} : {}), net_amount_minor: fields.net_amount_minor, payment_reference: fields.payment_reference, iban: fields.iban, due_date: fields.due_date, recognition_confidence: record.recognition.confidence, invoice_number: fields.invoice_number, ...(fields.document_type?{document_type:fields.document_type}:{}),settlement_convention: 'payable-face-v1', document_review_status: 'confirmed', attachment_path: 'attachments/' + createHash('sha256').update(principal.workspace_id).digest('hex') + '/' + record.hash } };
       next.documents.set(record.id, document);
-      recordAudit(next,'STATE_COMMITTED','Document',record.id,{actor_type:'user',actor_id:principal.subject,reason:'Document confirmed after review',after:{status:'confirmed',source_document_ref:document.source_document_ref,attachment_hash:record.hash}});
-      await this.options.persistAndActivate(expected, next, principal.subject);
       record.status = 'confirmed'; record.history.push({ at: now(), actor: principal.subject, action: 'confirmed', fields: { ...fields } });
+      this.auditReview(next,principal,'confirmed',before,record);
+      await this.options.persistAndActivate(expected, next, principal.subject);
       await this.writeIndex(index); return record;
     });
   }
@@ -275,6 +310,7 @@ export class CommunityDocumentService {
     scope(principal);
     return this.lock(async () => {
       const index = await this.readIndex(); const record = this.find(index, principal, id);
+      if(action==='reject'&&record.status==='rejected'||action==='archive'&&record.status==='archived'||action==='restore'&&record.status!=='archived'&&record.history.at(-1)?.action==='restore')return record;
       if (action === 'reject' && record.status !== 'review') problem('INVALID_STATUS', 'Only review documents can be rejected');
       if (action === 'archive') {
         const accepted = [...this.options.getState().match_groups.values()].some(group => ['accepted','confirmed','manual'].includes(group.status) && group.document_ids.includes(id));
@@ -283,19 +319,20 @@ export class CommunityDocumentService {
       }
       if (action === 'restore' && record.status !== 'archived') problem('INVALID_STATUS', 'Only archived documents can be restored');
       if (action === 'archive' && record.status === 'archived') problem('INVALID_STATUS', 'Document is already archived');
+      const before=jsonCopy(record);
       if (action === 'archive') { record.archived_from = record.status as 'review' | 'confirmed' | 'rejected'; record.status = 'archived'; }
       else if (action === 'restore') { record.status = record.archived_from ?? 'review'; delete record.archived_from; }
       else record.status = 'rejected';
-      const expected = this.options.getState(); const existing = expected.documents.get(id);
+      const expected = this.options.getState(),next=cloneState(expected); const existing = expected.documents.get(id);
       if (existing && (action === 'archive' || action === 'restore')) {
-        const next = cloneState(expected);
         const meta: Record<string, unknown> = { ...existing.meta, document_review_status: action === 'archive' ? 'archived' : 'confirmed' };
         if (action === 'archive') { meta.accounting_status = 'cancelled'; meta.archived_by_documents = true; }
         else if (meta.archived_by_documents === true) { delete meta.accounting_status; delete meta.archived_by_documents; }
         next.documents.set(id, { ...existing, meta });
-        await this.options.persistAndActivate(expected, next, principal.subject);
       }
       record.history.push({ at: now(), actor: principal.subject, action });
+      this.auditReview(next,principal,action,before,record);
+      await this.options.persistAndActivate(expected,next,principal.subject);
       await this.writeIndex(index); return record;
     });
   }

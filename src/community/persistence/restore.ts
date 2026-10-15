@@ -1,4 +1,6 @@
 import Database from 'better-sqlite3';
+import {recoverAuditedDocumentReviews} from '../documents/review-audit.js';
+import type {AuditEvent} from '../../core/types.js';
 import { createHash, randomUUID } from 'node:crypto';
 import { closeSync, existsSync, fsyncSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -17,8 +19,9 @@ function fingerprint(root:string):string{
   const paths=['state/state.json','database/matching.db','database/matching.db-wal'];
   const statePath=join(root,'state','state.json');
   if(existsSync(statePath)){
-    const state=JSON.parse(regular(root,statePath).toString('utf8')) as {documents?:Record<string,{filename?:string;meta?:{attachment_path?:string}}>};
+    const state=JSON.parse(regular(root,statePath).toString('utf8')) as {audit_events?:AuditEvent[];documents?:Record<string,{filename?:string;meta?:{attachment_path?:string}}>};
     for(const doc of Object.values(state.documents??{})){const name=doc.meta?.attachment_path??doc.filename;if(name){safeArchivePath(name);paths.push('documents/'+name);}}
+    for(const record of recoverAuditedDocumentReviews(state.audit_events??[]))paths.push('documents/attachments/'+hash(record.workspace_id)+'/'+record.hash);
   }
   const indexPath=join(root,'documents','document-index-v1.json');
   if(existsSync(indexPath)){

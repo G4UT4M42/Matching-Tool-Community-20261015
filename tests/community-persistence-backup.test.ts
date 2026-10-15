@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync,truncateSync,readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
@@ -41,6 +41,19 @@ async function setup() {
 }
 afterEach(() => { close?.(); close = undefined; if (root) rmSync(root, { recursive: true, force: true }); delete process.env.MATCHING_RUNTIME_MODE; delete process.env.MATCHING_RUNTIME_ROOT; vi.resetModules(); });
 describe('Community backup artifact', () => {
+  it('rejects aggregate attachment size before reading or hashing oversized evidence into memory',async()=>{
+    const db=await setup(),raw=state();
+    for(const id of ['DOC-2','DOC-3']){
+      const filename=id+'.txt';raw.documents[id as 'DOC-1']={...raw.documents['DOC-1'],document_id:id,source_document_ref:id,filename};
+      db.prepare('INSERT INTO documents(document_id,source_system,source_document_ref,captured_at,document_date,total_amount_minor,currency_code,file_hash,filename) VALUES(?,?,?,?,?,?,?,?,?)').run(id,'upload',id,'2026-01-01','2026-01-01',1250,'EUR',raw.documents['DOC-1'].file_hash,filename);
+      writeFileSync(join(root,'documents',filename),'');
+    }
+    writeFileSync(join(root,'state','state.json'),JSON.stringify(raw));
+    // Sparse/extended synthetic files: no large buffers are allocated by this test.
+    for(const filename of ['synthetic.txt','DOC-2.txt','DOC-3.txt'])truncateSync(join(root,'documents',filename),180*1024*1024);
+    await expect(createCommunityBackup(root,exclusive)).rejects.toThrow('Backup aggregate size exceeds limit');
+    expect(readdirSync(join(root,'backups')).filter(name=>name.endsWith('.zip'))).toEqual([]);
+  });
   it('captures committed WAL rows, JSON, referenced document and excludes credential settings', async () => {
     const db = await setup();
     db.prepare("INSERT INTO settings (key,value) VALUES ('password','SYNTHETIC_SECRET')").run();
