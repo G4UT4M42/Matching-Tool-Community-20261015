@@ -1,6 +1,7 @@
 import { chmodSync, existsSync, lstatSync, mkdirSync, readdirSync } from 'node:fs';
 import { dirname, isAbsolute, join, parse, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import {trustedWindowsPowerShellEnvironment,trustedWindowsPowerShellPreamble} from '../core/windows-powershell.js';
 
 const identityMembers = new Set(['auth.sqlite', 'auth.sqlite-wal', 'auth.sqlite-shm']);
 const identityDirectories = new Set(['provider-vault','bank-vault','invoice-browsers']);
@@ -61,11 +62,10 @@ function verifyLocalPermissions(directory: string, created: boolean): void {
     const systemRoot = process.env.SystemRoot ?? process.env.SYSTEMROOT;
     if (!systemRoot || !isAbsolute(systemRoot)) throw new Error('The trusted Windows system directory is unavailable');
     const executable = join(systemRoot, 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe');
-    const environment: NodeJS.ProcessEnv = {};
-    for (const name of ['SystemRoot', 'SYSTEMROOT', 'WINDIR', 'SystemDrive', 'COMSPEC', 'TEMP', 'TMP', 'USERPROFILE', 'LOCALAPPDATA']) if (process.env[name]) environment[name] = process.env[name];
+    const environment=trustedWindowsPowerShellEnvironment();
     environment.MATCHING_AUTH_ACL_DIRECTORY = directory;
     environment.MATCHING_AUTH_ACL_CREATE = created ? 'true' : 'false';
-    const result = spawnSync(executable, ['-NoLogo', '-NoProfile', '-NonInteractive', '-Command', windowsAclScript], { env: environment, windowsHide: true, encoding: 'utf8', timeout: 15000, maxBuffer: 65536 });
+    const result = spawnSync(executable, ['-NoLogo', '-NoProfile', '-NonInteractive', '-Command', trustedWindowsPowerShellPreamble+windowsAclScript], { env: environment, windowsHide: true, encoding: 'utf8', timeout: 15000, maxBuffer: 65536 });
     if (result.error || result.status !== 0 || result.stdout.trim() !== 'AUTH_IDENTITY_ACL_VERIFIED') throw new Error('Private Windows identity storage permissions could not be verified');
     return;
   }

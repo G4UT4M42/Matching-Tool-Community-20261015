@@ -852,12 +852,14 @@
       "docs/MIGRATION_POLICY.md"
     ],
     "design": "Gate build/types/unit/financial/API/security/privacy/secrets/localization/schema/migration/restore/dependencies/licenses and artifact inspection in CI. Historical fixtures and recovery tests accompany persistence changes. Review and reconcile primary worktree CI changes without overwriting them. Verify actual GitHub runs rather than only YAML presence.",
-    "status": "BLOCKED_EXTERNAL",
+    "status": "IN_PROGRESS",
     "commit": "3819415",
     "evidence": [
       "packaging-validation.json",
       "candidate-packaging-source-binding-01.log",
-      "committed-app-01-vitest.json"
+      "committed-app-01-vitest.json",
+      "docs/feature-parity/GITHUB_INFRASTRUCTURE.md",
+      "Private repository creation and visibility independently verified; exact final CI conclusion is bound by the later external Acceptance addendum."
     ]
   },
   {

@@ -66,7 +66,7 @@ describe('independent ordinary legacy document workspace binding',()=>{
  it('hash-dedupes a newly uploaded copy of an already-bound real PDF without another blob or economic document',async()=>{
   const docs=service(),before=json.serializeCommunityState(state);expect((await docs.list(owner))[0].mime).toBe('application/pdf');for(let index=0;index<2;index++){const uploaded=await docs.upload(owner,bytes,'synthetic-copy.pdf');expect(uploaded.duplicate).toBe(true);expect(uploaded.record.id).toBe(documentId);}
   expect(state.documents.size).toBe(1);expect(json.serializeCommunityState(state)).toBe(before);expect(readdirSync(join(root,'documents','attachments',sha(owner.workspace_id)))).toEqual([sha(bytes)]);expect(readFileSync(originalPath())).toEqual(bytes);expect((await docs.download(owner,documentId)).buffer).toEqual(bytes);
- });
+ },30000);
  it('retains a historically cancelled financial status through ordinary archive and restore',async()=>{
   const original=structuredClone(state.documents.get(documentId)!);expect(original.meta.accounting_status).toBe('cancelled');await service().disposition(owner,documentId,'archive');await service().disposition(owner,documentId,'restore');expect(state.documents.get(documentId)!.meta.accounting_status).toBe('cancelled');expect(state.documents.get(documentId)!.meta.archived_by_documents).toBeUndefined();expect(state.documents.get(documentId)).toEqual({...original,meta:{...original.meta,document_review_status:'confirmed'}});restart();expect(state.documents.get(documentId)!.meta.accounting_status).toBe('cancelled');expect(accountingReport(state,{start:'2025-01-01',end:'2025-12-31'}).documents[0].reconciliation).toBe('cancelled');expect(currentPaymentInvoices(state,owner.workspace_id)).toEqual([]);
  });

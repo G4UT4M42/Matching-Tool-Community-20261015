@@ -2,6 +2,7 @@ import { constants } from 'node:fs';
 import { lstat, mkdir, open, chmod, readdir } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
+import {trustedWindowsPowerShellEnvironment,trustedWindowsPowerShellPreamble} from '../../core/windows-powershell.js';
 
 /** Sensitive files stay inside a regular, independently owned vault directory. */
 const aclCheck = String.raw`
@@ -70,13 +71,11 @@ async function directoryChain(directory: string): Promise<void> {
   }
 }
 function verifyWindowsAcl(directory: string, created: boolean, layout:'vault'|'browser-sessions'): void {
-  const names = ['SystemRoot', 'SYSTEMROOT', 'WINDIR', 'SystemDrive', 'USERPROFILE', 'TEMP', 'TMP', 'LOCALAPPDATA'];
-  const env: NodeJS.ProcessEnv = {};
-  for (const name of names) if (process.env[name]) env[name] = process.env[name];
+  const env=trustedWindowsPowerShellEnvironment();
   env.MATCHING_VAULT_DIRECTORY = directory;
   env.MATCHING_VAULT_NEW = created ? 'true' : 'false';
   env.MATCHING_VAULT_LAYOUT = layout;
-  const check = spawnSync(trustedWindowsPowerShell(), ['-NoLogo', '-NoProfile', '-NonInteractive', '-Command', aclCheck],
+  const check = spawnSync(trustedWindowsPowerShell(), ['-NoLogo', '-NoProfile', '-NonInteractive', '-Command', trustedWindowsPowerShellPreamble+aclCheck],
     { env, windowsHide: true, encoding: 'utf8', timeout: 15000, maxBuffer: 65536 });
   if (check.error || check.status !== 0 || check.stdout.trim() !== 'COMMUNITY_VAULT_ACL_VERIFIED') {
     throw new Error('UNSAFE_VAULT_STORAGE');

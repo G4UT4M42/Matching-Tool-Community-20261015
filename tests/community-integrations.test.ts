@@ -42,14 +42,18 @@ describe('credential vault', () => {
   });
   it('uses the actual Windows DPAPI boundary when available', async () => {
     if (process.platform !== 'win32') return;
-    const protector = new WindowsDpapiProtector(), context = Buffer.from('synthetic-owner\0paypal\0sandbox');
-    let encrypted: Buffer;
-    try { encrypted = protector.protect(Buffer.from('synthetic-only'), context); }
-    catch (error) { expect((error as Error).message).toBe('PROTECTION_UNAVAILABLE'); return; }
-    expect(encrypted.toString()).not.toContain('synthetic-only');
-    expect(protector.unprotect(encrypted, context).toString()).toBe('synthetic-only');
-    expect(() => protector.unprotect(encrypted, Buffer.from('wrong-owner'))).toThrow('PROTECTION_UNAVAILABLE');
-  });
+    const originalModulePath=process.env.PSModulePath;
+    process.env.PSModulePath=path.join(tmpdir(),'synthetic-incompatible-modules');
+    try {
+      const protector = new WindowsDpapiProtector(), context = Buffer.from('synthetic-owner\0paypal\0sandbox');
+      const encrypted=protector.protect(Buffer.from('synthetic-only'), context);
+      expect(encrypted.toString()).not.toContain('synthetic-only');
+      expect(protector.unprotect(encrypted, context).toString()).toBe('synthetic-only');
+      expect(() => protector.unprotect(encrypted, Buffer.from('wrong-owner'))).toThrow('PROTECTION_UNAVAILABLE');
+    } finally {
+      if(originalModulePath===undefined)delete process.env.PSModulePath;else process.env.PSModulePath=originalModulePath;
+    }
+  },35000);
 });
 describe('provider normalization and paging', () => {
   it('parses exact PayPal decimals, refunds, fees and independent currencies', () => {

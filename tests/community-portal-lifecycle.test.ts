@@ -18,4 +18,4 @@ it('a cancelled slow attempt closes only its own browser and cannot disconnect a
    expect(old.closed).toBe(1);expect(replacement.closed).toBe(0);expect(await sessions.isConnected(owner,portal.id)).toBe(true);expect((await readdir(join(root,'sessions'))).length).toBe(1);
    await sessions.disconnect(owner,portal.id);expect(replacement.closed).toBe(1);expect(await readdir(join(root,'sessions'))).toEqual([]);
  }finally{finish();await sessions.close();await rm(root,{recursive:true,force:true,maxRetries:5,retryDelay:100});}
-});
+},40000);

@@ -5,6 +5,7 @@ import { chmod, open, rm } from 'node:fs/promises';
 import { inspectVaultMember, readVaultMember, secureVaultDirectory, trustedWindowsPowerShell } from './vault-files.js';
 import path from 'node:path';
 import { assertEnvironment, assertPrincipal, assertProvider, type Environment, type Principal, type Provider } from './types.js';
+import {trustedWindowsPowerShellEnvironment,trustedWindowsPowerShellPreamble} from '../../core/windows-powershell.js';
 
 export interface KeyProtector { protect(plain: Buffer, context: Buffer): Buffer; unprotect(cipher: Buffer, context: Buffer): Buffer }
 const dpapiScript = `$ErrorActionPreference='Stop'
@@ -20,7 +21,8 @@ else { exit 3 }
 export class WindowsDpapiProtector implements KeyProtector {
   private run(operation: 'protect' | 'unprotect', data: Buffer, context: Buffer): Buffer {
     if (process.platform !== 'win32') throw new Error('PROTECTION_UNAVAILABLE');
-    const result = spawnSync(trustedWindowsPowerShell(), ['-NoProfile', '-NonInteractive', '-Command', dpapiScript], {
+    const result = spawnSync(trustedWindowsPowerShell(), ['-NoProfile', '-NonInteractive', '-Command', trustedWindowsPowerShellPreamble+dpapiScript], {
+      env:trustedWindowsPowerShellEnvironment(),
       input: JSON.stringify({ operation, data: data.toString('base64'), entropy: context.toString('base64') }), encoding: 'utf8', timeout: 10000, maxBuffer: 1024 * 1024, windowsHide: true,
     });
     if (result.status !== 0 || !/^[A-Za-z0-9+/]+={0,2}$/.test(result.stdout.trim())) throw new Error('PROTECTION_UNAVAILABLE');
