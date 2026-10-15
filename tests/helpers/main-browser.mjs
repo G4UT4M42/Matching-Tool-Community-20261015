@@ -66,8 +66,8 @@ export async function mainBrowser(name,{entrypoint='src/server/index.ts',package
   }catch(error){if(browser)await browser.close();await stop();rmSync(temp,{force:true,recursive:true,maxRetries:10,retryDelay:100});throw error;}
   const fill=async(selector,value)=>{await page.waitForSelector(selector);await page.click(selector);await page.keyboard.down('Control');await page.keyboard.press('KeyA');await page.keyboard.up('Control');await page.keyboard.press('Backspace');await page.type(selector,String(value));assert.equal(await page.$eval(selector,node=>node.value),String(value));};
   const click=async(text,scope='body')=>{
-    await page.waitForFunction((text,scope)=>[...document.querySelector(scope).querySelectorAll('button')].some(button=>button.textContent?.trim()===text&&!button.disabled),{},text,scope);
-    await page.evaluate((text,scope)=>{const button=[...document.querySelector(scope).querySelectorAll('button')].find(button=>button.textContent?.trim()===text&&!button.disabled);if(!button)throw new Error('Enabled button disappeared');button.click();},text,scope);
+    await page.waitForFunction((text,scope)=>[...document.querySelector(scope).querySelectorAll('button')].some(button=>button.textContent?.trim()===text&&!button.matches(':disabled')),{},text,scope);
+    await page.evaluate((text,scope)=>{const button=[...document.querySelector(scope).querySelectorAll('button')].find(button=>button.textContent?.trim()===text&&!button.matches(':disabled'));if(!button)throw new Error('Enabled button disappeared');button.click();},text,scope);
   };
   const screenshot=async(label)=>{const path=join(evidence,label+'.png');await page.screenshot({path,fullPage:true});screenshots.push({name:label,sha256:sha(readFileSync(path))});};
   const read=async(path)=>page.evaluate(async path=>{const response=await fetch('/api'+path);return{status:response.status,data:await response.json()};},path);
