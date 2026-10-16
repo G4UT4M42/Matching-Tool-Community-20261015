@@ -1,4 +1,6 @@
-# Synthetic offline staging admission — qualification record
+# Synthetic offline staging admission — historical qualification record
+
+Historical scope note (2026-10-16): this record describes the isolated 2026-10-13 staging preview. Its unavailable-backup/migration statements below apply to that snapshot, before the later Community canonical backup, restore and owner-reviewed migration implementation. Current contracts and candidate qualification are recorded in [persistence implementation](feature-parity/persistence-implementation.md) and [current status](feature-parity/STATUS.md). This note does not promote release or software acceptance.
 
 Date: 2026-10-13
 Scope: isolated Community release-preparation branch, synthetic fixture datasets only.

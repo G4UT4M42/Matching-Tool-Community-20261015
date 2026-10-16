@@ -23,6 +23,8 @@ import { CredentialVault } from '../community/integrations/vault.js';
 import { IntegrationService } from '../community/integrations/service.js';
 import { prepareProviderImport } from '../community/integrations/canonical-import.js';
 import { createCommunityIntegrationsRouter,type IntegrationOperationEntry } from './routes/community-integrations.js';
+import {preparePayoutObservation,storedPayoutReports} from '../community/integrations/payout-evidence.js';
+import {validPayoutId} from '../community/integrations/stripe-payout.js';
 import type { Transport } from '../community/integrations/types.js';
 import { currentPaymentInvoices, provedPaymentReconciliation } from '../community/payments/community-evidence.js';
 import { communitySimulatedPaymentAdapter } from '../community/payments/simulated-adapter.js';
@@ -53,6 +55,8 @@ export const COMMUNITY_WORKSPACE_ROUTES:readonly CommunityRouteRule[]=[
   rule('POST','^/community/documents/'+id+'/(?:confirm|reject|archive|restore)$','documents:write'),
   rule('GET','^/community/integrations/(?:paypal/(?:sandbox|live)|stripe/(?:test|live))$','integrations:read'),
   rule('GET','^/community/integrations/(?:paypal/(?:sandbox|live)|stripe/(?:test|live))/history$','integrations:read'),
+  rule('GET','^/community/integrations/stripe/(?:test|live)/payouts(?:/po_[A-Za-z0-9]{1,128})?$','integrations:read'),
+  rule('POST','^/community/integrations/stripe/(?:test|live)/payouts/reconcile$','integrations:sync'),
   rule('PUT','^/community/integrations/(?:paypal/(?:sandbox|live)|stripe/(?:test|live))$','integrations:configure'),
   rule('POST','^/community/integrations/(?:paypal/(?:sandbox|live)|stripe/(?:test|live))/test$','integrations:configure'),
   rule('POST','^/community/integrations/(?:paypal/(?:sandbox|live)|stripe/(?:test|live))/sync$','integrations:sync'),
@@ -173,6 +177,13 @@ export function createCommunityWorkspace(options:WorkspaceOptions){
         if(typeof row.meta.provider_source_event_key==='string')known.add(row.meta.provider_source_event_key);
         else if(typeof row.booking_reference==='string')known.add(row.currency_code+':'+row.booking_reference);
       }return seen.every(key=>known.has(key));
+    },
+    payoutEvidence:{
+      list:({principal,environment,account})=>{const actor=requireCurrent('integrations:read');if(actor.subject!==principal.subject)throw new Error('UNAUTHENTICATED');const state=options.getState(),discoveredIds=new Set<string>();
+        for(const row of state.transactions.values())if(row.source_system==='stripe'&&row.source_account_id===account+':'+environment&&row.tags.includes('provider-import')&&!row.tags.includes('provider-fee')&&row.meta.provider_classification==='payout'&&validPayoutId(row.payment_reference))discoveredIds.add(row.payment_reference);
+        return{reports:storedPayoutReports(state,actor.subject,environment,account),discoveredIds:[...discoveredIds]};
+      },
+      commit:({principal,evidence,observedAt,guard})=>{const actor=requireCurrent('integrations:sync');if(actor.subject!==principal.subject)throw new Error('UNAUTHENTICATED');guard();const before=options.getState(),prepared=preparePayoutObservation(before,actor.subject,evidence,observedAt);if(!prepared.replayed)commit(before,prepared.state,actor.subject);return{report:prepared.report,replayed:prepared.replayed};},
     },
   });
   const withExclusiveAccess:Exclusive=async operation=>{

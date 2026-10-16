@@ -1,16 +1,19 @@
 import { asObject, currencyCode, safeInteger, type CanonicalTransaction, type Environment, type Transport } from './types.js';
 import { requestJson } from './http.js';
 import {providerAccountIdentity} from './provider-account.js';
+import {readStripePayout,validPayoutId} from './stripe-payout.js';
 
 export class StripeClient {
   constructor(private key: string, private environment: Environment, private transport: Transport) {
     if (environment !== 'test' && environment !== 'live' || !new RegExp(`^rk_${environment}_[A-Za-z0-9]{8,}$`).test(key)) throw new Error('INVALID_CREDENTIALS');
   }
-  private async accountIdentity():Promise<string>{
-    const account=asObject(await requestJson(this.transport,{method:'GET',url:'https://api.stripe.com/v1/account',headers:{Authorization:`Bearer ${this.key}`,Accept:'application/json'}}));
+  private async accountIdentity(transport=this.transport):Promise<string>{
+    const account=asObject(await requestJson(transport,{method:'GET',url:'https://api.stripe.com/v1/account',headers:{Authorization:`Bearer ${this.key}`,Accept:'application/json'}}));
     if(account.object!=='account')throw new Error('PROVIDER_ACCOUNT_UNAVAILABLE');
     return providerAccountIdentity('stripe',this.environment,account.id);
   }
+  async identifyAccount():Promise<string>{return this.accountIdentity();}
+  async reconcilePayout(payoutId:string,guard:()=>void=()=>{}){if(!validPayoutId(payoutId))throw new Error('INVALID_PAYOUT_ID');const transport:Transport=async request=>{guard();const response=await this.transport(request);guard();return response;};guard();const account=await this.accountIdentity(transport);guard();return readStripePayout(this.key,this.environment,account,payoutId,transport,guard);}
   async *pages(start: Date, end: Date, _localSubject?: string): AsyncGenerator<{transactions: CanonicalTransaction[]; checkpoint: string}> {
     if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || start >= end) throw new Error('INVALID_DATE_WINDOW');
     const account=await this.accountIdentity();

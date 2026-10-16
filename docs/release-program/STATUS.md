@@ -1,4 +1,21 @@
-# Authoritative release execution status
+# Release execution status and historical baseline
+
+Current private internal development update (2026-10-16): the active checkout is
+`<isolated-worktrees>/Matching-Community-Payout-Completion-20261016`, branch
+`community/payout-finalization-20261016`. AIS consent and PayPal financial
+corrections are committed at 9ae; app571/571 passed and its Node suite was still
+running at this update. New standard-automatic Stripe payout reconciliation is
+implemented and focused-tested; its logical commit and complete exact-candidate
+qualification remain pending. See [current status](../feature-parity/STATUS.md)
+and [payout contract](../feature-parity/STRIPE_PAYOUT_RECONCILIATION.md).
+
+A separate PRIVATE Community repository and sealed-fbf hosted CI already exist.
+Do not infer newer-source CI from that result. Owner-selected scope is private
+internal use; pristine Windows VM testing is OWNER_DEFERRED. Ownership/MIT
+authority remains unverified; no legal/public/redistribution acceptance is
+inferred. Provider live authority is separate from supported local code.
+
+## Historical 2026-10-13 baseline (retained unchanged in scope)
 
 Date: 2026-10-13 (Europe/Vienna)
 Repository: Matching Tool Community isolated worktree
@@ -15,19 +32,19 @@ Public release: **NOT_READY**; visibility change not approved.
 - Backend/frontend typecheck PASS; Vite build PASS; privacy scan PASS.
 - Initial Node 24 attempt failed 3 native SQLite tests due ABI mismatch, not adjudicated application defects.
 
-## Currently executing
+## Execution at the historical baseline
 - P00 release-program inventory/checkpoint documentation and security/privacy follow-up.
 - No phase beyond baseline qualified; all P01-P14 release gates remain open.
 - Source-license provenance, functional migration, browser E2E, tax/report validation and publication remain blocked.
 
-## Immediate next packages
+## Next packages at the historical baseline
 1. P01-B remove private owner-specific terms from publicly tracked scanner and test the private-blocklist mechanism.
 2. P03-A positive API route policy and negative tests.
 3. P05-A per-store versioning plus forward migration fixtures.
 4. P06-A classify legacy SQLite/JSON data, no credential leakage.
 5. P12-A CI build and synthetic regression gates.
 
-## Owner-only gates
+## Owner-only gates recorded at the historical baseline
 Rights verification/MIT final decision; any private dry run with real records; permission to publish public. These are never inferred from a generic execution prompt.
 
 **Do not report Done unless `03_ACCEPTANCE_MATRIX.md` is fully evidenced.**

@@ -21,6 +21,16 @@ export interface CanonicalTransaction {
   providerUpdatedAt?: string;
 }
 export interface Checkpoint { cursor: string | null; seen: string[] }
+export interface StripePayoutComponent {reference:string;providerType:string;reportingCategory:string;classification:CanonicalTransaction['classification'];sourceReference:string|null;occurredAt:string;amountMinor:number;feeMinor:number;netMinor:number}
+export interface StripePayoutEvidence {
+  payoutId:string;account:string;environment:'test'|'live';status:'pending'|'reconciled'|'unsupported'|'unreconciled';
+  reason?:'PAYOUT_MANUAL_UNSUPPORTED'|'PAYOUT_INSTANT_UNSUPPORTED'|'PAYOUT_MEMBERSHIP_UNAVAILABLE'|'PAYOUT_NOT_PAID'|'PAYOUT_RECONCILIATION_PENDING'|'PAYOUT_TOTAL_MISMATCH';
+  currency:string;amountMinor:number;automatic:boolean;method:'standard'|'instant';providerStatus:'paid'|'pending'|'in_transit'|'canceled'|'failed';reconciliationStatus:'completed'|'in_progress'|'not_applicable';
+  payoutBalanceTransaction:string|null;componentCount:number;totals:{grossMinor:number;feeMinor:number;netMinor:number};components:StripePayoutComponent[];
+  requiredFundingMinor:number|null;settlementFeeMinor:number|null;residualMinor:number|null;
+  payoutLeg:(StripePayoutComponent&{includedInListing:boolean})|null;
+}
+export interface StripePayoutReport extends StripePayoutEvidence {observationId:string;observedAt:string}
 export interface CommitBatch {
   (input: {principal: Principal; provider: Provider; environment: Environment; transactions: CanonicalTransaction[]; checkpoint: Checkpoint}): Promise<void | number>
 }
@@ -57,5 +67,6 @@ const publicErrors = new Set([
   'PROVIDER_PAGINATION_LOOP', 'PROVIDER_PAGINATION_LIMIT', 'CHECKPOINT_UNAVAILABLE', 'CHECKPOINT_CAPACITY', 'CREDENTIAL_UNAVAILABLE', 'PROTECTION_UNAVAILABLE',
   'PROVIDER_ACCOUNT_UNAVAILABLE', 'PROVIDER_ACCOUNT_CHANGED', 'PROVIDER_ACCOUNT_BINDING_REQUIRED',
   'CHECKPOINT_BACKFILL_REQUIRED', 'PROVIDER_TRANSACTION_PENDING', 'PROVIDER_TRANSACTION_INCOMPLETE', 'PROVIDER_SOURCE_CONFLICT', 'PROVIDER_SOURCE_COLLISION',
+  'INVALID_PAYOUT_ID','PAYOUT_NOT_FOUND','PAYOUT_EVIDENCE_UNAVAILABLE','PAYOUT_SOURCE_CONFLICT','PAYOUT_CURRENCY_MISMATCH','PAYOUT_ACCOUNT_BINDING_REQUIRED',
 ]);
 export function publicErrorCode(error: unknown): string { const message = error instanceof Error ? error.message : ''; return publicErrors.has(message) ? message : 'INTEGRATION_FAILED'; }

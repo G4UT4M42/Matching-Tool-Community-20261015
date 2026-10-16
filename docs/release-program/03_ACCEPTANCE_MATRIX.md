@@ -1,5 +1,15 @@
 # Release acceptance and evidence matrix
 
+Current update (2026-10-16): private internal development uses branch
+`community/payout-finalization-20261016`. The separate private repository and
+sealed-fbf hosted CI are verified. AIS consent and PayPal corrections are in
+9ae (app571/571; its complete Node run pending at this update); newest Stripe
+payout reconciliation has focused implementation evidence but is not yet
+committed/full-qualified. Current software acceptance remains pending, and
+provider live acceptance, ownership/MIT facts and owner-deferred VM qualification
+are distinct. No public or third-party redistribution is authorized by this
+record. See [current status](../feature-parity/STATUS.md).
+
 > Historical 2026-10-13 baseline retained for provenance. Current qualification supersedes its package versions, counts and unfinished-function statements; see [../feature-parity/STATUS.md](../feature-parity/STATUS.md). This historical table is not current acceptance.
 | Phase | Required objective | Evidence presently available | Status |
 |---|---|---|---|

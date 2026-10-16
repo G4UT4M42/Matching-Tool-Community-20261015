@@ -2,7 +2,7 @@
   "format": "matching-community-source-map-v1",
   "source_representation": "Canonical Git index blobs (line-ending independent)",
   "scope": "Tracked Community implementation source; legacy v2_source inventory remains a frozen reference, not runtime acceptance.",
-  "source_content_sha256": "3a64799a0efbf606fa23f4e53a6f47a507a5b34a9232ffb58540743d70554b8c",
+  "source_content_sha256": "86eaed1db3b90efcad2ea531b906eab964ad4554a4453740ad6b19f86da55291",
   "files": [
     {
       "path": "src/app/cli.ts",
@@ -233,6 +233,16 @@
       ]
     },
     {
+      "path": "src/community/integrations/payout-evidence.ts",
+      "sha256": "9f58878dcdf6adcbe1682c2a2e67bed1356f68be895e660ea7e267c0754f4d88",
+      "bytes": 8806,
+      "exports": [
+        "checkedPayoutEvidence",
+        "storedPayoutReports",
+        "preparePayoutObservation"
+      ]
+    },
+    {
       "path": "src/community/integrations/paypal-event.ts",
       "sha256": "31a2d0290a029b592d7b5cd98b18bee1e68c05fbdefb571064a04eadf5c5f2ae",
       "bytes": 1020,
@@ -260,17 +270,27 @@
     },
     {
       "path": "src/community/integrations/service.ts",
-      "sha256": "5ebbb55adffa7f7188059988b9e04dcc37717675562b764853c7c0cc4b25f5f0",
-      "bytes": 15228,
+      "sha256": "0080b918a15a22bbe6b94011e1152396b2dba22363a0da0c3dd4a482e7c3b02f",
+      "bytes": 19984,
       "exports": [
         "IntegrationGuards",
         "IntegrationService"
       ]
     },
     {
+      "path": "src/community/integrations/stripe-payout.ts",
+      "sha256": "0b9bf7fe3e124ed62c11d9b6b9c21cd38192c52fe8b8edcff54418d37dfc5957",
+      "bytes": 7534,
+      "exports": [
+        "validPayoutId",
+        "stripePayoutClassification",
+        "readStripePayout"
+      ]
+    },
+    {
       "path": "src/community/integrations/stripe.ts",
-      "sha256": "f4291743f35b596cb415bad175cbd4d7c11c9c66d687f6347110a000f8d7e807",
-      "bytes": 4088,
+      "sha256": "7dd4c896792e098850c0b3a2227fc7b13d95a6f22eaaca587cf7d0d2f5eff9c3",
+      "bytes": 4651,
       "exports": [
         "StripeClient",
         "normalizeStripe"
@@ -278,8 +298,8 @@
     },
     {
       "path": "src/community/integrations/types.ts",
-      "sha256": "5acf20b913b747b3eb51f16e5242f4ae8fbb9259153873fc2797f7472090fbb3",
-      "bytes": 4541,
+      "sha256": "1924bd08ddb45aab78e2b0ea690b77b77fd1d3925c60cea4c16fe1076f59fa32",
+      "bytes": 5926,
       "exports": [
         "Provider",
         "Environment",
@@ -287,6 +307,9 @@
         "Principal",
         "CanonicalTransaction",
         "Checkpoint",
+        "StripePayoutComponent",
+        "StripePayoutEvidence",
+        "StripePayoutReport",
         "CommitBatch",
         "HttpRequest",
         "HttpResponse",
@@ -2043,8 +2066,8 @@
     },
     {
       "path": "src/server/community-workspace.ts",
-      "sha256": "a3a8f833f4e683c206ad1fc98eae6985aaa86076165043da979c85b627b04a96",
-      "bytes": 30627,
+      "sha256": "02d9e75d08064de2d80a7f519f68e5370c0866522679209e022e2ac6f078c788",
+      "bytes": 32168,
       "exports": [
         "COMMUNITY_WORKSPACE_ROUTES",
         "WorkspaceOptions",
@@ -2106,8 +2129,8 @@
     },
     {
       "path": "src/server/routes/community-integrations.ts",
-      "sha256": "e0bc38d968a137dcf451c1e61cf3b01101b08b7ff72fad451854449f9447237b",
-      "bytes": 8394,
+      "sha256": "94578ad31da940740b3b8ba960f4746e6e4510d5cfe2fa8939142dcb9ed54eed",
+      "bytes": 9509,
       "exports": [
         "PermissionPredicate",
         "IntegrationOperation",
@@ -2570,6 +2593,15 @@
       ]
     },
     {
+      "path": "web/src/i18n/community-payouts.ts",
+      "sha256": "c50bb98568e49810848c5601a967fb6523cf77a0fde3e9f1e69694628dc1d324",
+      "bytes": 5552,
+      "exports": [
+        "payoutText",
+        "payoutReasonText"
+      ]
+    },
+    {
       "path": "web/src/i18n/community-persistence.ts",
       "sha256": "93d4d4cb9a30d545cf966da9994eb2153c8317e210d322cd0d7120f3e3a3572e",
       "bytes": 5039,
@@ -2703,8 +2735,8 @@
     },
     {
       "path": "web/src/pages/CommunityIntegrations.tsx",
-      "sha256": "2cb79f1be7d82378db16d2a40d0f2f1ddf3d425ff8eb31458401deca93003216",
-      "bytes": 10780,
+      "sha256": "259369af5b3ca407cab12d5e06da1e4231ecb30559011c30fe405a06c2dd7ed6",
+      "bytes": 11441,
       "exports": [
         "CommunityIntegrations"
       ]
@@ -2855,6 +2887,14 @@
       ]
     },
     {
+      "path": "web/src/pages/StripePayoutReconciliation.tsx",
+      "sha256": "4a439296e96205177a75e993a225956f848d971a3d236336b9f282ea26566505",
+      "bytes": 6732,
+      "exports": [
+        "StripePayoutReconciliation"
+      ]
+    },
+    {
       "path": "web/src/pages/Transactions.tsx",
       "sha256": "4ea6800355ddece695f7067ae83239c961cf58011ba3327f9d227296b297dfa6",
       "bytes": 86441,
@@ -2868,6 +2908,21 @@
       "bytes": 31517,
       "exports": [
         "VatReport"
+      ]
+    },
+    {
+      "path": "web/src/payout-contract.ts",
+      "sha256": "ad46398eed9e3d8a1d731329f0e3570a5a28a7686a80be68ab0b9f9d2dc71364",
+      "bytes": 8250,
+      "exports": [
+        "PayoutStatus",
+        "PayoutSummary",
+        "PayoutComponent",
+        "PayoutReport",
+        "isPayoutId",
+        "payoutSummary",
+        "payoutList",
+        "payoutReport"
       ]
     }
   ],
@@ -2918,6 +2973,18 @@
       "method": "GET",
       "pattern": "^\\/community\\/integrations\\/(?:paypal\\/(?:sandbox|live)|stripe\\/(?:test|live))\\/history$",
       "permission": "integrations:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/community\\/integrations\\/stripe\\/(?:test|live)\\/payouts(?:\\/po_[A-Za-z0-9]{1,128})?$",
+      "permission": "integrations:read",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community\\/integrations\\/stripe\\/(?:test|live)\\/payouts\\/reconcile$",
+      "permission": "integrations:sync",
       "recent_authentication": false
     },
     {

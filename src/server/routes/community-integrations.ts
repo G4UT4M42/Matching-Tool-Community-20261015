@@ -5,7 +5,7 @@ import { hasCommunityPermission, type CommunityPrincipal } from '../community-pe
 import { assertEnvironment, assertPrincipal, assertProvider, publicErrorCode, type Environment, type Permission, type Principal, type Provider } from '../../community/integrations/types.js';
 
 export type PermissionPredicate = (principal: CommunityPrincipal, permission: Permission) => boolean | Promise<boolean>;
-export type IntegrationOperation = 'configure' | 'test' | 'sync' | 'disconnect';
+export type IntegrationOperation = 'configure' | 'test' | 'sync' | 'disconnect' | 'payout-reconcile';
 export interface IntegrationHistoryScope { subject:string; workspace_id:string; provider:Provider; environment:Environment }
 export interface IntegrationOperationEntry extends IntegrationHistoryScope {
   id:string; operation_id:string; occurred_at:string; operation:IntegrationOperation;
@@ -21,7 +21,7 @@ const uuid=/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i;
 function historyEntry(raw:IntegrationOperationEntry,scope:IntegrationHistoryScope):IntegrationOperationEntry|null {
   if(!raw||raw.subject!==scope.subject||raw.workspace_id!==scope.workspace_id||raw.provider!==scope.provider||raw.environment!==scope.environment||
     typeof raw.id!=='string'||!uuid.test(raw.id)||typeof raw.operation_id!=='string'||!uuid.test(raw.operation_id)||typeof raw.occurred_at!=='string'||raw.occurred_at.length>64||!Number.isFinite(Date.parse(raw.occurred_at))||
-    !['configure','test','sync','disconnect'].includes(raw.operation)||
+    !['configure','test','sync','disconnect','payout-reconcile'].includes(raw.operation)||
     !(raw.phase==='started'&&raw.outcome==='started'||raw.phase==='completed'&&['succeeded','failed'].includes(raw.outcome)))return null;
   return {...scope,id:raw.id,operation_id:raw.operation_id,occurred_at:raw.occurred_at,operation:raw.operation,phase:raw.phase,outcome:raw.outcome,
     ...(raw.phase==='completed'&&raw.outcome==='failed'?{code:publicErrorCode(new Error(typeof raw.code==='string'?raw.code:''))}:{}),
@@ -67,7 +67,7 @@ export function createCommunityIntegrationsRouter(service: IntegrationService, p
         res.json(result);
       } catch (error) {
         const code = error instanceof Error&&error.message==='INTEGRATION_HISTORY_UNAVAILABLE'?'INTEGRATION_HISTORY_UNAVAILABLE':publicErrorCode(error);
-        const status = code==='INTEGRATION_HISTORY_UNAVAILABLE'?503:code.startsWith('INVALID_') ? 400 : code === 'NOT_CONFIGURED' ? 404 : code === 'INTEGRATION_BUSY' ? 409 : 502;
+        const status = code==='INTEGRATION_HISTORY_UNAVAILABLE'||code==='PAYOUT_EVIDENCE_UNAVAILABLE'?503:code.startsWith('INVALID_') ? 400 : ['NOT_CONFIGURED','PAYOUT_NOT_FOUND'].includes(code) ? 404 : code === 'INTEGRATION_BUSY' ? 409 : 502;
         res.status(status).json({ code });
       }
     };
@@ -78,6 +78,9 @@ export function createCommunityIntegrationsRouter(service: IntegrationService, p
       return{items:found.map(raw=>historyEntry(raw,scope)).filter((item):item is IntegrationOperationEntry=>item!==null).sort((a,b)=>b.occurred_at.localeCompare(a.occurred_at)).slice(0,100)};
     }catch{throw new Error('INTEGRATION_HISTORY_UNAVAILABLE');}
   }));
+  router.get('/:provider/:environment/payouts',route('integrations:read',async(req,principal)=>{if(req.params.provider!=='stripe')throw new Error('INVALID_PROVIDER');return service.payouts(principal,req.params.environment as Environment);}));
+  router.get('/:provider/:environment/payouts/:payoutId',route('integrations:read',async(req,principal)=>{if(req.params.provider!=='stripe')throw new Error('INVALID_PROVIDER');return service.payout(principal,req.params.environment as Environment,req.params.payoutId as string);}));
+  router.post('/:provider/:environment/payouts/reconcile',route('integrations:sync',async(req,principal)=>{if(req.params.provider!=='stripe')throw new Error('INVALID_PROVIDER');if(!req.body||typeof req.body!=='object'||Array.isArray(req.body)||Object.keys(req.body).join(',')!=='payoutId'||typeof req.body.payoutId!=='string')throw new Error('INVALID_PAYOUT_ID');return service.reconcilePayout(principal,req.params.environment as Environment,req.body.payoutId);},'payout-reconcile'));
   router.get('/:provider/:environment', route('integrations:read', async (req, principal) => {
     return service.status(principal, assertProvider(req.params.provider), assertEnvironment(assertProvider(req.params.provider), req.params.environment));
   }));

@@ -16,7 +16,7 @@ const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 async function freePort(){const listener=createServer();await new Promise((ok,fail)=>{listener.once('error',fail);listener.listen(0,'127.0.0.1',ok);});const port=listener.address().port;await new Promise(ok=>listener.close(ok));return port;}
 export async function mainBrowser(name,{entrypoint='src/server/index.ts',packageDirectory}={}){
   if(!/^[a-z0-9-]{1,60}$/.test(name))throw new Error('Invalid synthetic test name');
-  if(!['src/server/index.ts','tests/helpers/integrated-server.mjs','tests/helpers/portal-evidence-server.mjs','tests/helpers/banking-server.mjs'].includes(entrypoint))throw new Error('Unreviewed test server entrypoint');
+  if(!['src/server/index.ts','tests/helpers/integrated-server.mjs','tests/helpers/portal-evidence-server.mjs','tests/helpers/banking-server.mjs','tests/helpers/payout-server.mjs'].includes(entrypoint))throw new Error('Unreviewed test server entrypoint');
   if(packageDirectory&&entrypoint==='tests/helpers/portal-evidence-server.mjs')throw new Error('The receipt fixture composition is source-only and cannot claim installed application qualification');
   const temp=mkdtempSync(join(tmpdir(),'matching-real-'+name+'-'));
   const runtime=join(temp,'runtime'),downloads=join(temp,'downloads');mkdirSync(runtime);mkdirSync(downloads);
@@ -42,7 +42,7 @@ export async function mainBrowser(name,{entrypoint='src/server/index.ts',package
     delete env.MATCHING_LOCAL_ACCESS_TOKEN;delete env.MATCHING_OCR_LANGUAGE_DIR;
     const serverEntry=entrypoint==='src/server/index.ts'?join(applicationRoot,entrypoint):join(repository,entrypoint);
     const program=packageDirectory?join(applicationRoot,'runtime','node.exe'):process.execPath;
-    const child=spawn(program,['--import','tsx',serverEntry,...(['tests/helpers/integrated-server.mjs','tests/helpers/banking-server.mjs'].includes(entrypoint)?[applicationRoot]:[])],{cwd:applicationRoot,env,windowsHide:true,stdio:['ignore','pipe','pipe']});
+    const child=spawn(program,['--import','tsx',serverEntry,...(['tests/helpers/integrated-server.mjs','tests/helpers/banking-server.mjs','tests/helpers/payout-server.mjs'].includes(entrypoint)?[applicationRoot]:[])],{cwd:applicationRoot,env,windowsHide:true,stdio:['ignore','pipe','pipe']});
     const result={child,log:''};for(const stream of[child.stdout,child.stderr])stream.on('data',bytes=>{result.log=(result.log+bytes).slice(-65536);});return result;
   };
   const ready=async()=>{for(let n=0;n<150;n++){if(server.child.exitCode!==null)throw new Error('Actual server exited: '+server.log);try{const response=await fetch(origin+'/health',{signal:AbortSignal.timeout(1000)});if(response.ok)return;}catch{}await pause(100);}throw new Error('Actual server readiness deadline exceeded');};

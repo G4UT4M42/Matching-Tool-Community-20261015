@@ -33,7 +33,14 @@ async function start(dbPath,fake){
   const app=express();app.use(express.json());app.use((_req,res,next)=>{res.locals.communityPrincipal=principal;next()});app.use('/api/community-payments',createCommunityPaymentsRouter(service));app.use(vite.middlewares);
   app.get('/',async(_req,res)=>res.type('html').send(await vite.transformIndexHtml('/',html)));
   const server=app.listen(0,'127.0.0.1');await new Promise(ok=>server.once('listening',ok));const address=server.address();
-  return {db,service,vite,server,base:`http://127.0.0.1:${address.port}`,async stop(){await new Promise((ok,fail)=>server.close(err=>err?fail(err):ok()));await vite.close();db.close()}};
+  return {db,service,vite,server,base:`http://127.0.0.1:${address.port}`,async stop(){
+    // Close the test-owned HMR websocket before waiting for HTTP shutdown.
+    // server.close() alone can otherwise wait for Vite's upgraded connection.
+    await vite.close();
+    const stopped=new Promise((ok,fail)=>server.close(err=>err?fail(err):ok()));
+    server.closeAllConnections();
+    await stopped;db.close();
+  }};
 }
 async function click(page,label){const buttons=await page.$$('button');for(const button of buttons){if((await button.evaluate(el=>el.textContent||'')).trim()===label){await button.click();return}}throw new Error(`Button missing: ${label}`)}
 async function waitStatus(page,status){await page.waitForFunction(s=>[...document.querySelectorAll('article p')].some(el=>el.textContent?.includes(`Status: ${s}`)||el.textContent?.includes(`Status: ${s}`)),{},status)}

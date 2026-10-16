@@ -1,0 +1,35 @@
+import {it,expect} from 'vitest';
+import {payoutReport,payoutList} from '../web/src/payout-contract';
+import express from 'express';
+import {build} from 'esbuild';
+import {mkdtempSync,mkdirSync,existsSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join,resolve} from 'node:path';
+import puppeteer from 'puppeteer-core';
+import type {Server} from 'node:http';
+
+const report={payoutId:'po_SYNTAUTO',account:'SYNTHETIC-ACCOUNT',environment:'test',status:'reconciled',currency:'EUR',amountMinor:750,automatic:true,method:'standard',providerStatus:'paid',reconciliationStatus:'completed',payoutBalanceTransaction:'txn_SYNTOWN',componentCount:1,totals:{grossMinor:800,feeMinor:30,netMinor:770},components:[{reference:'txn_SYNTCHARGE',classification:'payment',providerType:'charge',reportingCategory:'charge',sourceReference:'ch_SYNTCHARGE',occurredAt:'2026-08-01T00:00:00Z',amountMinor:800,feeMinor:30,netMinor:770}],payoutLeg:{reference:'txn_SYNTOWN',classification:'payout',providerType:'payout',reportingCategory:'payout',sourceReference:'po_SYNTAUTO',occurredAt:'2026-10-14T00:00:00Z',amountMinor:-750,feeMinor:20,netMinor:-770,includedInListing:true},requiredFundingMinor:770,settlementFeeMinor:20,residualMinor:0,observationId:'SYNTHETIC-OBSERVATION',observedAt:'2026-10-16T00:00:00Z',replayed:false};
+it('rejects forged payout totals, wrong environments, duplicate components and fake settled statuses',()=>{
+ expect(payoutReport(report,'test','po_SYNTAUTO').requiredFundingMinor).toBe(770);
+ for(const bad of [{...report,components:[{...report.components[0],providerType:undefined}]},{...report,components:[{...report.components[0],classification:'fee'}]},{...report,payoutLeg:{...report.payoutLeg,providerType:'payout_failure'}},{...report,environment:'live'},{...report,status:['reconciled']},{...report,method:['standard']},{...report,providerStatus:'pending'},{...report,totals:{...report.totals,netMinor:750}},{...report,settlementFeeMinor:0},{...report,residualMinor:1},{...report,amountMinor:0},{...report,payoutLeg:{...report.payoutLeg,sourceReference:'po_OTHER'}},{...report,payoutLeg:{...report.payoutLeg,classification:'payment'}},{...report,components:[...report.components,...report.components],componentCount:2},{...report,payoutLeg:{...report.payoutLeg,reference:'txn_SYNTCHARGE'}}])expect(()=>payoutReport(bad,'test','po_SYNTAUTO')).toThrow();
+ expect(()=>payoutList({items:[report,report],limit:100},'test')).toThrow();
+ expect(()=>payoutReport(report,'live','po_SYNTAUTO')).toThrow();
+});
+
+it('ignores old-environment payout results and clears malformed refreshed evidence in both languages',async()=>{
+ const root=mkdtempSync(join(tmpdir(),'community-payout-ui-'));let server:Server|undefined,browser:Awaited<ReturnType<typeof puppeteer.launch>>|undefined;
+ let hold:Promise<void>|undefined,release:()=>void=()=>{},began=false,malformed=false;
+ try{
+  mkdirSync(join(root,'web'));await build({stdin:{contents:"import React from 'react';import{createRoot}from'react-dom/client';import{StripePayoutReconciliation}from'../web/src/pages/StripePayoutReconciliation.tsx';function App(){const[env,setEnv]=React.useState('test');window.switchPayoutEnvironment=setEnv;return React.createElement(StripePayoutReconciliation,{key:env,environment:env,language:new URLSearchParams(location.search).get('language')??'en',maySync:true});}createRoot(document.getElementById('root')).render(React.createElement(App));",resolveDir:resolve('tests'),loader:'tsx'},bundle:true,platform:'browser',format:'iife',outfile:join(root,'web/harness.js'),alias:{react:resolve('web/node_modules/react'),'react-dom/client':resolve('web/node_modules/react-dom/client')},logLevel:'silent'});
+  const app=express();app.use(express.json());app.get('/favicon.ico',(_req,res)=>res.sendStatus(204));app.get('/',(_req,res)=>res.type('html').send('<!doctype html><link rel="icon" href="data:,"><div id="root"></div><script src="/harness.js"></script>'));app.get('/harness.js',(_req,res)=>res.sendFile(join(root,'web/harness.js')));
+  app.get('/api/community/integrations/stripe/:env/payouts',(_req,res)=>res.json({items:[],limit:100}));
+  app.post('/api/community/integrations/stripe/:env/payouts/reconcile',async(_req,res)=>{began=true;await hold;res.json(malformed?{...report,totals:{...report.totals,netMinor:1}}:report);});
+  server=app.listen(0,'127.0.0.1');await new Promise<void>(ok=>server!.once('listening',ok));const address=server.address();if(!address||typeof address==='string')throw Error('No synthetic listener');const origin='http://127.0.0.1:'+address.port;
+  const executablePath=['C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe','C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'].find(existsSync);expect(executablePath).toBeTruthy();browser=await puppeteer.launch({executablePath,headless:true,userDataDir:join(root,'fresh-browser'),args:['--no-first-run','--disable-background-networking']});const page=await browser.newPage(),errors:string[]=[],external:string[]=[];page.on('pageerror',error=>errors.push(String(error)));await page.setRequestInterception(true);page.on('request',request=>{const url=new URL(request.url());if(url.origin===origin||['data:','about:','blob:'].includes(url.protocol))void request.continue();else{external.push(url.origin);void request.abort();}});
+  for(const language of ['en','de']){
+   began=false;malformed=false;hold=new Promise<void>(ok=>release=ok);await page.goto(origin+'/?language='+language,{waitUntil:'networkidle0'});await page.type('#payout-id','po_SYNTAUTO');await page.click('#payout-reconcile');for(let attempt=0;attempt<300&&!began;attempt++)await new Promise(done=>setTimeout(done,10));expect(began).toBe(true);await page.evaluate(()=>(window as any).switchPayoutEnvironment('live'));release();await page.waitForNetworkIdle();expect(await page.$('[data-testid=payout-report]')).toBeNull();expect(await page.$eval('#payout-id',node=>(node as HTMLInputElement).value)).toBe('');
+   hold=undefined;await page.goto(origin+'/?language='+language,{waitUntil:'networkidle0'});await page.type('#payout-id','po_SYNTAUTO');await page.click('#payout-reconcile');await page.waitForSelector('[data-testid=payout-report][data-status=reconciled]');malformed=true;await page.waitForFunction(()=>!document.querySelector('#payout-reconcile')?.matches(':disabled'));await page.click('#payout-reconcile');await page.waitForSelector('[role=alert]');expect(await page.$('[data-testid=payout-report]')).toBeNull();expect(await page.$eval('[role=alert]',node=>node.textContent)).toContain(language==='de'?'Seite neu laden':'Reload the page');
+  }
+  expect(errors).toEqual([]);expect(external).toEqual([]);
+ }finally{release();await browser?.close();if(server)await new Promise<void>(ok=>server!.close(()=>ok()));const absolute=resolve(root);if(!absolute.startsWith(resolve(tmpdir())+'\\community-payout-ui-'))throw Error('Unexpected synthetic root');rmSync(absolute,{recursive:true,force:true,maxRetries:10,retryDelay:100});}
+},40000);

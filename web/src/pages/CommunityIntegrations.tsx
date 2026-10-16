@@ -3,6 +3,7 @@ import { communityFetch } from '../api';
 import {problemMessage} from '../i18n/community-problems';
 import { useLanguage } from '../i18n/locale';
 import { integrationMessages } from '../i18n/community-integrations';
+import {StripePayoutReconciliation} from './StripePayoutReconciliation';
 
 type Provider = 'paypal' | 'stripe';
 type Environment = 'sandbox' | 'test' | 'live';
@@ -18,7 +19,7 @@ function responseHistory(value:unknown):HistoryEntry[]|null{
   if(!object(value)||!Array.isArray(value.items)||value.items.length>100)return null;
   const items:HistoryEntry[]=[],ids=new Set<string>();
   for(const item of value.items){
-    if(!object(item)||typeof item.id!=='string'||!item.id||item.id.length>200||ids.has(item.id)||typeof item.occurred_at!=='string'||item.occurred_at.length>64||!Number.isFinite(Date.parse(item.occurred_at))||!['configure','test','sync','disconnect'].includes(String(item.operation))||!(item.phase==='started'&&item.outcome==='started'||item.phase==='completed'&&['succeeded','failed'].includes(String(item.outcome)))||item.imported!==undefined&&(!Number.isSafeInteger(item.imported)||Number(item.imported)<0||item.operation!=='sync'||item.outcome!=='succeeded')||item.code!==undefined&&(typeof item.code!=='string'||!/^[A-Z][A-Z0-9_]{1,99}$/.test(item.code)))return null;
+    if(!object(item)||typeof item.id!=='string'||!item.id||item.id.length>200||ids.has(item.id)||typeof item.occurred_at!=='string'||item.occurred_at.length>64||!Number.isFinite(Date.parse(item.occurred_at))||!['configure','test','sync','disconnect','payout-reconcile'].includes(String(item.operation))||!(item.phase==='started'&&item.outcome==='started'||item.phase==='completed'&&['succeeded','failed'].includes(String(item.outcome)))||item.imported!==undefined&&(!Number.isSafeInteger(item.imported)||Number(item.imported)<0||item.operation!=='sync'||item.outcome!=='succeeded')||item.code!==undefined&&(typeof item.code!=='string'||!/^[A-Z][A-Z0-9_]{1,99}$/.test(item.code)))return null;
     ids.add(item.id);items.push({id:item.id,occurred_at:item.occurred_at,operation:String(item.operation),phase:String(item.phase),outcome:String(item.outcome),...(item.imported!==undefined?{imported:Number(item.imported)}:{}),...(item.code!==undefined?{code:String(item.code)}:{})});
   }
   return items;
@@ -28,6 +29,7 @@ export function CommunityIntegrations({permissions}:{permissions?:readonly strin
   const { language } = useLanguage();
   const m = integrationMessages[language === 'de' ? 'de' : 'en'];
   const [history,setHistory]=React.useState<HistoryEntry[]>([]);
+  const [payoutAuthorityEpoch,setPayoutAuthorityEpoch]=React.useState(0);
   const [provider, setProvider] = React.useState<Provider>('paypal');
   const [environment, setEnvironment] = React.useState<Environment>('sandbox');
   const [clientId, setClientId] = React.useState('');
@@ -56,6 +58,7 @@ export function CommunityIntegrations({permissions}:{permissions?:readonly strin
   }, [path,provider,environment,language,invalidResponse,m.error]);
   React.useEffect(() => { const epoch=scope.current.epoch;setStatus(null);setHistory([]);setNotice(''); void refresh().catch(error => {if(scope.current.path===path&&scope.current.language===language&&scope.current.epoch===epoch)setNotice(error instanceof Error?error.message:m.error);}); }, [refresh, m.error,path,language]);
   const invoke = async (method: string, suffix = '', body?: unknown) => {
+    if(!suffix&&(method==='PUT'||method==='DELETE'))setPayoutAuthorityEpoch(value=>value+1);
     setBusy(true); setNotice('');
     try {
       const response = await communityFetch(path + suffix, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
@@ -95,8 +98,9 @@ export function CommunityIntegrations({permissions}:{permissions?:readonly strin
       {may('integrations:configure')&&<button type="button" disabled={busy || !status?.configured} onClick={() => void invoke('DELETE')}>{m.disconnect}</button>}
     </div>
     <p>{m.lastSuccess}: {status?.lastSuccess ?? m.never}</p><p>{m.lastError}: {status?.lastError ?? m.never}</p>
+    {provider==='stripe'&&status?.configured&&<StripePayoutReconciliation key={path+'|'+language+'|'+String(may('integrations:sync'))+'|'+payoutAuthorityEpoch} disabled={busy} environment={environment as 'test'|'live'} language={language} maySync={may('integrations:sync')} onRecorded={refresh}/>}
     <h2>{language==='de'?'Verbindungs- und Synchronisierungsverlauf':'Connection and synchronization history'}</h2>
-    <div style={{overflowX:'auto'}}><table><thead><tr>{(language==='de'?['Zeit','Vorgang','Phase','Ergebnis','Importiert']:['Time','Operation','Phase','Outcome','Imported']).map(label=><th key={label}>{label}</th>)}</tr></thead><tbody data-testid="integration-history">{history.map(entry=><tr key={entry.id} data-operation={entry.operation} data-outcome={entry.outcome}><td>{entry.occurred_at}</td><td>{language==='de'?({configure:'Konfiguration',test:'Verbindungstest',sync:'Synchronisierung',disconnect:'Trennen'} as Record<string,string>)[entry.operation]:entry.operation}</td><td>{language==='de'?(entry.phase==='started'?'Begonnen':'Abgeschlossen'):entry.phase}</td><td>{language==='de'?({started:'Begonnen',succeeded:'Erfolgreich',failed:'Fehlgeschlagen'} as Record<string,string>)[entry.outcome]:entry.outcome}{entry.code?' · '+entry.code:''}</td><td>{entry.imported??'—'}</td></tr>)}</tbody></table></div>
+    <div style={{overflowX:'auto'}}><table><thead><tr>{(language==='de'?['Zeit','Vorgang','Phase','Ergebnis','Importiert']:['Time','Operation','Phase','Outcome','Imported']).map(label=><th key={label}>{label}</th>)}</tr></thead><tbody data-testid="integration-history">{history.map(entry=><tr key={entry.id} data-operation={entry.operation} data-outcome={entry.outcome}><td>{entry.occurred_at}</td><td>{language==='de'?({configure:'Konfiguration',test:'Verbindungstest',sync:'Synchronisierung',disconnect:'Trennen','payout-reconcile':'Auszahlungsabstimmung'} as Record<string,string>)[entry.operation]:entry.operation==='payout-reconcile'?'Payout reconciliation':entry.operation}</td><td>{language==='de'?(entry.phase==='started'?'Begonnen':'Abgeschlossen'):entry.phase}</td><td>{language==='de'?({started:'Begonnen',succeeded:'Erfolgreich',failed:'Fehlgeschlagen'} as Record<string,string>)[entry.outcome]:entry.outcome}{entry.code?' · '+entry.code:''}</td><td>{entry.imported??'—'}</td></tr>)}</tbody></table></div>
     {notice && <p role="status">{notice}</p>}{busy && <p role="status">{m.busy}</p>}
   </section>;
 }

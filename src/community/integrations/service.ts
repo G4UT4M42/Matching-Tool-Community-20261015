@@ -9,13 +9,18 @@ import { PayPalClient } from './paypal.js';
 import { StripeClient } from './stripe.js';
 import { providerTransport } from './http.js';
 import { isProviderAccountIdentity } from './provider-account.js';
-import { assertEnvironment, assertPrincipal, assertProvider, publicErrorCode, type CanonicalTransaction, type Checkpoint, type CommitBatch, type Environment, type Permission, type Principal, type Provider, type Transport } from './types.js';
+import {validPayoutId} from './stripe-payout.js';
+import { assertEnvironment, assertPrincipal, assertProvider, publicErrorCode, type CanonicalTransaction, type Checkpoint, type CommitBatch, type Environment, type Permission, type Principal, type Provider, type Transport,type StripePayoutEvidence,type StripePayoutReport } from './types.js';
 
-interface StoredState { identity: string; checkpoint: Checkpoint; account?:string|null; coverageStart?:string|null; lastSuccess: string | null; lastError: string | null }
+interface StoredState { identity: string; checkpoint: Checkpoint; account?:string|null;payoutAccount?:string|null; coverageStart?:string|null; lastSuccess: string | null; lastError: string | null }
 const blank = (identity: string): StoredState => ({ identity, checkpoint: { cursor: null, seen: [] }, account:null, coverageStart:null, lastSuccess: null, lastError: null });
 export interface IntegrationGuards {
   authorizeMutation?(principal:Principal,permission:Permission):void;
   hasCanonicalCoverage?(input:{principal:Principal;provider:Provider;environment:Environment;account:string;seen:readonly string[]}):boolean;
+  payoutEvidence?:{
+    list(input:{principal:Principal;environment:'test'|'live';account:string}):{reports:StripePayoutReport[];discoveredIds:string[]};
+    commit(input:{principal:Principal;evidence:StripePayoutEvidence;observedAt:string;guard:()=>void}):{report:StripePayoutReport;replayed:boolean};
+  };
 }
 const locks = new Set<string>();
 export class IntegrationService {
@@ -37,6 +42,8 @@ export class IntegrationService {
       if (value.identity !== id || !value.checkpoint || (value.checkpoint.cursor !== null && typeof value.checkpoint.cursor !== 'string') || !Array.isArray(value.checkpoint.seen) || value.checkpoint.seen.length > 100000 || value.checkpoint.seen.some(x => typeof x !== 'string')) throw new Error();
       if(value.coverageStart!==null&&value.coverageStart!==undefined&&(typeof value.coverageStart!=='string'||!Number.isFinite(Date.parse(value.coverageStart))||value.checkpoint.cursor!==null&&Date.parse(value.coverageStart)>Date.parse(value.checkpoint.cursor)))throw new Error();
       if(value.account!==null&&value.account!==undefined&&!isProviderAccountIdentity(value.account,provider,environment))throw new Error();
+      if(value.payoutAccount!==null&&value.payoutAccount!==undefined&&(provider!=='stripe'||!isProviderAccountIdentity(value.payoutAccount,provider,environment)))throw new Error();
+      if(value.payoutAccount&&value.account&&value.payoutAccount!==value.account)throw new Error();
       return value;
     } catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return blank(id); throw new Error('CHECKPOINT_UNAVAILABLE'); }
   }
@@ -161,7 +168,7 @@ export class IntegrationService {
         const nextSeen = [...state.checkpoint.seen, ...fresh.map(tx => tx.sourceEventKey ?? `${tx.currency}:${tx.reference}`)];
         if (nextSeen.length > 100000) throw new Error('CHECKPOINT_CAPACITY');
         const checkpoint: Checkpoint = { cursor: end.toISOString(), seen: nextSeen };
-        if(observedAccount)state.account=observedAccount;
+        if(observedAccount){if(state.payoutAccount&&state.payoutAccount!==observedAccount)throw new Error('PROVIDER_ACCOUNT_CHANGED');state.account=observedAccount;}
         // Every observed row must reach the immutable canonical evidence check,
         // including checkpoint-known rows and replay after accounting restore.
         // The coordinator commits idempotently before this checkpoint persists.
@@ -193,5 +200,28 @@ export class IntegrationService {
       await this.vault.remove(p, provider, environment,()=>{this.guards.authorizeMutation?.(p,'integrations:configure');});
       this.sessions.get(id)?.invalidate(); this.sessions.delete(id);
     } finally { locks.delete(id); }
+  }
+  private async payoutScope(rawPrincipal:Principal,rawEnvironment:Environment){
+    const p=assertPrincipal(rawPrincipal),environment=assertEnvironment('stripe',rawEnvironment) as 'test'|'live';this.guards.authorizeMutation?.(p,'integrations:read');
+    // Reads remain available from the last locally verified account even when a provider is offline.
+    const state=await this.readState(p,'stripe',environment);this.guards.authorizeMutation?.(p,'integrations:read');const account=state.account??state.payoutAccount??null;
+    if(!this.guards.payoutEvidence)throw new Error('PAYOUT_EVIDENCE_UNAVAILABLE');return{p,environment,account};
+  }
+  async payouts(p:Principal,environment:Environment){
+    const scope=await this.payoutScope(p,environment);if(!scope.account)return{items:[],limit:100,account:null,requiresAccountVerification:true};
+    const {reports,discoveredIds}=this.guards.payoutEvidence!.list({principal:scope.p,environment:scope.environment,account:scope.account}),latest=new Map<string,StripePayoutReport>();for(const report of reports)latest.set(report.payoutId,report);
+    const ids=[...new Set([...discoveredIds,...latest.keys()])].sort((a,b)=>(latest.get(b)?.observedAt??'').localeCompare(latest.get(a)?.observedAt??'')||a.localeCompare(b));
+    return{items:ids.slice(0,100).map(payoutId=>{const report=latest.get(payoutId);return report?{payoutId,account:scope.account,environment:scope.environment,status:report.status,...(report.reason?{reason:report.reason}:{}),currency:report.currency,amountMinor:report.amountMinor,componentCount:report.componentCount,observedAt:report.observedAt}:{payoutId,account:scope.account,environment:scope.environment,status:'discovered' as const};}),limit:100,account:scope.account,requiresAccountVerification:false};
+  }
+  async payout(p:Principal,environment:Environment,payoutId:string){if(!validPayoutId(payoutId))throw new Error('INVALID_PAYOUT_ID');const scope=await this.payoutScope(p,environment);if(!scope.account)throw new Error('PAYOUT_NOT_FOUND');const reports=this.guards.payoutEvidence!.list({principal:scope.p,environment:scope.environment,account:scope.account}).reports;const report=[...reports].reverse().find(row=>row.payoutId===payoutId);if(!report)throw new Error('PAYOUT_NOT_FOUND');return{...report,replayed:false};}
+  async reconcilePayout(rawPrincipal:Principal,rawEnvironment:Environment,payoutId:string){
+    const p=assertPrincipal(rawPrincipal),environment=assertEnvironment('stripe',rawEnvironment) as 'test'|'live';if(!validPayoutId(payoutId))throw new Error('INVALID_PAYOUT_ID');const id=this.identity(p,'stripe',environment);if(locks.has(id))throw new Error('INTEGRATION_BUSY');locks.add(id);
+    const guard=()=>this.guards.authorizeMutation?.(p,'integrations:sync');
+    try{guard();if(!this.guards.payoutEvidence)throw new Error('PAYOUT_EVIDENCE_UNAVAILABLE');const credentials=await this.vault.get(p,'stripe',environment);guard();if(!credentials)throw new Error('NOT_CONFIGURED');const state=await this.readState(p,'stripe',environment);guard();const evidence=await new StripeClient(credentials.apiKey,environment,this.transport).reconcilePayout(payoutId,guard);guard();
+      if(state.account&&state.account!==evidence.account||state.payoutAccount&&state.payoutAccount!==evidence.account)throw new Error('PROVIDER_ACCOUNT_CHANGED');
+      // Bind only merchant identity. Reconciliation never advances the sync cursor or seen-set.
+      if(state.payoutAccount!==evidence.account){state.payoutAccount=evidence.account;await this.writeState(p,'stripe',environment,state,'integrations:sync');guard();}
+      const result=this.guards.payoutEvidence.commit({principal:p,evidence,observedAt:this.now().toISOString(),guard});guard();return{...result.report,replayed:result.replayed};
+    }catch(error){try{guard();}catch(revoked){throw new Error(publicErrorCode(revoked));}throw new Error(publicErrorCode(error));}finally{locks.delete(id);}
   }
 }

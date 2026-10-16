@@ -1,6 +1,6 @@
 # Local account authentication — implementation and qualification boundary
 
-Status: IN_PROGRESS. This document describes a tested backend component, not an accepted complete product or completed first-run browser workflow.
+Current implementation scope (2026-10-16): local account authentication, first-owner setup and the normal account UI are integrated. The component qualification below is historical evidence; current complete-candidate acceptance is recorded separately.
 
 ## Implemented source
 
@@ -10,13 +10,13 @@ Status: IN_PROGRESS. This document describes a tested backend component, not an 
 - `src/server/community-identity-files.ts`: private application-owned identity storage and native Windows permission verification.
 - `src/server/community-guard.ts`: the existing preview guard remains intact; a directly observed same-origin predicate is exported for the account HTTP boundary.
 
-The existing application's main server and token-based preview gate have NOT been converted to the new account UI. Standalone authenticated API qualification must not be reported as a completed installation or browser acceptance.
+The original backend snapshot preceded main-server and account-UI integration. The current normal application uses the account boundary; standalone component evidence still cannot substitute for complete installation or browser qualification.
 
 ## Identity and installation ownership
 
 Each explicitly configured runtime has an independent `identity/auth.sqlite` database, random workspace identifier and random cookie namespace. First-owner creation requires a random, installation-bound local setup code. Only its SHA-256 digest is persisted; it expires after 30 minutes and is consumed atomically when the first owner is created. Concurrent setup requests cannot create two initial owners.
 
-The intended normal launcher must present the temporary code locally rather than expose it in a URL, repository file, browser localStorage or ordinary log. That launcher/UI integration remains pending. A missing setup code is not an invitation to enable unrestricted registration.
+The normal launcher (`scripts/Start-Community.ps1`) generates and displays the temporary setup code locally for first-owner creation. It is not placed in a URL, repository file or browser localStorage. A missing setup code does not enable unrestricted registration. The earlier pending-launcher statement applied only to the original backend snapshot.
 
 On Windows, a newly created empty identity directory receives protected discretionary access rules for the current Windows user and Local System. Reopening an existing directory verifies its actual rules and the rules of known SQLite members. Unexpected access principals, inherited unrelated permissions, directory links and unrecognized members fail closed. Existing permissive directories are not silently rewritten. This boundary protects the application-owned store; it does not claim protection against a compromised operating-system administrator.
 

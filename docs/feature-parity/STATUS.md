@@ -1,22 +1,27 @@
 # Matching Tool Community — current status
 
-> Internal finalization update, 2026-10-16: active branch
-> `community/internal-finalization-20261016` extends sealed revision
-> `fbf40e85cbaa8213e6fa199bfcf5690eeedec5f8`. Earlier passing measurements remain
-> evidence for that revision only. Requirement reconciliation found actual local
-> gaps in AIS consent and PayPal event semantics; their implementation and focused
-> synthetic tests do not yet establish final exact-candidate acceptance. See
-> [bank consent](BANK_CONSENT_CONTRACT.md), [PayPal events](PAYPAL_EVENT_CONTRACT.md)
-> and [private internal scope](../compliance/PRIVATE_INTERNAL_USE.md).
-> The owner deferred the fresh Windows VM test. No deferred test is a PASS.
+> Current private internal development, 2026-10-16: active branch
+> `community/payout-finalization-20261016` in
+> `<isolated-worktrees>/Matching-Community-Payout-Completion-20261016` extends
+> `9ae282fd86cb67ac00d875f580141efeb5321b2e`; sealed `fbf40e85` artifacts are preserved.
+> AIS consent and PayPal event corrections are committed at 9ae; its app suite
+> passed 571/571. Its complete Node run ended with 88/89 passing and one timeout in the isolated payment-browser restart harness; that run remains FAILED. The test-owned Vite/HTTP shutdown ordering was repaired and the same focused journey passed 1/1 without weakening assertions.
+> New Stripe payout reconciliation is implemented with focused synthetic
+> evidence; it is not yet committed or fully qualified as a final candidate.
+> See [bank consent](BANK_CONSENT_CONTRACT.md), [PayPal events](PAYPAL_EVENT_CONTRACT.md),
+> [Stripe payouts](STRIPE_PAYOUT_RECONCILIATION.md) and
+> [private internal scope](../compliance/PRIVATE_INTERNAL_USE.md).
+> A separate private Community repository and sealed-fbf hosted CI are verified.
+> Later source needs its own qualification. VM testing is OWNER_DEFERRED, not PASS.
+> No blanket ownership/MIT, legal, distribution or release clearance is inferred.
 
-Status: IN_PROGRESS. Updated 2026-10-15. This document describes the current isolated candidate; historical counts remain evidence for their own source snapshots.
+Status: IN_PROGRESS. Updated 2026-10-16. This document describes the current isolated candidate; historical counts remain evidence for their own source snapshots.
 
-> Current freeze checkpoint (2026-10-15): local contracts are implemented for34of41 work packages;2packages have explicit external account/hosted-CI requirements and5final qualification/release packages retain separate gates. All11 controlled portal choices, explicit workspace recovery, generation isolation and original-preserving operational migration are integrated. New known-history composition passes89/89; independent new-file review38/38 plus envelope/REAL/null-MIME/backup-tamper probes. Expanded source journey passes in105651.872ms with9 historical rows,2linked originals,48 interface combinations and actual exit86/rollback/retry; no unexplained browser errors. Standalone OCR harness now uses packaged languages and passes1/1. Full4867 app run507/508 failed only the old owner fixture, repaired focused1/1; all failed evidence remains. Final clean candidate complete suites and installed3replacement/4supplement journey are recorded in external exact-final run manifests after this immutable freeze. No final PASS is inferred here. Repository/software/release milestones remain false until their own actual gates pass.
+> Historical checkpoint (2026-10-15; superseded, measurements retained for their original snapshots): local contracts are implemented for34of41 work packages;2packages have explicit external account/hosted-CI requirements and5final qualification/release packages retain separate gates. All11 controlled portal choices, explicit workspace recovery, generation isolation and original-preserving operational migration are integrated. New known-history composition passes89/89; independent new-file review38/38 plus envelope/REAL/null-MIME/backup-tamper probes. Expanded source journey passes in105651.872ms with9 historical rows,2linked originals,48 interface combinations and actual exit86/rollback/retry; no unexplained browser errors. Standalone OCR harness now uses packaged languages and passes1/1. Full4867 app run507/508 failed only the old owner fixture, repaired focused1/1; all failed evidence remains. Final clean candidate complete suites and installed3replacement/4supplement journey are recorded in external exact-final run manifests after this immutable freeze. No final PASS is inferred here. Repository/software/release milestones remain false until their own actual gates pass.
 
 ## Source and recovery
 
-The current candidate is `<isolated-worktrees>/Matching-Tool-Community-Private-Candidate-20261015`, branch `community-sanitized`. Its parentless source root is `0f3ba3487349324885987d46c2a6b48f478b9a59`. Original V2 ancestry and the quarantined preliminary local roots must never be pushed. The original final worktree and all uncommitted work were preserved in a hash-verified external recovery checkpoint before copying.
+The current development checkout is `<isolated-worktrees>/Matching-Community-Payout-Completion-20261016`, branch `community/payout-finalization-20261016`. The earlier `Matching-Tool-Community-Private-Candidate-20261015` / `community-sanitized` checkout is retained historical evidence. Its parentless source root is `0f3ba3487349324885987d46c2a6b48f478b9a59`. Original V2 ancestry and the quarantined preliminary local roots must never be pushed. The original final worktree and all uncommitted work were preserved in a hash-verified external recovery checkpoint before copying.
 
 Reviewed commits after the safe root:
 
@@ -32,9 +37,9 @@ Further reviewed commits: `ad7eb13` (literal-rule ownership and future imports),
 
 Owner setup, login/logout, account roles, recent password confirmation, session-bound CSRF and exact method/capability checks protect account-owned workflows. Normal pages include account/source/date/search dashboard filters, statement preview/confirm, document upload/OCR/correction/confirmation, matching decisions, partial/split/refund/fee/exact-FX allocations, private classifications, rule management, tax evidence, reports/exports, providers, bank settings, assisted portals, payment preparation and data management.
 
-PayPal and Stripe use official read-only contracts and verified merchant account identities. Durable source commits precede checkpoints. Restored missing historical rows replay from recorded coverage. Ambiguous older actor-based source rows require explicit reconciliation. Live/sandbox provider acceptance remains unperformed.
+PayPal and Stripe use official read-only contracts and verified merchant account identities. The 9ae PayPal correction separates event type from amount sign, preserves S/V cash rows and blocks unresolved windows before checkpoint advancement. New read-only Stripe payout reconciliation preserves exact components and actual settlement fees as immutable audit evidence without new cash/revenue. Supported membership is limited to completed standard automatic payouts; manual/instant/unavailable cases stay explicit, and pending evidence has a separate retry. Durable financial commits precede checkpoints; historical restore replay and ambiguous legacy bindings remain explicit. Focused evidence is not final candidate or live/sandbox provider acceptance.
 
-Read-only AIS, SEPA preparation and simulated payment submission are separate capabilities. One-use confirmation, exact payment digests, durable claims and uncertain-outcome safeguards are implemented. No automated test makes a real transfer.
+Read-only AIS now includes normal owner-driven application configuration, bank discovery, consent callback, account selection, reconnect/cancel and protected credential binding. Its local consent flow is implemented; live bank authorization remains separately unqualified. Read-only AIS, SEPA preparation and simulated payment submission are separate capabilities. One-use confirmation, exact payment digests, durable claims and uncertain-outcome safeguards are implemented. No automated test makes a real transfer.
 
 Document review is appended to canonical immutable audit before updating its derived index. Missing indexes recover original fields, history and typed provenance. Backup references include unconfirmed original blobs from audit; restore confirmation fingerprints those blobs too. Historical financial records remain exact through restore; separate identity-store audit records operational backup/restore/migration history.
 
@@ -44,18 +49,18 @@ English is default; German is selectable. Role controls, responsive dashboard, k
 
 ## Packaging and release gates
 
-Self-contained Windows development candidates contain Node22/ABI127, native dependencies, OCR languages, launcher/install/upgrade/uninstall and full legal evidence. A complete installed journey with source-built canvas passed before the final verifier allowlist; the 5/5 historical installation/launcher and 4/4 later package results are separate intermediate invocations. The diagnostic64-test run found3 failures and1 timeout, with all failed evidence retained; precise204 classification, stale history fixture/response handling and measured installation deadlines were repaired without removing assertions. Final exact-commit qualification is still required. Clean-VM, publisher ownership, full corresponding-source/relink, optional WASM and signing evidence remain separate gates.
+Self-contained Windows development candidates contain Node22/ABI127, native dependencies, OCR languages, launcher/install/upgrade/uninstall and source/notice evidence. A complete installed journey with source-built canvas passed before the final verifier allowlist; the 5/5 historical installation/launcher and 4/4 later package results are separate intermediate invocations. The diagnostic64-test run found3 failures and1 timeout, with all failed evidence retained; precise204 classification, stale history fixture/response handling and measured installation deadlines were repaired without removing assertions. Final exact-commit qualification is still required. The owner deferred pristine-OS/VM testing. Native source/relink evidence is independently scoped below; it is not legal or ownership clearance. Public/third-party redistribution and signing are outside the selected private internal scope.
 
 The refreshed inventory contains517 locked installations (374 installed,143 absent),381 notice occurrences,235 distinct texts and52 binary/font/OCR assets. Candidate version metadata changed without changing locked dependency versions or integrity. Three frozen source-built replacements cover canvas/Skia/Rust, sharp WASM with its actual source closure, and native Windows libvips with unchanged reviewed C++/Node companions. Each has independently checked source, actual build/runtime proof and exact hashes. Four supplements supply original source/notices plus detailed WASM and Node SBOMs. The native source review accounts for164 broad public-profile findings in unchanged upstream source/metadata, with zero private/local findings; these are disclosed rather than falsely reported as zero generic matches. Replacement/source-build qualification does not prove app ownership, legal compatibility, historical binary reproduction or a fresh Windows OS installation. Redistribution and legal gates remain false.
 
-No new GitHub repository, push, Actions result, branch protection or release is verified. The connector lacks repository creation; isolated qualified GitHub CLI authentication awaits the owner. Never substitute the existing private V2 repository.
+A separate PRIVATE Community repository, sanitized source push and sealed-fbf hosted Actions are verified. Available protection configuration remains constrained by the recorded hosted permission/plan response; it is not a missing local application feature. No later source CI or release result is inferred from sealed-fbf. Never substitute the existing private V2 repository.
 
 ## Required continuation
 
 1. Repeat the complete installed browser interruption scenario and locale/role matrix on the clean final candidate with all three frozen replacements and four supplements; include all newly discovered regression entrypoints.
 2. Commit reviewed logical units; run all discovered app and Node tests, typechecks, build, migration policy, production audit and full current-tree/index/reachable-history privacy scans on the exact candidate.
-3. Complete source-supply packaging, bind artifacts to the exact commit and record hashes; preserve false distribution gates where evidence is unresolved.
-4. After CLI authentication, create a new PRIVATE source-only repository, verify visibility, push only sanitized history, run exact-commit Actions and configure available protections.
+3. Build a new revision-bound package with the reviewed source/notice inputs, including separately qualified runtime-notice companion02; verify actual bytes and record hashes. Preserve sealed packages and unresolved ownership/distribution facts.
+4. Reuse the verified separate PRIVATE Community repository after current source/index/history checks; push only the explicitly authorized sanitized branch and qualify exact-commit Actions. Retain the existing protection limitation and never infer hosted success for newer source.
 5. Reconcile every feature/work package and produce the German owner report with precise remaining limits.
 
 Independent privacy/source engineering review found no concrete leak in its exact stable snapshot:18 reachable commits,526 index files and676 unique blobs, plus manual triage of175 generic candidates. It does not cover later source, built artifacts or legal/publication approval.

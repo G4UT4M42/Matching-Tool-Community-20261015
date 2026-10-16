@@ -187,16 +187,27 @@
       "P06-W02"
     ],
     "source_files": [
-      "src/import/stripe-import.ts",
-      "src/core/ingestion/stripe.ts"
+      "src/community/integrations/stripe.ts",
+      "src/community/integrations/stripe-payout.ts",
+      "src/community/integrations/payout-evidence.ts",
+      "src/community/integrations/service.ts",
+      "src/server/routes/community-integrations.ts",
+      "src/server/community-workspace.ts",
+      "web/src/pages/StripePayoutReconciliation.tsx",
+      "tests/community-stripe-payout.test.ts",
+      "tests/community-stripe-payout-main.e2e.mjs"
     ],
     "design": "Preserve balance transaction, charge/refund/dispute and payout identities. A payout is a settlement transfer, not additional revenue. Use provider minor units, reconcile gross minus fee to net and group payout components by currency. Cover partial refunds, multiple pages, repeated sync and unavailable payout-component evidence.",
     "status": "IMPLEMENTED",
-    "commit": "3819415",
+    "commit": null,
     "evidence": [
-      "independent-security/provider-account-identity-history-02.stdout.txt",
-      "committed-app-01-vitest.json"
-    ]
+      "historical foundation: independent-security/provider-account-identity-history-02.stdout.txt",
+      "historical foundation: committed-app-01-vitest.json",
+      "independent-stripe-payout-review-20261016-01/review.result.json",
+      "STRIPE_PAYOUT_RECONCILIATION.md"
+    ],
+    "historical_foundation_commit": "3819415",
+    "qualification": "Local standard-automatic payout membership is implemented with focused synthetic regression and independent economic review. Manual/instant/unavailable membership is explicit; pending evidence is independently retriable. Exact current logical commit, complete source/installed/CI qualification remain pending; real provider credentials gate external acceptance only."
   },
   {
     "id": "P06-W01",
@@ -456,7 +467,7 @@
       "src/invoicebot/file-store.ts",
       "web/src/pages/InvoiceBot.tsx"
     ],
-    "design": "Use isolated user-controlled browser sessions, supported interactive login and explicit provider authorization. Never reuse personal browser profiles, bypass MFA/CAPTCHA or retry non-idempotent actions blindly. Qualify realistic local mock portals, scheduling persistence, cancellation, timeout, duplicate invoices, expiry and disconnect. Live provider tests need separately supplied account access.",
+    "design": "Use isolated user-controlled browser sessions, supported interactive login and explicit provider authorization. Never reuse personal browser profiles, bypass MFA/CAPTCHA or retry non-idempotent actions blindly. Qualify realistic local mock portals, owner-driven execution, cancellation, timeout, duplicate invoices, expiry and disconnect. The original F11 contract requires explicit user-owned collection; unattended authenticated scheduling is not implemented or claimed. Temporary run controls remain transient while imported provenance is durable. Live provider tests need separately supplied account access.",
     "status": "IMPLEMENTED",
     "commit": "3819415",
     "evidence": [
