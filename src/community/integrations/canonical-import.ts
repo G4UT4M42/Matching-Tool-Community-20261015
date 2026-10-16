@@ -6,7 +6,7 @@ import type { CanonicalTransaction, CommitBatch } from './types.js';
 import {isProviderAccountIdentity} from './provider-account.js';
 
 type Batch = Parameters<CommitBatch>[0];
-export interface ProviderImportResult { state: MatchingState; added: number; duplicates: number; events: number; importedEvents: number }
+export interface ProviderImportResult { state: MatchingState; added: number; duplicates: number; events: number; importedEvents: number; observations:number }
 const digest = (values: unknown[]) => createHash('sha256').update(JSON.stringify(values)).digest('hex');
 const identity = (event: CanonicalTransaction, kind: 'source' | 'fee') =>
   'PROV-' + digest([event.provider, event.environment, event.account, event.reference, event.classification, event.currency, kind]).slice(0, 40);
@@ -16,13 +16,16 @@ function checkedEvent(event: CanonicalTransaction, batch: Batch): void {
       !isProviderAccountIdentity(event.account,batch.provider,batch.environment) ||
       !/^[A-Za-z0-9:_-]{1,160}$/.test(event.reference) ||
       !/^[A-Z]{3}$/.test(event.currency) ||
-      !['payment','refund','dispute','fee','payout','other'].includes(event.classification) ||
+      !['payment','refund','dispute','fee','payout','transfer','other'].includes(event.classification) ||
       !Number.isFinite(Date.parse(event.occurredAt)) ||
       !Number.isSafeInteger(event.amountMinor) || !Number.isSafeInteger(event.feeMinor) ||
       !Number.isSafeInteger(event.netMinor) ||
       !Number.isSafeInteger(event.amountMinor + event.feeMinor) ||
       event.amountMinor + event.feeMinor !== event.netMinor ||
       typeof event.revenue !== 'boolean' ||
+      (event.providerStatus!==undefined&&(!['S','V'].includes(event.providerStatus)||event.provider!=='paypal'||typeof event.providerEventCode!=='string'||!/^T\d{4}$/.test(event.providerEventCode))) ||
+      (event.providerEventCode!==undefined&&(event.provider!=='paypal'||!/^T\d{4}$/.test(event.providerEventCode)||event.providerStatus===undefined)) ||
+      (event.providerUpdatedAt!==undefined&&(event.provider!=='paypal'||event.providerStatus===undefined||typeof event.providerUpdatedAt!=='string'||event.providerUpdatedAt.length>64||!Number.isFinite(Date.parse(event.providerUpdatedAt)))) ||
       (event.relatedReference !== undefined && (typeof event.relatedReference !== 'string' || event.relatedReference.length > 256))) {
     throw new Error('INVALID_PROVIDER_EVENT');
   }
@@ -73,6 +76,9 @@ export function prepareProviderImport(input: MatchingState, batch: Batch): Provi
   }
   const state = structuredClone(input);
   let added = 0, duplicates = 0, importedEvents = 0;
+  const knownObservations=new Set<string>();
+  for(const audit of state.audit_events){const observations=audit.after?.provider_observations;if(Array.isArray(observations))for(const observation of observations)if(observation&&typeof observation==='object'&&typeof observation.key==='string')knownObservations.add(observation.key);}
+  const observations:Array<{key:string;reference:string;event_code:string;status:string;account:string;provider_updated_at:string}>=[];
   const knownRefs = new Map<string,string>();
   // Economic identity excludes mutable classification/currency. Preserve the
   // historical ledger IDs while rejecting a changed event under a second ID.
@@ -133,6 +139,10 @@ export function prepareProviderImport(input: MatchingState, batch: Batch): Provi
       added++;
     }
     if(added > precedingAdded)importedEvents++;
+    if(event.providerStatus){
+      const updatedAt=event.providerUpdatedAt??event.occurredAt,key=digest([event.provider,event.environment,event.account,event.reference,event.sourceEventKey,event.providerEventCode,event.providerStatus,updatedAt]);
+      if(!knownObservations.has(key)){knownObservations.add(key);observations.push({key,reference:event.reference,event_code:event.providerEventCode!,status:event.providerStatus,account:event.account,provider_updated_at:updatedAt});}
+    }
   }
   if (added) {
     recordAudit(state,'TRANSACTIONS_IMPORTED','Run',
@@ -140,5 +150,6 @@ export function prepareProviderImport(input: MatchingState, batch: Batch): Provi
       {actor_type:'user',actor_id:batch.principal.subject,reason:'Durable user-requested provider synchronization',
        after:{provider:batch.provider,environment:batch.environment,source_events:batch.transactions.length,created_ledger_rows:added,duplicate_ledger_rows:duplicates}});
   }
-  return {state,added,duplicates,events:batch.transactions.length,importedEvents};
+  if(observations.length)recordAudit(state,'STATE_COMMITTED','Run','PROVIDER-OBSERVATION-'+randomUUID(),{actor_type:'user',actor_id:batch.principal.subject,reason:'Append-only observed provider status; original cashflow remains immutable',after:{provider:batch.provider,environment:batch.environment,provider_observations:observations}});
+  return {state,added,duplicates,events:batch.transactions.length,importedEvents,observations:observations.length};
 }

@@ -2,7 +2,7 @@
   "format": "matching-community-source-map-v1",
   "source_representation": "Canonical Git index blobs (line-ending independent)",
   "scope": "Tracked Community implementation source; legacy v2_source inventory remains a frozen reference, not runtime acceptance.",
-  "source_content_sha256": "63cc82b6bdb2b7f0e296e1ebfd21585327e18a1b0a0b2213061e8f6635e5716a",
+  "source_content_sha256": "3a64799a0efbf606fa23f4e53a6f47a507a5b34a9232ffb58540743d70554b8c",
   "files": [
     {
       "path": "src/app/cli.ts",
@@ -28,8 +28,8 @@
     },
     {
       "path": "src/community/accounting/ledger.ts",
-      "sha256": "ec006ae3623dbfc51c35b1534f8d58d15e48db93d82d3363112536b9d517858a",
-      "bytes": 32347,
+      "sha256": "134dc462cc55db64098ef1c9ae515c319d928ea178a91d013af7ffbc9dcc0eb3",
+      "bytes": 32368,
       "exports": [
         "AccountingError",
         "roundRationalHalfAwayFromZero",
@@ -49,8 +49,8 @@
     },
     {
       "path": "src/community/accounting/reports.ts",
-      "sha256": "ccf948c64863f73cfa21d95f558b0c785eabbedab7be963c115fcfcd71e4e3f5",
-      "bytes": 6961,
+      "sha256": "4cc901cb0bc754ad6e1e3589989c47dbe520f4ccc4e9b10e9bcea5a151f1cf7c",
+      "bytes": 6982,
       "exports": [
         "ReportQuery",
         "validatePeriod",
@@ -59,17 +59,53 @@
       ]
     },
     {
+      "path": "src/community/banking/application-vault.ts",
+      "sha256": "c2df2edc4fc4c7749f9bc0c48a2cdcaf6e12945a78c257a80a6d0d9a4fc612aa",
+      "bytes": 3518,
+      "exports": [
+        "StoredBankApplication",
+        "BankApplicationVault"
+      ]
+    },
+    {
       "path": "src/community/banking/canonical-import.ts",
-      "sha256": "2863c17403f519fe26cf417a44475a0c5b085fe4abd741ecd7a7fa55ea72e441",
-      "bytes": 2371,
+      "sha256": "4265d618bfd45a70ea9bc4bb0ca356c9a9c8cfad13e299e809c44f41a802196c",
+      "bytes": 2706,
       "exports": [
         "prepareBankImport"
       ]
     },
     {
+      "path": "src/community/banking/consent-client.ts",
+      "sha256": "87dba6d81c7ba9492c4c6906f89a2463c513ccd285931e188690e1290e6c8ba8",
+      "bytes": 7727,
+      "exports": [
+        "BankEnvironment",
+        "BankApplication",
+        "ConsentBank",
+        "ConsentAccount",
+        "AuthorizedBankSession",
+        "bankUuid",
+        "boundedBankJson",
+        "checkedApplication",
+        "BankConsentClient"
+      ]
+    },
+    {
+      "path": "src/community/banking/consent.ts",
+      "sha256": "2c7b9ff5a8c832e8eafb80cc3eb735e729cd1305c99568c1ae4b6a002d5a41e3",
+      "bytes": 11796,
+      "exports": [
+        "ConsentBinding",
+        "ApplicationStore",
+        "ConsentStage",
+        "BankConsentCoordinator"
+      ]
+    },
+    {
       "path": "src/community/banking/enablebanking-ais.ts",
-      "sha256": "e004b4fafc37c58a725a4a9ab921fa0c73418b51f6dd344ccc9ac89bb67b1526",
-      "bytes": 5771,
+      "sha256": "29bf1aa6da072533f1953839d4f570cc2ccd728d21ccf466dcf5b315ef005c00",
+      "bytes": 6257,
       "exports": [
         "VaultCredential",
         "checkedBankCredential",
@@ -87,8 +123,8 @@
     },
     {
       "path": "src/community/banking/service.ts",
-      "sha256": "33fe7c197d03f59642949e2548c0a17e79f63c425043e2c3a1bf2c7fded19571",
-      "bytes": 7404,
+      "sha256": "119eede492c11f2cd8faa07cdd2540ab28f6dcf13c1bef7dcacdc8c623a61ec6",
+      "bytes": 8114,
       "exports": [
         "BankAccountRow",
         "BankTransactionRow",
@@ -99,8 +135,8 @@
     },
     {
       "path": "src/community/banking/vault.ts",
-      "sha256": "ffb9dc9850fa6e280bbcab1e156fa2ecc2cd750146e2e20f5f757d5e17dad41d",
-      "bytes": 4474,
+      "sha256": "9487179405f3909daf9eb394b5396e1a6ada673befe23994a479049c8cdd286d",
+      "bytes": 4771,
       "exports": [
         "BankCredentialVault"
       ]
@@ -180,8 +216,8 @@
     },
     {
       "path": "src/community/integrations/canonical-import.ts",
-      "sha256": "48649abdcf921dcb69c592356809c28d7649149d15683563e9e23e38ac2cb860",
-      "bytes": 9107,
+      "sha256": "1a21b315192148f7106b80ccd7af489deab155b30376f3db986aa0a6ce6d013f",
+      "bytes": 11064,
       "exports": [
         "ProviderImportResult",
         "prepareProviderImport"
@@ -197,9 +233,17 @@
       ]
     },
     {
+      "path": "src/community/integrations/paypal-event.ts",
+      "sha256": "31a2d0290a029b592d7b5cd98b18bee1e68c05fbdefb571064a04eadf5c5f2ae",
+      "bytes": 1020,
+      "exports": [
+        "paypalEventClassification"
+      ]
+    },
+    {
       "path": "src/community/integrations/paypal.ts",
-      "sha256": "2fd61ea5e8f559da688fede63a1c4d8d096a09c8003b9811f257f79fd921a4ec",
-      "bytes": 6360,
+      "sha256": "8d3f08f6eea236667aee3daa6cf1fa433316f7a71bbb7e84dfd38b572c26e52e",
+      "bytes": 7373,
       "exports": [
         "PayPalClient",
         "normalizePayPal"
@@ -234,8 +278,8 @@
     },
     {
       "path": "src/community/integrations/types.ts",
-      "sha256": "fd9055497973fc118debb88d8b3461bbf81cbfd8b9ebbbe47c6b9a38d3c74972",
-      "bytes": 4316,
+      "sha256": "5acf20b913b747b3eb51f16e5242f4ae8fbb9259153873fc2797f7472090fbb3",
+      "bytes": 4541,
       "exports": [
         "Provider",
         "Environment",
@@ -360,8 +404,8 @@
     },
     {
       "path": "src/community/payments/types.ts",
-      "sha256": "593182f3e6f55f412275a210ae93c53c2c861c5e465164d354c3ece703afb7c6",
-      "bytes": 2716,
+      "sha256": "5206126290f7884063cebdbd3d18123e4f6eb0ecb2d915d821387976c3bfacae",
+      "bytes": 2726,
       "exports": [
         "PaymentStatus",
         "PaymentPermission",
@@ -1927,8 +1971,8 @@
     },
     {
       "path": "src/server/application.ts",
-      "sha256": "558b0ba36549cc90e16bc0b497791b0bdbca3eed5168faa2ce2e3b258dd161ca",
-      "bytes": 7358,
+      "sha256": "890ca18e0ab9e2b19ef0bcacc8d78c47e71d84cec1b99b282c705b4bdd927387",
+      "bytes": 7753,
       "exports": [
         "CommunityApplicationOptions",
         "createCommunityApplication"
@@ -1999,8 +2043,8 @@
     },
     {
       "path": "src/server/community-workspace.ts",
-      "sha256": "7dca7be3a781099446bd212939c3a7b9d746d00a7d000ddfc78f585c177725db",
-      "bytes": 27091,
+      "sha256": "a3a8f833f4e683c206ad1fc98eae6985aaa86076165043da979c85b627b04a96",
+      "bytes": 30627,
       "exports": [
         "COMMUNITY_WORKSPACE_ROUTES",
         "WorkspaceOptions",
@@ -2042,9 +2086,12 @@
     },
     {
       "path": "src/server/routes/community-banking.ts",
-      "sha256": "25c20136e619aea19511865c5de8690419b72027a3fbb416a9105fbe9f38f1fb",
-      "bytes": 1765,
+      "sha256": "63481a4c7e6437ce36e654e91c471eacc4e7810fc99736544d9e1df419a77530",
+      "bytes": 6750,
       "exports": [
+        "BankOperationEvent",
+        "BankingRouterOptions",
+        "bankConsentCallback",
         "createCommunityBankingRouter"
       ]
     },
@@ -2343,6 +2390,23 @@
       ]
     },
     {
+      "path": "web/src/banking-contract.ts",
+      "sha256": "c4a80bfc8ed0336326f084b340362a4544704b1950b552b2ae4d4860fe465e58",
+      "bytes": 4440,
+      "exports": [
+        "BankEnvironment",
+        "BankAccount",
+        "Consent",
+        "BankingStatus",
+        "Bank",
+        "bankEnvironment",
+        "bankAccounts",
+        "bankingStatus",
+        "availableBanks",
+        "consentAuthorization"
+      ]
+    },
+    {
       "path": "web/src/components/CommunityAccountAccess.tsx",
       "sha256": "a2bd80d5be8482bb266b379d9c3fd1bf236b0cba970dfb94857c4658dedad22c",
       "bytes": 16592,
@@ -2466,10 +2530,11 @@
     },
     {
       "path": "web/src/i18n/community-banking.ts",
-      "sha256": "77a298c1d14f8491727c1d81922973c50b6e51e3318e4a4e4400271bbf4e3c25",
-      "bytes": 1956,
+      "sha256": "6093f44a57ea7fb1d01ff52aa8625638591a9f4881c515b48c05aa47cd48ccdc",
+      "bytes": 10149,
       "exports": [
-        "bankingText"
+        "bankingText",
+        "bankProblemText"
       ]
     },
     {
@@ -2514,8 +2579,8 @@
     },
     {
       "path": "web/src/i18n/community-problems.ts",
-      "sha256": "5f8923c372366de1cf6d75c5e0e32803d1a4b2fcc29169cf4d42fa43019aac89",
-      "bytes": 9508,
+      "sha256": "8c80a9b7ab8fa78713991d48c4e744777d471dcbb9682719e5d42c6743ed6928",
+      "bytes": 10835,
       "exports": [
         "problemMessage"
       ]
@@ -2606,8 +2671,8 @@
     },
     {
       "path": "web/src/pages/CommunityBanking.tsx",
-      "sha256": "cc03415f56e4c27cbd5c727776eb815885316d3dda86ed9c9eee26e29bcc3f4a",
-      "bytes": 4666,
+      "sha256": "252b77505f453de72674c8854d0ccb8c4e2b78f54bdbb268795ba36b0736a5d3",
+      "bytes": 12608,
       "exports": [
         "CommunityBanking"
       ]
@@ -2894,6 +2959,24 @@
     {
       "method": "POST",
       "pattern": "^\\/community-banking\\/(?:configure|disconnect)$",
+      "permission": "integrations:configure",
+      "recent_authentication": true
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community-banking\\/(?:application|consents)$",
+      "permission": "integrations:configure",
+      "recent_authentication": true
+    },
+    {
+      "method": "GET",
+      "pattern": "^\\/community-banking\\/banks$",
+      "permission": "integrations:configure",
+      "recent_authentication": false
+    },
+    {
+      "method": "POST",
+      "pattern": "^\\/community-banking\\/consents\\/[A-Za-z0-9_-]{1,120}\\/(?:complete|select|cancel)$",
       "permission": "integrations:configure",
       "recent_authentication": true
     },

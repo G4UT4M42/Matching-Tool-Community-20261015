@@ -1,5 +1,12 @@
 # Windows development packaging and installation
 
+The owner selected private internal use on 2026-10-16. The package includes
+`PRIVATE_INTERNAL_USE.md` with the bounded rights/provenance findings and
+owner-deferred fresh-Windows test. Development/distribution flags remain false;
+they do not represent a prohibition on private execution or a completed VM test.
+The selected new local qualification includes three reviewed replacements and
+five evidence supplements, including the independently reviewed runtime notices.
+
 The packaging command builds a self-contained **development candidate**. It
 does not create a release-accepted distributable. Ownership, native source and
 relink obligations, and asset provenance remain unresolved; requesting

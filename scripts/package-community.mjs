@@ -125,6 +125,7 @@ export function buildPackage({ out, compliance, supplement, replacement, mode = 
   copyTree(join(root, 'web', 'dist'), join(out, 'web', 'dist'));
   for (const name of ['LICENSE', 'NOTICE', 'package.json', 'package-lock.json']) copyTree(join(root, name), join(out, name));
   copyTree(join(root, 'docs', 'compliance', 'PACKAGING.md'), join(out, 'PACKAGING.md'));
+  copyTree(join(root, 'docs', 'compliance', 'PRIVATE_INTERNAL_USE.md'), join(out, 'PRIVATE_INTERNAL_USE.md'));
   for (const name of ['Start-Community.ps1', 'Install-Community.ps1', 'Upgrade-Community.ps1', 'Uninstall-Community.ps1', 'verify-community-package.mjs']) copyTree(join(root, 'scripts', name), join(out, 'scripts', name));
   copyTree(node, join(out, 'runtime', 'node.exe')); copyTree(runtimeLicense, join(out, 'runtime', 'LICENSE.node'));
   for (const entry of selected) copyTree(join(root, ...safeParts(entry.path)), join(out, ...safeParts(entry.path)), true);

@@ -3,6 +3,11 @@
 Status: IMPLEMENTED for reproducible evidence collection. Ownership, complete
 native-library compliance, legal review, and release acceptance remain open.
 
+The owner-selected private internal scope and bounded attribution/notice
+findings are recorded in the [private internal use addendum](PRIVATE_INTERNAL_USE.md).
+It distinguishes current internal-use conditions, future recipient obligations
+and owner-deferred VM testing without changing license or acceptance flags.
+
 Run from the checkout using the qualified Node.js 22 runtime:
 
 ```powershell

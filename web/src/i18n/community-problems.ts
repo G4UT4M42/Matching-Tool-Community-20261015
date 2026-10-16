@@ -1,5 +1,8 @@
 /** Stable API codes are translated locally; upstream error details never become translated UI markup. */
 const de:Record<string,string>={
+PROVIDER_TRANSACTION_PENDING:'Der Anbieter meldet noch einen ausstehenden Vorgang. Der betroffene Zeitraum wird nicht übersprungen. Nach dessen Abschluss erneut synchronisieren.',
+PROVIDER_TRANSACTION_INCOMPLETE:'Der Anbieter hat den Buchungsstatus eines Vorgangs nicht geliefert. Der Zeitraum wurde nicht übersprungen. Später erneut versuchen und bei wiederholtem Fehler die Anbieterfreigabe prüfen.',
+PROVIDER_SOURCE_CONFLICT:'Die Anbieterantwort widerspricht bereits gespeicherten Quelldaten. Originale unverändert lassen und den Konflikt vor einer weiteren Übernahme prüfen.',PROVIDER_SOURCE_COLLISION:'Die Anbieterkennung ist bereits widersprüchlich belegt. Originale unverändert lassen und die Quellzuordnung prüfen.',
 STALE_REVIEW:'Der geprüfte Datenstand hat sich geändert. Bitte die wiederhergestellten Datensätze erneut prüfen.',NOTHING_TO_RECOVER:'Es sind keine weiteren Belege für diesen Arbeitsbereich zu übernehmen.',ORIGINAL_UNAVAILABLE:'Ein Originalbeleg fehlt oder stimmt nicht mit der Sicherung überein.',INVALID_PRINCIPAL:'Die Übernahme benötigt den aktuellen Eigentümer dieses Arbeitsbereichs.',WORKSPACE_RECOVERY_CONFIRMATION_REQUIRED:'Bitte die Originalnachweise prüfen und die Übernahme ausdrücklich bestätigen.',WORKSPACE_RECOVERY_FAILED:'Die Übernahme ist sicher fehlgeschlagen. Bitte den aktuellen Datenstand prüfen.',
 UNSUPPORTED_EXCLUSION_RULE:'Diese historische Regel wird nicht ausgeführt. Bitte eine unterstützte wörtliche Regel erstellen.',EXCLUSION_RULE_NOT_FOUND:'Die Ausschlussregel wurde nicht gefunden.',EXCLUSION_OWNERSHIP_CONFLICT:'Die Ausschlussnachweise sind widersprüchlich. Bitte den Datenstand prüfen.',EXCLUSION_RULE_LIMIT:'Die zulässige Anzahl von Ausschlussregeln ist erreicht.',
 AUTHENTICATION_REQUIRED:'Bitte erneut anmelden.',UNAUTHENTICATED:'Bitte erneut anmelden.',AUTH_REQUIRED:'Bitte erneut anmelden.',FORBIDDEN:'Die erforderliche Berechtigung fehlt.',PERMISSION_DENIED:'Die erforderliche Berechtigung fehlt.',PERMISSION_REQUIRED:'Die erforderliche Berechtigung fehlt.',RECENT_AUTH_REQUIRED:'Bitte das aktuelle Passwort erneut bestätigen.',REAUTHENTICATION_REQUIRED:'Bitte das aktuelle Passwort erneut bestätigen.',CSRF_REQUIRED:'Die Sitzungsbestätigung ist abgelaufen. Bitte die Seite neu laden.',
@@ -14,5 +17,8 @@ export function problemMessage(problem:unknown,language?:string,fallback='Operat
  const code=typeof body.code==='string'&&/^[A-Z][A-Z0-9_]{1,99}$/.test(body.code)?body.code:undefined;
  const locale=language??(typeof window==='undefined'?'en':window.localStorage.getItem('matching-community-locale')??'en');
  if(locale==='de')return(code&&de[code]||'Der Vorgang konnte nicht abgeschlossen werden. Bitte Eingaben und Berechtigungen prüfen.')+(code?' ('+code+')':'');
+ if(code==='PROVIDER_TRANSACTION_PENDING')return 'The provider still reports a pending transaction. This window has not been skipped. Synchronize again after it settles.';
+ if(code==='PROVIDER_TRANSACTION_INCOMPLETE')return 'The provider omitted a transaction status. This window has not been skipped. Try again later and check provider access if the problem persists.';
+ if(code==='PROVIDER_SOURCE_CONFLICT'||code==='PROVIDER_SOURCE_COLLISION')return 'Provider evidence conflicts with an existing source record. Keep the originals unchanged and review the conflict before importing again.';
  return typeof body.error==='string'&&body.error.length<=2000?body.error:code??fallback;
 }

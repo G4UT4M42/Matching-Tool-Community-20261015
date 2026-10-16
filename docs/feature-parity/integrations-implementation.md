@@ -1,5 +1,12 @@
 # Integration foundation implementation
 
+Current internal development update (2026-10-16): the application wiring and
+normal connection/synchronization history are implemented. The historical
+foundation notes below describe their original implementation snapshot.
+[PayPal event semantics](PAYPAL_EVENT_CONTRACT.md) now correct a mandatory
+local financial gap; [AIS consent](BANK_CONSENT_CONTRACT.md) has a separate
+complete local flow. Current exact-candidate qualification remains pending.
+
 This isolated implementation adds a credential vault, PayPal Transaction Search client, Stripe balance transaction client, an owner-scoped synchronization service, an authenticated management router, and an English/German React page. It does not activate an external integration in the current Community preview. The supervisor must review the wiring and accounting callback before enabling any route.
 
 ## Verified provider contracts

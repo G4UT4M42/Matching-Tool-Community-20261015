@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { asObject, currencyCode, decimalMinor, type CanonicalTransaction, type Environment, type HttpRequest, type Transport } from './types.js';
 import { requestJson } from './http.js';
 import {providerAccountIdentity} from './provider-account.js';
+import {paypalEventClassification} from './paypal-event.js';
 
 export class PayPalClient {
   private token: { value: string; expiresAt: number } | null = null;
@@ -28,6 +29,7 @@ export class PayPalClient {
       const url = new URL(`${this.base}/v1/reporting/transactions`);
       url.searchParams.set('start_date', start.toISOString()); url.searchParams.set('end_date', end.toISOString());
       url.searchParams.set('fields', 'all'); url.searchParams.set('page_size', '100'); url.searchParams.set('page', String(page));
+      url.searchParams.set('balance_affecting_records_only','Y');
       let body: unknown;
       try { body = await requestJson(this.transport, { method: 'GET', url: url.href, headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' } }); }
       catch (error) {
@@ -57,16 +59,24 @@ export class PayPalClient {
 export function normalizePayPal(value: unknown, environment: Environment, account: string): CanonicalTransaction[] {
   const detail = asObject(value), info = asObject(detail.transaction_info);
   if (typeof info.transaction_id !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(info.transaction_id)) throw new Error('INVALID_PROVIDER_RESPONSE');
+  const classification=paypalEventClassification(info.transaction_event_code);
+  if(classification==='informational'||info.transaction_status==='D')return [];
+  // A pending event may settle outside the cursor overlap. Do not advance past
+  // it and silently lose its later cashflow; retry this window after settlement.
+  if(info.transaction_status==='P')throw new Error('PROVIDER_TRANSACTION_PENDING');
+  if(info.transaction_status===undefined)throw new Error('PROVIDER_TRANSACTION_INCOMPLETE');
+  if(typeof info.transaction_status!=='string'||!['S','V'].includes(info.transaction_status))throw new Error('INVALID_PROVIDER_RESPONSE');
   const amount = asObject(info.transaction_amount), currency = currencyCode(amount.currency_code);
   const amountMinor = decimalMinor(amount.value, currency);
   const fee = info.fee_amount ? asObject(info.fee_amount) : null;
   let feeMinor = 0;
   const extra: CanonicalTransaction[] = [];
   const reference = info.transaction_id;
-  const eventCode = String(info.transaction_event_code ?? '');
-  const classification = amountMinor < 0 || /^T11|^T12/.test(eventCode) ? 'refund' : 'payment';
-  const occurredAt = String(info.transaction_initiation_date ?? info.transaction_updated_date ?? '');
-  if (!Number.isFinite(Date.parse(occurredAt))) throw new Error('INVALID_PROVIDER_RESPONSE');
+  const eventCode = String(info.transaction_event_code);
+  const occurredAt = info.transaction_initiation_date ?? info.transaction_updated_date;
+  if (typeof occurredAt!=='string'||occurredAt.length>64||!Number.isFinite(Date.parse(occurredAt))) throw new Error('INVALID_PROVIDER_RESPONSE');
+  const providerUpdatedAt=info.transaction_updated_date??occurredAt;
+  if(typeof providerUpdatedAt!=='string'||providerUpdatedAt.length>64||!Number.isFinite(Date.parse(providerUpdatedAt)))throw new Error('INVALID_PROVIDER_RESPONSE');
   if (fee) {
     const feeCurrency = currencyCode(fee.currency_code), rawFee = decimalMinor(fee.value, feeCurrency);
     if (feeCurrency === currency) feeMinor = rawFee;
@@ -75,5 +85,5 @@ export function normalizePayPal(value: unknown, environment: Environment, accoun
   const netMinor = amountMinor + feeMinor;
   if (!Number.isSafeInteger(netMinor)) throw new Error('INVALID_PROVIDER_AMOUNT');
   const sourceEventKey = `${reference}:${eventCode}:${occurredAt}:${currency}:${amountMinor}:${feeMinor}`;
-  return [{ provider: 'paypal', environment, account, reference, sourceEventKey, relatedReference: typeof info.paypal_reference_id === 'string' ? info.paypal_reference_id : undefined, occurredAt, currency, amountMinor, feeMinor, netMinor, classification, revenue: info.transaction_status === undefined || info.transaction_status === 'S' }, ...extra];
+  return [{ provider: 'paypal', environment, account, reference, sourceEventKey, relatedReference: typeof info.paypal_reference_id === 'string' ? info.paypal_reference_id : undefined, occurredAt, currency, amountMinor, feeMinor, netMinor, classification, revenue: ['payment','refund','dispute'].includes(classification),providerStatus:info.transaction_status as 'S'|'V',providerEventCode:eventCode,providerUpdatedAt }, ...extra];
 }

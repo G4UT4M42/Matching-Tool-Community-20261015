@@ -13,7 +13,7 @@ export function acceptancePackage(){
   const inventory=spawnSync(process.execPath,[join(root,'scripts/create-compliance-inventory.mjs'),'--out',compliance],{cwd:root,encoding:'utf8',windowsHide:true,timeout:120000});
   if(inventory.status!==0)throw new Error('Synthetic acceptance package inventory failed: '+(inventory.stderr||inventory.stdout).slice(-1500));
   const supplements=process.env.MATCHING_ACCEPTANCE_SUPPLEMENTS?JSON.parse(process.env.MATCHING_ACCEPTANCE_SUPPLEMENTS):[];
-  if(!Array.isArray(supplements)||supplements.length>4||!supplements.every(path=>typeof path==='string'&&path.length>0))throw new Error('Explicit acceptance supplements must be a bounded array of external paths');
+  if(!Array.isArray(supplements)||supplements.length>5||!supplements.every(path=>typeof path==='string'&&path.length>0))throw new Error('Explicit acceptance supplements must be a bounded array of external paths');
   const result=buildPackage({out:packageDirectory,compliance,supplement:supplements,replacement:[process.env.MATCHING_ACCEPTANCE_NATIVE_REPLACEMENT,process.env.MATCHING_ACCEPTANCE_WASM_REPLACEMENT,process.env.MATCHING_ACCEPTANCE_LIBVIPS_REPLACEMENT].filter(Boolean)});
   if(result.distributable!==false||result.releaseAccepted!==false)throw new Error('Unexpected acceptance promotion');
   const manifest=JSON.parse(readFileSync(join(packageDirectory,'community-package.json'),'utf8'));

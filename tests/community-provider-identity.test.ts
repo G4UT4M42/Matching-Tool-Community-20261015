@@ -37,7 +37,7 @@ describe('provider economic identity independently of mutable row classification
   expect(prepareProviderImport(first.state,batch([original]))).toMatchObject({added:0,duplicates:2,importedEvents:0});
   const otherScope=event({account:providerAccountIdentity('stripe','live','acct_OTHER'),environment:'live'});
   expect(prepareProviderImport(first.state,batch([otherScope])).state.transactions.size).toBe(4);
-  const paypal=normalizePayPal({transaction_info:{transaction_id:'SYN_PAYPAL',transaction_amount:{value:'10.00',currency_code:'EUR'},fee_amount:{value:'-0.30',currency_code:'USD'},transaction_event_code:'T0006',transaction_initiation_date:'2026-10-14T00:00:00Z'}},'sandbox',providerAccountIdentity('paypal','sandbox','SYNTHETICMERCHANT'));
+  const paypal=normalizePayPal({transaction_info:{transaction_status:'S',transaction_id:'SYN_PAYPAL',transaction_amount:{value:'10.00',currency_code:'EUR'},fee_amount:{value:'-0.30',currency_code:'USD'},transaction_event_code:'T0006',transaction_initiation_date:'2026-10-14T00:00:00Z'}},'sandbox',providerAccountIdentity('paypal','sandbox','SYNTHETICMERCHANT'));
   const split=prepareProviderImport(first.state,batch(paypal));
   expect(paypal.map(row=>row.reference)).toEqual(['SYN_PAYPAL','SYN_PAYPAL:fee:USD']);
   expect(split.importedEvents).toBe(2);expect(prepareProviderImport(split.state,batch(paypal))).toMatchObject({added:0,duplicates:2});
@@ -73,7 +73,7 @@ describe('provider economic identity independently of mutable row classification
    expect((await service.synchronize(principal,'stripe','test')).imported).toBe(1);
    const ids=[...state.transactions.keys()];expect(await cursor()).toBe('2026-10-15T00:00:00.000Z');
    rows=[{...rows[0],type:'refund'}];now=new Date('2026-10-16T00:00:00.000Z');
-   await expect(service.synchronize(principal,'stripe','test')).rejects.toThrow('INTEGRATION_FAILED');
+   await expect(service.synchronize(principal,'stripe','test')).rejects.toThrow('PROVIDER_SOURCE_CONFLICT');
    expect(await cursor()).toBe('2026-10-15T00:00:00.000Z');expect([...state.transactions.keys()]).toEqual(ids);
    rows=[{...rows[0],type:'charge'}];expect((await service.synchronize(principal,'stripe','test')).imported).toBe(0);
    expect(state.audit_events).toHaveLength(1);expect([...state.transactions.keys()]).toEqual(ids);
@@ -96,14 +96,14 @@ describe('provider economic identity independently of mutable row classification
    if(request.url.endsWith('/v1/account'))return{status:200,json:{id:'acct_SYNTHETIC',object:'account'}};
    if(request.method==='POST')return{status:200,json:{access_token:'synthetic-token',expires_in:3600}};
    if(provider==='stripe')return{status:200,json:{data:[{id:'txn_shared_account',type:'charge',amount:1000,fee:30,net:970,currency:'eur',created:Date.parse('2026-10-14T00:00:00Z')/1000}],has_more:false}};
-   return{status:200,json:{account_number:'SYNTHETICMERCHANT',total_pages:1,transaction_details:[{transaction_info:{transaction_id:'SHARED_ACCOUNT',transaction_amount:{value:'10.00',currency_code:'EUR'},fee_amount:{value:'-0.30',currency_code:'EUR'},transaction_event_code:'T0006',transaction_initiation_date:'2026-10-14T00:00:00Z'}}]}};
+   return{status:200,json:{account_number:'SYNTHETICMERCHANT',total_pages:1,transaction_details:[{transaction_info:{transaction_status:'S',transaction_id:'SHARED_ACCOUNT',transaction_amount:{value:'10.00',currency_code:'EUR'},fee_amount:{value:'-0.30',currency_code:'EUR'},transaction_event_code:'T0006',transaction_initiation_date:'2026-10-14T00:00:00Z'}}]}};
   };
   const service=new IntegrationService(new CredentialVault(root,new TestProtector()),async input=>{seenAccounts.push(input.transactions[0].account);const result=prepareProviderImport(state,input);state=result.state;return result.importedEvents;},transport,()=>new Date('2026-10-15T00:00:00Z'));
   try{
    const credentials:Record<string,string>=provider==='stripe'?{apiKey:'rk_test_synthetic1234'}:{clientId:'synthetic-client',clientSecret:'synthetic-secret'};
-   await service.configure({subject},provider,environment,credentials);expect((await service.synchronize({subject},provider,environment)).imported).toBe(1);const ids=[...state.transactions.keys()];
+   await service.configure({subject},provider,environment,credentials);expect((await service.synchronize({subject},provider,environment)).imported).toBe(1);const ids=[...state.transactions.keys()],originalAudit=structuredClone(state.audit_events);
    await service.configure({subject:'USR-other-synthetic-actor'},provider,environment,credentials);expect((await service.synchronize({subject:'USR-other-synthetic-actor'},provider,environment)).imported).toBe(0);
-   expect(seenAccounts[0]).toBe(seenAccounts[1]);expect(seenAccounts[0]).not.toContain(subject);expect([...state.transactions.keys()]).toEqual(ids);expect(state.audit_events).toHaveLength(1);
+   expect(seenAccounts[0]).toBe(seenAccounts[1]);expect(seenAccounts[0]).not.toContain(subject);expect([...state.transactions.keys()]).toEqual(ids);expect(state.audit_events).toEqual(originalAudit);expect(state.audit_events.filter(event=>event.action==='TRANSACTIONS_IMPORTED')).toHaveLength(1);expect(state.audit_events).toHaveLength(provider==='paypal'?2:1);
    expect([...state.transactions.values()].reduce((sum,row)=>sum+row.amount_minor,0)).toBe(970);
   }finally{await rm(root,{recursive:true,force:true,maxRetries:5,retryDelay:100});}
  });

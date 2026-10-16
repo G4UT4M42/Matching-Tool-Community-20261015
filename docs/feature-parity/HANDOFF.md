@@ -1,12 +1,23 @@
 # Matching Tool Community — current continuation handoff
 
+> Active internal finalization, 2026-10-16: use only
+> `<isolated-worktrees>/Matching-Community-Internal-Finalization-20261016`, branch
+> `community/internal-finalization-20261016`. The earlier candidate and its
+> sealed outputs are preserved. AIS consent and PayPal event semantics had local
+> gaps; see [current status](STATUS.md) and their contract documents. Root owns
+> handed-back code. Run complete exact-candidate regression and installed
+> journeys before promoting software acceptance. The existing repository is
+> PRIVATE and its sealed baseline CI passed; later code needs a fresh CI run.
+> Private internal use and owner-deferred VM testing supersede broader delivery
+> assumptions. Do not recreate policy-denied provider evidence templates.
+
 Status: IN_PROGRESS. Updated 2026-10-15. Read [STATUS](STATUS.md), [feature matrix](02_FEATURE_MATRIX.md), [current work package](packages/FINAL-P03-integrated-acceptance.md), actual Git HEAD and status before editing.
 
 > Current freeze checkpoint (2026-10-15): local contracts are implemented for34of41 work packages;2packages have explicit external account/hosted-CI requirements and5final qualification/release packages retain separate gates. All11 controlled portal choices, explicit workspace recovery, generation isolation and original-preserving operational migration are integrated. New known-history composition passes89/89; independent new-file review38/38 plus envelope/REAL/null-MIME/backup-tamper probes. Expanded source journey passes in105651.872ms with9 historical rows,2linked originals,48 interface combinations and actual exit86/rollback/retry; no unexplained browser errors. Standalone OCR harness now uses packaged languages and passes1/1. Full4867 app run507/508 failed only the old owner fixture, repaired focused1/1; all failed evidence remains. Final clean candidate complete suites and installed3replacement/4supplement journey are recorded in external exact-final run manifests after this immutable freeze. No final PASS is inferred here. Repository/software/release milestones remain false until their own actual gates pass.
 
 ## Boundaries and ownership
 
-Use only `<isolated-worktrees>/Matching-Tool-Community-Private-Candidate-20261015`. Productive V2, recovered original worktrees, user financial stores and existing browser sessions remain untouched. All tests create independent synthetic roots. Never use real provider credentials or execute real transfers. Owner communication is German; code/docs/tests are English by default.
+Use only the active worktree named above. Productive V2, the preserved sealed candidate, recovered original worktrees, user financial stores and existing browser sessions remain untouched. All tests create independent synthetic roots. Never use real provider credentials or execute real transfers. Owner communication is German; code/docs/tests are English by default.
 
 Root owns application composition, normal pages, integration tests, data-operation audit and packaging. Agent source handoffs are explicit. All agent source handoffs are complete; root owns the final source. Native build evidence remains external and frozen. Independent data-audit and historical-document source reviews are completed and handed back. Do not overwrite active files or retry any denied operation.
 

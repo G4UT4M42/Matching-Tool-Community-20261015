@@ -108,7 +108,7 @@ export function validateAccountingState(state: MatchingState): void {
       if (kinds.has('transfer') && c.category !== 'transfer' && c.category !== 'unclassified') bad('CLASSIFICATION_CONFLICT', 'Transfer legs cannot be reported as revenue or expense');
       if (kinds.has('fee') && c.category !== 'fee' && c.category !== 'unclassified') bad('CLASSIFICATION_CONFLICT', 'Fee legs require fee classification');
       const sourceKind = state.transactions.get(c.transaction_id)!.meta?.accounting_event_kind;
-      if (['provider_payout', 'internal_transfer'].includes(String(sourceKind)) && c.category !== 'transfer' && c.category !== 'unclassified') bad('CLASSIFICATION_CONFLICT', 'Payouts and internal transfers cannot be new revenue');
+      if (['provider_payout', 'provider_transfer', 'internal_transfer'].includes(String(sourceKind)) && c.category !== 'transfer' && c.category !== 'unclassified') bad('CLASSIFICATION_CONFLICT', 'Payouts and internal transfers cannot be new revenue');
     }
     for (const tax of account.document_taxes) {
       if (!['output', 'input', 'exempt', 'outside_scope', 'unclassified'].includes(tax.tax_category) || !integer(tax.rate_numerator) || tax.rate_numerator < 0 || !integer(tax.rate_denominator) || tax.rate_denominator <= 0 || !integer(tax.vat_minor) || typeof tax.input_tax_eligible !== 'boolean') bad('INVALID_TAX_CLASSIFICATION', 'Invalid exact tax classification');

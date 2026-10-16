@@ -23,7 +23,7 @@ class TestProtector implements KeyProtector {
 const owner = { subject: 'USR-' + randomUUID() }, other = { subject: 'USR-' + randomUUID() };
 const workspace = 'WS-' + randomUUID(), session = 'SES-' + randomUUID();
 const paypalCredential = { clientId: 'synthetic-client', clientSecret: 'synthetic-secret' };
-const paypalRow = (id: string, amount = '10.25', fee = '-0.55', currency = 'USD') => ({ transaction_info: { transaction_id: id, transaction_amount: {value: amount, currency_code: currency}, fee_amount: {value: fee, currency_code: currency}, transaction_initiation_date: '2026-10-01T00:00:00Z', transaction_event_code: amount.startsWith('-') ? 'T1107' : 'T0006', paypal_reference_id: 'related-payment' } });
+const paypalRow = (id: string, amount = '10.25', fee = '-0.55', currency = 'USD') => ({ transaction_info: { transaction_status:'S', transaction_id: id, transaction_amount: {value: amount, currency_code: currency}, fee_amount: {value: fee, currency_code: currency}, transaction_initiation_date: '2026-10-01T00:00:00Z', transaction_event_code: amount.startsWith('-') ? 'T1107' : 'T0006', paypal_reference_id: 'related-payment' } });
 
 describe('credential vault', () => {
   it('isolates owner and environment, hides plaintext, fails on tamper and deletes', async () => {

@@ -36,8 +36,11 @@ import { AssistedPortalSessions } from '../community/invoice-bot/assisted-portal
 import { CommunityBankingService } from '../community/banking/service.js';
 import { EnableBankingAisAdapter } from '../community/banking/enablebanking-ais.js';
 import { BankCredentialVault } from '../community/banking/vault.js';
+import {BankApplicationVault} from '../community/banking/application-vault.js';
+import {BankConsentClient,type BankEnvironment} from '../community/banking/consent-client.js';
+import {BankConsentCoordinator} from '../community/banking/consent.js';
 import { prepareBankImport } from '../community/banking/canonical-import.js';
-import { createCommunityBankingRouter } from './routes/community-banking.js';
+import { createCommunityBankingRouter,bankConsentCallback } from './routes/community-banking.js';
 
 const id='[A-Za-z0-9_-]{1,120}';
 const rule=(method:string,pattern:string,permission:CommunityPermission,recentAuthentication=false):CommunityRouteRule=>({method,pattern:new RegExp(pattern),permission,...(recentAuthentication?{recentAuthentication:true}:{})});
@@ -57,6 +60,9 @@ export const COMMUNITY_WORKSPACE_ROUTES:readonly CommunityRouteRule[]=[
   rule('GET','^/community-payments/(?:candidates|batches)$','finance:read'),
   rule('GET','^/community-banking/(?:status|capabilities|accounts)$','integrations:read'),
   rule('POST','^/community-banking/(?:configure|disconnect)$','integrations:configure',true),
+  rule('POST','^/community-banking/(?:application|consents)$','integrations:configure',true),
+  rule('GET','^/community-banking/banks$','integrations:configure'),
+  rule('POST','^/community-banking/consents/'+id+'/(?:complete|select|cancel)$','integrations:configure',true),
   rule('POST','^/community-banking/sync$','integrations:sync'),
   rule('GET','^/community-payments/batches/'+id+'(?:/sepa)?$','finance:read'),
   rule('POST','^/community-payments/batches$','payments:prepare'),
@@ -98,6 +104,10 @@ export interface WorkspaceOptions{
   localLanguageDir?:string;legacySources?:Array<{id:string;label:string;root:string}>;
   /** Test-injected transport; the real server always uses the verified official provider transport. */
   providerTransport?:Transport;
+  /** Trusted composition only: never configurable by request or environment. */
+  bankTransport?:typeof fetch;
+  /** Exact registered loopback callback from the actual listener composition. */
+  bankCallbackUrl?:string;
   /** Lifecycle observer for controlled embedding/failure qualification; never configured by HTTP or environment. */
   afterRestoreCutover?:()=>void;
   /** Explicit synthetic composition only; never selected through HTTP or environment. */
@@ -132,13 +142,27 @@ export function createCommunityWorkspace(options:WorkspaceOptions){
   }
   const providerVault=new CredentialVault(join(options.runtimeRoot,'identity','provider-vault'));
   const bankVault=new BankCredentialVault(join(options.runtimeRoot,'identity','bank-vault'));
+  const applicationVault=new BankApplicationVault(join(options.runtimeRoot,'identity','bank-vault'));
+  const bankServices=new Map<BankEnvironment,CommunityBankingService>();
+  const bankCallbackUrl=options.bankCallbackUrl??'http://127.0.0.1:3000/api/community-banking/callback';
+  const bankConsent=new BankConsentCoordinator(applicationVault,new BankConsentClient(options.bankTransport),bankCallbackUrl,(principal,permission)=>{
+    const current=requireCurrent(permission),scope=context.getStore()!;
+    if(current.subject!==principal.subject||current.workspace_id!==principal.workspace_id||current.session_id!==principal.session_id)throw new Error('UNAUTHENTICATED');
+    if(permission==='integrations:configure'){const session=options.auth.authenticate(scope.token);if(!session)throw new Error('UNAUTHENTICATED');options.auth.requireRecentAuthentication(session);}
+    const token=scope.token,epoch=generation;
+    return{validate:()=>{
+      if(generation!==epoch||exclusiveActive)throw new Error('BANK_CONSENT_REVOKED');
+      const activeSession=options.auth.authenticate(token);
+      if(!activeSession||activeSession.principal.subject!==principal.subject||activeSession.principal.session_id!==principal.session_id||!hasCommunityPermission(activeSession.principal,principal.workspace_id,permission))throw new Error('BANK_CONSENT_REVOKED');
+    }};
+  },async(principal,environment,accountRef,credential,guard)=>{const service=bankServices.get(environment);if(!service)throw new Error('BANK_OPERATION_FAILED');await service.configure(principal,accountRef,credential,guard);});
   const portalSessions=new AssistedPortalSessions(join(options.runtimeRoot,'identity','invoice-browsers'));
   const providers=new IntegrationService(providerVault,async batch=>{
     const principal=requireCurrent('integrations:sync');
     if(batch.principal.subject!==principal.subject)throw new CanonicalStateError('AUTHENTICATION_REQUIRED','Provider synchronization principal changed');
     const before=options.getState();
     const prepared=prepareProviderImport(before,batch);
-    if(prepared.added)commit(before,prepared.state,principal.subject);
+    if(prepared.added||prepared.observations)commit(before,prepared.state,principal.subject);
     return prepared.importedEvents;
   },options.providerTransport,undefined,{
     authorizeMutation:(principal,permission)=>{const actor=requireCurrent(permission);if(actor.subject!==principal.subject)throw new CanonicalStateError('AUTHENTICATION_REQUIRED','The provider principal changed');},
@@ -163,6 +187,7 @@ export function createCommunityWorkspace(options:WorkspaceOptions){
       active.principal.workspace_id===principal.workspace_id?active:null;
   };
   function rebuild():void{
+    bankConsent.invalidate();bankServices.clear();
     const routes=Router();
     const documents=new CommunityDocumentService({workspaceId:options.auth.workspaceId,root:join(options.runtimeRoot,'documents'),getState:options.getState,persistAndActivate:commit,localLanguageDir:options.localLanguageDir});
     routes.use('/community/documents',createCommunityDocumentsRouter(documents,can));
@@ -184,32 +209,37 @@ export function createCommunityWorkspace(options:WorkspaceOptions){
       history:scope=>options.getState().audit_events.filter(event=>event.actor_type==='user'&&event.actor_id===scope.subject&&event.after?.integration_operation)
         .map(event=>event.after!.integration_operation as IntegrationOperationEntry),
     }));
-    const banking=new CommunityBankingService(getDb(),(principal,permission)=>{const current=requireCurrent(permission);return current.subject===principal.subject&&current.workspace_id===principal.workspace_id;},bankVault,new EnableBankingAisAdapter(),{
-      storeCredential:async({principal,credential})=>{requireCurrent('integrations:configure');return bankVault.put(principal,credential);},
-      removeCredential:async(principal,vaultRef)=>{requireCurrent('integrations:configure');await bankVault.remove(principal,vaultRef);},
+    const makeBanking=(environment:BankEnvironment)=>new CommunityBankingService(getDb(),(principal,permission)=>{const current=requireCurrent(permission);return current.subject===principal.subject&&current.workspace_id===principal.workspace_id;},bankVault,new EnableBankingAisAdapter(options.bankTransport,environment,bankCallbackUrl),{
+      storeCredential:async({principal,credential})=>{requireCurrent('integrations:configure');return bankVault.put(principal,{...(credential as object),environment});},
+      removeCredential:async(principal,vaultRef)=>{requireCurrent('integrations:configure');await bankVault.remove(principal,vaultRef,environment);},
       commitConnection:({principal,action,accountRef,mutate})=>{
         const actor=requireCurrent('integrations:configure');if(actor.subject!==principal.subject)throw new CanonicalStateError('AUTHENTICATION_REQUIRED','The bank configuration principal changed');
         const before=options.getState();
-        const previous=getDb().prepare('SELECT account_ref FROM community_bank_connections WHERE workspace_id=? AND subject=? AND provider=? AND environment=?').get(actor.workspace_id,actor.subject,'enablebanking-ais','live') as {account_ref:string}|undefined;
+        const previous=getDb().prepare('SELECT account_ref FROM community_bank_connections WHERE workspace_id=? AND subject=? AND provider=? AND environment=?').get(actor.workspace_id,actor.subject,'enablebanking-ais',environment) as {account_ref:string}|undefined;
         const result=commitCanonicalMutation(before,actor.subject,()=>{
           mutate();const next=structuredClone(before);
           recordAudit(next,'STATE_COMMITTED','Run','BANK-CONNECTION-'+randomUUID(),{actor_type:'user',actor_id:actor.subject,
             reason:action==='configure'?'Bank connection configured':'Bank connection disconnected',
             before:{configured:!!previous,account_ref:previous?.account_ref??null},
-            after:{provider:'enablebanking-ais',environment:'live',action,configured:action==='configure',account_ref:accountRef??null}});
+            after:{provider:'enablebanking-ais',environment,action,configured:action==='configure',account_ref:accountRef??null}});
           return{state:next,result:null};
         });options.activate(result.state);
       },
-      importTransactions:async({principal,transactions})=>{
+      importTransactions:async({principal,transactions,guard})=>{
         const actor=requireCurrent('integrations:sync');if(actor.subject!==principal.subject)throw new Error('AUTHENTICATION_REQUIRED');
-        const before=options.getState(),result=prepareBankImport(before,transactions,actor.subject);
+        guard?.();const before=options.getState(),result=prepareBankImport(before,transactions,actor.subject);
         if(result.imported)commit(before,result.state,actor.subject);
         return{imported:result.imported,skipped:result.skipped};
       },
     });
+    for(const environment of ['sandbox','live'] as const)bankServices.set(environment,makeBanking(environment));
+    const banking=bankServices.get('live')!;
     routes.use('/community-banking',createCommunityBankingRouter(banking,(principal,token)=>{
       const session=currentPaymentSession(principal);return Boolean(session&&options.auth.validateCsrf(session,token));
-    }));
+    },{consent:bankConsent,selectService:async principal=>bankServices.get(await bankConsent.environment(principal))!,disconnectAll:async principal=>{for(const service of bankServices.values())await service.disconnect(principal);},observe:(principal,event)=>{
+      const actor=requireCurrent();if(actor.subject!==principal.subject||actor.workspace_id!==principal.workspace_id)throw new Error('UNAUTHENTICATED');
+      const before=options.getState(),next=structuredClone(before);recordAudit(next,'STATE_COMMITTED','Run','BANK-OPERATION-'+event.id,{actor_type:'user',actor_id:actor.subject,correlation_id:event.operationId,reason:'Bank operation '+event.operation+' '+event.phase,after:{bank_operation:event}});commit(before,next,actor.subject);
+    }}));
     const payments=new CommunityPaymentService<MatchingState>({
       db:getDb(),
       accounting:{
@@ -313,5 +343,5 @@ export function createCommunityWorkspace(options:WorkspaceOptions){
     context.run({principal,token,permission:policy.permission,csrf:request.get('X-CSRF-Token'),generation},next);
   });
   router.use((request,response,next)=>currentRouter(request,response,next));
-  return{router,commit,withExclusiveAccess,rebuild,requireCurrent,close:async()=>{await portalSessions.close();await options.invoiceBot?.close?.();}};
+  return{router,bankCallback:bankConsentCallback(bankConsent),commit,withExclusiveAccess,rebuild,requireCurrent,close:async()=>{bankConsent.invalidate();await portalSessions.close();await options.invoiceBot?.close?.();}};
 }

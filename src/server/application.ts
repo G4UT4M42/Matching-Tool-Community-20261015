@@ -19,7 +19,7 @@ import { resolveAccountingPaths } from '../storage/paths.js';
 import type { Document, MatchingState } from '../core/types.js';
 
 
-export type CommunityApplicationOptions=Pick<import('./community-workspace.js').WorkspaceOptions,'providerTransport'|'invoiceBot'|'paymentAdapter'|'afterRestoreCutover'>;
+export type CommunityApplicationOptions=Pick<import('./community-workspace.js').WorkspaceOptions,'providerTransport'|'bankTransport'|'invoiceBot'|'paymentAdapter'|'afterRestoreCutover'>;
 /** Production composition root. Test transports are explicit code dependencies, never HTTP/environment switches. */
 export function createCommunityApplication(options:CommunityApplicationOptions={}){
 if (process.env.MATCHING_RUNTIME_MODE !== 'external-runtime-root') throw new Error('Community requires an isolated external runtime root');
@@ -55,7 +55,8 @@ if (authMode === 'synthetic-preview' && state.run_id !== 'COMMUNITY_SYNTHETIC_DE
 // Do not hydrate selected SQL columns over the authoritative source snapshot.
 initializeCanonicalState(state);
 const authStore = authMode === 'accounts' ? new CommunityAuthStore({ runtimeRoot: paths.runtimeRoot, setupToken: process.env.MATCHING_SETUP_TOKEN }) : undefined;
-const workspace = authStore ? createCommunityWorkspace({runtimeRoot:paths.runtimeRoot,auth:authStore,getState:()=>state,activate:value=>{state=value;},localLanguageDir:process.env.MATCHING_OCR_LANGUAGE_DIR,providerTransport:options.providerTransport,invoiceBot:options.invoiceBot,paymentAdapter:options.paymentAdapter,afterRestoreCutover:options.afterRestoreCutover}) : undefined;
+const bankCallbackUrl=`http://${host==='::1'?'[::1]':host}:${port}/api/community-banking/callback`;
+const workspace = authStore ? createCommunityWorkspace({runtimeRoot:paths.runtimeRoot,auth:authStore,getState:()=>state,activate:value=>{state=value;},localLanguageDir:process.env.MATCHING_OCR_LANGUAGE_DIR,providerTransport:options.providerTransport,bankTransport:options.bankTransport,bankCallbackUrl,invoiceBot:options.invoiceBot,paymentAdapter:options.paymentAdapter,afterRestoreCutover:options.afterRestoreCutover}) : undefined;
 const app = express();
 app.disable('x-powered-by');
 app.use((_request, response, next) => {
@@ -63,6 +64,9 @@ app.use((_request, response, next) => {
 });
 app.get('/health', (_request, response) => response.json({ ok: true, auth_mode: authMode, release_ready: false }));
 if (authStore) {
+  // Only a one-use AIS receipt is public. Completion remains behind unchanged
+  // same-origin, authenticated, recent-authentication and CSRF guards below.
+  app.get('/api/community-banking/callback',workspace!.bankCallback);
   app.use('/api', createCommunityTransportGuard());
   app.use('/api', createCommunityAuthRouter(authStore));
   app.use('/api', createCommunityAccountGuard(authStore, COMMUNITY_WORKSPACE_ROUTES));

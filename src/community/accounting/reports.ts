@@ -21,7 +21,7 @@ export function accountingReport(state: MatchingState, query: ReportQuery) {
       const explicit = classifications.get(t.transaction_id);
       const component = new Set(assigned.map(a => a.kind));
       const category = t.meta?.accounting_status === 'cancelled' ? 'cancelled' : state.excluded_transaction_ids.has(t.transaction_id) ? 'excluded' :
-        (component.has('transfer') || ['provider_payout', 'internal_transfer'].includes(String(t.meta?.accounting_event_kind))) ? 'transfer' :
+        (component.has('transfer') || ['provider_payout', 'provider_transfer', 'internal_transfer'].includes(String(t.meta?.accounting_event_kind))) ? 'transfer' :
         component.has('fee') ? 'fee' : component.has('refund') || component.has('credit_note') ? 'refund' :
         explicit?.category ?? 'unclassified';
       return { transaction_id: t.transaction_id, source_system: t.source_system, source_account_id: t.source_account_id,

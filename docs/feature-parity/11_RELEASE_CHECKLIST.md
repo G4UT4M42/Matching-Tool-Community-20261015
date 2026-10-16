@@ -2,6 +2,14 @@
 
 # Final release checklist
 
+Current internal development update (2026-10-16): the owner selected private
+internal use and deferred the pristine Windows VM test. New AIS consent and
+PayPal event-semantic changes need complete exact-candidate qualification;
+earlier measurements do not qualify them. Runtime notice companion02 has an
+independent bounded engineering review. Ownership/MIT authority was not
+confirmed. Checkboxes remain full-release gates rather than permission to
+execute privately; no missing implementation is classified as external.
+
 These checkboxes denote final release acceptance, not merely implemented local contracts. The feature matrix,41-package registry and exact-source run manifests separately record software behavior and precise external limitations. Unchecked external rights/provider/clean-OS/GitHub gates do not imply missing normal-application controls.
 
 - [ ] Transactions and dashboard (F01)

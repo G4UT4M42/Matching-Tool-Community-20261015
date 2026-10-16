@@ -14,8 +14,11 @@ export interface CanonicalTransaction {
   amountMinor: number;
   feeMinor: number;
   netMinor: number;
-  classification: 'payment' | 'refund' | 'dispute' | 'fee' | 'payout' | 'other';
+  classification: 'payment' | 'refund' | 'dispute' | 'fee' | 'payout' | 'transfer' | 'other';
   revenue: boolean;
+  providerStatus?: 'S'|'V';
+  providerEventCode?: string;
+  providerUpdatedAt?: string;
 }
 export interface Checkpoint { cursor: string | null; seen: string[] }
 export interface CommitBatch {
@@ -53,6 +56,6 @@ const publicErrors = new Set([
   'NOT_CONFIGURED', 'INTEGRATION_BUSY', 'PROVIDER_UNAUTHORIZED', 'PROVIDER_PERMISSION_DENIED', 'PROVIDER_RATE_LIMITED', 'PROVIDER_UNAVAILABLE',
   'PROVIDER_PAGINATION_LOOP', 'PROVIDER_PAGINATION_LIMIT', 'CHECKPOINT_UNAVAILABLE', 'CHECKPOINT_CAPACITY', 'CREDENTIAL_UNAVAILABLE', 'PROTECTION_UNAVAILABLE',
   'PROVIDER_ACCOUNT_UNAVAILABLE', 'PROVIDER_ACCOUNT_CHANGED', 'PROVIDER_ACCOUNT_BINDING_REQUIRED',
-  'CHECKPOINT_BACKFILL_REQUIRED',
+  'CHECKPOINT_BACKFILL_REQUIRED', 'PROVIDER_TRANSACTION_PENDING', 'PROVIDER_TRANSACTION_INCOMPLETE', 'PROVIDER_SOURCE_CONFLICT', 'PROVIDER_SOURCE_COLLISION',
 ]);
 export function publicErrorCode(error: unknown): string { const message = error instanceof Error ? error.message : ''; return publicErrors.has(message) ? message : 'INTEGRATION_FAILED'; }
