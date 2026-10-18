@@ -81,6 +81,12 @@ test('P08 real browser review, localized controls, manual matching, audit and re
   };
   try {
     execution = await boot(runtime, listenPort, token);
+    const initial = JSON.parse(readFileSync(join(runtime, 'state', 'state.json'), 'utf8'));
+    assert.equal(initial.schema_version, 2);
+    assert.equal(initial.format, 'matching-community-state-v2');
+    assert.equal(initial.accounting.capability, 'exact-accounting-v1');
+    assert.equal(Object.keys(initial.transactions).length, 17);
+    assert.equal(Object.keys(initial.documents).length, 13);
     browser = await puppeteer.launch({ executablePath, headless: true, userDataDir: join(work, 'browser-profile'), defaultViewport: { width: 1440, height: 1000 } });
     page = await browser.newPage(); page.setDefaultTimeout(15000);
     page.on('dialog', dialog => dialog.accept());
@@ -126,12 +132,18 @@ test('P08 real browser review, localized controls, manual matching, audit and re
     for (const node of await page.$$('div[style*="cursor: pointer"]')) {
       if ((await node.evaluate(element => element.textContent)).includes('DEMO-DOC-002')) { await node.click(); break; }
     }
-    await clickButton(page, 'Create Match');
+    await clickButton(page, 'Create match');
     await page.waitForFunction(() => document.body.innerText.includes('Match created:'));
     await screenshot('05-manual-match-created');
     const before = JSON.parse(readFileSync(join(runtime, 'state', 'state.json'), 'utf8'));
-    assert.equal(Object.keys(before.transactions).length, 4);
-    assert.equal(Object.values(before.transactions).reduce((sum, item) => sum + item.amount_minor, 0), 26300);
+    assert.deepEqual(before.transactions, initial.transactions);
+    assert.deepEqual(before.documents, initial.documents);
+    assert.deepEqual(before.accounting, initial.accounting);
+    const totals = Object.values(before.transactions).reduce((sum, item) => {
+      sum[item.currency_code] = (sum[item.currency_code] ?? 0) + item.amount_minor;
+      return sum;
+    }, {});
+    assert.deepEqual(totals, { EUR: 36360, USD: 5000 });
     assert.equal(before.match_groups['DEMO-MATCH-002'].status, 'rejected');
     assert.ok(Object.values(before.match_groups).some(group => group.status === 'confirmed' && group.transaction_ids.includes('DEMO-TXN-002')));
     for (const action of ['MATCH_REJECTED', 'MATCH_REOPENED', 'MATCH_ACCEPTED', 'MATCH_DELETED', 'MATCH_CREATED_MANUAL']) assert.ok(before.audit_events.some(event => event.action === action), action);
@@ -144,10 +156,12 @@ test('P08 real browser review, localized controls, manual matching, audit and re
     assert.deepEqual(after.match_groups, before.match_groups);
     assert.deepEqual(after.audit_events, before.audit_events);
     assert.deepEqual(after.transactions, before.transactions);
+    assert.deepEqual(after.documents, before.documents);
+    assert.deepEqual(after.accounting, before.accounting);
     assert.equal((await fetch(execution.base + '/api/transactions')).status, 401);
     assert.equal(externalRequests.length, 0, 'No provider/external request is allowed in synthetic browser qualification');
     assert.deepEqual(pageErrors, []);
-    writeFileSync(join(evidence, 'matching-review-result.json'), JSON.stringify({ result: 'PASS', browser: await browser.version(), milestones, accounting: { transactions: 4, currency: 'EUR', signed_total_minor: 26300 }, audit_actions: before.audit_events.map(event => event.action), external_requests: externalRequests, page_errors: pageErrors }, null, 2));
+    writeFileSync(join(evidence, 'matching-review-result.json'), JSON.stringify({ result: 'PASS', browser: await browser.version(), milestones, accounting: { transactions: 17, documents: 13, signed_totals_by_currency: totals }, audit_actions: before.audit_events.map(event => event.action), external_requests: externalRequests, page_errors: pageErrors }, null, 2));
   } catch (error) {
     if (page && !page.isClosed()) { try { await screenshot('failure'); } catch {} }
     writeFileSync(join(evidence, 'matching-review-result.json'), JSON.stringify({ result: 'FAIL', error: String(error.message).replaceAll(token, '[redacted]'), milestones, external_requests: externalRequests, page_errors: pageErrors }, null, 2));

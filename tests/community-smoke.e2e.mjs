@@ -95,10 +95,23 @@ test('fresh offline demo boot, protected financial API and persisted restart', {
       const response = await fetch(base + url, { headers });
       assert.equal(response.status, 403, url + ' must remain unavailable');
     }
-    const state = JSON.parse(readFileSync(join(runtime, 'state', 'state.json'), 'utf8'));
-    assert.equal(state.schema_version, 1);
-    assert.equal(state.format, 'matching-community-state-v1');
+    const stateBytes = readFileSync(join(runtime, 'state', 'state.json'));
+    const state = JSON.parse(stateBytes);
+    assert.equal(state.schema_version, 2);
+    assert.equal(state.format, 'matching-community-state-v2');
+    assert.equal(state.accounting.capability, 'exact-accounting-v1');
+    assert.equal(Object.keys(state.transactions).length, 17);
+    assert.equal(Object.keys(state.documents).length, 13);
+    assert.equal(state.transactions['DEMO-TXN-017'].amount_minor, 5000);
+    assert.equal(state.transactions['DEMO-TXN-017'].currency_code, 'USD');
     assert.ok(state.transactions['DEMO-TXN-001']);
+    const previewResponse = await fetch(base + '/api/community/demo', { headers });
+    assert.equal(previewResponse.status, 200);
+    const preview = await previewResponse.json();
+    assert.equal(preview.payments.length, 1);
+    assert.equal(preview.payments[0].status, 'draft');
+    assert.deepEqual(preview.payments[0].items.map(item => [item.documentId, item.amountMinor]).sort(),
+      [['DEMO-DOC-007', 6000], ['DEMO-DOC-009', 3600]]);
     await stop(process1.child);
 
     // Restart and confirm the same persisted synthetic economic records remain.
@@ -107,6 +120,11 @@ test('fresh offline demo boot, protected financial API and persisted restart', {
     const resumed = await fetch(base + '/api/transactions', { headers });
     assert.equal(resumed.status, 200);
     const storedState = JSON.parse(readFileSync(join(runtime, 'state', 'state.json'), 'utf8'));
+    assert.deepEqual(readFileSync(join(runtime, 'state', 'state.json')), stateBytes);
+    assert.deepEqual(storedState, state);
+    const resumedPreview = await fetch(base + '/api/community/demo', { headers });
+    assert.equal(resumedPreview.status, 200);
+    assert.deepEqual(await resumedPreview.json(), preview);
     assert.ok(storedState.transactions['DEMO-TXN-001']);
     assert.equal(storedState.match_groups['DEMO-MATCH-002'].status, 'proposed');
   } finally {
