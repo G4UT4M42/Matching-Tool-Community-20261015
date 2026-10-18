@@ -36,6 +36,9 @@ an empty successful report.
 ## Interface
 
 English is the default; German is selectable and persists in the local browser.
+Manual transaction/document selection uses named keyboard controls. Its two
+source panels stack within narrow viewports and remain side by side on desktop;
+search and action rows wrap without moving either source panel off screen.
 The existing matching review, manual matching, exclusions and audit interfaces
 remain interactive within their already reviewed routes. Imports, annotations,
 provider collection and unreviewed matching automation are unavailable in this

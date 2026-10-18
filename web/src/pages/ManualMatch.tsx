@@ -67,10 +67,10 @@ export function ManualMatch({allowOriginalFiles=true}:{allowOriginalFiles?:boole
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: 16 }}>
+      <div data-testid="manual-match-panels" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 360px), 1fr))', gap: 16 }}>
         {/* Left panel: Transactions */}
-        <Card title={text("Transaktionen auswählen")} style={{ flex: 1 }}>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        <Card title={text("Transaktionen auswählen")} style={{ minWidth: 0 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
             <SearchInput value={txnSearch} onChange={setTxnSearch} placeholder={text("Transaktionen suchen...")} />
             <Button onClick={searchTxns}>{text("Suchen")}</Button>
           </div>
@@ -107,8 +107,8 @@ export function ManualMatch({allowOriginalFiles=true}:{allowOriginalFiles?:boole
         </Card>
 
         {/* Right panel: Documents */}
-        <Card title={text("Dokumente auswählen")} style={{ flex: 1 }}>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        <Card title={text("Dokumente auswählen")} style={{ minWidth: 0 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
             <SearchInput value={docSearch} onChange={setDocSearch} placeholder={text("Dokumente suchen...")} />
             <Button onClick={searchDocs}>{text("Suchen")}</Button>
           </div>
@@ -147,14 +147,14 @@ export function ManualMatch({allowOriginalFiles=true}:{allowOriginalFiles?:boole
 
       {/* Match action */}
       <Card style={{ marginTop: 16 }}>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
           <input
             type="text"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             aria-label={text("Grund für manuelle Zuordnung (optional)")}
             placeholder={text("Grund für manuelle Zuordnung (optional)")}
-            style={{ flex: 1, padding: '8px 12px', borderRadius: 6, border: '1px solid #ddd', fontSize: 13 }}
+            style={{ flex: '1 1 200px', minWidth: 0, padding: '8px 12px', borderRadius: 6, border: '1px solid #ddd', fontSize: 13 }}
           />
           <Button
             onClick={createMatch}
