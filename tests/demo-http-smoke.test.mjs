@@ -99,7 +99,19 @@ test('synthetic preview boots, rejects unauthenticated/unsafe actions, persists 
     processInfo=undefined;
     const persisted=JSON.parse(readFileSync(join(runtime,'state','state.json'),'utf8'));
     assert.equal(persisted.run_id,'COMMUNITY_SYNTHETIC_DEMO_V1');
-    assert.equal(Object.keys(persisted.transactions).length,4);
+    assert.equal(Object.keys(persisted.transactions).length,17);
+    assert.equal(Object.keys(persisted.documents).length,13);
+    // Original fixture identities and economics remain part of the richer demo.
+    for(const [id,amount] of [['DEMO-TXN-001',-12900],['DEMO-TXN-002',-5050],['DEMO-TXN-003',5050],['DEMO-TXN-004',39200]]) {
+      assert.equal(persisted.transactions[id].transaction_id,id);
+      assert.equal(persisted.transactions[id].source_account_id,'NON-ROUTABLE-DEMO');
+      assert.equal(persisted.transactions[id].amount_minor,amount);
+    }
+    assert.equal(persisted.documents['DEMO-DOC-001'].total_amount_minor,-12900);
+    assert.equal(persisted.documents['DEMO-DOC-002'].total_amount_minor,-5050);
+    const totals={};
+    for(const row of Object.values(persisted.transactions))totals[row.currency_code]=(totals[row.currency_code]??0)+row.amount_minor;
+    assert.deepEqual(totals,{EUR:36360,USD:5000});
     assert.equal(existsSync(join(runtime,'database','matching.db')),true);
     const secondPort=await availablePort();
     processInfo=await boot(runtime,secondPort,token);

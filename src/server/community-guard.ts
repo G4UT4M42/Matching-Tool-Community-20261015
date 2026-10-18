@@ -17,6 +17,7 @@ function allowedHost(host: string | undefined): boolean {
  */
 const reviewedPreviewRoutes: ReadonlyArray<readonly [string, RegExp]> = [
   ['GET', /^\/community\/session$/],
+  ['GET', /^\/community\/demo$/],
   ['GET', /^\/(?:match|summary|transactions|documents|matches|exclusions|review-queue|audit)$/],
   ['GET', /^\/(?:transactions|documents|matches)\/[^/]+$/],
   ['GET', /^\/report\/(?:json|csv|summary)$/],

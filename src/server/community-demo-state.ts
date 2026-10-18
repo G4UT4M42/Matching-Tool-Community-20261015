@@ -1,5 +1,6 @@
 import type { MatchingState, Transaction, Document, MatchGroup } from '../core/types.js';
 import { createEmptyState } from '../storage/json-store.js';
+import { enrichCommunityDemoState } from './community-demo-preview.js';
 
 /** All records are fictional and created specifically for Community Preview. */
 export function createCommunityDemoState(): MatchingState {
@@ -65,5 +66,5 @@ export function createCommunityDemoState(): MatchingState {
     state.matched_transaction_ids.add(group.txn);
     state.matched_document_ids.add(group.doc);
   }
-  return state;
+  return enrichCommunityDemoState(state);
 }

@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { createApiRouter } from './routes/api.js';
 import { resolveHttpHost } from './host.js';
 import { createCommunityDemoState } from './community-demo-state.js';
+import { communityDemoProjection, ensureCommunityDemoDraft } from './community-demo-preview.js';
 import { createCommunityGuard } from './community-guard.js';
 import { CommunityAuthStore } from './community-auth-store.js';
 import { createCommunityAccountGuard, createCommunityAuthRouter, createCommunityTransportGuard } from './community-auth-http.js';
@@ -54,6 +55,7 @@ if (authMode === 'synthetic-preview' && state.run_id !== 'COMMUNITY_SYNTHETIC_DE
 // Canonical initialization verifies every persisted SQL/JSON source field.
 // Do not hydrate selected SQL columns over the authoritative source snapshot.
 initializeCanonicalState(state);
+if (authMode === 'synthetic-preview') ensureCommunityDemoDraft(getDb(), state);
 const authStore = authMode === 'accounts' ? new CommunityAuthStore({ runtimeRoot: paths.runtimeRoot, setupToken: process.env.MATCHING_SETUP_TOKEN }) : undefined;
 const bankCallbackUrl=`http://${host==='::1'?'[::1]':host}:${port}/api/community-banking/callback`;
 const workspace = authStore ? createCommunityWorkspace({runtimeRoot:paths.runtimeRoot,auth:authStore,getState:()=>state,activate:value=>{state=value;},localLanguageDir:process.env.MATCHING_OCR_LANGUAGE_DIR,providerTransport:options.providerTransport,bankTransport:options.bankTransport,bankCallbackUrl,paymentTransport:options.paymentTransport,paymentCallbackUrl:`http://${host==='::1'?'[::1]':host}:${port}/api/community-payments/sandbox/callback`,invoiceBot:options.invoiceBot,paymentAdapter:options.paymentAdapter,afterRestoreCutover:options.afterRestoreCutover}) : undefined;
@@ -86,6 +88,7 @@ app.get('/api/community/session', (_request, response) => response.json({
   ...(authStore ? { workspace_id: authStore.workspaceId, role: response.locals.communityPrincipal.role } : {}),
 }));
 if (workspace) app.use('/api', workspace.router);
+if (authMode === 'synthetic-preview') app.get('/api/community/demo', (_request, response) => response.json(communityDemoProjection(getDb(), state)));
 app.use('/api', createApiRouter(() => state, value => { state = value; }, (before, next, actor) => {
   if (workspace) workspace.commit(before, next, actor);
   else state = commitCanonicalState(before, next, actor);
