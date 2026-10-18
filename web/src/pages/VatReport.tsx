@@ -1,3 +1,5 @@
+import { useLegacyText } from '../i18n/legacy';
+import { legacyAccountingEnglish, accountingWarningText } from '../i18n/legacy-accounting';
 import React, { useEffect, useState } from 'react';
 import { api } from '../api';
 import { Card, Button, colors, FileLink, Tip, CopyValue, useWorkingYear, workingPeriodDates } from '../components/shared';
@@ -29,6 +31,8 @@ interface Bucket {
 }
 
 export function VatReport() {
+  const text = useLegacyText(legacyAccountingEnglish);
+  const locale = text('de-DE');
   const { workingYear, quarter } = useWorkingYear();
   const currentYear = new Date().getFullYear();
   const currentQuarter = Math.ceil((new Date().getMonth() + 1) / 3);
@@ -77,26 +81,26 @@ export function VatReport() {
 
   return (
     <div>
-      <h1 style={{ fontSize: 22, marginBottom: 16 }}>Umsatzsteuer-Bericht Österreich</h1>
+      <h1 style={{ fontSize: 22, marginBottom: 16 }}>{text("Umsatzsteuer-Bericht Österreich")}</h1>
 
       {/* Period selector */}
       <Card style={{ marginBottom: 24 }}>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <label style={labelStyle}>Von:</label>
+          <label style={labelStyle}>{text("Von:")}</label>
           <input type="date" value={start} onChange={e => setStart(e.target.value)} style={inputStyle} />
-          <label style={labelStyle}>Bis:</label>
+          <label style={labelStyle}>{text("Bis:")}</label>
           <input type="date" value={end} onChange={e => setEnd(e.target.value)} style={inputStyle} />
-          <Tip text="USt-Bericht für den gewählten Zeitraum generieren">
+          <Tip text={text("USt-Bericht für den gewählten Zeitraum generieren")}>
             <Button onClick={load} disabled={loading} color="#2c3e50">
-              {loading ? 'Wird erstellt...' : 'Bericht erstellen'}
+              {loading ? text("Wird erstellt...") : text("Bericht erstellen")}
             </Button>
           </Tip>
           {report && (
-            <Tip text="Bericht als PDF speichern">
+            <Tip text={text("Bericht als PDF speichern")}>
               <Button onClick={() => {
                 window.open(`/api/report/vat/pdf?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`, '_blank');
               }} color="#8e44ad">
-                Bericht festschreiben (PDF)
+                {text("Bericht festschreiben (PDF)")}
               </Button>
             </Tip>
           )}
@@ -147,17 +151,17 @@ export function VatReport() {
         <div style={{ marginBottom: 16 }}>
           <input
             type="text" value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="Suche (Lieferant, Datei, Betrag)..."
+            placeholder={text("Suche (Lieferant, Datei, Betrag)...")}
             style={{ ...inputStyle, width: 350 }}
           />
-          {search && <button onClick={() => setSearch('')} style={{ ...btnSmall, marginLeft: 8 }}>Zurücksetzen</button>}
+          {search && <button onClick={() => setSearch('')} style={{ ...btnSmall, marginLeft: 8 }}>{text("Zurücksetzen")}</button>}
         </div>
       )}
 
       {report && (
         <>
           {/* ============= REVENUE (Umsatz) ============= */}
-          <h2 style={h2Style}>A) Umsatz (Revenues)</h2>
+          <h2 style={h2Style}>{text("A) Umsatz (Revenues)")}</h2>
 
           {/* 000 Summe der Umsätze */}
           <Card style={{ marginBottom: 16, background: '#f8f9fa' }}>
@@ -165,33 +169,33 @@ export function VatReport() {
               <span style={{ display: 'inline-block', background: '#2c3e50', color: '#fff', borderRadius: 4, padding: '2px 8px', fontSize: 12, fontWeight: 700 }}>
                 000
               </span>
-              <span style={{ fontWeight: 700, fontSize: 16 }}>Summe der Umsätze</span>
+              <span style={{ fontWeight: 700, fontSize: 16 }}>{text("Summe der Umsätze")}</span>
             </div>
             <div style={{ display: 'flex', gap: 32, fontSize: 14, marginTop: 12 }}>
               <div>
-                <CopyValue minor={report.revenue_total_net_minor} label="Netto" style={{ fontSize: 22, color: colors.green }} />
+                <CopyValue minor={report.revenue_total_net_minor} label={text("Netto")} style={{ fontSize: 22, color: colors.green }} />
               </div>
               <div>
-                <div style={{ color: '#666', fontSize: 12 }}>USt</div>
-                <div style={{ fontSize: 22, fontWeight: 700 }}>{fmtEur(report.revenue_total_vat_minor)}</div>
+                <div style={{ color: '#666', fontSize: 12 }}>{text("USt")}</div>
+                <div style={{ fontSize: 22, fontWeight: 700 }}>{fmtEur(report.revenue_total_vat_minor, locale)}</div>
               </div>
               <div>
-                <div style={{ color: '#666', fontSize: 12 }}>Brutto</div>
-                <div style={{ fontSize: 22, fontWeight: 700 }}>{fmtEur(report.revenue_total_gross_minor)}</div>
+                <div style={{ color: '#666', fontSize: 12 }}>{text("Brutto")}</div>
+                <div style={{ fontSize: 22, fontWeight: 700 }}>{fmtEur(report.revenue_total_gross_minor, locale)}</div>
               </div>
             </div>
           </Card>
 
           {/* Umsätze Österreich */}
-          <RevenueBucketCard bucket={report.revenue_at} title="Umsätze Österreich" onReload={load} search={search} />
+          <RevenueBucketCard bucket={report.revenue_at} title={text("Umsätze Österreich")} onReload={load} search={search} />
 
           {/* Umsätze non-EU */}
-          <RevenueBucketCard bucket={report.revenue_non_eu} title="Umsätze aus nicht EU Ländern mit 0% USt." onReload={load} search={search} />
+          <RevenueBucketCard bucket={report.revenue_non_eu} title={text("Umsätze aus nicht EU Ländern mit 0% USt.")} onReload={load} search={search} />
 
           {/* Excluded EU revenue: only count in reconciliation, not shown as card */}
 
           {/* ============= INPUT VAT (Vorsteuer) ============= */}
-          <h2 style={{ ...h2Style, marginTop: 32 }}>B) Vorsteuer / Input VAT</h2>
+          <h2 style={{ ...h2Style, marginTop: 32 }}>{text("B) Vorsteuer / Input VAT")}</h2>
 
           <VatCategoryCard cat={report.cat_072} onReload={load} search={search} />
           <VatCategoryCard cat={report.cat_076} onReload={load} search={search} />
@@ -204,12 +208,12 @@ export function VatReport() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ background: '#2c3e50', color: '#fff', borderRadius: 4, padding: '2px 8px', fontSize: 12, fontWeight: 700 }}>057</span>
-                  <span style={{ fontWeight: 600, fontSize: 14 }}>Reverse Charge — Steuerschuld gem. Art 196 MwStSyst-RL</span>
+                  <span style={{ fontWeight: 600, fontSize: 14 }}>{text("Reverse Charge — Steuerschuld gem. Art 196 MwStSyst-RL")}</span>
                   <span style={{ color: '#999', fontSize: 12 }}>({report.cat_066.lines.length})</span>
                 </div>
                 <div style={{ display: 'flex', gap: 16, alignItems: 'center', fontSize: 13, flexShrink: 0 }}>
-                  <span>Netto: <b>{fmtEur(Math.abs(report.cat_066.total_net_minor))}</b></span>
-                  <CopyValue minor={Math.round(Math.abs(report.cat_066.total_net_minor) * 0.2)} label="USt 20%" />
+                  <span>{text("Netto:")} <b>{fmtEur(Math.abs(report.cat_066.total_net_minor), locale)}</b></span>
+                  <CopyValue minor={Math.round(Math.abs(report.cat_066.total_net_minor) * 0.2)} label={text("USt 20%")} />
                 </div>
               </div>
             </Card>
@@ -220,24 +224,24 @@ export function VatReport() {
           {report.other_no_vat?.lines?.length > 0 && <VatCategoryCard cat={report.other_no_vat} onReload={load} search={search} />}
 
           {/* ============= RECONCILIATION ============= */}
-          <h2 style={{ ...h2Style, marginTop: 32 }}>Abstimmung</h2>
+          <h2 style={{ ...h2Style, marginTop: 32 }}>{text("Abstimmung")}</h2>
           <Card style={{ marginBottom: 16 }}>
             <table style={{ fontSize: 13, borderCollapse: 'collapse' }}>
               <tbody>
-                <tr><td style={tdR}>Dokumente im Zeitraum:</td><td style={tdV}>{report.total_documents_processed}</td></tr>
-                <tr><td style={tdR}>Umsätze Österreich:</td><td style={tdV}>{report.revenue_at.lines.length}</td></tr>
-                <tr><td style={tdR}>Umsätze nicht-EU:</td><td style={tdV}>{report.revenue_non_eu.lines.length}</td></tr>
-                <tr><td style={tdR}>Einnahmen EU (ausgeschlossen):</td><td style={tdV}>{report.revenue_excluded_eu.lines.length}</td></tr>
-                <tr><td style={tdR}>060 AT Vorsteuer:</td><td style={tdV}>{report.cat_060.lines.length}</td></tr>
-                <tr><td style={tdR}>061 EUSt:</td><td style={tdV}>{report.cat_061.lines.length}</td></tr>
-                <tr><td style={tdR}>065 IGL Vorsteuer:</td><td style={tdV}>{report.cat_065.lines.length}</td></tr>
-                <tr><td style={tdR}>066 Reverse Charge:</td><td style={tdV}>{report.cat_066.lines.length}</td></tr>
-                <tr><td style={tdR}>072 IGL Erwerbe:</td><td style={tdV}>{report.cat_072.lines.length}</td></tr>
-                <tr><td style={tdR}>076 Im Bestimmungsland besteuert:</td><td style={tdV}>{report.cat_076.lines.length}</td></tr>
-                {report.other_no_vat?.lines?.length > 0 && <tr><td style={tdR}>Sonstige Ausgaben (keine USt):</td><td style={tdV}>{report.other_no_vat.lines.length}</td></tr>}
+                <tr><td style={tdR}>{text("Dokumente im Zeitraum:")}</td><td style={tdV}>{report.total_documents_processed}</td></tr>
+                <tr><td style={tdR}>{text("Umsätze Österreich:")}</td><td style={tdV}>{report.revenue_at.lines.length}</td></tr>
+                <tr><td style={tdR}>{text("Umsätze nicht-EU:")}</td><td style={tdV}>{report.revenue_non_eu.lines.length}</td></tr>
+                <tr><td style={tdR}>{text("Einnahmen EU (ausgeschlossen):")}</td><td style={tdV}>{report.revenue_excluded_eu.lines.length}</td></tr>
+                <tr><td style={tdR}>{text("060 AT Vorsteuer:")}</td><td style={tdV}>{report.cat_060.lines.length}</td></tr>
+                <tr><td style={tdR}>{text("061 EUSt:")}</td><td style={tdV}>{report.cat_061.lines.length}</td></tr>
+                <tr><td style={tdR}>{text("065 IGL Vorsteuer:")}</td><td style={tdV}>{report.cat_065.lines.length}</td></tr>
+                <tr><td style={tdR}>{text("066 Reverse Charge:")}</td><td style={tdV}>{report.cat_066.lines.length}</td></tr>
+                <tr><td style={tdR}>{text("072 IGL Erwerbe:")}</td><td style={tdV}>{report.cat_072.lines.length}</td></tr>
+                <tr><td style={tdR}>{text("076 Im Bestimmungsland besteuert:")}</td><td style={tdV}>{report.cat_076.lines.length}</td></tr>
+                {report.other_no_vat?.lines?.length > 0 && <tr><td style={tdR}>{text("Sonstige Ausgaben (keine USt):")}</td><td style={tdV}>{report.other_no_vat.lines.length}</td></tr>}
                 <tr style={{ borderTop: '2px solid #ddd' }}>
                   <td style={{ ...tdR, color: report.total_unclassified > 0 ? colors.red : colors.green }}>
-                    Nicht klassifiziert:
+                    {text("Nicht klassifiziert:")}
                   </td>
                   <td style={tdV}>{report.total_unclassified}</td>
                 </tr>
@@ -247,14 +251,14 @@ export function VatReport() {
 
           {/* Unclassified */}
           {report.unclassified_lines.length > 0 && (
-            <Card title={`Nicht klassifiziert (${report.unclassified_lines.length})`} style={{ marginBottom: 16 }}>
+            <Card title={text("Nicht klassifiziert ({p0})", { p0: report.unclassified_lines.length })} style={{ marginBottom: 16 }}>
               <DetailTable lines={report.unclassified_lines} showCountry onReload={load} search={search} />
             </Card>
           )}
 
           {/* Warnings */}
           {report.integrity_warnings.length > 0 && (
-            <Card title={`Hinweise (${report.integrity_warnings.length})`} style={{ marginBottom: 16 }}>
+            <Card title={text("Hinweise ({p0})", { p0: report.integrity_warnings.length })} style={{ marginBottom: 16 }}>
               <ul style={{ fontSize: 12, color: '#888', maxHeight: 200, overflow: 'auto', margin: 0, paddingLeft: 20 }}>
                 {report.integrity_warnings.slice(0, 50).map((w: string, i: number) => {
                   const docMatch = w.match(/^(DOC-[A-Za-z0-9_-]+)/);
@@ -267,14 +271,14 @@ export function VatReport() {
                           style={{ color: colors.blue, textDecoration: 'none', borderBottom: '1px dashed #2980b9' }}>
                           {docId}
                         </a>
-                        {rest}
+                        {accountingWarningText(text, rest)}
                       </li>
                     );
                   }
-                  return <li key={i}>{w}</li>;
+                  return <li key={i}>{accountingWarningText(text, w)}</li>;
                 })}
                 {report.integrity_warnings.length > 50 && (
-                  <li>... und {report.integrity_warnings.length - 50} weitere</li>
+                  <li>{text("... und")} {report.integrity_warnings.length - 50} {text("weitere")}</li>
                 )}
               </ul>
             </Card>
@@ -290,6 +294,8 @@ export function VatReport() {
 // ---------------------------------------------------------------------------
 
 function RevenueBucketCard({ bucket, title, muted, onReload, search }: { bucket: Bucket; title: string; muted?: boolean; onReload?: () => void; search?: string }) {
+  const text = useLegacyText(legacyAccountingEnglish);
+  const locale = text('de-DE');
   const [open, setOpen] = useState(false);
   const opacity = muted ? 0.5 : 1;
   return (
@@ -302,13 +308,13 @@ function RevenueBucketCard({ bucket, title, muted, onReload, search }: { bucket:
                 {bucket.code}
               </span>
             )}
-            <span style={{ fontWeight: 600, fontSize: 14 }}>{title}</span>
+            <span style={{ fontWeight: 600, fontSize: 14 }}>{text(title)}</span>
             <span style={{ color: '#999', fontSize: 12 }}>({bucket.lines.length})</span>
           </div>
           <div style={{ display: 'flex', gap: 16, alignItems: 'center', fontSize: 13, flexShrink: 0 }}>
-            <CopyValue minor={bucket.total_net_minor} label="Netto" />
-            <span>USt: <b>{fmtEur(bucket.total_vat_minor)}</b></span>
-            <span>Brutto: <b>{fmtEur(bucket.total_gross_minor)}</b></span>
+            <CopyValue minor={bucket.total_net_minor} label={text("Netto")} />
+            <span>{text("USt:")} <b>{fmtEur(bucket.total_vat_minor, locale)}</b></span>
+            <span>{text("Brutto:")} <b>{fmtEur(bucket.total_gross_minor, locale)}</b></span>
             <span style={{ color: '#999' }}>{open ? '\u25B2' : '\u25BC'}</span>
           </div>
         </div>
@@ -323,6 +329,8 @@ function RevenueBucketCard({ bucket, title, muted, onReload, search }: { bucket:
 }
 
 function VatCategoryCard({ cat, onReload, search }: { cat: Bucket & { code?: string; title?: string }; onReload?: () => void; search?: string }) {
+  const text = useLegacyText(legacyAccountingEnglish);
+  const locale = text('de-DE');
   const [open, setOpen] = useState(false);
   const hasLines = cat.lines.length > 0;
   return (
@@ -334,28 +342,28 @@ function VatCategoryCard({ cat, onReload, search }: { cat: Bucket & { code?: str
             <span style={{ background: '#2c3e50', color: '#fff', borderRadius: 4, padding: '2px 8px', fontSize: 12, fontWeight: 700 }}>
               {cat.code}
             </span>
-            <span style={{ fontWeight: 600, fontSize: 14 }}>{cat.title}</span>
+            <span style={{ fontWeight: 600, fontSize: 14 }}>{text(cat.title || "")}</span>
             <span style={{ color: '#999', fontSize: 12 }}>({cat.lines.length})</span>
           </div>
           <div style={{ display: 'flex', gap: 16, alignItems: 'center', fontSize: 13, flexShrink: 0 }}>
             {cat.code === '061' ? (
-              <CopyValue minor={Math.abs(cat.total_net_minor)} label="Netto" />
+              <CopyValue minor={Math.abs(cat.total_net_minor)} label={text("Netto")} />
             ) : cat.code === '060' || cat.code === '065' ? (
               <>
-                <span>Netto: <b>{fmtEur(Math.abs(cat.total_net_minor))}</b></span>
-                <CopyValue minor={Math.abs(cat.total_vat_minor)} label="USt" />
+                <span>{text("Netto:")} <b>{fmtEur(Math.abs(cat.total_net_minor), locale)}</b></span>
+                <CopyValue minor={Math.abs(cat.total_vat_minor)} label={text("USt")} />
               </>
             ) : cat.code === '076' ? (
-              <CopyValue minor={Math.abs(cat.total_net_minor + cat.total_vat_minor)} label="Brutto" />
+              <CopyValue minor={Math.abs(cat.total_net_minor + cat.total_vat_minor)} label={text("Brutto")} />
             ) : cat.code === '072' ? (
               <>
-                <CopyValue minor={Math.abs(cat.total_net_minor)} label="Netto" />
-                <span>USt 20%: <b>{fmtEur(Math.round(Math.abs(cat.total_net_minor) * 0.2))}</b></span>
+                <CopyValue minor={Math.abs(cat.total_net_minor)} label={text("Netto")} />
+                <span>{text("USt 20%:")} <b>{fmtEur(Math.round(Math.abs(cat.total_net_minor) * 0.2), locale)}</b></span>
               </>
             ) : (
               <>
-                <CopyValue minor={Math.abs(cat.total_net_minor)} label="Netto" />
-                <span>USt: <b>{fmtEur(Math.abs(cat.total_vat_minor))}</b></span>
+                <CopyValue minor={Math.abs(cat.total_net_minor)} label={text("Netto")} />
+                <span>{text("USt:")} <b>{fmtEur(Math.abs(cat.total_vat_minor), locale)}</b></span>
               </>
             )}
           {hasLines && <span style={{ color: '#999' }}>{open ? '\u25B2' : '\u25BC'}</span>}
@@ -372,6 +380,8 @@ function VatCategoryCard({ cat, onReload, search }: { cat: Bucket & { code?: str
 }
 
 function DetailTable({ lines, showCountry, onReload, search }: { lines: VatLine[]; showCountry?: boolean; onReload?: () => void; search?: string }) {
+  const text = useLegacyText(legacyAccountingEnglish);
+  const locale = text('de-DE');
   const filtered = search
     ? lines.filter(l => {
         const s = search.toLowerCase();
@@ -381,7 +391,7 @@ function DetailTable({ lines, showCountry, onReload, search }: { lines: VatLine[
           String(Math.abs(l.gross_minor) / 100).includes(s);
       })
     : lines;
-  if (search && filtered.length === 0) return <div style={{ fontSize: 12, color: '#999', padding: 8 }}>Keine Treffer</div>;
+  if (search && filtered.length === 0) return <div style={{ fontSize: 12, color: '#999', padding: 8 }}>{text("Keine Treffer")}</div>;
   const [edits, setEdits] = useState<Record<string, Record<string, any>>>({});
   const [editing, setEditing] = useState<string | null>(null); // "docId:field"
   const [saving, setSaving] = useState<string | null>(null);
@@ -400,7 +410,7 @@ function DetailTable({ lines, showCountry, onReload, search }: { lines: VatLine[
       const line = lines.find(l => l.document_id === docId);
       const vendor = line?.supplier_name ?? 'diesen Lieferanten';
       applyVatToVendor = confirm(
-        `USt-Satz auf ${Math.round(changes.vat_rate * 100)}% geändert.\n\nFür ALLE Rechnungen von "${vendor}" übernehmen?\n\n• OK = Alle Rechnungen dieses Vendors\n• Abbrechen = Nur diese Rechnung`
+        text("USt-Satz auf {p0}% geändert.\n\nFür ALLE Rechnungen von \"{p1}\" übernehmen?\n\n• OK = Alle Rechnungen dieses Vendors\n• Abbrechen = Nur diese Rechnung", { p0: Math.round(changes.vat_rate * 100), p1: vendor })
       );
     }
 
@@ -411,7 +421,7 @@ function DetailTable({ lines, showCountry, onReload, search }: { lines: VatLine[
       setEditing(null);
       onReload?.();
     } catch (e: any) {
-      alert('Fehler: ' + e.message);
+      alert(text('Fehler: ') + e.message);
     } finally {
       setSaving(null);
     }
@@ -442,7 +452,7 @@ function DetailTable({ lines, showCountry, onReload, search }: { lines: VatLine[
       <span
         onClick={() => setEditing(key)}
         style={{ ...editableStyle, ...(s ?? {}), background: changed ? '#fff3cd' : undefined }}
-        title="Klicken zum Bearbeiten"
+        title={text("Klicken zum Bearbeiten")}
       >
         {display || '—'}
       </span>
@@ -478,9 +488,9 @@ function DetailTable({ lines, showCountry, onReload, search }: { lines: VatLine[
       <span
         onClick={() => setEditing(key)}
         style={{ ...editableStyle, ...(s ?? {}), background: changed ? '#fff3cd' : undefined }}
-        title="Klicken zum Bearbeiten"
+        title={text("Klicken zum Bearbeiten")}
       >
-        {fmtEur(Math.abs(currentMinor))}
+        {fmtEur(Math.abs(currentMinor), locale)}
       </span>
     );
   };
@@ -515,7 +525,7 @@ function DetailTable({ lines, showCountry, onReload, search }: { lines: VatLine[
       <span
         onClick={() => setEditing(key)}
         style={{ ...editableStyle, background: changed ? '#fff3cd' : undefined }}
-        title="Klicken zum Bearbeiten"
+        title={text("Klicken zum Bearbeiten")}
       >
         {display}
       </span>
@@ -527,15 +537,15 @@ function DetailTable({ lines, showCountry, onReload, search }: { lines: VatLine[
       <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
         <thead>
           <tr>
-            <th style={th}>Datum</th>
-            {showCountry && <th style={th}>Land</th>}
-            <th style={th}>Lieferant</th>
-            <th style={th}>Netto</th>
-            <th style={th}>USt</th>
-            <th style={th}>Brutto</th>
-            <th style={th}>USt%</th>
-            <th style={th}>Datei</th>
-            <th style={th}>Buchung</th>
+            <th style={th}>{text("Datum")}</th>
+            {showCountry && <th style={th}>{text("Land")}</th>}
+            <th style={th}>{text("Lieferant")}</th>
+            <th style={th}>{text("Netto")}</th>
+            <th style={th}>{text("USt")}</th>
+            <th style={th}>{text("Brutto")}</th>
+            <th style={th}>{text("USt%")}</th>
+            <th style={th}>{text("Datei")}</th>
+            <th style={th}>{text("Buchung")}</th>
             <th style={th}></th>
           </tr>
         </thead>
@@ -547,7 +557,7 @@ function DetailTable({ lines, showCountry, onReload, search }: { lines: VatLine[
             const isSaving = saving === l.document_id;
             return (
             <tr key={i} style={{ borderBottom: '1px solid #f0f0f0', background: isRefund ? '#f0fff0' : hasEdits ? '#fffef5' : undefined }}>
-              <td style={td}>{fmtDate(l.document_date)}</td>
+              <td style={td}>{fmtDate(l.document_date, locale)}</td>
               {showCountry && (
                 <td style={td}>
                   <EditableText docId={l.document_id} field="country_code" value={l.country_code ?? l.country_raw ?? ''} />
@@ -579,16 +589,16 @@ function DetailTable({ lines, showCountry, onReload, search }: { lines: VatLine[
                         <a key={j}
                           href={`/?highlight=${encodeURIComponent(t.transaction_id)}&source=${encodeURIComponent(t.source_system)}`}
                           style={{ display: 'block', whiteSpace: 'nowrap', textDecoration: 'none', color: 'inherit', borderBottom: '1px dashed #2980b9', marginBottom: 2 }}
-                          title={`Buchung öffnen: ${t.transaction_id}`}>
-                          <span style={{ color: '#999' }}>{fmtDate(t.posting_at)}</span>
+                          title={text("Buchung öffnen: {p0}", { p0: t.transaction_id })}>
+                          <span style={{ color: '#999' }}>{fmtDate(t.posting_at, locale)}</span>
                           {' '}
                           <span style={{ fontWeight: 600, color: colors.blue }}>{t.source_system}</span>
                           {' '}
                           <span style={{ fontFamily: 'monospace', color: t.amount_minor < 0 ? colors.red : colors.green }}>
-                            {fmtEur(Math.abs(t.amount_minor))}
+                            {fmtEur(Math.abs(t.amount_minor), locale)}
                           </span>
                           {t.counterparty_name && <span style={{ color: '#666' }}> {t.counterparty_name}</span>}
-                          {mismatch && <span style={{ color: '#e67e22', marginLeft: 4 }} title={`Beleg: ${fmtEur(Math.abs(l.gross_minor))} ≠ Buchung: ${fmtEur(Math.abs(t.amount_minor))}`}>⚠</span>}
+                          {mismatch && <span style={{ color: '#e67e22', marginLeft: 4 }} title={text("Beleg: {p0} ≠ Buchung: {p1}", { p0: fmtEur(Math.abs(l.gross_minor), locale), p1: fmtEur(Math.abs(t.amount_minor), locale) })}>⚠</span>}
                         </a>
                       );
                     })}
@@ -599,7 +609,7 @@ function DetailTable({ lines, showCountry, onReload, search }: { lines: VatLine[
               </td>
               <td style={{ ...td, whiteSpace: 'nowrap' }}>
                 {hasEdits && (
-                  <Tip text="Änderungen speichern und Bericht neu klassifizieren">
+                  <Tip text={text("Änderungen speichern und Bericht neu klassifizieren")}>
                     <button
                       onClick={() => handleSave(l.document_id)}
                       disabled={isSaving}
@@ -609,7 +619,7 @@ function DetailTable({ lines, showCountry, onReload, search }: { lines: VatLine[
                         fontSize: 11, opacity: isSaving ? 0.6 : 1,
                       }}
                     >
-                      {isSaving ? '...' : 'Übernehmen'}
+                      {isSaving ? '...' : text("Übernehmen")}
                     </button>
                   </Tip>
                 )}
@@ -638,12 +648,12 @@ const btnSmall: React.CSSProperties = { padding: '4px 10px', borderRadius: 4, bo
 const editableStyle: React.CSSProperties = { cursor: 'pointer', padding: '1px 4px', borderRadius: 3, borderBottom: '1px dashed #ccc' };
 const editInputStyle: React.CSSProperties = { padding: '2px 4px', fontSize: 12, borderRadius: 3, border: '1px solid #f39c12', outline: 'none', background: '#fffef5' };
 
-function fmtEur(minor: number): string {
-  return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(minor / 100);
+function fmtEur(minor: number, locale = 'de-DE'): string {
+  return new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(minor / 100);
 }
 
-function fmtDate(iso: string | null): string {
+function fmtDate(iso: string | null, locale = 'de-DE'): string {
   if (!iso) return '—';
   const [y, m, d] = iso.slice(0, 10).split('-');
-  return `${d}.${m}.${y}`;
+  return locale === 'de-DE' ? `${d}.${m}.${y}` : `${d}/${m}/${y}`;
 }

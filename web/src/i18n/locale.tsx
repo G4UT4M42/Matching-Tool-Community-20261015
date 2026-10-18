@@ -91,3 +91,7 @@ export function useLanguage(): LocaleContextValue {
   if (!context) throw new Error('LanguageProvider is missing');
   return context;
 }
+/** Legacy component embeddings may omit the application provider. */
+export function useOptionalLanguage(): LocaleContextValue | null {
+  return React.useContext(Context);
+}

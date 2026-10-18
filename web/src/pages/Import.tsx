@@ -1,3 +1,5 @@
+import {useLegacyText} from '../i18n/legacy';
+import {legacyCoreEnglish} from '../i18n/legacy-core';
 import React, { useState, useEffect } from 'react';
 import { api } from '../api';
 import { Card, Badge, colors, Amount, formatDate } from '../components/shared';
@@ -54,6 +56,7 @@ interface ImportResult {
 }
 
 export function Import() {
+  const lt = useLegacyText(legacyCoreEnglish);
   // Default: current quarter
   const now = new Date();
   const qStart = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1);
@@ -128,19 +131,18 @@ export function Import() {
 
   return (
     <div>
-      <h2 style={{ margin: '0 0 20px' }}>Datenimport</h2>
+      <h2 style={{ margin: '0 0 20px' }}>{lt("Datenimport")}</h2>
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-start' }}>
 
         {/* Stripe Import Card */}
         <Card title="Stripe Import" style={{ flex: '1 1 500px', maxWidth: 700 }}>
           <p style={{ color: '#666', fontSize: 14, margin: '0 0 16px' }}>
-            Importiert Balance Transactions direkt von der Stripe API in die lokale Datenbank.
-          </p>
+            {lt("Importiert Balance Transactions direkt von der Stripe API in die lokale Datenbank.")}</p>
 
           <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', flexWrap: 'wrap' }}>
             <div>
-              <label style={labelStyle}>Von</label>
+              <label style={labelStyle}>{lt("Von")}</label>
               <input
                 type="date"
                 value={startDate}
@@ -149,7 +151,7 @@ export function Import() {
               />
             </div>
             <div>
-              <label style={labelStyle}>Bis</label>
+              <label style={labelStyle}>{lt("Bis")}</label>
               <input
                 type="date"
                 value={endDate}
@@ -160,14 +162,14 @@ export function Import() {
           </div>
 
           <div style={{ marginTop: 12 }}>
-            <label style={labelStyle}>Stripe API Key</label>
+            <label style={labelStyle}>{lt("Stripe-API-Schlüssel")}</label>
             {savedKeyInfo?.is_set && !apiKey && (
               <div style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8,
                 padding: '6px 12px', background: '#f0fff0', border: '1px solid #27ae60',
                 borderRadius: 4, fontSize: 13, marginBottom: 8,
               }}>
-                <span style={{ color: '#27ae60', fontWeight: 600 }}>Gespeichert:</span>
+                <span style={{ color: '#27ae60', fontWeight: 600 }}>{lt("Gespeichert:")}{' '}</span>
                 <code style={{ fontSize: 12 }}>{savedKeyInfo.masked}</code>
                 <button
                   onClick={() => {
@@ -180,21 +182,20 @@ export function Import() {
                     cursor: 'pointer', fontSize: 12, textDecoration: 'underline',
                   }}
                 >
-                  entfernen
-                </button>
+                  {lt("entfernen")}</button>
               </div>
             )}
             <input
               type="password"
-              placeholder={savedKeyInfo?.is_set ? 'Gespeicherter Key wird verwendet' : 'sk_live_... oder sk_test_...'}
+              placeholder={savedKeyInfo?.is_set ? lt("Gespeicherter Key wird verwendet") : lt("sk_live_... oder sk_test_...")}
               value={apiKey}
               onChange={e => setApiKey(e.target.value)}
               style={{ ...inputStyle, width: '100%', maxWidth: 400 }}
             />
             <div style={{ fontSize: 12, color: '#999', marginTop: 4 }}>
               {savedKeyInfo?.is_set
-                ? 'Neuen Key eingeben um den gespeicherten zu ersetzen, oder leer lassen.'
-                : 'Wird beim ersten Import automatisch gespeichert.'}
+                ? lt("Neuen Key eingeben um den gespeicherten zu ersetzen, oder leer lassen.")
+                : lt("Wird beim ersten Import automatisch gespeichert.")}
             </div>
           </div>
 
@@ -207,7 +208,7 @@ export function Import() {
               opacity: status === 'loading' ? 0.6 : 1,
             }}
           >
-            {status === 'loading' ? 'Importiere...' : 'Stripe Import starten'}
+            {status === 'loading' ? lt("Importiere...") : lt("Stripe Import starten")}
           </button>
 
           {status === 'error' && (
@@ -224,14 +225,13 @@ export function Import() {
         <BankImport startDate={startDate} endDate={endDate} />
 
         {/* File Upload Import Card */}
-        <Card title="Datei Import (CSV / XLSX)" style={{ flex: '1 1 500px', maxWidth: 700 }}>
+        <Card title={lt("Datei Import (CSV / XLSX)")} style={{ flex: '1 1 500px', maxWidth: 700 }}>
           <p style={{ color: '#666', fontSize: 14, margin: '0 0 16px' }}>
-            Importiert Sparkasse oder Visa Kontoumsätze aus CSV/XLSX-Dateien.
-          </p>
+            {lt("Importiert Sparkasse oder Visa Kontoumsätze aus CSV/XLSX-Dateien.")}</p>
 
           <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', flexWrap: 'wrap', marginBottom: 12 }}>
             <div>
-              <label style={labelStyle}>Quelle</label>
+              <label style={labelStyle}>{lt("Quelle")}</label>
               <select
                 value={fileSource}
                 onChange={e => setFileSource(e.target.value as 'sparkasse' | 'visa')}
@@ -242,7 +242,7 @@ export function Import() {
               </select>
             </div>
             <div style={{ flex: 1 }}>
-              <label style={labelStyle}>Datei auswählen</label>
+              <label style={labelStyle}>{lt("Datei auswählen")}</label>
               <input
                 type="file"
                 accept=".csv,.xlsx,.xls"
@@ -254,7 +254,7 @@ export function Import() {
 
           {selectedFile && (
             <div style={{ fontSize: 13, color: '#555', marginBottom: 12 }}>
-              Ausgewählt: <strong>{selectedFile.name}</strong> ({(selectedFile.size / 1024).toFixed(1)} KB)
+              {lt("Ausgewählt:")}{' '}<strong>{selectedFile.name}</strong> ({(selectedFile.size / 1024).toFixed(1)} KB)
             </div>
           )}
 
@@ -267,7 +267,7 @@ export function Import() {
               opacity: (fileStatus === 'loading' || !selectedFile) ? 0.6 : 1,
             }}
           >
-            {fileStatus === 'loading' ? 'Importiere...' : 'Datei importieren'}
+            {fileStatus === 'loading' ? lt("Importiere...") : lt("Datei importieren")}
           </button>
 
           {fileStatus === 'error' && (
@@ -281,8 +281,8 @@ export function Import() {
         </Card>
 
         {/* Quick date presets */}
-        <Card title="Schnellauswahl" style={{ flex: '0 0 200px' }}>
-          {getQuarterPresets().map(p => (
+        <Card title={lt("Schnellauswahl")} style={{ flex: '0 0 200px' }}>
+          {getQuarterPresets(lt).map(p => (
             <button
               key={p.label}
               onClick={() => { setStartDate(p.start); setEndDate(p.end); }}
@@ -302,11 +302,11 @@ export function Import() {
       {/* Results */}
       {result && (
         <div style={{ marginTop: 24 }}>
-          <Card title="Import-Ergebnis">
+          <Card title={lt("Import-Ergebnis")}>
             <div style={{ display: 'flex', gap: 24, marginBottom: 16 }}>
-              <StatBox label="Von Stripe abgerufen" value={result.fetched} />
-              <StatBox label="Neu importiert" value={result.imported} color={colors.green} />
-              <StatBox label="Bereits vorhanden" value={result.skipped} color={colors.darkGray} />
+              <StatBox label={lt("Von Stripe abgerufen")} value={result.fetched} />
+              <StatBox label={lt("Neu importiert")} value={result.imported} color={colors.green} />
+              <StatBox label={lt("Bereits vorhanden")} value={result.skipped} color={colors.darkGray} />
             </div>
 
             {result.transactions.length > 0 && (
@@ -314,11 +314,11 @@ export function Import() {
                 <thead>
                   <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
                     <th style={thStyle}>Status</th>
-                    <th style={thStyle}>Datum</th>
-                    <th style={thStyle}>Typ</th>
-                    <th style={thStyle}>Beschreibung / Order</th>
-                    <th style={{ ...thStyle, textAlign: 'right' }}>Betrag</th>
-                    <th style={{ ...thStyle, textAlign: 'right' }}>Gebühr</th>
+                    <th style={thStyle}>{lt("Datum")}</th>
+                    <th style={thStyle}>{lt("Typ")}</th>
+                    <th style={thStyle}>{lt("Beschreibung / Order")}</th>
+                    <th style={{ ...thStyle, textAlign: 'right' }}>{lt("Betrag")}</th>
+                    <th style={{ ...thStyle, textAlign: 'right' }}>{lt("Gebühr")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -329,8 +329,8 @@ export function Import() {
                     }}>
                       <td style={tdStyle}>
                         {t.is_new
-                          ? <Badge text="NEU" color={colors.green} />
-                          : <Badge text="existiert" color={colors.gray} />
+                          ? <Badge text={lt("NEU")} color={colors.green} />
+                          : <Badge text={lt("existiert")} color={colors.gray} />
                         }
                       </td>
                       <td style={tdStyle}>{formatDate(t.date)}</td>
@@ -362,17 +362,16 @@ export function Import() {
 
           {/* Monthly Fee Summaries */}
           {result.fee_summaries?.length > 0 && (
-            <Card title="Monatliche Gebühren-Belege" style={{ marginTop: 16 }}>
+            <Card title={lt("Monatliche Gebühren-Belege")} style={{ marginTop: 16 }}>
               <p style={{ color: '#666', fontSize: 13, margin: '0 0 12px' }}>
-                Automatisch erstellte Ausgabebelege — Stripe Gebühren pro Monat zusammengefasst.
-              </p>
+                {lt("Automatisch erstellte Ausgabebelege — Stripe Gebühren pro Monat zusammengefasst.")}</p>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                 <thead>
                   <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
                     <th style={thStyle}>Status</th>
-                    <th style={thStyle}>Monat</th>
-                    <th style={thStyle}>Anzahl Charges</th>
-                    <th style={{ ...thStyle, textAlign: 'right' }}>Gesamtgebühr</th>
+                    <th style={thStyle}>{lt("Monat")}</th>
+                    <th style={thStyle}>{lt("Anzahl Charges")}</th>
+                    <th style={{ ...thStyle, textAlign: 'right' }}>{lt("Gesamtgebühr")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -383,8 +382,8 @@ export function Import() {
                     }}>
                       <td style={tdStyle}>
                         {fs.is_new
-                          ? <Badge text="NEU" color={colors.green} />
-                          : <Badge text="aktualisiert" color={colors.blue} />
+                          ? <Badge text={lt("NEU")} color={colors.green} />
+                          : <Badge text={lt("aktualisiert")} color={colors.blue} />
                         }
                       </td>
                       <td style={tdStyle}>{fs.month}</td>
@@ -403,11 +402,11 @@ export function Import() {
       {/* File Import Results */}
       {fileResult && (
         <div style={{ marginTop: 24 }}>
-          <Card title={`Datei Import-Ergebnis: ${fileResult.filename}`}>
+          <Card title={lt("Datei Import-Ergebnis: {value0}", {value0: fileResult.filename})}>
             <div style={{ display: 'flex', gap: 24, marginBottom: 16 }}>
-              <StatBox label="Aus Datei gelesen" value={fileResult.fetched} />
-              <StatBox label="Neu importiert" value={fileResult.imported} color={colors.green} />
-              <StatBox label="Bereits vorhanden" value={fileResult.skipped} color={colors.darkGray} />
+              <StatBox label={lt("Aus Datei gelesen")} value={fileResult.fetched} />
+              <StatBox label={lt("Neu importiert")} value={fileResult.imported} color={colors.green} />
+              <StatBox label={lt("Bereits vorhanden")} value={fileResult.skipped} color={colors.darkGray} />
             </div>
 
             {fileResult.transactions.length > 0 && (
@@ -415,10 +414,10 @@ export function Import() {
                 <thead>
                   <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
                     <th style={thStyle}>Status</th>
-                    <th style={thStyle}>Datum</th>
-                    <th style={thStyle}>Beschreibung</th>
-                    <th style={thStyle}>Gegenkonto</th>
-                    <th style={{ ...thStyle, textAlign: 'right' }}>Betrag</th>
+                    <th style={thStyle}>{lt("Datum")}</th>
+                    <th style={thStyle}>{lt("Beschreibung")}</th>
+                    <th style={thStyle}>{lt("Gegenkonto")}</th>
+                    <th style={{ ...thStyle, textAlign: 'right' }}>{lt("Betrag")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -429,8 +428,8 @@ export function Import() {
                     }}>
                       <td style={tdStyle}>
                         {t.is_new
-                          ? <Badge text="NEU" color={colors.green} />
-                          : <Badge text="existiert" color={colors.gray} />
+                          ? <Badge text={lt("NEU")} color={colors.green} />
+                          : <Badge text={lt("existiert")} color={colors.gray} />
                         }
                       </td>
                       <td style={tdStyle}>{formatDate(t.date)}</td>
@@ -462,7 +461,7 @@ function StatBox({ label, value, color }: { label: string; value: number; color?
   );
 }
 
-function getQuarterPresets() {
+function getQuarterPresets(lt: (text: string, values?: Record<string, string | number>) => string) {
   const now = new Date();
   const year = now.getFullYear();
   const presets = [];
@@ -487,7 +486,7 @@ function getQuarterPresets() {
   }
 
   // Full previous year
-  presets.push({ label: `Ganzes Jahr ${year - 1}`, start: `${year - 1}-01-01`, end: `${year - 1}-12-31` });
+  presets.push({ label: lt("Ganzes Jahr {value0}", {value0: year - 1}), start: `${year - 1}-01-01`, end: `${year - 1}-12-31` });
 
   return presets;
 }

@@ -1,3 +1,5 @@
+import { useLegacyText } from '../i18n/legacy';
+import { legacyDocumentsEnglish } from '../i18n/legacy-documents';
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { api } from '../api';
 import { Card, Pagination, SearchInput, Select, Amount, Badge, FileLink, SourceBadge, colors, formatDate, usePageSize, useWorkingYear, Tip } from '../components/shared';
@@ -5,6 +7,7 @@ import { Card, Pagination, SearchInput, Select, Amount, Badge, FileLink, SourceB
 type ImportStatus = 'idle' | 'loading' | 'success' | 'error';
 
 export function Rechnungen() {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   const [data, setData] = useState<any>(null);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState(() => {
@@ -110,7 +113,7 @@ export function Rechnungen() {
       const doc = data?.items?.find((d: any) => d.document_id === docId);
       const oldName = doc?.supplier_name ?? '';
       const applyAll = confirm(
-        `Lieferant geändert: "${oldName}" → "${changes.supplier_name}"\n\nFür ALLE Rechnungen von "${oldName}" übernehmen?\n\n• OK = Alle Rechnungen\n• Abbrechen = Nur diese Rechnung`
+        lt("Lieferant geändert: \"{oldName}\" → \"{newName}\"\n\nFür ALLE Rechnungen von \"{oldName}\" übernehmen?\n\n• OK = Alle Rechnungen\n• Abbrechen = Nur diese Rechnung", { oldName, newName: changes.supplier_name })
       );
       if (applyAll) skipPropagation = false;
     }
@@ -122,7 +125,7 @@ export function Rechnungen() {
       setEditingCell(null);
       load();
     } catch (e: any) {
-      alert('Fehler: ' + e.message);
+      alert(lt("Fehler: ") + e.message);
     } finally {
       setSaving(null);
     }
@@ -200,12 +203,12 @@ export function Rechnungen() {
     return dups;
   }, [data]);
 
-  if (!data) return <p>Loading...</p>;
+  if (!data) return <p>{lt("Laden...")}</p>;
 
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
-        <h1 style={{ fontSize: 22, margin: 0 }}>Rechnungen (Ausgaben)</h1>
+        <h1 style={{ fontSize: 22, margin: 0 }}>{lt("Rechnungen (Ausgaben)")}</h1>
         {(() => {
           const docs = summary?.documents;
           if (!docs) return null;
@@ -223,7 +226,7 @@ export function Rechnungen() {
               background: pct > 80 ? '#e8f5e9' : pct > 50 ? '#fff8e1' : '#fce4ec',
               color: pct > 80 ? '#27ae60' : pct > 50 ? '#f39c12' : '#e74c3c',
             }}>
-              {pct}% gematcht ({matched}/{total})
+              {pct}{lt("% gematcht (")}{matched}/{total})
             </span>
           );
         })()}
@@ -234,7 +237,7 @@ export function Rechnungen() {
             border: 'none', borderRadius: 4, fontSize: 13, fontWeight: 600, cursor: 'pointer',
           }}
         >
-          {showImport ? 'Import ausblenden' : 'Import'}
+          {showImport ? lt("Import ausblenden") : 'Import'}
         </button>
         {belegeInfo?.years && Object.keys(belegeInfo.years).sort().reverse().map(year => (
           <button
@@ -245,18 +248,15 @@ export function Rechnungen() {
               border: '1px solid #ddd', borderRadius: 4, fontSize: 13, cursor: 'pointer',
             }}
           >
-            {year} ({belegeInfo.years[year].rechnungen} Dateien)
-          </button>
+            {year} ({belegeInfo.years[year].rechnungen} {lt("Dateien)")}</button>
         ))}
       </div>
 
       {showImport && (<>
         <Card style={{ marginBottom: 16 }}>
-          <h3 style={{ margin: '0 0 8px', fontSize: 15 }}>Rechnungen importieren (XLS / CSV)</h3>
+          <h3 style={{ margin: '0 0 8px', fontSize: 15 }}>{lt("Rechnungen importieren (XLS / CSV)")}</h3>
           <p style={{ color: '#666', fontSize: 13, margin: '0 0 12px' }}>
-            Importiert Ausgaben-Rechnungen aus einer Excel- oder CSV-Datei.
-            Erwartet die Spalten: filename, invoice_date, vendor, invoice_number, sum_value, vat_%, vat_value, etc.
-          </p>
+            {lt("Importiert Ausgaben-Rechnungen aus einer Excel- oder CSV-Datei. Erwartet die Spalten: filename, invoice_date, vendor, invoice_number, sum_value, vat_%, vat_value, etc.")}</p>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
             <input
               type="file"
@@ -273,7 +273,7 @@ export function Rechnungen() {
                 opacity: (importStatus === 'loading' || !importFile) ? 0.6 : 1,
               }}
             >
-              {importStatus === 'loading' ? 'Importiere...' : 'Importieren'}
+              {importStatus === 'loading' ? lt("Importiere...") : lt("Importieren")}
             </button>
           </div>
 
@@ -286,20 +286,20 @@ export function Rechnungen() {
           {importResult && (
             <div style={{ marginTop: 12 }}>
               <div style={{ display: 'flex', gap: 20, marginBottom: 12 }}>
-                <StatBox label="Gelesen" value={importResult.fetched} />
-                <StatBox label="Neu" value={importResult.imported} color={colors.green} />
-                <StatBox label="Aktualisiert" value={importResult.skipped} color={colors.darkGray} />
+                <StatBox label={lt("Gelesen")} value={importResult.fetched} />
+                <StatBox label={lt("Neu")} value={importResult.imported} color={colors.green} />
+                <StatBox label={lt("Aktualisiert")} value={importResult.skipped} color={colors.darkGray} />
               </div>
               {importResult.documents?.length > 0 && (
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                   <thead>
                     <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
                       <th style={thStyle}>Status</th>
-                      <th style={thStyle}>Datum</th>
-                      <th style={thStyle}>Rechnungsnr.</th>
-                      <th style={thStyle}>Lieferant</th>
-                      <th style={thStyle}>Datei</th>
-                      <th style={{ ...thStyle, textAlign: 'right' }}>Betrag</th>
+                      <th style={thStyle}>{lt("Datum")}</th>
+                      <th style={thStyle}>{lt("Rechnungsnr.")}</th>
+                      <th style={thStyle}>{lt("Lieferant")}</th>
+                      <th style={thStyle}>{lt("Datei")}</th>
+                      <th style={{ ...thStyle, textAlign: 'right' }}>{lt("Betrag")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -310,8 +310,8 @@ export function Rechnungen() {
                       }}>
                         <td style={tdStyle}>
                           {d.is_new
-                            ? <Badge text="NEU" color={colors.green} />
-                            : <Badge text="aktualisiert" color={colors.blue} />
+                            ? <Badge text={lt("NEU")} color={colors.green} />
+                            : <Badge text={lt("aktualisiert")} color={colors.blue} />
                           }
                         </td>
                         <td style={tdStyle}>{formatDate(d.date)}</td>
@@ -334,22 +334,21 @@ export function Rechnungen() {
 
         {/* Amazon Import */}
         <Card style={{ marginBottom: 16 }}>
-          <h3 style={{ margin: '0 0 8px', fontSize: 15 }}>Amazon Bestellungen importieren</h3>
+          <h3 style={{ margin: '0 0 8px', fontSize: 15 }}>{lt("Amazon Bestellungen importieren")}</h3>
           <p style={{ color: '#666', fontSize: 13, margin: '0 0 12px' }}>
-            Drei CSV-Berichte von Amazon hochladen. Alle werden über die Bestellnummer verknüpft.
-          </p>
+            {lt("Drei CSV-Berichte von Amazon hochladen. Alle werden über die Bestellnummer verknüpft.")}</p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 12 }}>
             <div>
-              <label style={labelStyle}>Sendungen (Pflicht)</label>
+              <label style={labelStyle}>{lt("Sendungen (Pflicht)")}</label>
               <input type="file" accept=".csv,.xlsx,.xls" onChange={e => setAmazonSendungen(e.target.files?.[0] ?? null)} style={{ fontSize: 13 }} />
             </div>
             <div>
-              <label style={labelStyle}>Abgleich (Pflicht — enthält Zahldatum)</label>
+              <label style={labelStyle}>{lt("Abgleich (Pflicht — enthält Zahldatum)")}</label>
               <input type="file" accept=".csv,.xlsx,.xls" onChange={e => setAmazonAbgleich(e.target.files?.[0] ?? null)} style={{ fontSize: 13 }} />
             </div>
             <div>
-              <label style={labelStyle}>Erstattungen (optional)</label>
+              <label style={labelStyle}>{lt("Erstattungen (optional)")}</label>
               <input type="file" accept=".csv,.xlsx,.xls" onChange={e => setAmazonErstattungen(e.target.files?.[0] ?? null)} style={{ fontSize: 13 }} />
             </div>
           </div>
@@ -363,7 +362,7 @@ export function Rechnungen() {
               opacity: (amazonStatus === 'loading' || !amazonSendungen || !amazonAbgleich) ? 0.6 : 1,
             }}
           >
-            {amazonStatus === 'loading' ? 'Importiere...' : 'Amazon Import starten'}
+            {amazonStatus === 'loading' ? lt("Importiere...") : lt("Amazon Import starten")}
           </button>
 
           {amazonStatus === 'error' && (
@@ -375,42 +374,41 @@ export function Rechnungen() {
           {amazonResult && (
             <div style={{ marginTop: 12 }}>
               <div style={{ display: 'flex', gap: 20, marginBottom: 12 }}>
-                <StatBox label="Bestellungen" value={amazonResult.orders} />
-                <StatBox label="Erstattungen" value={amazonResult.refunds} color={colors.orange} />
-                <StatBox label="Neu" value={amazonResult.imported} color={colors.green} />
-                <StatBox label="Aktualisiert" value={amazonResult.skipped} color={colors.darkGray} />
+                <StatBox label={lt("Bestellungen")} value={amazonResult.orders} />
+                <StatBox label={lt("Erstattungen")} value={amazonResult.refunds} color={colors.orange} />
+                <StatBox label={lt("Neu")} value={amazonResult.imported} color={colors.green} />
+                <StatBox label={lt("Aktualisiert")} value={amazonResult.skipped} color={colors.darkGray} />
               </div>
               {amazonResult.auto_linked && amazonResult.auto_linked.matched > 0 && (
                 <div style={{ marginBottom: 12, padding: 8, background: '#e8f5e9', borderRadius: 4, fontSize: 12 }}>
-                  <b>{amazonResult.auto_linked.matched}</b> PDFs automatisch den Rechnungen zugeordnet
-                  {amazonResult.auto_linked.unmatched > 0 && (
-                    <span style={{ color: colors.orange }}> ({amazonResult.auto_linked.unmatched} nicht zugeordnet)</span>
+                  <b>{amazonResult.auto_linked.matched}</b> {lt("PDFs automatisch den Rechnungen zugeordnet")}{amazonResult.auto_linked.unmatched > 0 && (
+                    <span style={{ color: colors.orange }}> ({amazonResult.auto_linked.unmatched} {lt("nicht zugeordnet)")}</span>
                   )}
                 </div>
               )}
               {amazonResult.debug && (
                 <details open style={{ marginBottom: 12, fontSize: 11, color: '#888', border: '1px solid #ddd', borderRadius: 4, padding: 8 }}>
-                  <summary style={{ cursor: 'pointer', fontWeight: 600 }}>Spalten-Erkennung (Debug)</summary>
+                  <summary style={{ cursor: 'pointer', fontWeight: 600 }}>{lt("Spalten-Erkennung (Debug)")}</summary>
                   <div style={{ marginTop: 6, padding: 8, background: '#f8f8f8', borderRadius: 4, fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
-                    <div><b>Abgleich Spalten:</b> {amazonResult.debug.abgleich_columns?.join(', ') || '—'}</div>
-                    <div><b>Transaktionstyp-Spalte:</b> {amazonResult.debug.abgleich_txn_type_col || 'NICHT GEFUNDEN'}</div>
-                    <div><b>Transaktionstyp-Werte:</b> {amazonResult.debug.abgleich_txn_type_values?.join(', ') || '—'}</div>
-                    <div><b>Erstattungen im Abgleich:</b> {amazonResult.debug.abgleich_refund_count}</div>
-                    <div><b>Abgleich Zeilen gesamt:</b> {amazonResult.debug.abgleich_total_rows ?? '—'}</div>
-                    <div><b>Orders gesamt:</b> {amazonResult.debug.orders_total ?? '—'} (davon Erstattungen: {amazonResult.debug.orders_refund_count ?? '—'})</div>
+                    <div><b>{lt("Abgleich Spalten:")}</b> {amazonResult.debug.abgleich_columns?.join(', ') || '—'}</div>
+                    <div><b>{lt("Transaktionstyp-Spalte:")}</b> {amazonResult.debug.abgleich_txn_type_col || lt("NICHT GEFUNDEN")}</div>
+                    <div><b>{lt("Transaktionstyp-Werte:")}</b> {amazonResult.debug.abgleich_txn_type_values?.join(', ') || '—'}</div>
+                    <div><b>{lt("Erstattungen im Abgleich:")}</b> {amazonResult.debug.abgleich_refund_count}</div>
+                    <div><b>{lt("Abgleich Zeilen gesamt:")}</b> {amazonResult.debug.abgleich_total_rows ?? '—'}</div>
+                    <div><b>{lt("Orders gesamt:")}</b> {amazonResult.debug.orders_total ?? '—'} {lt("(davon Erstattungen:") + " "}{amazonResult.debug.orders_refund_count ?? '—'})</div>
                     {amazonResult.debug.abgleich_samples && (
                       <div style={{ marginTop: 4 }}>
-                        <b>Erste 5 Abgleich-Zeilen:</b>
+                        <b>{lt("Erste 5 Abgleich-Zeilen:")}</b>
                         {amazonResult.debug.abgleich_samples.map((s: any, i: number) => (
                           <div key={i} style={{ paddingLeft: 12 }}>
-                            {s.order} | Typ: "{s.txnType}" | Betrag: {s.amount}
+                            {s.order} {" " + lt("| Typ: \"")}{s.txnType}{lt("\" | Betrag:") + " "}{s.amount}
                           </div>
                         ))}
                       </div>
                     )}
-                    <div style={{ marginTop: 4 }}><b>Sendungen Spalten:</b> {amazonResult.debug.sendungen_columns?.join(', ') || '—'}</div>
-                    <div><b>USt-Land-Spalte:</b> {amazonResult.debug.sendungen_vat_country_col || 'NICHT GEFUNDEN'}</div>
-                    <div><b>Versand-MwSt-Spalte:</b> {amazonResult.debug.sendungen_shipping_vat_col || 'NICHT GEFUNDEN'}</div>
+                    <div style={{ marginTop: 4 }}><b>{lt("Sendungen Spalten:")}</b> {amazonResult.debug.sendungen_columns?.join(', ') || '—'}</div>
+                    <div><b>{lt("USt-Land-Spalte:")}</b> {amazonResult.debug.sendungen_vat_country_col || lt("NICHT GEFUNDEN")}</div>
+                    <div><b>{lt("Versand-MwSt-Spalte:")}</b> {amazonResult.debug.sendungen_shipping_vat_col || lt("NICHT GEFUNDEN")}</div>
                   </div>
                 </details>
               )}
@@ -419,15 +417,15 @@ export function Rechnungen() {
                   <thead>
                     <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
                       <th style={thStyle}>Status</th>
-                      <th style={thStyle}>Typ</th>
-                      <th style={thStyle}>Datum</th>
-                      <th style={thStyle}>Bestellnummer</th>
-                      <th style={thStyle}>Artikel</th>
-                      <th style={thStyle}>Land</th>
-                      <th style={thStyle}>Ust.</th>
-                      <th style={thStyle}>Steuer%</th>
-                      <th style={thStyle}>Kat.</th>
-                      <th style={{ ...thStyle, textAlign: 'right' }}>Betrag</th>
+                      <th style={thStyle}>{lt("Typ")}</th>
+                      <th style={thStyle}>{lt("Datum")}</th>
+                      <th style={thStyle}>{lt("Bestellnummer")}</th>
+                      <th style={thStyle}>{lt("Artikel")}</th>
+                      <th style={thStyle}>{lt("Land")}</th>
+                      <th style={thStyle}>{lt("Ust.")}</th>
+                      <th style={thStyle}>{lt("Steuer%")}</th>
+                      <th style={thStyle}>{lt("Kat.")}</th>
+                      <th style={{ ...thStyle, textAlign: 'right' }}>{lt("Betrag")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -438,17 +436,17 @@ export function Rechnungen() {
                       }}>
                         <td style={tdStyle}>
                           {d.is_new
-                            ? <Badge text="NEU" color={colors.green} />
-                            : <Badge text="aktualisiert" color={colors.blue} />
+                            ? <Badge text={lt("NEU")} color={colors.green} />
+                            : <Badge text={lt("aktualisiert")} color={colors.blue} />
                           }
                         </td>
                         <td style={tdStyle}>
-                          <Badge text={d.is_refund ? 'Erstattung' : 'Bestellung'} color={d.is_refund ? colors.orange : colors.blue} />
+                          <Badge text={d.is_refund ? lt("Erstattung") : lt("Bestellung")} color={d.is_refund ? colors.orange : colors.blue} />
                         </td>
                         <td style={tdStyle}>{formatDate(d.date)}</td>
                         <td style={{ ...tdStyle, fontFamily: 'monospace', fontSize: 11 }}>{d.order_number}</td>
                         <td style={{ ...tdStyle, maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 11 }}
-                            title={d.title}>{d.title || `${d.items} Artikel`}</td>
+                            title={d.title}>{d.title || lt("{count} Artikel", { count: d.items })}</td>
                         <td style={{ ...tdStyle, fontSize: 11 }}>{d.vat_country || '—'}</td>
                         <td style={{ ...tdStyle, textAlign: 'right', fontSize: 11 }}>
                           {d.shipping_vat ? <Amount value={d.is_refund ? d.shipping_vat : -d.shipping_vat} currency="EUR" /> : '—'}
@@ -474,8 +472,7 @@ export function Rechnungen() {
       </>)}
 
       <p style={{ fontSize: 13, color: '#666', marginBottom: 16 }}>
-        {data.total} Ausgaben-Dokumente
-      </p>
+        {data.total} {lt("Ausgaben-Dokumente")}</p>
 
       <div style={{ display: 'flex', gap: 12, marginBottom: 16, alignItems: 'center', flexWrap: 'wrap' }}>
         <button
@@ -486,12 +483,12 @@ export function Rechnungen() {
             fontSize: 13, fontWeight: 600, cursor: 'pointer',
           }}
         >
-          {editMode ? 'Abbrechen' : 'Bearbeiten'}
+          {editMode ? lt("Abbrechen") : lt("Bearbeiten")}
         </button>
         {editMode && selected.size > 0 && (
           <button
             onClick={async () => {
-              if (!confirm(`${selected.size} Rechnung(en) wirklich löschen?`)) return;
+              if (!confirm(lt("{count} Rechnung(en) wirklich löschen?", { count: selected.size }))) return;
               setDeleting(true);
               try {
                 await api.deleteDocuments([...selected]);
@@ -499,7 +496,7 @@ export function Rechnungen() {
                 setEditMode(false);
                 load();
               } catch (err: any) {
-                alert('Fehler: ' + err.message);
+                alert(lt("Fehler: ") + err.message);
               } finally {
                 setDeleting(false);
               }
@@ -510,7 +507,7 @@ export function Rechnungen() {
               background: '#e74c3c', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer',
             }}
           >
-            {deleting ? 'Wird gelöscht...' : `${selected.size} löschen`}
+            {deleting ? lt("Wird gelöscht...") : lt("{count} löschen", { count: selected.size })}
           </button>
         )}
         {editMode && data?.items?.length > 0 && (
@@ -527,31 +524,31 @@ export function Rechnungen() {
               background: '#fff', color: '#333', fontSize: 13, cursor: 'pointer',
             }}
           >
-            {selected.size === data.items.length ? 'Keine auswählen' : 'Alle auswählen'}
+            {selected.size === data.items.length ? lt("Keine auswählen") : lt("Alle auswählen")}
           </button>
         )}
-        <SearchInput value={search} onChange={setSearch} onSearch={doSearch} placeholder="Suche (Dateiname, Lieferant, Ref)..." />
+        <SearchInput value={search} onChange={setSearch} onSearch={doSearch} placeholder={lt("Suche (Dateiname, Lieferant, Ref)...")} />
         <Select value={status} onChange={(v) => { setStatus(v); setPage(1); }} options={[
-          { value: '', label: 'Alle' },
-          { value: 'matched', label: 'Verknüpft' },
-          { value: 'unmatched', label: 'Offen' },
+          { value: '', label: lt("Alle") },
+          { value: 'matched', label: lt("Verknüpft") },
+          { value: 'unmatched', label: lt("Offen") },
         ]} />
         <Select value={source} onChange={(v) => { setSource(v); setPage(1); }} options={[
-          { value: '', label: 'Alle Quellen' },
+          { value: '', label: lt("Alle Quellen") },
           { value: 'extracted_invoice', label: 'Extracted Invoice' },
           { value: 'invoice_file', label: 'Invoice File' },
-          { value: 'invoice_scan', label: 'Belegerkennung' },
+          { value: 'invoice_scan', label: lt("Belegerkennung") },
           { value: 'amazon', label: 'Amazon' },
-          { value: 'stripe_fee', label: 'Stripe Gebühren' },
+          { value: 'stripe_fee', label: lt("Stripe Gebühren") },
         ]} />
-        <Tip text="Nur Rechnungen des Arbeitszeitraums anzeigen oder alle Jahre">
+        <Tip text={lt("Nur Rechnungen des Arbeitszeitraums anzeigen oder alle Jahre")}>
           <button onClick={() => { const v = !periodFilter; setPeriodFilter(v); localStorage.setItem('doc_periodFilter', String(v)); setPage(1); }}
             style={{
               padding: '6px 12px', borderRadius: 6, fontSize: 12, cursor: 'pointer', fontWeight: 600,
               background: periodFilter ? '#2c3e50' : '#ecf0f1', color: periodFilter ? '#fff' : '#333',
               border: periodFilter ? '1px solid #2c3e50' : '1px solid #ddd',
             }}>
-            {periodFilter ? `${workingYear}${quarter ? ' Q' + quarter : ''}` : 'Alle Jahre'}
+            {periodFilter ? `${workingYear}${quarter ? ' Q' + quarter : ''}` : lt("Alle Jahre")}
           </button>
         </Tip>
       </div>
@@ -561,18 +558,18 @@ export function Rechnungen() {
           <thead>
             <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
               {editMode && <th style={{ ...thStyle, width: 30 }} />}
-              <SortTh field="document_date" label="Datum" current={sortField} order={sortOrder} onSort={(f, o) => { setSortField(f); setSortOrder(o); setPage(1); }} />
-              <th style={thStyle}>Dokument</th>
-              <th style={thStyle}>Lieferant</th>
-              <th style={thStyle}>Quelle</th>
-              <th style={{ ...thStyle, textAlign: 'right' }}>Netto</th>
-              <SortTh field="total_amount_minor" label="Brutto" current={sortField} order={sortOrder} onSort={(f, o) => { setSortField(f); setSortOrder(o); setPage(1); }} align="right" />
+              <SortTh field="document_date" label={lt("Datum")} current={sortField} order={sortOrder} onSort={(f, o) => { setSortField(f); setSortOrder(o); setPage(1); }} />
+              <th style={thStyle}>{lt("Dokument")}</th>
+              <th style={thStyle}>{lt("Lieferant")}</th>
+              <th style={thStyle}>{lt("Quelle")}</th>
+              <th style={{ ...thStyle, textAlign: 'right' }}>{lt("Netto")}</th>
+              <SortTh field="total_amount_minor" label={lt("Brutto")} current={sortField} order={sortOrder} onSort={(f, o) => { setSortField(f); setSortOrder(o); setPage(1); }} align="right" />
               <th style={{ ...thStyle, textAlign: 'right' }}>FX</th>
-              <th style={{ ...thStyle, textAlign: 'right' }}>Ust.</th>
-              <th style={thStyle}>Steuer%</th>
-              <th style={thStyle}>Kat.</th>
+              <th style={{ ...thStyle, textAlign: 'right' }}>{lt("Ust.")}</th>
+              <th style={thStyle}>{lt("Steuer%")}</th>
+              <th style={thStyle}>{lt("Kat.")}</th>
               <SortTh field="status" label="Status" current={sortField} order={sortOrder} onSort={(f, o) => { setSortField(f); setSortOrder(o); setPage(1); }} />
-              <th style={thStyle}>Zahlung</th>
+              <th style={thStyle}>{lt("Zahlung")}</th>
               <th style={thStyle}></th>
             </tr>
           </thead>
@@ -647,26 +644,25 @@ export function Rechnungen() {
                   </td>
                   <td style={tdStyle}>
                     {d.meta?.cash_payment
-                      ? <Badge text="Bar" color={colors.green} />
+                      ? <Badge text={lt("Bar")} color={colors.green} />
                       : d.is_matched
                         ? d.auto_match_tier != null
                           ? d.auto_match_tier === 'no_date'
                             ? <Badge text="Auto Match" color={colors.red} />
-                            : <Badge text={`Auto Match (${d.auto_match_tier}d)`} color={colors.blue} />
-                          : <Badge text="Verknüpft" color={colors.green} />
-                        : <Badge text="Offen" color={colors.orange} />
+                            : <Badge text={lt("Auto Match ({days}d)", { days: d.auto_match_tier })} color={colors.blue} />
+                          : <Badge text={lt("Verknüpft")} color={colors.green} />
+                        : <Badge text={lt("Offen")} color={colors.orange} />
                     }
                   </td>
                   <td style={tdStyle}>
                     {d.linked_transactions?.length > 0
                       ? <span style={{ fontSize: 12 }}>
-                          {d.linked_transactions.length} Zahlung(en)
-                          {(() => {
+                          {d.linked_transactions.length} {lt("Zahlung(en)")}{(() => {
                             const txns = d.linked_transactions;
                             if (txns.length === 1) {
                               const isFx = d.currency_code === 'USD' || d.meta?.original_currency === 'USD';
                               const mismatch = !isFx && txns[0].amount_minor != null && Math.abs(txns[0].amount_minor) !== Math.abs(d.total_amount_minor);
-                              return mismatch ? <span title={`Beleg: ${(Math.abs(d.total_amount_minor)/100).toFixed(2)}€ ≠ Buchung: ${(Math.abs(txns[0].amount_minor)/100).toFixed(2)}€`}
+                              return mismatch ? <span title={lt("Beleg: {document}€ ≠ Buchung: {transaction}€", { document: (Math.abs(d.total_amount_minor)/100).toFixed(2), transaction: (Math.abs(txns[0].amount_minor)/100).toFixed(2) })}
                                 style={{ color: '#e67e22', marginLeft: 4, cursor: 'help' }}>⚠</span> : null;
                             }
                             // Multi-txn: no individual mismatch warning (sum checked in detail view)
@@ -679,16 +675,16 @@ export function Rechnungen() {
                   <td style={{ ...tdStyle, whiteSpace: 'nowrap' }} onClick={e => e.stopPropagation()}>
                     {dupSet.has(d.document_id) && !dismissedDups.has(d.document_id) && (
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginRight: 4 }}>
-                        <Badge text="Duplikat" color={colors.red} />
+                        <Badge text={lt("Duplikat")} color={colors.red} />
                         <button onClick={async () => {
-                          if (!confirm('Duplikat löschen?')) return;
+                          if (!confirm(lt("Duplikat löschen?"))) return;
                           await api.deleteDocuments([d.document_id]);
                           load();
                         }} style={{ border: 'none', background: 'none', cursor: 'pointer', color: colors.red, fontSize: 14, padding: 2 }}
-                          title="Löschen">✕</button>
+                          title={lt("Löschen")}>✕</button>
                         <button onClick={() => setDismissedDups(prev => { const n = new Set(prev); n.add(d.document_id); return n; })}
                           style={{ border: 'none', background: 'none', cursor: 'pointer', color: colors.green, fontSize: 14, padding: 2 }}
-                          title="Kein Duplikat">✓</button>
+                          title={lt("Kein Duplikat")}>✓</button>
                       </span>
                     )}
                     {edits[d.document_id] && Object.keys(edits[d.document_id]).length > 0 && (
@@ -699,7 +695,7 @@ export function Rechnungen() {
                           borderRadius: 4, padding: '3px 10px', cursor: 'pointer', fontSize: 11,
                           marginRight: 4, opacity: saving === d.document_id ? 0.6 : 1,
                         }}>
-                        {saving === d.document_id ? '...' : 'Übernehmen'}
+                        {saving === d.document_id ? '...' : lt("Übernehmen")}
                       </button>
                     )}
                     <RowMenu
@@ -743,6 +739,7 @@ export function Rechnungen() {
 }
 
 function StatBox({ label, value, color }: { label: string; value: number; color?: string }) {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   return (
     <div style={{ textAlign: 'center' }}>
       <div style={{ fontSize: 20, fontWeight: 700, color: color ?? '#333' }}>{value}</div>
@@ -752,36 +749,37 @@ function StatBox({ label, value, color }: { label: string; value: number; color?
 }
 
 function DocDetail({ doc }: { doc: any }) {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   return (
     <div style={{ fontSize: 13 }}>
       <div style={{ display: 'flex', gap: 24, marginBottom: 12 }}>
-        <div><b>Dokument-ID:</b> <code style={{ fontSize: 11 }}>{doc.document_id}</code></div>
-        <div><b>Quelle:</b> {doc.source_system}</div>
-        <div><b>Referenz:</b> {doc.source_document_ref}</div>
+        <div><b>{lt("Dokument-ID:")}</b> <code style={{ fontSize: 11 }}>{doc.document_id}</code></div>
+        <div><b>{lt("Quelle:")}</b> {doc.source_system}</div>
+        <div><b>{lt("Referenz:")}</b> {doc.source_document_ref}</div>
       </div>
 
       {doc.filename && (
         <div style={{ marginBottom: 8 }}>
-          <b>Datei:</b> <FileLink filename={doc.filename} />
+          <b>{lt("Datei:")}</b> <FileLink filename={doc.filename} />
         </div>
       )}
 
       {doc.vat_amount_minor != null && (
         <div style={{ marginBottom: 8 }}>
-          <b>MwSt:</b> <Amount value={doc.vat_amount_minor / 100} currency={doc.currency_code} />
+          <b>{lt("MwSt:")}</b> <Amount value={doc.vat_amount_minor / 100} currency={doc.currency_code} />
           {doc.vat_rate != null && <span> ({(doc.vat_rate * 100).toFixed(0)}%)</span>}
         </div>
       )}
 
       {doc.rule_id && (
         <div style={{ marginBottom: 8 }}>
-          <b>Match-Regel:</b> <code style={{ fontSize: 11 }}>{doc.rule_id}</code>
+          <b>{lt("Match-Regel:")}</b> <code style={{ fontSize: 11 }}>{doc.rule_id}</code>
         </div>
       )}
 
       {doc.linked_transactions?.length > 0 && (
         <div style={{ marginTop: 12 }}>
-          <b>Verknüpfte Zahlungen:</b>
+          <b>{lt("Verknüpfte Zahlungen:")}</b>
           <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 6 }}>
             {doc.linked_transactions.map((t: any) => {
               const isSingleMatch = doc.linked_transactions.length === 1;
@@ -800,9 +798,8 @@ function DocDetail({ doc }: { doc: any }) {
                   <Amount value={t.amount} currency={t.currency_code} />
                   {mismatch && (
                     <span style={{ color: '#e67e22', fontSize: 11, fontWeight: 600 }}
-                      title={`Beleg: ${(Math.abs(doc.total_amount_minor)/100).toFixed(2)}€ ≠ Buchung: ${(Math.abs(t.amount_minor)/100).toFixed(2)}€`}>
-                      ⚠ Betrag
-                    </span>
+                      title={lt("Beleg: {document}€ ≠ Buchung: {transaction}€", { document: (Math.abs(doc.total_amount_minor)/100).toFixed(2), transaction: (Math.abs(t.amount_minor)/100).toFixed(2) })}>
+                      {lt("⚠ Betrag")}</span>
                   )}
                 </div>
               );
@@ -813,23 +810,22 @@ function DocDetail({ doc }: { doc: any }) {
 
       {(!doc.linked_transactions || doc.linked_transactions.length === 0) && (
         <div style={{ marginTop: 8, color: '#999', fontStyle: 'italic' }}>
-          Keine Zahlung verknüpft
-        </div>
+          {lt("Keine Zahlung verknüpft")}</div>
       )}
 
       {/* Stripe/PayPal fee breakdown from meta */}
       {doc.meta?.type === 'monthly_fee_summary' && doc.meta?.charge_count > 0 && (
         <div style={{ marginTop: 12 }}>
-          <b>Gebührenaufschlüsselung ({doc.meta.charge_count} Transaktionen):</b>
+          <b>{lt("Gebührenaufschlüsselung (")}{doc.meta.charge_count} {lt("Transaktionen):")}</b>
           {doc.meta.charges?.length > 0 ? (
             <div style={{ marginTop: 6, maxHeight: 250, overflow: 'auto' }}>
               <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
-                    <th style={{ textAlign: 'left', padding: '3px 6px', borderBottom: '1px solid #ddd', color: '#888' }}>Datum</th>
-                    <th style={{ textAlign: 'left', padding: '3px 6px', borderBottom: '1px solid #ddd', color: '#888' }}>Beschreibung</th>
-                    <th style={{ textAlign: 'right', padding: '3px 6px', borderBottom: '1px solid #ddd', color: '#888' }}>Umsatz</th>
-                    <th style={{ textAlign: 'right', padding: '3px 6px', borderBottom: '1px solid #ddd', color: '#888' }}>Gebühr</th>
+                    <th style={{ textAlign: 'left', padding: '3px 6px', borderBottom: '1px solid #ddd', color: '#888' }}>{lt("Datum")}</th>
+                    <th style={{ textAlign: 'left', padding: '3px 6px', borderBottom: '1px solid #ddd', color: '#888' }}>{lt("Beschreibung")}</th>
+                    <th style={{ textAlign: 'right', padding: '3px 6px', borderBottom: '1px solid #ddd', color: '#888' }}>{lt("Umsatz")}</th>
+                    <th style={{ textAlign: 'right', padding: '3px 6px', borderBottom: '1px solid #ddd', color: '#888' }}>{lt("Gebühr")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -842,7 +838,7 @@ function DocDetail({ doc }: { doc: any }) {
                     </tr>
                   ))}
                   <tr style={{ borderTop: '2px solid #ddd', fontWeight: 700 }}>
-                    <td colSpan={3} style={{ padding: '3px 6px' }}>Gesamt</td>
+                    <td colSpan={3} style={{ padding: '3px 6px' }}>{lt("Gesamt")}</td>
                     <td style={{ padding: '3px 6px', textAlign: 'right', fontFamily: 'monospace', color: colors.red }}>
                       {(Math.abs(doc.total_amount_minor) / 100).toFixed(2)} €
                     </td>
@@ -852,8 +848,7 @@ function DocDetail({ doc }: { doc: any }) {
             </div>
           ) : (
             <div style={{ fontSize: 11, color: '#888', marginTop: 4 }}>
-              Detaillierte Aufschlüsselung nicht verfügbar. Bitte Stripe-Daten neu importieren.
-            </div>
+              {lt("Detaillierte Aufschlüsselung nicht verfügbar. Bitte Stripe-Daten neu importieren.")}</div>
           )}
         </div>
       )}
@@ -868,6 +863,7 @@ const TAX_CAT_COLORS: Record<string, { bg: string; fg: string }> = {
 };
 
 function TaxCategoryBadge({ category }: { category: string }) {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   const c = TAX_CAT_COLORS[category] ?? { bg: '#f5f5f5', fg: '#666' };
   return (
     <span style={{
@@ -886,6 +882,7 @@ function EditableCell({ docId, field, value, type, editingCell, setEditingCell, 
   editingCell: string | null; setEditingCell: (k: string | null) => void;
   edits: Record<string, Record<string, any>>; setField: (docId: string, field: string, value: any) => void;
 }) {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   const key = `${docId}:${field}`;
   const isEditing = editingCell === key;
   const editedValue = edits[docId]?.[field];
@@ -954,6 +951,7 @@ function EditableCell({ docId, field, value, type, editingCell, setEditingCell, 
 function RowMenu({ doc, isOpen, onToggle, onClose, onDelete, onUnmatch, onCashPayment }: {
   doc: any; isOpen: boolean; onToggle: () => void; onClose: () => void; onDelete: (docId: string) => void; onUnmatch: (mgId: string) => void; onCashPayment: (docId: string, active: boolean) => void;
 }) {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -971,7 +969,7 @@ function RowMenu({ doc, isOpen, onToggle, onClose, onDelete, onUnmatch, onCashPa
   if (doc.linked_transactions?.length > 0) {
     const t = doc.linked_transactions[0];
     menuItems.push({
-      label: `Buchung (${t.source_system})`,
+      label: lt("Buchung ({source})", { source: t.source_system }),
       href: `/?highlight=${encodeURIComponent(t.transaction_id)}&source=${encodeURIComponent(t.source_system)}`,
     });
   }
@@ -979,7 +977,7 @@ function RowMenu({ doc, isOpen, onToggle, onClose, onDelete, onUnmatch, onCashPa
   // "Scan ansehen" — open in Belegerkennung list with scan highlighted
   if (doc.scan_id) {
     menuItems.push({
-      label: 'Scan ansehen',
+      label: lt("Scan ansehen"),
       href: `/belegerkennung?highlight=${encodeURIComponent(doc.scan_id)}`,
     });
   }
@@ -990,7 +988,7 @@ function RowMenu({ doc, isOpen, onToggle, onClose, onDelete, onUnmatch, onCashPa
       label: 'Unmatch',
       color: colors.red,
       onClick: () => {
-        if (!confirm('Verknüpfung wirklich aufheben?')) return;
+        if (!confirm(lt("Verknüpfung wirklich aufheben?"))) return;
         onUnmatch(doc.match_group_id);
       },
     });
@@ -999,17 +997,17 @@ function RowMenu({ doc, isOpen, onToggle, onClose, onDelete, onUnmatch, onCashPa
   // "Barzahlung" — toggle cash payment flag
   const isCash = doc.meta?.cash_payment;
   menuItems.push({
-    label: isCash ? '✓ Barzahlung' : 'Barzahlung',
+    label: isCash ? lt("✓ Barzahlung") : lt("Barzahlung"),
     color: isCash ? colors.green : undefined,
     onClick: () => { onCashPayment(doc.document_id, !isCash); },
   });
 
   // "Löschen"
   menuItems.push({
-    label: 'Löschen',
+    label: lt("Löschen"),
     color: colors.red,
     onClick: () => {
-      if (!confirm(`Rechnung "${doc.supplier_name || doc.filename || doc.document_id}" wirklich löschen?`)) return;
+      if (!confirm(lt('Rechnung "{name}" wirklich löschen?', { name: doc.supplier_name || doc.filename || doc.document_id }))) return;
       onDelete(doc.document_id);
     },
   });
@@ -1023,7 +1021,7 @@ function RowMenu({ doc, isOpen, onToggle, onClose, onDelete, onUnmatch, onCashPa
           fontSize: 18, padding: '2px 6px', color: '#888', borderRadius: 4,
           lineHeight: 1,
         }}
-        title="Optionen"
+        title={lt("Optionen")}
       >...</button>
       {isOpen && menuItems.length > 0 && (
         <div style={{
@@ -1066,6 +1064,7 @@ function SortTh({ field, label, current, order, onSort, align }: {
   field: string; label: string; current: string; order: 'asc' | 'desc';
   onSort: (field: string, order: 'asc' | 'desc') => void; align?: 'right';
 }) {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   const active = current === field;
   const arrow = active ? (order === 'asc' ? ' \u25B2' : ' \u25BC') : '';
   return (

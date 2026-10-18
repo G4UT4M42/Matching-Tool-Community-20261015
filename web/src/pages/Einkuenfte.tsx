@@ -1,3 +1,5 @@
+import { useLegacyText } from '../i18n/legacy';
+import { legacyDocumentsEnglish } from '../i18n/legacy-documents';
 import React, { useEffect, useState, useRef } from 'react';
 import { api } from '../api';
 import { Card, Pagination, SearchInput, Select, Amount, Badge, FileLink, SourceBadge, colors, formatDate, usePageSize, useWorkingYear } from '../components/shared';
@@ -5,6 +7,7 @@ import { Card, Pagination, SearchInput, Select, Amount, Badge, FileLink, SourceB
 type ImportStatus = 'idle' | 'loading' | 'success' | 'error';
 
 export function Einkuenfte() {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   const [data, setData] = useState<any>(null);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -89,12 +92,12 @@ export function Einkuenfte() {
     }
   };
 
-  if (!data) return <p>Loading...</p>;
+  if (!data) return <p>{lt("Laden...")}</p>;
 
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
-        <h1 style={{ fontSize: 22, margin: 0 }}>Einkünfte (Einnahmen)</h1>
+        <h1 style={{ fontSize: 22, margin: 0 }}>{lt("Einkünfte (Einnahmen)")}</h1>
         {(() => {
           const inc = summary?.documents?.by_source?.income;
           if (!inc || inc.total === 0) return null;
@@ -105,7 +108,7 @@ export function Einkuenfte() {
               background: pct > 80 ? '#e8f5e9' : pct > 50 ? '#fff8e1' : '#fce4ec',
               color: pct > 80 ? '#27ae60' : pct > 50 ? '#f39c12' : '#e74c3c',
             }}>
-              {pct}% gematcht ({inc.matched}/{inc.total})
+              {pct}{lt("% gematcht (")}{inc.matched}/{inc.total})
             </span>
           );
         })()}
@@ -116,7 +119,7 @@ export function Einkuenfte() {
             border: 'none', borderRadius: 4, fontSize: 13, fontWeight: 600, cursor: 'pointer',
           }}
         >
-          {showImport ? 'Import ausblenden' : 'Import'}
+          {showImport ? lt("Import ausblenden") : 'Import'}
         </button>
         {belegeInfo?.years && Object.keys(belegeInfo.years).sort().reverse().map(year => (
           <button
@@ -127,8 +130,7 @@ export function Einkuenfte() {
               border: '1px solid #ddd', borderRadius: 4, fontSize: 13, cursor: 'pointer',
             }}
           >
-            {year} ({belegeInfo.years[year].einkuenfte} Dateien)
-          </button>
+            {year} ({belegeInfo.years[year].einkuenfte} {lt("Dateien)")}</button>
         ))}
       </div>
 
@@ -150,11 +152,11 @@ export function Einkuenfte() {
             <input ref={wcFileRef} type="file" multiple accept=".pdf" style={{ display: 'none' }}
               onChange={e => { if (e.target.files) handleWcUpload(Array.from(e.target.files)); e.target.value = ''; }} />
             {wcUploading ? (
-              <span style={{ color: '#888', fontSize: 12 }}>Wird verarbeitet...</span>
+              <span style={{ color: '#888', fontSize: 12 }}>{lt("Wird verarbeitet...")}</span>
             ) : (
               <>
                 <span style={{ fontSize: 18, marginBottom: 4 }}>+</span>
-                <span style={{ color: '#888', fontSize: 11, lineHeight: 1.3 }}>WooCommerce Rechnungen<br/>hierher ziehen oder klicken</span>
+                <span style={{ color: '#888', fontSize: 11, lineHeight: 1.3 }}>{lt("WooCommerce Rechnungen")}<br/>{lt("hierher ziehen oder klicken")}</span>
               </>
             )}
           </div>
@@ -166,8 +168,8 @@ export function Einkuenfte() {
                     <span style={{ color: colors.red }}>{r.filename}: {r.error}</span>
                   ) : (
                     <span style={{ color: colors.green }}>
-                      {r.isRefund ? 'Gutschrift' : 'Rechnung'} {r.ref} — {r.customer} — {Math.abs(r.gross).toFixed(2)}€
-                      {r.vatRate > 0 && ` (${r.vatRate}% USt: ${Math.abs(r.vat).toFixed(2)}€)`}
+                      {r.isRefund ? lt("Gutschrift") : lt("Rechnung")} {r.ref} — {r.customer} — {Math.abs(r.gross).toFixed(2)}€
+                      {r.vatRate > 0 && lt(" ({rate}% USt: {vat}€)", { rate: r.vatRate, vat: Math.abs(r.vat).toFixed(2) })}
                       {r.country && ` [${r.country}]`}
                     </span>
                   )}
@@ -180,11 +182,9 @@ export function Einkuenfte() {
 
       {showImport && (
         <Card style={{ marginBottom: 16 }}>
-          <h3 style={{ margin: '0 0 8px', fontSize: 15 }}>Einkünfte importieren (XLS / CSV)</h3>
+          <h3 style={{ margin: '0 0 8px', fontSize: 15 }}>{lt("Einkünfte importieren (XLS / CSV)")}</h3>
           <p style={{ color: '#666', fontSize: 13, margin: '0 0 12px' }}>
-            Importiert Einnahmen-Dokumente aus einer Excel- oder CSV-Datei.
-            Erwartet die Spalten: Belegnummer, Rechnungsdatum, Brutto, Netto, Steuer, First/Last Name, etc.
-          </p>
+            {lt("Importiert Einnahmen-Dokumente aus einer Excel- oder CSV-Datei. Erwartet die Spalten: Belegnummer, Rechnungsdatum, Brutto, Netto, Steuer, First/Last Name, etc.")}</p>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
             <input
               type="file"
@@ -201,7 +201,7 @@ export function Einkuenfte() {
                 opacity: (importStatus === 'loading' || !importFile) ? 0.6 : 1,
               }}
             >
-              {importStatus === 'loading' ? 'Importiere...' : 'Importieren'}
+              {importStatus === 'loading' ? lt("Importiere...") : lt("Importieren")}
             </button>
           </div>
 
@@ -214,19 +214,19 @@ export function Einkuenfte() {
           {importResult && (
             <div style={{ marginTop: 12 }}>
               <div style={{ display: 'flex', gap: 20, marginBottom: 12 }}>
-                <StatBox label="Gelesen" value={importResult.fetched} />
-                <StatBox label="Neu" value={importResult.imported} color={colors.green} />
-                <StatBox label="Aktualisiert" value={importResult.skipped} color={colors.darkGray} />
+                <StatBox label={lt("Gelesen")} value={importResult.fetched} />
+                <StatBox label={lt("Neu")} value={importResult.imported} color={colors.green} />
+                <StatBox label={lt("Aktualisiert")} value={importResult.skipped} color={colors.darkGray} />
               </div>
               {importResult.documents?.length > 0 && (
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                   <thead>
                     <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
                       <th style={thStyle}>Status</th>
-                      <th style={thStyle}>Datum</th>
-                      <th style={thStyle}>Belegnr.</th>
-                      <th style={thStyle}>Kunde</th>
-                      <th style={{ ...thStyle, textAlign: 'right' }}>Betrag</th>
+                      <th style={thStyle}>{lt("Datum")}</th>
+                      <th style={thStyle}>{lt("Belegnr.")}</th>
+                      <th style={thStyle}>{lt("Kunde")}</th>
+                      <th style={{ ...thStyle, textAlign: 'right' }}>{lt("Betrag")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -237,8 +237,8 @@ export function Einkuenfte() {
                       }}>
                         <td style={tdStyle}>
                           {d.is_new
-                            ? <Badge text="NEU" color={colors.green} />
-                            : <Badge text="aktualisiert" color={colors.blue} />
+                            ? <Badge text={lt("NEU")} color={colors.green} />
+                            : <Badge text={lt("aktualisiert")} color={colors.blue} />
                           }
                         </td>
                         <td style={tdStyle}>{formatDate(d.date)}</td>
@@ -258,15 +258,14 @@ export function Einkuenfte() {
       )}
 
       <p style={{ fontSize: 13, color: '#666', marginBottom: 16 }}>
-        {data.total} Einnahmen-Dokumente
-      </p>
+        {data.total} {lt("Einnahmen-Dokumente")}</p>
 
       <div style={{ display: 'flex', gap: 12, marginBottom: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-        <SearchInput value={search} onChange={setSearch} onSearch={doSearch} placeholder="Suche (Dateiname, Kunde, Ref)..." />
+        <SearchInput value={search} onChange={setSearch} onSearch={doSearch} placeholder={lt("Suche (Dateiname, Kunde, Ref)...")} />
         <Select value={status} onChange={(v) => { setStatus(v); setPage(1); }} options={[
-          { value: '', label: 'Alle' },
-          { value: 'matched', label: 'Verknüpft' },
-          { value: 'unmatched', label: 'Offen' },
+          { value: '', label: lt("Alle") },
+          { value: 'matched', label: lt("Verknüpft") },
+          { value: 'unmatched', label: lt("Offen") },
         ]} />
       </div>
 
@@ -274,17 +273,17 @@ export function Einkuenfte() {
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
           <thead>
             <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
-              <SortHeader field="document_date" label="Datum" current={sortField} order={sortOrder} onSort={(f, o) => { setSortField(f); setSortOrder(o); setPage(1); }} />
-              <th style={thStyle}>Dokument</th>
+              <SortHeader field="document_date" label={lt("Datum")} current={sortField} order={sortOrder} onSort={(f, o) => { setSortField(f); setSortOrder(o); setPage(1); }} />
+              <th style={thStyle}>{lt("Dokument")}</th>
               <th style={thStyle}>Order</th>
-              <SortHeader field="supplier_name" label="Kunde / Ref" current={sortField} order={sortOrder} onSort={(f, o) => { setSortField(f); setSortOrder(o); setPage(1); }} />
-              <th style={thStyle}>Land</th>
-              <th style={{ ...thStyle, textAlign: 'right' }}>Netto</th>
-              <th style={{ ...thStyle, textAlign: 'right' }}>USt</th>
-              <SortHeader field="total_amount_minor" label="Brutto" current={sortField} order={sortOrder} onSort={(f, o) => { setSortField(f); setSortOrder(o); setPage(1); }} align="right" />
-              <th style={{ ...thStyle, textAlign: 'center' }}>USt%</th>
+              <SortHeader field="supplier_name" label={lt("Kunde / Ref")} current={sortField} order={sortOrder} onSort={(f, o) => { setSortField(f); setSortOrder(o); setPage(1); }} />
+              <th style={thStyle}>{lt("Land")}</th>
+              <th style={{ ...thStyle, textAlign: 'right' }}>{lt("Netto")}</th>
+              <th style={{ ...thStyle, textAlign: 'right' }}>{lt("USt")}</th>
+              <SortHeader field="total_amount_minor" label={lt("Brutto")} current={sortField} order={sortOrder} onSort={(f, o) => { setSortField(f); setSortOrder(o); setPage(1); }} align="right" />
+              <th style={{ ...thStyle, textAlign: 'center' }}>{lt("USt%")}</th>
               <th style={thStyle}>Status</th>
-              <th style={thStyle}>Zahlung</th>
+              <th style={thStyle}>{lt("Zahlung")}</th>
             </tr>
           </thead>
           <tbody>
@@ -325,8 +324,8 @@ export function Einkuenfte() {
                   </td>
                   <td style={tdStyle}>
                     {d.is_matched
-                      ? <Badge text="Verknüpft" color={colors.green} />
-                      : <Badge text="Offen" color={colors.orange} />
+                      ? <Badge text={lt("Verknüpft")} color={colors.green} />
+                      : <Badge text={lt("Offen")} color={colors.orange} />
                     }
                   </td>
                   <td style={tdStyle}>
@@ -361,7 +360,7 @@ export function Einkuenfte() {
               </React.Fragment>
             ))}
             <tr style={{ borderTop: '2px solid #ddd', background: '#f8f9fa' }}>
-              <td colSpan={5} style={{ ...tdStyle, fontWeight: 700 }}>Summe (Seite {data.page}/{data.pages})</td>
+              <td colSpan={5} style={{ ...tdStyle, fontWeight: 700 }}>{lt("Summe (Seite") + " "}{data.page}/{data.pages})</td>
               {(() => {
                 const items = data.items;
                 const grossSum = items.reduce((s: number, d: any) => s + d.total_amount_minor, 0);
@@ -405,31 +404,31 @@ export function Einkuenfte() {
         {ossData?.quarters && (() => {
           const quarters = ossData.quarters;
           const allCountries = [...new Set(Object.values(quarters).flatMap((q: any) => Object.keys(q)))].sort() as string[];
-          if (allCountries.length === 0) return <div style={{ color: '#999', fontSize: 13 }}>Keine EU-OSS Daten für {ossYear}</div>;
+          if (allCountries.length === 0) return <div style={{ color: '#999', fontSize: 13 }}>{lt("Keine EU-OSS Daten für") + " "}{ossYear}</div>;
 
           return (
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ borderBottom: '2px solid #ddd' }}>
-                    <th style={{ ...thStyle, textAlign: 'left' }}>Land</th>
+                    <th style={{ ...thStyle, textAlign: 'left' }}>{lt("Land")}</th>
                     {['Q1', 'Q2', 'Q3', 'Q4'].map(q => (
                       <React.Fragment key={q}>
                         <th style={{ ...thStyle, textAlign: 'right', borderLeft: '1px solid #eee' }} colSpan={2}>{q} {ossYear}</th>
                       </React.Fragment>
                     ))}
-                    <th style={{ ...thStyle, textAlign: 'right', borderLeft: '2px solid #ddd' }} colSpan={2}>Gesamt</th>
+                    <th style={{ ...thStyle, textAlign: 'right', borderLeft: '2px solid #ddd' }} colSpan={2}>{lt("Gesamt")}</th>
                   </tr>
                   <tr style={{ borderBottom: '1px solid #eee' }}>
                     <th style={thStyle}></th>
                     {['Q1', 'Q2', 'Q3', 'Q4'].map(q => (
                       <React.Fragment key={q}>
-                        <th style={{ ...thStyle, textAlign: 'right', fontSize: 10, color: '#999', borderLeft: '1px solid #eee' }}>Netto</th>
-                        <th style={{ ...thStyle, textAlign: 'right', fontSize: 10, color: '#999' }}>USt</th>
+                        <th style={{ ...thStyle, textAlign: 'right', fontSize: 10, color: '#999', borderLeft: '1px solid #eee' }}>{lt("Netto")}</th>
+                        <th style={{ ...thStyle, textAlign: 'right', fontSize: 10, color: '#999' }}>{lt("USt")}</th>
                       </React.Fragment>
                     ))}
-                    <th style={{ ...thStyle, textAlign: 'right', fontSize: 10, color: '#999', borderLeft: '2px solid #ddd' }}>Netto</th>
-                    <th style={{ ...thStyle, textAlign: 'right', fontSize: 10, color: '#999' }}>USt</th>
+                    <th style={{ ...thStyle, textAlign: 'right', fontSize: 10, color: '#999', borderLeft: '2px solid #ddd' }}>{lt("Netto")}</th>
+                    <th style={{ ...thStyle, textAlign: 'right', fontSize: 10, color: '#999' }}>{lt("USt")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -462,7 +461,7 @@ export function Einkuenfte() {
                     );
                   })}
                   <tr style={{ borderTop: '2px solid #ddd', fontWeight: 700 }}>
-                    <td style={tdStyle}>Gesamt</td>
+                    <td style={tdStyle}>{lt("Gesamt")}</td>
                     {['Q1', 'Q2', 'Q3', 'Q4'].map(q => {
                       const qData = quarters[q] ?? {};
                       const qNet = Object.values(qData).reduce((s: number, d: any) => s + d.net, 0);
@@ -500,6 +499,7 @@ export function Einkuenfte() {
 }
 
 function StatBox({ label, value, color }: { label: string; value: number; color?: string }) {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   return (
     <div style={{ textAlign: 'center' }}>
       <div style={{ fontSize: 20, fontWeight: 700, color: color ?? '#333' }}>{value}</div>
@@ -509,29 +509,30 @@ function StatBox({ label, value, color }: { label: string; value: number; color?
 }
 
 function DocDetail({ doc }: { doc: any }) {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   return (
     <div style={{ fontSize: 13 }}>
       <div style={{ display: 'flex', gap: 24, marginBottom: 12 }}>
-        <div><b>Dokument-ID:</b> <code style={{ fontSize: 11 }}>{doc.document_id}</code></div>
-        <div><b>Quelle:</b> {doc.source_system}</div>
-        <div><b>Referenz:</b> {doc.source_document_ref}</div>
+        <div><b>{lt("Dokument-ID:")}</b> <code style={{ fontSize: 11 }}>{doc.document_id}</code></div>
+        <div><b>{lt("Quelle:")}</b> {doc.source_system}</div>
+        <div><b>{lt("Referenz:")}</b> {doc.source_document_ref}</div>
       </div>
 
       {doc.filename && (
         <div style={{ marginBottom: 8 }}>
-          <b>Datei:</b> <FileLink filename={doc.filename} />
+          <b>{lt("Datei:")}</b> <FileLink filename={doc.filename} />
         </div>
       )}
 
       {doc.rule_id && (
         <div style={{ marginBottom: 8 }}>
-          <b>Match-Regel:</b> <code style={{ fontSize: 11 }}>{doc.rule_id}</code>
+          <b>{lt("Match-Regel:")}</b> <code style={{ fontSize: 11 }}>{doc.rule_id}</code>
         </div>
       )}
 
       {doc.linked_transactions?.length > 0 && (
         <div style={{ marginTop: 12 }}>
-          <b>Verknüpfte Zahlungen:</b>
+          <b>{lt("Verknüpfte Zahlungen:")}</b>
           <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 6 }}>
             {doc.linked_transactions.map((t: any) => (
               <div key={t.transaction_id} style={{
@@ -551,8 +552,7 @@ function DocDetail({ doc }: { doc: any }) {
 
       {(!doc.linked_transactions || doc.linked_transactions.length === 0) && (
         <div style={{ marginTop: 8, color: '#999', fontStyle: 'italic' }}>
-          Keine Zahlung verknüpft
-        </div>
+          {lt("Keine Zahlung verknüpft")}</div>
       )}
     </div>
   );
@@ -569,6 +569,7 @@ function SortHeader({ field, label, current, order, onSort, align }: {
   field: string; label: string; current: string; order: 'asc' | 'desc';
   onSort: (field: string, order: 'asc' | 'desc') => void; align?: string;
 }) {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   const active = current === field;
   return (
     <th style={{ ...thStyle, textAlign: (align as any) ?? 'left', cursor: 'pointer', userSelect: 'none' }}

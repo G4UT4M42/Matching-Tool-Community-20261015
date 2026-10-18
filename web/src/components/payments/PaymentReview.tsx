@@ -1,3 +1,5 @@
+import {useLegacyText} from '../../i18n/legacy';
+import {legacyRecognitionEnglish} from '../../i18n/legacy-recognition';
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   cancelPaymentBatch,
@@ -133,20 +135,21 @@ function startDownload(blob: Blob, filename: string): void {
 }
 
 function Evidence({ evidence }: { evidence?: CandidateEvidence }) {
+  const lt=useLegacyText(legacyRecognitionEnglish);
   const fields: Array<[string, string]> = [
-    ['creditorName', 'Gläubigername'],
-    ['creditorIban', 'Gläubiger-IBAN'],
-    ['amountMinor', 'Betrag'],
-    ['currencyCode', 'Währung'],
-    ['remittanceInformation', 'Verwendungszweck'],
-    ['structuredCreditorReference', 'Strukturierte Referenz'],
-    ['requestedExecutionDate', 'Ausführungsdatum'],
-    ['invoiceNumber', 'Rechnungsnummer'],
-    ['dueDate', 'Fälligkeitsdatum'],
+    ['creditorName', lt("Gläubigername")],
+    ['creditorIban', lt("Gläubiger-IBAN")],
+    ['amountMinor', lt("Betrag")],
+    ['currencyCode', lt("Währung")],
+    ['remittanceInformation', lt("Verwendungszweck")],
+    ['structuredCreditorReference', lt("Strukturierte Referenz")],
+    ['requestedExecutionDate', lt("Ausführungsdatum")],
+    ['invoiceNumber', lt("Rechnungsnummer")],
+    ['dueDate', lt("Fälligkeitsdatum")],
   ];
   return (
     <div style={{ minWidth: 150, fontSize: 10, color: '#666', lineHeight: 1.5 }}>
-      <div><b>Quelle:</b> {evidence?.strategy ?? 'bestätigter Beleg'}</div>
+      <div><b>{lt("Quelle:")}</b> {evidence?.strategy ?? lt("bestätigter Beleg")}</div>
       {fields.map(([field, label]) => {
         const source = evidence?.sources?.[field];
         const confidence = evidence?.confidence?.[field];
@@ -162,6 +165,7 @@ function Evidence({ evidence }: { evidence?: CandidateEvidence }) {
 }
 
 export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps) {
+  const lt=useLegacyText(legacyRecognitionEnglish);
   const [view, setView] = useState<PaymentBatchView | null>(null);
   const [drafts, setDrafts] = useState<Record<string, ItemDraft>>({});
   const [evidence, setEvidence] = useState<Record<string, CandidateEvidence>>({});
@@ -308,7 +312,7 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
     if (!token) return;
     const amountMinor = parseMinor(draft.amount);
     if (amountMinor === null || amountMinor <= 0) {
-      if (isMutationCurrent(operationView, token)) setError('Betrag muss als positiver EUR-Betrag mit höchstens zwei Nachkommastellen eingegeben werden.');
+      if (isMutationCurrent(operationView, token)) setError(lt("Betrag muss als positiver EUR-Betrag mit höchstens zwei Nachkommastellen eingegeben werden."));
       finishMutation(token);
       return;
     }
@@ -337,7 +341,7 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
       if (!isMutationCurrent(operationView, token)) return;
       setConfirmedUnpaid(false);
       if (!isMutationCurrent(operationView, token)) return;
-      setNotice('Zahlungsposition gespeichert und serverseitig neu geprüft.');
+      setNotice(lt("Zahlungsposition gespeichert und serverseitig neu geprüft."));
       if (!isMutationCurrent(operationView, token)) return;
       onChanged();
     } catch (saveError) {
@@ -370,7 +374,7 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
         || !isPaymentOperationPreconditionSatisfied(next.batch.batchId, batchId, token)) return;
       setView(next);
       if (!isMutationCurrent(operationView, token)) return;
-      setNotice('Zahlungsstapel geprüft. Die Daten sind jetzt unveränderlich und für den SEPA-Export bereit.');
+      setNotice(lt("Zahlungsstapel geprüft. Die Daten sind jetzt unveränderlich und für den SEPA-Export bereit."));
       if (!isMutationCurrent(operationView, token)) return;
       onChanged();
     } catch (reviewError) {
@@ -391,13 +395,13 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
     if (!operationView || operationView.batch.batchId !== batchId || operationView.batch.status !== 'reviewed') return;
     const batch = operationView.batch;
     const confirmation = [
-      'SEPA-Datei wirklich erzeugen und herunterladen?',
+      lt("SEPA-Datei wirklich erzeugen und herunterladen?"),
       '',
-      `Schuldner-IBAN: ${batch.debtorIban}`,
-      `Transaktionen: ${batch.itemCount}`,
-      `Kontrollsumme: ${formatMinor(batch.controlSumMinor, batch.currencyCode)}`,
+      lt('Schuldner-IBAN: {iban}',{iban:batch.debtorIban}),
+      lt('Transaktionen: {count}',{count:batch.itemCount}),
+      lt('Kontrollsumme: {amount}',{amount:formatMinor(batch.controlSumMinor,batch.currencyCode)}),
       '',
-      'Dies exportiert nur eine Datei und führt keine Bankaktion aus.',
+      lt("Dies exportiert nur eine Datei und führt keine Bankaktion aus."),
     ].join('\n');
     if (!confirm(confirmation)) return;
     const token = beginMutation(operationView);
@@ -413,14 +417,14 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
       if (!isMutationCurrent(operationView, token) || result.batchId !== batchId) return;
       startDownload(result.blob, result.filename);
       if (!isMutationCurrent(operationView, token)) return;
-      setNotice(`SEPA-Datei exportiert: ${result.filename} · Stapel ${result.batchId} · Kontrollsumme ${formatMinor(result.controlSumMinor, batch.currencyCode)}.`);
+      setNotice(lt('SEPA-Datei exportiert: {filename} · Stapel {batch} · Kontrollsumme {amount}.',{filename:result.filename,batch:result.batchId,amount:formatMinor(result.controlSumMinor,batch.currencyCode)}));
       if (!isMutationCurrent(operationView, token)) return;
       await load();
       if (!isMutationCurrent(operationView, token)) return;
       onChanged();
     } catch (exportError) {
       if (!isMutationCurrent(operationView, token)) return;
-      const message = `${errorMessage(exportError)} Falls der Export bereits serverseitig gespeichert wurde, kann der Download nach dem Aktualisieren erneut versucht werden.`;
+      const message = lt('{error} Falls der Export bereits serverseitig gespeichert wurde, kann der Download nach dem Aktualisieren erneut versucht werden.',{error:errorMessage(exportError)});
       if (!isMutationCurrent(operationView, token)) return;
       await load(false);
       if (!isMutationCurrent(operationView, token)) return;
@@ -445,7 +449,7 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
       if (!isMutationCurrent(operationView, token) || result.batchId !== batchId) return;
       startDownload(result.blob, result.filename);
       if (!isMutationCurrent(operationView, token)) return;
-      setNotice(`SEPA-Datei exportiert: ${result.filename} · Stapel ${result.batchId} · Kontrollsumme ${formatMinor(result.controlSumMinor, operationView.batch.currencyCode)}.`);
+      setNotice(lt('SEPA-Datei exportiert: {filename} · Stapel {batch} · Kontrollsumme {amount}.',{filename:result.filename,batch:result.batchId,amount:formatMinor(result.controlSumMinor,operationView.batch.currencyCode)}));
     } catch (retryError) {
       if (!isMutationCurrent(operationView, token)) return;
       setError(errorMessage(retryError));
@@ -467,7 +471,7 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
       const next = await importPaymentBatchToGeorge(token.batchId, token.controller.signal);
       if (!isMutationCurrent(operationView, token) || next.batch_id !== batchId) return;
       setAutomation(next);
-      setNotice('George-Import wurde eingereiht. Die Seite zeigt ausschließlich den serverseitig verifizierten Fortschritt.');
+      setNotice(lt("George-Import wurde eingereiht. Die Seite zeigt ausschließlich den serverseitig verifizierten Fortschritt."));
       window.setTimeout(() => void pollAutomation(0), 0);
     } catch (importError) {
       if (isMutationCurrent(operationView, token)) setError(errorMessage(importError));
@@ -486,7 +490,7 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
       || current.batch_id !== batchId || current.available_action !== expectedAction) return;
     const confirmation = exactPaymentReleaseConfirmation(current, operationView.batch);
     if (!confirmation) {
-      setError('Die verifizierten George-Daten stimmen nicht exakt mit dem unveränderlichen Zahlungsstapel überein.');
+      setError(lt("Die verifizierten George-Daten stimmen nicht exakt mit dem unveränderlichen Zahlungsstapel überein."));
       return;
     }
     const token = beginMutation(operationView);
@@ -503,8 +507,8 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
       setAutomation(next);
       setReleaseDialogOpen(false);
       setNotice(expectedAction === 'request_release'
-        ? 'Sammelfreigabe wurde angefordert. Dies ist noch kein Zahlungs- oder Freigabenachweis.'
-        : 'Der Freigabestatus wird ausschließlich lesend mit George abgeglichen. Es wurde keine zweite Freigabe angefordert.');
+        ? lt("Sammelfreigabe wurde angefordert. Dies ist noch kein Zahlungs- oder Freigabenachweis.")
+        : lt("Der Freigabestatus wird ausschließlich lesend mit George abgeglichen. Es wurde keine zweite Freigabe angefordert."));
       window.setTimeout(() => void pollAutomation(0), 0);
     } catch (releaseError) {
       if (isMutationCurrent(operationView, token)) setError(errorMessage(releaseError));
@@ -522,9 +526,9 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
     if (!operationView || operationView.batch.batchId !== batchId
       || !['draft', 'reviewed', 'exported'].includes(operationView.batch.status)) return;
     if (operationView.batch.status === 'exported' && !confirm(
-      'Diesen exportierten Zahlungsstapel wirklich stornieren?\n\nDie bereits exportierte XML-Datei wird dadurch obsolet und darf nicht mehr in der Bank verwendet werden. Diese Stornierung führt keine Bankaktion aus.',
+      lt("Diesen exportierten Zahlungsstapel wirklich stornieren?\n\nDie bereits exportierte XML-Datei wird dadurch obsolet und darf nicht mehr in der Bank verwendet werden. Diese Stornierung führt keine Bankaktion aus."),
     )) return;
-    const reason = prompt('Grund für das Stornieren dieses Zahlungsstapels:');
+    const reason = prompt(lt("Grund für das Stornieren dieses Zahlungsstapels:"));
     if (!reason?.trim()) return;
     const token = beginMutation(operationView);
     if (!token) return;
@@ -539,8 +543,8 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
       setView(next);
       if (!isMutationCurrent(operationView, token)) return;
       setNotice(operationView.batch.status === 'exported'
-        ? 'Exportierter Zahlungsstapel storniert. Die exportierte XML-Datei ist obsolet und darf nicht mehr verwendet werden. Es wurde keine Bankaktion ausgeführt.'
-        : 'Zahlungsstapel storniert. Es wurde keine Bankaktion ausgeführt.');
+        ? lt("Exportierter Zahlungsstapel storniert. Die exportierte XML-Datei ist obsolet und darf nicht mehr verwendet werden. Es wurde keine Bankaktion ausgeführt.")
+        : lt("Zahlungsstapel storniert. Es wurde keine Bankaktion ausgeführt."));
       if (!isMutationCurrent(operationView, token)) return;
       onChanged();
     } catch (cancelError) {
@@ -559,8 +563,8 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
   if (!view) {
     return (
       <div>
-        <Button onClick={onBack}>Zurück</Button>
-        <Card style={{ marginTop: 12 }}>{error || 'Zahlungsstapel wird geladen…'}</Card>
+        <Button onClick={onBack}>{lt("Zurück")}</Button>
+        <Card style={{ marginTop: 12 }}>{error || lt("Zahlungsstapel wird geladen…")}</Card>
       </div>
     );
   }
@@ -568,8 +572,8 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
   if (view.batch.batchId !== batchId) {
     return (
       <div>
-        <Button onClick={onBack}>Zurück</Button>
-        <Card style={{ marginTop: 12 }}>Zahlungsstapel wird geladen…</Card>
+        <Button onClick={onBack}>{lt("Zurück")}</Button>
+        <Card style={{ marginTop: 12 }}>{lt("Zahlungsstapel wird geladen…")}</Card>
       </div>
     );
   }
@@ -588,22 +592,22 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-        <Button onClick={onBack}>Zurück zur Belegerkennung</Button>
-        <h1 style={{ fontSize: 22, margin: 0 }}>Zahlungsprüfung</h1>
-        <Badge text={STATUS_LABELS[batch.status] ?? batch.status} color={batch.status === 'draft' ? colors.orange : batch.status === 'cancelled' || batch.status === 'failed' ? colors.red : colors.green} />
-        <span style={{ marginLeft: 'auto', fontSize: 11, color: '#777' }}>Stapel {batch.batchId} · Revision {view.revision}</span>
+        <Button onClick={onBack}>{lt("Zurück zur Belegerkennung")}</Button>
+        <h1 style={{ fontSize: 22, margin: 0 }}>{lt("Zahlungsprüfung")}</h1>
+        <Badge text={lt(STATUS_LABELS[batch.status] ?? batch.status)} color={batch.status === 'draft' ? colors.orange : batch.status === 'cancelled' || batch.status === 'failed' ? colors.red : colors.green} />
+        <span style={{ marginLeft: 'auto', fontSize: 11, color: '#777' }}>{lt("Stapel")}{" "}{batch.batchId} · Revision {view.revision}</span>
       </div>
 
       {error && <div style={{ marginBottom: 12, padding: 10, background: '#fee', border: '1px solid #e74c3c', borderRadius: 5, color: colors.red }}>{error}</div>}
       {notice && <div style={{ marginBottom: 12, padding: 10, background: '#eef8ee', border: '1px solid #7dbb7d', borderRadius: 5, color: '#236b23' }}>{notice}</div>}
 
       <Card style={{ marginBottom: 14 }}>
-        <h2 style={{ fontSize: 15, marginTop: 0 }}>Schuldnerkonto (fest, schreibgeschützt)</h2>
+        <h2 style={{ fontSize: 15, marginTop: 0 }}>{lt("Schuldnerkonto (fest, schreibgeschützt)")}</h2>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.4fr 0.5fr', gap: 14, fontSize: 13 }}>
-          <div><b>Konto:</b><br />{batch.debtorAccountLabel}</div>
-          <div><b>Kontoinhaber:</b><br />{batch.debtorAccountHolder}</div>
+          <div><b>{lt("Konto:")}</b><br />{batch.debtorAccountLabel}</div>
+          <div><b>{lt("Kontoinhaber:")}</b><br />{batch.debtorAccountHolder}</div>
           <div><b>IBAN:</b><br /><code>{batch.debtorIban}</code></div>
-          <div><b>Währung:</b><br />{batch.currencyCode}</div>
+          <div><b>{lt("Währung:")}</b><br />{batch.currencyCode}</div>
         </div>
       </Card>
 
@@ -611,14 +615,14 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1180 }}>
           <thead>
             <tr>
-              <th style={thStyle}>Gläubiger</th>
+              <th style={thStyle}>{lt("Gläubiger")}</th>
               <th style={thStyle}>IBAN</th>
-              <th style={thStyle}>Betrag</th>
-              <th style={thStyle}>Referenz</th>
-              <th style={thStyle}>Datum</th>
-              <th style={thStyle}>Quelle / Konfidenz</th>
-              <th style={thStyle}>Rechnung / Prüfung</th>
-              {editable && <th style={thStyle}>Aktion</th>}
+              <th style={thStyle}>{lt("Betrag")}</th>
+              <th style={thStyle}>{lt("Referenz")}</th>
+              <th style={thStyle}>{lt("Datum")}</th>
+              <th style={thStyle}>{lt("Quelle / Konfidenz")}</th>
+              <th style={thStyle}>{lt("Rechnung / Prüfung")}</th>
+              {editable && <th style={thStyle}>{lt("Aktion")}</th>}
             </tr>
           </thead>
           <tbody>
@@ -632,44 +636,44 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
               return (
                 <tr key={item.itemId}>
                   <td style={{ ...tdStyle, minWidth: 160 }}>
-                    {editable ? <input aria-label="Gläubigername" value={draft.creditorName} onChange={event => setDraft({ creditorName: event.target.value })} style={fieldStyle} /> : item.creditorName || '—'}
+                    {editable ? <input aria-label={lt("Gläubigername")} value={draft.creditorName} onChange={event => setDraft({ creditorName: event.target.value })} style={fieldStyle} /> : item.creditorName || '—'}
                   </td>
                   <td style={{ ...tdStyle, minWidth: 190 }}>
-                    {editable ? <input aria-label="Gläubiger-IBAN" value={draft.creditorIban} onChange={event => setDraft({ creditorIban: event.target.value })} style={{ ...fieldStyle, fontFamily: 'monospace' }} /> : <code>{item.creditorIban || '—'}</code>}
+                    {editable ? <input aria-label={lt("Gläubiger-IBAN")} value={draft.creditorIban} onChange={event => setDraft({ creditorIban: event.target.value })} style={{ ...fieldStyle, fontFamily: 'monospace' }} /> : <code>{item.creditorIban || '—'}</code>}
                   </td>
                   <td style={{ ...tdStyle, minWidth: 105 }}>
                     {editable ? (
                       <div style={{ display: 'flex', gap: 4 }}>
-                        <input aria-label="Betrag in Euro" value={draft.amount} onChange={event => setDraft({ amount: event.target.value })} style={{ ...fieldStyle, width: 80, textAlign: 'right' }} />
-                        <input aria-label="Währung" value={draft.currencyCode} onChange={event => setDraft({ currencyCode: event.target.value.toUpperCase() })} style={{ ...fieldStyle, width: 50 }} maxLength={3} />
+                        <input aria-label={lt("Betrag in Euro")} value={draft.amount} onChange={event => setDraft({ amount: event.target.value })} style={{ ...fieldStyle, width: 80, textAlign: 'right' }} />
+                        <input aria-label={lt("Währung")} value={draft.currencyCode} onChange={event => setDraft({ currencyCode: event.target.value.toUpperCase() })} style={{ ...fieldStyle, width: 50 }} maxLength={3} />
                       </div>
                     ) : formatMinor(item.amountMinor, item.currencyCode ?? batch.currencyCode)}
                   </td>
                   <td style={{ ...tdStyle, minWidth: 210 }}>
                     {editable ? (
                       <>
-                        <input aria-label="Verwendungszweck" value={draft.reference} onChange={event => setDraft({ reference: event.target.value })} placeholder="Verwendungszweck" style={{ ...fieldStyle, marginBottom: 4 }} />
-                        <input aria-label="Strukturierte Referenz" value={draft.structuredReference} onChange={event => setDraft({ structuredReference: event.target.value })} placeholder="RF-Referenz (optional)" style={fieldStyle} />
+                        <input aria-label={lt("Verwendungszweck")} value={draft.reference} onChange={event => setDraft({ reference: event.target.value })} placeholder={lt("Verwendungszweck")} style={{ ...fieldStyle, marginBottom: 4 }} />
+                        <input aria-label={lt("Strukturierte Referenz")} value={draft.structuredReference} onChange={event => setDraft({ structuredReference: event.target.value })} placeholder={lt("RF-Referenz (optional)")} style={fieldStyle} />
                       </>
                     ) : item.structuredCreditorReference || item.remittanceInformation || '—'}
                   </td>
                   <td style={{ ...tdStyle, whiteSpace: 'nowrap', fontSize: 11 }}>
-                    <div><b>Ausführung:</b> {editable ? (
+                    <div><b>{lt("Ausführung:")}</b> {editable ? (
                       <input
-                        aria-label="Ausführungsdatum"
+                        aria-label={lt("Ausführungsdatum")}
                         type="date"
                         value={draft.requestedExecutionDate}
                         onChange={event => setDraft({ requestedExecutionDate: event.target.value })}
                         style={{ ...fieldStyle, width: 132, marginTop: 4 }}
                       />
                     ) : formatDate(item.requestedExecutionDate)}</div>
-                    <div><b>Fällig:</b> {formatDate(item.dueDate)}</div>
+                    <div><b>{lt("Fällig:")}</b> {formatDate(item.dueDate)}</div>
                   </td>
                   <td style={tdStyle}><Evidence evidence={evidence[item.itemId]} /></td>
                   <td style={{ ...tdStyle, minWidth: 180, fontSize: 11 }}>
-                    <a href={`/rechnungen?highlight=${encodeURIComponent(item.documentId)}`} target="_blank" rel="noreferrer">Rechnung {item.invoiceNumber || item.documentId}</a>
+                    <a href={`/rechnungen?highlight=${encodeURIComponent(item.documentId)}`} target="_blank" rel="noreferrer">{lt("Rechnung")}{" "}{item.invoiceNumber || item.documentId}</a>
                     {validation.length === 0 ? (
-                      <div style={{ color: colors.green, marginTop: 5 }}>Serverprüfung: gültig</div>
+                      <div style={{ color: colors.green, marginTop: 5 }}>{lt("Serverprüfung: gültig")}</div>
                     ) : validation.map(issue => (
                       <div key={`${issue.code}-${issue.field}`} style={{ color: issue.severity === 'error' ? colors.red : colors.orange, marginTop: 5 }}>
                         {issue.message} <code>{issue.code}</code>
@@ -679,7 +683,7 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
                   {editable && (
                     <td style={tdStyle}>
                       <button disabled={busy !== null} onClick={() => void saveItem(item)} style={{ padding: '5px 9px', cursor: 'pointer' }}>
-                        {busy === item.itemId ? 'Speichere…' : 'Speichern'}
+                        {busy === item.itemId ? lt("Speichere…") : lt("Speichern")}
                       </button>
                     </td>
                   )}
@@ -692,23 +696,22 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
 
       {(automation || ['exported', 'prepared', 'released'].includes(batch.status)) && (
         <Card style={{ marginBottom: 14, border: automation?.phase === 'unknown' || automation?.phase === 'failed' ? '1px solid #d98c00' : undefined }}>
-          <h2 style={{ fontSize: 15, marginTop: 0 }}>George-Automation (deterministisch, ohne Agent)</h2>
+          <h2 style={{ fontSize: 15, marginTop: 0 }}>{lt("George-Automation (deterministisch, ohne Agent)")}</h2>
           {automation ? (
             <>
-              <div style={{ fontWeight: 700 }}>{AUTOMATION_PHASE_COPY[automation.phase]}</div>
-              <div style={{ marginTop: 6, fontSize: 12, color: '#666' }}>
-                Fortschritt {automation.progress.current}/{automation.progress.total} · Phase <code>{automation.phase}</code>
+              <div style={{ fontWeight: 700 }}>{lt(AUTOMATION_PHASE_COPY[automation.phase])}</div>
+              <div style={{ marginTop: 6, fontSize: 12, color: '#666' }}>{" "}{lt("Fortschritt")}{" "}{automation.progress.current}/{automation.progress.total} · Phase <code>{automation.phase}</code>
               </div>
               {automation.error && <div style={{ marginTop: 8, color: colors.red }}>{automation.error.message} <code>{automation.error.code}</code></div>}
-              {automationManualGuidance && <div style={{ marginTop: 8, padding: 10, border: '2px solid #d98c00', background: '#fff7e6', color: '#6b3a00', fontWeight: 700 }}>{automationManualGuidance}</div>}
-              {automation.evidence.package_status === 'rejected' && <div style={{ marginTop: 8, color: colors.red, fontWeight: 700 }}>Freigabe abgelehnt. Der Stapel ist nicht freigegeben.</div>}
-              {automation.phase === 'unknown' && <div style={{ marginTop: 8, color: colors.red, fontWeight: 700 }}>Status unbekannt — keinesfalls als bezahlt behandeln.</div>}
+              {automationManualGuidance && <div style={{ marginTop: 8, padding: 10, border: '2px solid #d98c00', background: '#fff7e6', color: '#6b3a00', fontWeight: 700 }}>{lt(automationManualGuidance)}</div>}
+              {automation.evidence.package_status === 'rejected' && <div style={{ marginTop: 8, color: colors.red, fontWeight: 700 }}>{lt("Freigabe abgelehnt. Der Stapel ist nicht freigegeben.")}</div>}
+              {automation.phase === 'unknown' && <div style={{ marginTop: 8, color: colors.red, fontWeight: 700 }}>{lt("Status unbekannt — keinesfalls als bezahlt behandeln.")}</div>}
               {automation.evidence.package_reference && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1.2fr .7fr 1fr 1.5fr', gap: 12, marginTop: 12, fontSize: 12 }}>
-                  <div><b>Schuldner-IBAN</b><br /><code>{automation.evidence.debtor_iban}</code></div>
-                  <div><b>Anzahl</b><br />{automation.evidence.item_count}</div>
-                  <div><b>Kontrollsumme</b><br />{formatMinor(automation.evidence.control_sum_minor ?? null, batch.currencyCode)}</div>
-                  <div><b>George-Paketreferenz</b><br /><code>{automation.evidence.package_reference}</code></div>
+                  <div><b>{lt("Schuldner-IBAN")}</b><br /><code>{automation.evidence.debtor_iban}</code></div>
+                  <div><b>{lt("Anzahl")}</b><br />{automation.evidence.item_count}</div>
+                  <div><b>{lt("Kontrollsumme")}</b><br />{formatMinor(automation.evidence.control_sum_minor ?? null, batch.currencyCode)}</div>
+                  <div><b>{lt("George-Paketreferenz")}</b><br /><code>{automation.evidence.package_reference}</code></div>
                   <div style={{ gridColumn: '1 / -1' }}><b>XML-SHA-256</b><br /><code style={{ overflowWrap: 'anywhere' }}>{automation.evidence.xml_sha256}</code></div>
                 </div>
               )}
@@ -725,68 +728,62 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
                       color: '#fff', border: 0, borderRadius: 4, fontWeight: 700,
                     }}
                   >
-                    {releaseDecision.label}
+                    {lt(releaseDecision.label)}
                   </button>
                 )}
                 {automation.phase !== 'released' && (
-                  <button disabled={busy !== null} onClick={() => void pollAutomation(0)} style={{ padding: '8px 12px' }}>
-                    Status erneut prüfen
-                  </button>
+                  <button disabled={busy !== null} onClick={() => void pollAutomation(0)} style={{ padding: '8px 12px' }}>{" "}{lt("Status erneut prüfen")}{" "}</button>
                 )}
                 {automation.phase === 'failed' && batch.status === 'exported' && (
-                  <button disabled={busy !== null} onClick={() => void prepareInGeorge()} style={{ padding: '8px 12px' }}>
-                    Neuen sicheren Importversuch starten
-                  </button>
+                  <button disabled={busy !== null} onClick={() => void prepareInGeorge()} style={{ padding: '8px 12px' }}>{" "}{lt("Neuen sicheren Importversuch starten")}{" "}</button>
                 )}
               </div>
             </>
           ) : (
-            <div style={{ fontSize: 12, color: '#666' }}>Noch kein George-Import gestartet. Das Öffnen dieser Ansicht löst keine Bankaktion aus.</div>
+            <div style={{ fontSize: 12, color: '#666' }}>{lt("Noch kein George-Import gestartet. Das Öffnen dieser Ansicht löst keine Bankaktion aus.")}</div>
           )}
         </Card>
       )}
 
       {releaseDialogOpen && automation?.available_action === 'request_release' && releaseConfirmation && (
         <Card style={{ marginBottom: 14, border: '2px solid #a14d00', background: '#fffaf2' }}>
-          <h2 style={{ fontSize: 16, marginTop: 0 }}>Sammelfreigabe ausdrücklich bestätigen</h2>
-          <p>Diese separate Bestätigung erlaubt genau eine Freigabeanforderung in George. Die Banking-App-2FA führen ausschließlich Sie aus.</p>
+          <h2 style={{ fontSize: 16, marginTop: 0 }}>{lt("Sammelfreigabe ausdrücklich bestätigen")}</h2>
+          <p>{lt("Diese separate Bestätigung erlaubt genau eine Freigabeanforderung in George. Die Banking-App-2FA führen ausschließlich Sie aus.")}</p>
           <ul style={{ lineHeight: 1.7 }}>
-            <li>Schuldner-IBAN: <code>{automation.evidence.debtor_iban}</code></li>
-            <li>Transaktionen: <b>{automation.evidence.item_count}</b></li>
-            <li>Kontrollsumme: <b>{formatMinor(automation.evidence.control_sum_minor ?? null, batch.currencyCode)}</b></li>
-            <li>George-Paketreferenz: <code>{automation.evidence.package_reference}</code></li>
+            <li>{lt("Schuldner-IBAN:")}{" "}<code>{automation.evidence.debtor_iban}</code></li>
+            <li>{lt("Transaktionen:")}{" "}<b>{automation.evidence.item_count}</b></li>
+            <li>{lt("Kontrollsumme:")}{" "}<b>{formatMinor(automation.evidence.control_sum_minor ?? null, batch.currencyCode)}</b></li>
+            <li>{lt("George-Paketreferenz:")}{" "}<code>{automation.evidence.package_reference}</code></li>
             <li>XML-SHA-256: <code style={{ overflowWrap: 'anywhere' }}>{automation.evidence.xml_sha256}</code></li>
           </ul>
           <div style={{ display: 'flex', gap: 8 }}>
             <button disabled={busy !== null} onClick={() => void requestRelease()} style={{ padding: '8px 16px', background: '#a14d00', color: '#fff', border: 0, borderRadius: 4, fontWeight: 700 }}>
-              {busy === 'release' ? 'Fordere an…' : 'Sammelfreigabe anfordern'}
+              {busy === 'release' ? lt("Fordere an…") : lt("Sammelfreigabe anfordern")}
             </button>
-            <button disabled={busy !== null} onClick={() => setReleaseDialogOpen(false)} style={{ padding: '8px 12px' }}>Abbrechen</button>
+            <button disabled={busy !== null} onClick={() => setReleaseDialogOpen(false)} style={{ padding: '8px 12px' }}>{lt("Abbrechen")}</button>
           </div>
         </Card>
       )}
 
       <Card>
         <div style={{ display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap' }}>
-          <div><b>Anzahl:</b> {batch.itemCount}</div>
-          <div><b>Kontrollsumme:</b> {formatMinor(batch.controlSumMinor, batch.currencyCode)}</div>
-          <div><b>Ausführungsdatum:</b> {formatDate(batch.requestedExecutionDate)}</div>
-          <div><b>Status:</b> {STATUS_LABELS[batch.status] ?? batch.status}</div>
+          <div><b>{lt("Anzahl:")}</b> {batch.itemCount}</div>
+          <div><b>{lt("Kontrollsumme:")}</b> {formatMinor(batch.controlSumMinor, batch.currencyCode)}</div>
+          <div><b>{lt("Ausführungsdatum:")}</b> {formatDate(batch.requestedExecutionDate)}</div>
+          <div><b>Status:</b> {lt(STATUS_LABELS[batch.status] ?? batch.status)}</div>
         </div>
 
         {editable && (
           <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid #ddd' }}>
             <label style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontWeight: 600, cursor: 'pointer' }}>
-              <input type="checkbox" checked={confirmedUnpaid} onChange={event => setConfirmedUnpaid(event.target.checked)} />
-              Ich bestätige, dass alle angezeigten Rechnungen offen und unbezahlt sind.
-            </label>
-            {hasIssues && <div style={{ color: colors.red, fontSize: 12, marginTop: 8 }}>Die Serverprüfung enthält Fehler oder Warnungen. Bitte korrigieren und jede betroffene Position speichern.</div>}
+              <input type="checkbox" checked={confirmedUnpaid} onChange={event => setConfirmedUnpaid(event.target.checked)} />{" "}{lt("Ich bestätige, dass alle angezeigten Rechnungen offen und unbezahlt sind.")}{" "}</label>
+            {hasIssues && <div style={{ color: colors.red, fontSize: 12, marginTop: 8 }}>{lt("Die Serverprüfung enthält Fehler oder Warnungen. Bitte korrigieren und jede betroffene Position speichern.")}</div>}
             <button
               disabled={!confirmedUnpaid || hasIssues || busy !== null}
               onClick={() => void review()}
               style={{ marginTop: 12, padding: '8px 16px', background: confirmedUnpaid && !hasIssues ? '#2980b9' : '#bbb', color: '#fff', border: 0, borderRadius: 4, cursor: confirmedUnpaid && !hasIssues ? 'pointer' : 'not-allowed', fontWeight: 700 }}
             >
-              {busy === 'review' ? 'Prüfe…' : 'Zahlungsstapel verbindlich prüfen'}
+              {busy === 'review' ? lt("Prüfe…") : lt("Zahlungsstapel verbindlich prüfen")}
             </button>
           </div>
         )}
@@ -794,22 +791,22 @@ export function PaymentReview({ batchId, onBack, onChanged }: PaymentReviewProps
         <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
           {batch.status === 'reviewed' && (
             <button disabled={busy !== null} onClick={() => void exportXml()} style={{ padding: '8px 16px', background: '#237a3b', color: '#fff', border: 0, borderRadius: 4, cursor: 'pointer', fontWeight: 700 }}>
-              {busy === 'export' ? 'Erzeuge SEPA-Datei…' : 'SEPA-Datei exportieren'}
+              {busy === 'export' ? lt("Erzeuge SEPA-Datei…") : lt("SEPA-Datei exportieren")}
             </button>
           )}
           {batch.status === 'exported' && (
             <button disabled={busy !== null} onClick={() => void retryDownload()} style={{ padding: '8px 16px', background: '#237a3b', color: '#fff', border: 0, borderRadius: 4, cursor: 'pointer', fontWeight: 700 }}>
-              {busy === 'retry' ? 'Lade…' : 'SEPA-Datei erneut herunterladen'}
+              {busy === 'retry' ? lt("Lade…") : lt("SEPA-Datei erneut herunterladen")}
             </button>
           )}
           {batch.status === 'exported' && (!automation || automation.phase === 'failed') && (
             <button disabled={busy !== null} onClick={() => void prepareInGeorge()} style={{ padding: '8px 16px', background: '#245a9b', color: '#fff', border: 0, borderRadius: 4, cursor: 'pointer', fontWeight: 700 }}>
-              {busy === 'george-import' ? 'Reihe ein…' : 'In George vorbereiten'}
+              {busy === 'george-import' ? lt("Reihe ein…") : lt("In George vorbereiten")}
             </button>
           )}
           {['draft', 'reviewed', 'exported'].includes(batch.status) && (
             <button disabled={busy !== null} onClick={() => void cancelBatch()} style={{ padding: '8px 16px', background: '#fff', color: colors.red, border: `1px solid ${colors.red}`, borderRadius: 4, cursor: 'pointer' }}>
-              {batch.status === 'exported' ? 'Exportierten Stapel stornieren (XML wird obsolet)' : 'Zahlungsstapel stornieren'}
+              {batch.status === 'exported' ? lt("Exportierten Stapel stornieren (XML wird obsolet)") : lt("Zahlungsstapel stornieren")}
             </button>
           )}
         </div>

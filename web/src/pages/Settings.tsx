@@ -1,11 +1,15 @@
+import {useOptionalLanguage} from '../i18n/locale';
+import {useLegacyText} from '../i18n/legacy';
+import {legacyCoreEnglish} from '../i18n/legacy-core';
 import React, { useEffect, useState } from 'react';
 import { api } from '../api';
 import { Card, Button, Badge, colors } from '../components/shared';
 
 export function Settings() {
+  const lt = useLegacyText(legacyCoreEnglish);
   return (
     <div>
-      <h1 style={{ fontSize: 22, marginBottom: 20 }}>Einstellungen</h1>
+      <h1 style={{ fontSize: 22, marginBottom: 20 }}>{lt("Einstellungen")}</h1>
       <VendorDirectory />
       <BackupSection />
       <TrashSection />
@@ -16,6 +20,7 @@ export function Settings() {
 // ==================== VENDOR DIRECTORY ====================
 
 function VendorDirectory() {
+  const lt = useLegacyText(legacyCoreEnglish);
   const [vendors, setVendors] = useState<any[]>([]);
   const [search, setSearch] = useState('');
   const [editKey, setEditKey] = useState<string | null>(null);
@@ -37,7 +42,7 @@ function VendorDirectory() {
       await api.updateVendor(editKey, editData);
       setEditKey(null);
       load();
-    } catch (e: any) { alert('Fehler beim Speichern: ' + (e.message || 'Unbekannter Fehler')); }
+    } catch (e: any) { alert("" + lt("Fehler beim Speichern:") + " " + (e.message || lt("Unbekannter Fehler"))); }
     finally { setSaving(false); }
   };
 
@@ -56,30 +61,30 @@ function VendorDirectory() {
   return (
     <Card style={{ marginBottom: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <h2 style={{ fontSize: 16, margin: 0 }}>Lieferanten ({vendors.length})</h2>
+        <h2 style={{ fontSize: 16, margin: 0 }}>{lt("Lieferanten (")}{vendors.length})</h2>
         <input
           type="text" value={search} onChange={e => setSearch(e.target.value)}
-          placeholder="Suche..."
+          placeholder={lt("Suche...")}
           style={{ padding: '6px 12px', borderRadius: 6, border: '1px solid #ddd', fontSize: 13, width: 220 }}
         />
       </div>
 
       {filtered.length === 0 ? (
         <div style={{ color: '#999', fontSize: 13 }}>
-          {vendors.length === 0 ? 'Keine Lieferanten aus Belegscans erkannt' : 'Keine Treffer'}
+          {vendors.length === 0 ? lt("Keine Lieferanten aus Belegscans erkannt") : lt("Keine Treffer")}
         </div>
       ) : (
         <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
           <thead>
             <tr>
               <th style={th}>Name</th>
-              <th style={th}>Land</th>
-              <th style={th}>Adresse</th>
+              <th style={th}>{lt("Land")}</th>
+              <th style={th}>{lt("Adresse")}</th>
               <th style={th}>RC</th>
-              <th style={th}>KZ</th>
-              <th style={th}>USt-ID</th>
-              <th style={th}>E-Mail</th>
-              <th style={{ ...th, textAlign: 'right' }}>Belege</th>
+              <th style={th}>{lt("KZ")}</th>
+              <th style={th}>{lt("USt-ID")}</th>
+              <th style={th}>{lt("E-Mail")}</th>
+              <th style={{ ...th, textAlign: 'right' }}>{lt("Belege")}</th>
               <th style={{ ...th, width: 80 }}></th>
             </tr>
           </thead>
@@ -95,7 +100,7 @@ function VendorDirectory() {
                     <td style={{ ...td, textAlign: 'center' }}>
                       <input type="checkbox" checked={editData.is_reverse_charge}
                         onChange={e => setEditData({ ...editData, is_reverse_charge: e.target.checked })}
-                        title="Reverse Charge Vendor (nicht-EU Dienstleistungen)" />
+                        title={lt("Reverse Charge Vendor (nicht-EU Dienstleistungen)")} />
                     </td>
                     <td style={td}>
                       <select style={{ ...cellInput, width: 60 }} value={editData.tax_category_kz}
@@ -143,15 +148,15 @@ function VendorDirectory() {
                     <td style={td}>
                       <div style={{ display: 'flex', gap: 3 }}>
                         <button onClick={() => startEdit(v)}
-                          style={{ ...btnSmall, color: '#666', borderColor: '#ccc' }}>Edit</button>
+                          style={{ ...btnSmall, color: '#666', borderColor: '#ccc' }}>{lt("Bearbeiten")}</button>
                         <button onClick={() => {
                           const to = v.email ?? '';
-                          const subject = `Anfrage: Fehlende Rechnungen – ${v.name}`;
-                          const body = `Sehr geehrte Damen und Herren,\n\nfür einige Buchungen konnten wir in unserer Ablage keine Rechnung zuordnen. Wir bitten Sie höflich, uns die entsprechenden Belege zukommen zu lassen.\n\nVielen Dank im Voraus.\n\nMit freundlichen Grüßen`;
+                          const subject = lt("Anfrage: Fehlende Rechnungen – {vendor}", {vendor: v.name});
+                          const body = lt("Sehr geehrte Damen und Herren,\n\nfür einige Buchungen konnten wir in unserer Ablage keine Rechnung zuordnen. Wir bitten Sie höflich, uns die entsprechenden Belege zukommen zu lassen.\n\nVielen Dank im Voraus.\n\nMit freundlichen Grüßen");
                           api.composeEmail(to, subject, body);
                         }}
                           style={{ ...btnSmall, color: '#e67e22', borderColor: '#e67e22' }}
-                          title="Rechnungen per E-Mail anfordern">Mail</button>
+                          title={lt("Rechnungen per E-Mail anfordern")}>Mail</button>
                       </div>
                     </td>
                   </>)}
@@ -163,8 +168,7 @@ function VendorDirectory() {
       )}
 
       <div style={{ fontSize: 11, color: '#999', marginTop: 8 }}>
-        Automatisch aus Belegscans aggregiert. Bei Konflikten wird der häufigste Wert verwendet. Manuell korrigierte Einträge sind grün hinterlegt.
-      </div>
+        {lt("Automatisch aus Belegscans aggregiert. Bei Konflikten wird der häufigste Wert verwendet. Manuell korrigierte Einträge sind grün hinterlegt.")}</div>
     </Card>
   );
 }
@@ -172,9 +176,10 @@ function VendorDirectory() {
 // ==================== BACKUP ====================
 
 function BackupSection() {
+  const lt = useLegacyText(legacyCoreEnglish);
   const [backups, setBackups] = useState<any[]>([]);
   const [creating, setCreating] = useState(false);
-  const [message, setMessage] = useState<{ text: string; color: string } | null>(null);
+  const [message, setMessage] = useState<{ text: string; color: string; template?: {key: string; values: Record<string, string | number>} } | null>(null);
 
   const load = () => { api.getBackups().then(setBackups).catch(() => {}); };
   useEffect(() => { load(); }, []);
@@ -184,7 +189,7 @@ function BackupSection() {
     setMessage(null);
     try {
       const res = await api.createBackup();
-      setMessage({ text: `Backup erstellt: ${res.backup.name}`, color: colors.green });
+      setMessage({ text: "", template: {key: "Backup erstellt: {value0}", values: {value0: res.backup.name}}, color: colors.green });
       load();
     } catch (err: any) {
       setMessage({ text: err.message, color: colors.red });
@@ -197,22 +202,22 @@ function BackupSection() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <h2 style={{ fontSize: 16, margin: 0 }}>Backups</h2>
         <Button onClick={handleCreate} disabled={creating} color="#2c3e50">
-          {creating ? '...' : 'Backup erstellen'}
+          {creating ? '...' : lt("Backup erstellen")}
         </Button>
       </div>
 
-      {message && <div style={{ color: message.color, fontSize: 13, marginBottom: 12 }}>{message.text}</div>}
+      {message && <div style={{ color: message.color, fontSize: 13, marginBottom: 12 }}>{message.template ? lt(message.template.key, message.template.values) : message.text}</div>}
 
       {backups.length === 0 ? (
-        <div style={{ color: '#999', fontSize: 13 }}>Keine Backups vorhanden</div>
+        <div style={{ color: '#999', fontSize: 13 }}>{lt("Keine Backups vorhanden")}</div>
       ) : (
         <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
           <thead>
             <tr>
               <th style={th}>Name</th>
-              <th style={th}>Erstellt</th>
-              <th style={th}>Dateien</th>
-              <th style={th}>Aktionen</th>
+              <th style={th}>{lt("Erstellt")}</th>
+              <th style={th}>{lt("Dateien")}</th>
+              <th style={th}>{lt("Aktionen")}</th>
             </tr>
           </thead>
           <tbody>
@@ -223,7 +228,7 @@ function BackupSection() {
                 <td style={td}>{fmtSize(b.size_bytes)}</td>
                 <td style={td}>
                   <div style={{ display: 'flex', gap: 4 }}>
-<span style={{ color: colors.gray, fontSize: 11 }} title="Wiederherstellung erfordert den sicheren Offline-Wartungsmodus.">Nur Offline-Wiederherstellung</span>
+<span style={{ color: colors.gray, fontSize: 11 }} title={lt("Wiederherstellung erfordert den sicheren Offline-Wartungsmodus.")}>{lt("Nur Offline-Wiederherstellung")}</span>
                   </div>
                 </td>
               </tr>
@@ -233,8 +238,7 @@ function BackupSection() {
       )}
 
       <div style={{ fontSize: 11, color: '#999', marginTop: 8 }}>
-        Neue Backups enthalten eine WAL-sichere SQLite-Kopie, state.json und Prüfsummen. Die Wiederherstellung und das Löschen im laufenden Betrieb sind aus Sicherheitsgründen deaktiviert. Der Offline-Migrations- und Wiederherstellungsprozess muss vor einem produktiven Restore separat geprüft werden.
-      </div>
+        {lt("Neue Backups enthalten eine WAL-sichere SQLite-Kopie, state.json und Prüfsummen. Die Wiederherstellung und das Löschen im laufenden Betrieb sind aus Sicherheitsgründen deaktiviert. Der Offline-Migrations- und Wiederherstellungsprozess muss vor einem produktiven Restore separat geprüft werden.")}</div>
     </Card>
   );
 }
@@ -242,9 +246,11 @@ function BackupSection() {
 // ==================== TRASH / PAPIERKORB ====================
 
 function TrashSection() {
+  const lt = useLegacyText(legacyCoreEnglish);
+  const language = useOptionalLanguage()?.language ?? 'de';
   const [items, setItems] = useState<any[]>([]);
   const [filter, setFilter] = useState('');
-  const [message, setMessage] = useState<{ text: string; color: string } | null>(null);
+  const [message, setMessage] = useState<{ text: string; color: string; template?: {key: string; values: Record<string, string | number>} } | null>(null);
 
   const load = () => { api.getTrash(filter || undefined).then(setItems).catch(() => setItems([])); };
   useEffect(() => { load(); }, [filter]);
@@ -252,7 +258,7 @@ function TrashSection() {
   const handleRestore = async (trashId: string) => {
     try {
       const res = await api.restoreTrash(trashId);
-      setMessage({ text: `Wiederhergestellt: ${res.entity_id}`, color: colors.green });
+      setMessage({ text: "", template: {key: "Wiederhergestellt: {value0}", values: {value0: res.entity_id}}, color: colors.green });
       load();
     } catch (err: any) {
       setMessage({ text: err.message, color: colors.red });
@@ -260,7 +266,7 @@ function TrashSection() {
   };
 
   const handleDeletePermanent = async (trashId: string) => {
-    if (!confirm('Endgültig löschen?')) return;
+    if (!confirm(lt("Endgültig löschen?"))) return;
     try {
       await api.deleteTrashItem(trashId);
       load();
@@ -268,10 +274,10 @@ function TrashSection() {
   };
 
   const handleEmpty = async () => {
-    if (!confirm('Papierkorb komplett leeren? Diese Aktion kann nicht rückgängig gemacht werden.')) return;
+    if (!confirm(lt("Papierkorb komplett leeren? Diese Aktion kann nicht rückgängig gemacht werden."))) return;
     try {
       const res = await api.emptyTrash(filter || undefined);
-      setMessage({ text: `${res.deleted} Einträge gelöscht`, color: colors.orange });
+      setMessage({ text: "", template: {key: "{value0} Einträge gelöscht", values: {value0: res.deleted}}, color: colors.orange });
       load();
     } catch (err: any) {
       setMessage({ text: err.message, color: colors.red });
@@ -279,15 +285,15 @@ function TrashSection() {
   };
 
   const TYPE_LABELS: Record<string, string> = {
-    document: 'Dokument',
-    invoice_scan: 'Beleg-Scan',
-    match_group: 'Match-Gruppe',
+    document: lt("Dokument"),
+    invoice_scan: lt("Beleg-Scan"),
+    match_group: lt("Match-Gruppe"),
   };
 
   return (
     <Card>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <h2 style={{ fontSize: 16, margin: 0 }}>Papierkorb ({items.length})</h2>
+        <h2 style={{ fontSize: 16, margin: 0 }}>{lt("Papierkorb (")}{items.length})</h2>
         <div style={{ display: 'flex', gap: 8 }}>
           <div style={{ display: 'flex', gap: 4 }}>
             {['', 'document', 'invoice_scan', 'match_group'].map(t => (
@@ -298,29 +304,29 @@ function TrashSection() {
                   color: filter === t ? '#fff' : '#333',
                   borderColor: filter === t ? '#2c3e50' : '#ddd',
                 }}>
-                {t ? TYPE_LABELS[t] ?? t : 'Alle'}
+                {t ? TYPE_LABELS[t] ?? t : lt("Alle")}
               </button>
             ))}
           </div>
           {items.length > 0 && (
-            <Button onClick={handleEmpty} color={colors.red}>Papierkorb leeren</Button>
+            <Button onClick={handleEmpty} color={colors.red}>{lt("Papierkorb leeren")}</Button>
           )}
         </div>
       </div>
 
-      {message && <div style={{ color: message.color, fontSize: 13, marginBottom: 8 }}>{message.text}</div>}
+      {message && <div style={{ color: message.color, fontSize: 13, marginBottom: 8 }}>{message.template ? lt(message.template.key, message.template.values) : message.text}</div>}
 
       {items.length === 0 ? (
-        <div style={{ color: '#999', fontSize: 13 }}>Papierkorb ist leer</div>
+        <div style={{ color: '#999', fontSize: 13 }}>{lt("Papierkorb ist leer")}</div>
       ) : (
         <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th style={th}>Typ</th>
-              <th style={th}>Bezeichnung</th>
-              <th style={th}>Gelöscht am</th>
-              <th style={th}>Notiz</th>
-              <th style={th}>Aktionen</th>
+              <th style={th}>{lt("Typ")}</th>
+              <th style={th}>{lt("Bezeichnung")}</th>
+              <th style={th}>{lt("Gelöscht am")}</th>
+              <th style={th}>{lt("Notiz")}</th>
+              <th style={th}>{lt("Aktionen")}</th>
             </tr>
           </thead>
           <tbody>
@@ -331,17 +337,16 @@ function TrashSection() {
                     color={item.entity_type === 'document' ? colors.blue : item.entity_type === 'invoice_scan' ? '#8e44ad' : colors.gray} />
                 </td>
                 <td style={td}>
-                  <div>{describeTrashItem(item)}</div>
+                  <div>{describeTrashItem(item, lt)}</div>
                   <code style={{ fontSize: 10, color: '#999' }}>{item.entity_id}</code>
                 </td>
-                <td style={td}>{fmtDateTime(item.deleted_at)}</td>
+                <td style={td}>{fmtDateTime(item.deleted_at, language)}</td>
                 <td style={td}>{item.note ?? '—'}</td>
                 <td style={td}>
                   <div style={{ display: 'flex', gap: 4 }}>
                     <button onClick={() => handleRestore(item.trash_id)}
                       style={{ ...btnSmall, color: colors.green, borderColor: colors.green }}>
-                      Wiederherstellen
-                    </button>
+                      {lt("Wiederherstellen")}</button>
                     <button onClick={() => handleDeletePermanent(item.trash_id)}
                       style={{ ...btnSmall, color: colors.red, borderColor: colors.red }}>
                       X
@@ -357,16 +362,16 @@ function TrashSection() {
   );
 }
 
-function describeTrashItem(item: any): string {
+function describeTrashItem(item: any, lt: (text: string, values?: Record<string, string | number>) => string): string {
   const d = item.entity_data;
   if (item.entity_type === 'document') {
-    return `${d.supplier_name ?? 'Unbekannt'} — ${d.filename ?? d.source_document_ref ?? ''}`;
+    return `${d.supplier_name ?? lt("Unbekannt")} — ${d.filename ?? d.source_document_ref ?? ''}`;
   }
   if (item.entity_type === 'invoice_scan') {
     return d.original_filename ?? d.scan_id;
   }
   if (item.entity_type === 'match_group') {
-    return `${d.rule_id} (${d.transaction_ids?.length ?? 0} Txn, ${d.document_ids?.length ?? 0} Dok)`;
+    return lt("{rule} ({transactions} Buchungen, {documents} Dok)", {rule: d.rule_id, transactions: d.transaction_ids?.length ?? 0, documents: d.document_ids?.length ?? 0});
   }
   return item.entity_id;
 }
@@ -386,10 +391,10 @@ function fmtSize(bytes: number): string {
   return `${(bytes / 1048576).toFixed(1)} MB`;
 }
 
-function fmtDateTime(iso: string | null): string {
+function fmtDateTime(iso: string | null, language: string): string {
   if (!iso) return '—';
   try {
-    return new Date(iso).toLocaleString('de-DE');
+    return new Date(iso).toLocaleString(language === 'de' ? 'de-DE' : 'en-GB');
   } catch {
     return iso;
   }

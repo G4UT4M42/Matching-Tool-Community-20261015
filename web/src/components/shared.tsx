@@ -1,4 +1,12 @@
 import React, { createContext, useContext, useState } from 'react';
+import {useOptionalLanguage} from '../i18n/locale';
+import {useLegacyText} from '../i18n/legacy';
+const sharedEnglish={
+ 'Suche zurücksetzen':'Clear search','Öffnen: {filename}':'Open: {filename}',
+ 'Zeilen pro Seite':'Rows per page','Alle':'All','Tooltips ein/ausschalten':'Toggle tooltips',
+ 'Auswahl':'Selection',
+ 'Klicken zum Kopieren: {value}':'Click to copy: {value}','Kopiert!':'Copied!',
+};
 
 // --- Style constants ---
 export const colors = {
@@ -40,9 +48,10 @@ export function Badge({ text, color }: { text: string; color: string }) {
 }
 
 export function StatusBadge({ matched }: { matched: boolean }) {
+  const de=(useOptionalLanguage()?.language??'de')==='de';
   return matched
-    ? <Badge text="Matched" color={colors.green} />
-    : <Badge text="Unmatched" color={colors.orange} />;
+    ? <Badge text={de?'Zugeordnet':'Matched'} color={colors.green} />
+    : <Badge text={de?'Nicht zugeordnet':'Unmatched'} color={colors.orange} />;
 }
 
 export function SourceBadge({ source }: { source: string }) {
@@ -55,7 +64,8 @@ export function SourceBadge({ source }: { source: string }) {
 }
 
 export function Amount({ value, currency }: { value: number; currency?: string }) {
-  const formatted = new Intl.NumberFormat('de-DE', {
+  const language=useOptionalLanguage()?.language;
+  const formatted = new Intl.NumberFormat(language==='en'?'en-GB':'de-DE', {
     style: 'currency', currency: currency ?? 'EUR',
   }).format(value);
   return <span style={{ color: value < 0 ? colors.red : colors.green, fontWeight: 600, fontFamily: 'monospace' }}>{formatted}</span>;
@@ -89,12 +99,13 @@ export function Table({ headers, rows }: { headers: string[]; rows: React.ReactN
 }
 
 export function Pagination({ page, pages, onPage }: { page: number; pages: number; onPage: (p: number) => void }) {
+  const de=(useOptionalLanguage()?.language??'de')==='de';
   if (pages <= 1) return null;
   return (
     <div style={{ display: 'flex', gap: 4, justifyContent: 'center', marginTop: 12 }}>
-      <button disabled={page <= 1} onClick={() => onPage(page - 1)} style={btnStyle}>Prev</button>
-      <span style={{ padding: '6px 12px', fontSize: 13 }}>Page {page} of {pages}</span>
-      <button disabled={page >= pages} onClick={() => onPage(page + 1)} style={btnStyle}>Next</button>
+      <button disabled={page <= 1} onClick={() => onPage(page - 1)} style={btnStyle}>{de?'Zurück':'Prev'}</button>
+      <span style={{ padding: '6px 12px', fontSize: 13 }}>{de?'Seite':'Page'} {page} {de?'von':'of'} {pages}</span>
+      <button disabled={page >= pages} onClick={() => onPage(page + 1)} style={btnStyle}>{de?'Weiter':'Next'}</button>
     </div>
   );
 }
@@ -118,6 +129,7 @@ export function Button({ children, onClick, color, disabled, style: s }: {
 }
 
 export function SearchInput({ value, onChange, onSearch, placeholder }: { value: string; onChange: (v: string) => void; onSearch?: () => void; placeholder?: string }) {
+  const text=useLegacyText(sharedEnglish),de=(useOptionalLanguage()?.language??'de')==='de';
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>
       <input
@@ -125,7 +137,8 @@ export function SearchInput({ value, onChange, onSearch, placeholder }: { value:
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={(event) => { if (event.key === 'Enter' && !event.nativeEvent.isComposing && onSearch) { event.preventDefault(); onSearch(); } }}
-        placeholder={placeholder ?? 'Search...'}
+        aria-label={placeholder ?? (de?'Suche':'Search')}
+        placeholder={placeholder ?? (de?'Suche...':'Search...')}
         style={{ padding: '8px 28px 8px 12px', borderRadius: 6, border: '1px solid #ddd', fontSize: 13, width: 260 }}
       />
       {value && (
@@ -136,7 +149,8 @@ export function SearchInput({ value, onChange, onSearch, placeholder }: { value:
             border: 'none', background: 'none', cursor: 'pointer',
             color: '#999', fontSize: 16, lineHeight: 1, padding: 2,
           }}
-          title="Suche zurücksetzen"
+          aria-label={text('Suche zurücksetzen')}
+          title={text('Suche zurücksetzen')}
         >
           ×
         </button>
@@ -145,9 +159,10 @@ export function SearchInput({ value, onChange, onSearch, placeholder }: { value:
   );
 }
 
-export function Select({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: { value: string; label: string }[] }) {
+export function Select({ value, onChange, options, accessibleName }: { accessibleName?: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[] }) {
+  const text=useLegacyText(sharedEnglish);
   return (
-    <select value={value} onChange={(e) => onChange(e.target.value)} style={{ padding: '8px 12px', borderRadius: 6, border: '1px solid #ddd', fontSize: 13 }}>
+    <select aria-label={accessibleName ?? options[0]?.label ?? text("Auswahl")} value={value} onChange={(e) => onChange(e.target.value)} style={{ padding: '8px 12px', borderRadius: 6, border: '1px solid #ddd', fontSize: 13 }}>
       {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
   );
@@ -155,6 +170,7 @@ export function Select({ value, onChange, options }: { value: string; onChange: 
 
 /** Clickable file link — opens the file in a new tab via the backend */
 export function FileLink({ filename, children }: { filename: string | null | undefined; children?: React.ReactNode }) {
+  const text=useLegacyText(sharedEnglish);
   if (!filename) return <span style={{ color: '#999' }}>—</span>;
   const label = children ?? filename;
   const isPlaceholder = filename === 'NO FILENAME' || filename === '-';
@@ -199,7 +215,7 @@ export function FileLink({ filename, children }: { filename: string | null | und
         cursor: 'pointer',
         borderBottom: '1px dashed #2980b9',
       }}
-      title={`Öffnen: ${filename}`}
+      title={text('Öffnen: {filename}',{filename})}
       onMouseOver={e => (e.currentTarget.style.color = '#1a5276')}
       onMouseOut={e => (e.currentTarget.style.color = colors.blue)}
     >
@@ -256,16 +272,18 @@ export function usePageSize() {
 }
 
 export function PageSizeSelect() {
+  const id=React.useId();
+  const text=useLegacyText(sharedEnglish);
   const { pageSize, setPageSize } = usePageSize();
   return (
     <div style={{ padding: '12px 16px', fontSize: 12, color: '#aaa' }}>
-      <label style={{ display: 'block', marginBottom: 4 }}>Zeilen pro Seite</label>
-      <select
+      <label htmlFor={id} style={{ display: 'block', marginBottom: 4 }}>{text('Zeilen pro Seite')}</label>
+      <select id={id}
         value={String(pageSize)}
         onChange={e => setPageSize(Number(e.target.value))}
         style={{ width: '100%', padding: '4px 8px', borderRadius: 4, border: '1px solid #444', background: '#16213e', color: '#eee', fontSize: 12 }}
       >
-        {PAGE_SIZE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+        {PAGE_SIZE_OPTIONS.map(o => <option key={o.value} value={o.value}>{text(o.label)}</option>)}
       </select>
     </div>
   );
@@ -353,7 +371,7 @@ export function WorkingYearSelect({locale='en'}:{locale?:'en'|'de'}={}) {
       </select>
       <select aria-label={de?'Quartal':'Quarter'} value={localQ === null ? '' : String(localQ)} onChange={e => setLocalQ(e.target.value ? Number(e.target.value) : null)} style={{ ...selStyle, marginBottom: 8 }}>
         <option value="">{de?'Ganzes Jahr':'Whole year'}</option>
-        <option value="1">Q1 (Jan–Mar)</option>
+        <option value="1">{de?"Q1 (Jan–Mär)":"Q1 (Jan–Mar)"}</option>
         <option value="2">Q2 (Apr–Jun)</option>
         <option value="3">Q3 (Jul–Sep)</option>
         <option value="4">{de?'Q4 (Okt–Dez)':'Q4 (Oct–Dec)'}</option>
@@ -392,6 +410,7 @@ export function useTooltips() { return useContext(TooltipContext); }
 
 /** Tooltip toggle button (? icon + switch) for the top-right corner */
 export function TooltipToggle() {
+  const text=useLegacyText(sharedEnglish);
   const { enabled, toggle } = useTooltips();
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -399,7 +418,7 @@ export function TooltipToggle() {
         width: 22, height: 22, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
         background: enabled ? '#2980b9' : '#ddd', color: enabled ? '#fff' : '#888',
         fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s',
-      }} onClick={toggle} title="Tooltips ein/ausschalten">
+      }} onClick={toggle} title={text('Tooltips ein/ausschalten')}>
         ?
       </div>
       <div onClick={toggle} style={{
@@ -446,8 +465,9 @@ export function Tip({ text, children }: { text: string; children: React.ReactNod
 
 /** Clickable value — copies the raw number to clipboard on click */
 export function CopyValue({ minor, label, style: s }: { minor: number; label?: string; style?: React.CSSProperties }) {
+  const text=useLegacyText(sharedEnglish),language=useOptionalLanguage()?.language;
   const [copied, setCopied] = useState(false);
-  const formatted = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(minor / 100);
+  const formatted = new Intl.NumberFormat(language==='en'?'en-GB':'de-DE', { style: 'currency', currency: 'EUR' }).format(minor / 100);
   const raw = (Math.abs(minor) / 100).toFixed(2).replace('.', ',');
 
   const handleClick = (e: React.MouseEvent) => {
@@ -459,7 +479,7 @@ export function CopyValue({ minor, label, style: s }: { minor: number; label?: s
   };
 
   return (
-    <span onClick={handleClick} title={`Klicken zum Kopieren: ${raw}`}
+    <span onClick={handleClick} title={text('Klicken zum Kopieren: {value}',{value:raw})}
       style={{
         cursor: 'pointer', position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 6,
         border: '1px solid #bbb', borderRadius: 5, padding: '4px 10px', background: copied ? '#e8f5e9' : '#f8f9fa',
@@ -473,7 +493,7 @@ export function CopyValue({ minor, label, style: s }: { minor: number; label?: s
           position: 'absolute', top: -22, left: '50%', transform: 'translateX(-50%)',
           background: '#27ae60', color: '#fff', fontSize: 10, padding: '2px 8px', borderRadius: 3, whiteSpace: 'nowrap',
         }}>
-          Kopiert!
+          {text('Kopiert!')}
         </span>
       )}
     </span>

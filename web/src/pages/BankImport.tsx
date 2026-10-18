@@ -1,3 +1,5 @@
+import {useLegacyText} from '../i18n/legacy';
+import {legacyCoreEnglish} from '../i18n/legacy-core';
 import React, { useState, useEffect } from 'react';
 import { api } from '../api';
 import { Card, Badge, colors, Amount, formatDate } from '../components/shared';
@@ -44,6 +46,7 @@ interface BankSearchResult {
 }
 
 export function BankImport({ startDate, endDate }: { startDate: string; endDate: string }) {
+  const lt = useLegacyText(legacyCoreEnglish);
   const [status, setStatus] = useState<BankStatus | null>(null);
   const [bankSearch, setBankSearch] = useState('');
   const [bankResults, setBankResults] = useState<BankSearchResult[]>([]);
@@ -123,18 +126,16 @@ export function BankImport({ startDate, endDate }: { startDate: string; endDate:
 
   return (
     <>
-      <Card title="Bank Import (Enable Banking / PSD2)" style={{ flex: '1 1 500px', maxWidth: 700 }}>
+      <Card title={lt("Bank Import (Enable Banking / PSD2)")} style={{ flex: '1 1 500px', maxWidth: 700 }}>
         <p style={{ color: '#666', fontSize: 14, margin: '0 0 16px' }}>
-          Importiert Kontoumsätze via PSD2 direkt von der Bank (Erste Sparkasse).
-        </p>
+          {lt("Importiert Kontoumsätze via PSD2 direkt von der Bank (Erste Sparkasse).")}</p>
 
         {!status?.configured && (
           <div style={{
             padding: '8px 12px', background: '#fff3cd', border: '1px solid #ffc107',
             borderRadius: 4, fontSize: 13, marginBottom: 16, color: '#856404',
           }}>
-            Bitte zuerst Enable Banking konfigurieren: Application ID und Private Key in den Settings hinterlegen
-            (<code>eb_application_id</code>, <code>eb_private_key_pem</code>).
+            {lt("Bitte zuerst Enable Banking konfigurieren: Application ID und Private Key in den Settings hinterlegen (")}<code>eb_application_id</code>, <code>eb_private_key_pem</code>).
           </div>
         )}
 
@@ -143,24 +144,23 @@ export function BankImport({ startDate, endDate }: { startDate: string; endDate:
             padding: '8px 12px', background: '#fdecea', border: '1px solid #e74c3c',
             borderRadius: 4, fontSize: 13, marginBottom: 16, color: '#c0392b',
           }}>
-            Bankverbindung abgelaufen (90 Tage). Bitte erneut verbinden.
-          </div>
+            {lt("Bankverbindung abgelaufen (90 Tage). Bitte erneut verbinden.")}</div>
         )}
 
         {/* Bank search + connect (not yet connected) */}
         {status?.configured && !status?.connected && (
           <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>Bank suchen</label>
+            <label style={labelStyle}>{lt("Bank suchen")}</label>
             <div style={{ display: 'flex', gap: 8 }}>
               <input
                 type="text"
                 value={bankSearch}
                 onChange={e => setBankSearch(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleBankSearch()}
-                placeholder="z.B. Erste Sparkasse"
+                placeholder={lt("z.B. Erste Sparkasse")}
                 style={{ ...inputStyle, flex: 1 }}
               />
-              <button onClick={handleBankSearch} style={btnStyle}>Suchen</button>
+              <button onClick={handleBankSearch} style={btnStyle}>{lt("Suchen")}</button>
             </div>
 
             {bankResults.length > 0 && (
@@ -185,7 +185,7 @@ export function BankImport({ startDate, endDate }: { startDate: string; endDate:
             {selectedBank && (
               <div style={{ marginTop: 12 }}>
                 <div style={{ fontSize: 13, marginBottom: 8 }}>
-                  Ausgewählt: <strong>{selectedBank.name}</strong>
+                  {lt("Ausgewählt:")}{' '}<strong>{selectedBank.name}</strong>
                 </div>
                 <button
                   onClick={handleConnect}
@@ -196,11 +196,10 @@ export function BankImport({ startDate, endDate }: { startDate: string; endDate:
                     opacity: connecting ? 0.6 : 1,
                   }}
                 >
-                  {connecting ? 'Verbinde...' : 'Mit Bank verbinden'}
+                  {connecting ? lt("Verbinde...") : lt("Mit Bank verbinden")}
                 </button>
                 <div style={{ fontSize: 12, color: '#999', marginTop: 4 }}>
-                  Du wirst zur Bank weitergeleitet (George / s Identity) um die Verbindung zu autorisieren.
-                </div>
+                  {lt("Du wirst zur Bank weitergeleitet (George / s Identity) um die Verbindung zu autorisieren.")}</div>
               </div>
             )}
           </div>
@@ -214,12 +213,12 @@ export function BankImport({ startDate, endDate }: { startDate: string; endDate:
               padding: '6px 12px', background: '#f0fff0', border: '1px solid #27ae60',
               borderRadius: 4, fontSize: 13, marginBottom: 12,
             }}>
-              <span style={{ color: '#27ae60', fontWeight: 600 }}>Verbunden:</span>
+              <span style={{ color: '#27ae60', fontWeight: 600 }}>{lt("Verbunden:")}{' '}</span>
               <span>{status.bank_name ?? 'Bank'}</span>
             </div>
 
             <div style={{ marginBottom: 12 }}>
-              <label style={labelStyle}>Konten auswählen</label>
+              <label style={labelStyle}>{lt("Konten auswählen")}</label>
               {status.accounts.map(a => (
                 <div
                   key={a.uid}
@@ -233,7 +232,7 @@ export function BankImport({ startDate, endDate }: { startDate: string; endDate:
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span>
-                      <strong>{a.name ?? 'Konto'}</strong>
+                      <strong>{a.name ?? lt("Konto")}</strong>
                       {a.iban && <span style={{ color: '#888', marginLeft: 8, fontFamily: 'monospace', fontSize: 12 }}>{a.iban}</span>}
                     </span>
                     <Amount value={a.balance} currency={a.currency} />
@@ -251,7 +250,7 @@ export function BankImport({ startDate, endDate }: { startDate: string; endDate:
                 opacity: (importing || selectedAccounts.length === 0) ? 0.6 : 1,
               }}
             >
-              {importing ? 'Importiere...' : `Bank Import starten (${selectedAccounts.length} Konto/en)`}
+              {importing ? lt("Importiere...") : lt("Bank Import starten ({value0} Konto/en)", {value0: selectedAccounts.length})}
             </button>
           </div>
         )}
@@ -269,11 +268,11 @@ export function BankImport({ startDate, endDate }: { startDate: string; endDate:
       {/* Bank import results */}
       {importResult && (
         <div style={{ marginTop: 24 }}>
-          <Card title="Bank Import-Ergebnis">
+          <Card title={lt("Bank Import-Ergebnis")}>
             <div style={{ display: 'flex', gap: 24, marginBottom: 16 }}>
-              <StatBox label="Von Bank abgerufen" value={importResult.fetched} />
-              <StatBox label="Neu importiert" value={importResult.imported} color={colors.green} />
-              <StatBox label="Bereits vorhanden" value={importResult.skipped} color={colors.darkGray} />
+              <StatBox label={lt("Von Bank abgerufen")} value={importResult.fetched} />
+              <StatBox label={lt("Neu importiert")} value={importResult.imported} color={colors.green} />
+              <StatBox label={lt("Bereits vorhanden")} value={importResult.skipped} color={colors.darkGray} />
             </div>
 
             {importResult.transactions.length > 0 && (
@@ -281,10 +280,10 @@ export function BankImport({ startDate, endDate }: { startDate: string; endDate:
                 <thead>
                   <tr style={{ borderBottom: '2px solid #eee', textAlign: 'left' }}>
                     <th style={thStyle}>Status</th>
-                    <th style={thStyle}>Datum</th>
-                    <th style={thStyle}>Beschreibung</th>
-                    <th style={thStyle}>Gegenkonto</th>
-                    <th style={{ ...thStyle, textAlign: 'right' }}>Betrag</th>
+                    <th style={thStyle}>{lt("Datum")}</th>
+                    <th style={thStyle}>{lt("Beschreibung")}</th>
+                    <th style={thStyle}>{lt("Gegenkonto")}</th>
+                    <th style={{ ...thStyle, textAlign: 'right' }}>{lt("Betrag")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -295,8 +294,8 @@ export function BankImport({ startDate, endDate }: { startDate: string; endDate:
                     }}>
                       <td style={tdStyle}>
                         {t.is_new
-                          ? <Badge text="NEU" color={colors.green} />
-                          : <Badge text="existiert" color={colors.gray} />
+                          ? <Badge text={lt("NEU")} color={colors.green} />
+                          : <Badge text={lt("existiert")} color={colors.gray} />
                         }
                       </td>
                       <td style={tdStyle}>{formatDate(t.date)}</td>

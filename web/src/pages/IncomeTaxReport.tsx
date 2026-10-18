@@ -1,3 +1,5 @@
+import { useLegacyText } from '../i18n/legacy';
+import { legacyAccountingEnglish } from '../i18n/legacy-accounting';
 import React, { useEffect, useState } from 'react';
 import { api } from '../api';
 import { Card, Button, colors, FileLink, Tip, CopyValue, useWorkingYear, workingPeriodDates } from '../components/shared';
@@ -26,6 +28,8 @@ interface TaxCategory {
 }
 
 export function IncomeTaxReport() {
+  const text = useLegacyText(legacyAccountingEnglish);
+  const locale = text('de-DE');
   const { workingYear, quarter } = useWorkingYear();
   const currentYear = new Date().getFullYear();
   const [start, setStart] = useState(() => sessionStorage.getItem('incomeTax_start') || `${currentYear}-01-01`);
@@ -64,26 +68,26 @@ export function IncomeTaxReport() {
 
   return (
     <div>
-      <h1 style={{ fontSize: 22, marginBottom: 16 }}>Einkommensteuer-Bericht (E1a)</h1>
+      <h1 style={{ fontSize: 22, marginBottom: 16 }}>{text("Einkommensteuer-Bericht (E1a)")}</h1>
 
       {/* Period selector */}
       <Card style={{ marginBottom: 24 }}>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-          <label style={labelStyle}>Von:</label>
+          <label style={labelStyle}>{text("Von:")}</label>
           <input type="date" value={start} onChange={e => setStart(e.target.value)} style={inputStyle} />
-          <label style={labelStyle}>Bis:</label>
+          <label style={labelStyle}>{text("Bis:")}</label>
           <input type="date" value={end} onChange={e => setEnd(e.target.value)} style={inputStyle} />
-          <Tip text="Einkommensteuer-Bericht (E1a) für den gewählten Zeitraum generieren">
+          <Tip text={text("Einkommensteuer-Bericht (E1a) für den gewählten Zeitraum generieren")}>
             <Button onClick={load} disabled={loading} color="#2c3e50">
-              {loading ? 'Wird erstellt...' : 'Bericht erstellen'}
+              {loading ? text("Wird erstellt...") : text("Bericht erstellen")}
             </Button>
           </Tip>
           {report && (
-            <Tip text="Bericht als PDF speichern">
+            <Tip text={text("Bericht als PDF speichern")}>
               <Button onClick={() => {
                 window.open(`/api/report/income-tax/pdf?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`, '_blank');
               }} color="#8e44ad">
-                Bericht festschreiben (PDF)
+                {text("Bericht festschreiben (PDF)")}
               </Button>
             </Tip>
           )}
@@ -102,10 +106,10 @@ export function IncomeTaxReport() {
         <div style={{ marginBottom: 16 }}>
           <input
             type="text" value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="Suche (Lieferant, Datei, Betrag)..."
+            placeholder={text("Suche (Lieferant, Datei, Betrag)...")}
             style={{ ...inputStyle, width: 350 }}
           />
-          {search && <button onClick={() => setSearch('')} style={{ ...btnSmall, marginLeft: 8 }}>Zurücksetzen</button>}
+          {search && <button onClick={() => setSearch('')} style={{ ...btnSmall, marginLeft: 8 }}>{text("Zurücksetzen")}</button>}
         </div>
       )}
 
@@ -115,22 +119,22 @@ export function IncomeTaxReport() {
           <Card style={{ marginBottom: 20, background: '#f8f9fa' }}>
             <div style={{ display: 'flex', gap: 48, fontSize: 14 }}>
               <div>
-                <div style={{ color: '#666', fontSize: 12 }}>Betriebseinnahmen</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: colors.green }}>{fmtEur(report.revenue_total_net_minor)}</div>
+                <div style={{ color: '#666', fontSize: 12 }}>{text("Betriebseinnahmen")}</div>
+                <div style={{ fontSize: 24, fontWeight: 700, color: colors.green }}>{fmtEur(report.revenue_total_net_minor, locale)}</div>
               </div>
               <div>
-                <div style={{ color: '#666', fontSize: 12 }}>Betriebsausgaben</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: colors.red }}>{fmtEur(report.expenses_total_net_minor)}</div>
+                <div style={{ color: '#666', fontSize: 12 }}>{text("Betriebsausgaben")}</div>
+                <div style={{ fontSize: 24, fontWeight: 700, color: colors.red }}>{fmtEur(report.expenses_total_net_minor, locale)}</div>
               </div>
               <div>
-                <div style={{ color: '#666', fontSize: 12 }}>Gewinn / Verlust</div>
+                <div style={{ color: '#666', fontSize: 12 }}>{text("Gewinn / Verlust")}</div>
                 <div style={{ fontSize: 24, fontWeight: 700, color: report.profit_minor >= 0 ? colors.green : colors.red }}>
-                  {report.profit_minor >= 0 ? '+' : '-'}{fmtEur(Math.abs(report.profit_minor))}
-                  {report.profit_minor < 0 && ' (Verlust)'}
+                  {report.profit_minor >= 0 ? '+' : '-'}{fmtEur(Math.abs(report.profit_minor), locale)}
+                  {report.profit_minor < 0 && text(" (Verlust)")}
                 </div>
               </div>
               <div>
-                <div style={{ color: '#666', fontSize: 12 }}>Dokumente</div>
+                <div style={{ color: '#666', fontSize: 12 }}>{text("Dokumente")}</div>
                 <div style={{ fontSize: 24, fontWeight: 700 }}>{report.total_documents_processed}</div>
               </div>
             </div>
@@ -153,23 +157,23 @@ export function IncomeTaxReport() {
               <Card style={{ marginBottom: 20, border: '1px solid #e6a0a0', background: '#fef8f8' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                   <h3 style={{ margin: 0, fontSize: 15, color: '#c0392b' }}>
-                    Prüfliste ({issues.length} {issues.length === 1 ? 'Problem' : 'Probleme'})
+                    {text("Prüfliste (")}{issues.length} {issues.length === 1 ? text("Problem") : 'Probleme'})
                   </h3>
                   <div style={{ fontSize: 12, color: '#888' }}>
-                    {missingReceipt.length > 0 && <span style={{ marginRight: 12 }}>🔴 {missingReceipt.length} Belege fehlen</span>}
-                    {amountMismatch.filter(l => !l.needs_receipt).length > 0 && <span>⚠ {amountMismatch.filter(l => !l.needs_receipt).length} Beträge abweichend</span>}
+                    {missingReceipt.length > 0 && <span style={{ marginRight: 12 }}>🔴 {missingReceipt.length} {text("Belege fehlen")}</span>}
+                    {amountMismatch.filter(l => !l.needs_receipt).length > 0 && <span>⚠ {amountMismatch.filter(l => !l.needs_receipt).length} {text("Beträge abweichend")}</span>}
                   </div>
                 </div>
                 <div style={{ maxHeight: 300, overflow: 'auto' }}>
                   <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
                     <thead>
                       <tr>
-                        <th style={{ ...thStyle, width: 60 }}>Problem</th>
-                        <th style={thStyle}>Datum</th>
-                        <th style={thStyle}>Lieferant</th>
-                        <th style={thStyle}>Beleg</th>
-                        <th style={thStyle}>Buchung</th>
-                        <th style={thStyle}>Datei</th>
+                        <th style={{ ...thStyle, width: 60 }}>{text("Problem")}</th>
+                        <th style={thStyle}>{text("Datum")}</th>
+                        <th style={thStyle}>{text("Lieferant")}</th>
+                        <th style={thStyle}>{text("Beleg")}</th>
+                        <th style={thStyle}>{text("Buchung")}</th>
+                        <th style={thStyle}>{text("Datei")}</th>
                         <th style={thStyle}></th>
                       </tr>
                     </thead>
@@ -180,23 +184,23 @@ export function IncomeTaxReport() {
                           <tr key={i} style={{ borderBottom: '1px solid #f0e0e0', background: l.issue === 'receipt' ? '#fef0f0' : '#fef9e7' }}>
                             <td style={tdStyle}>
                               {l.issue === 'receipt'
-                                ? <span style={{ color: '#c0392b', fontWeight: 600, fontSize: 11 }}>Beleg fehlt</span>
-                                : <span style={{ color: '#e67e22', fontWeight: 600, fontSize: 11 }}>⚠ Betrag</span>
+                                ? <span style={{ color: '#c0392b', fontWeight: 600, fontSize: 11 }}>{text("Beleg fehlt")}</span>
+                                : <span style={{ color: '#e67e22', fontWeight: 600, fontSize: 11 }}>{text("⚠ Betrag")}</span>
                               }
                             </td>
-                            <td style={tdStyle}>{fmtDate(l.document_date)}</td>
+                            <td style={tdStyle}>{fmtDate(l.document_date, locale)}</td>
                             <td style={tdStyle}>{l.supplier_name ?? '—'}</td>
                             <td style={{ ...tdStyle, fontFamily: 'monospace' }}>
                               <a href={`/rechnungen?highlight=${encodeURIComponent(l.document_id)}`}
                                 style={{ color: colors.blue, textDecoration: 'none', borderBottom: '1px dashed #2980b9' }}>
-                                {fmtEur(Math.abs(l.gross_minor))}
+                                {fmtEur(Math.abs(l.gross_minor), locale)}
                               </a>
                             </td>
                             <td style={{ ...tdStyle, fontFamily: 'monospace' }}>
                               {txn ? (
                                 <a href={`/?highlight=${encodeURIComponent(txn.transaction_id)}&source=${encodeURIComponent(txn.source_system)}`}
                                   style={{ color: colors.blue, textDecoration: 'none', borderBottom: '1px dashed #2980b9' }}>
-                                  {fmtEur(Math.abs(txn.amount_minor))}
+                                  {fmtEur(Math.abs(txn.amount_minor), locale)}
                                 </a>
                               ) : '—'}
                             </td>
@@ -220,55 +224,55 @@ export function IncomeTaxReport() {
           })()}
 
           {/* ============= REVENUE ============= */}
-          <CollapsibleCard kz="9040" title="Betriebseinnahmen (Umsätze)" total={report.revenue_total_net_minor} lines={report.revenue_lines} color={colors.green} search={search} />
+          <CollapsibleCard kz="9040" title={text("Betriebseinnahmen (Umsätze)")} total={report.revenue_total_net_minor} lines={report.revenue_lines} color={colors.green} search={search} />
 
           {/* ============= EXPENSE CATEGORIES ============= */}
-          <h2 style={h2Style}>Betriebsausgaben</h2>
+          <h2 style={h2Style}>{text("Betriebsausgaben")}</h2>
 
           {report.categories.map((cat: TaxCategory) => (
-            <CollapsibleCard key={cat.kz} kz={cat.kz} title={cat.title} total={cat.total_net_minor} lines={cat.lines}
+            <CollapsibleCard key={cat.kz} kz={cat.kz} title={text(cat.title)} total={cat.total_net_minor} lines={cat.lines}
               showKzTags={cat.kz === '9230'} onReload={load} search={search} />
           ))}
 
           {/* Unclassified */}
           {report.unclassified.length > 0 && (
-            <CollapsibleCard kz="—" title={`Nicht zugeordnet (${report.unclassified.length})`} total={
+            <CollapsibleCard kz="—" title={text("Nicht zugeordnet ({p0})", { p0: report.unclassified.length })} total={
               report.unclassified.reduce((s: number, l: TaxLine) => s + Math.abs(l.net_minor), 0)
             } lines={report.unclassified} color={colors.red} showKzTags onReload={load} search={search} />
           )}
 
           {/* ============= RECONCILIATION ============= */}
-          <h2 style={h2Style}>Zusammenfassung</h2>
+          <h2 style={h2Style}>{text("Zusammenfassung")}</h2>
           <Card style={{ marginBottom: 16 }}>
             <table style={{ fontSize: 13, borderCollapse: 'collapse' }}>
               <tbody>
                 <tr>
-                  <td style={tdR}>9040 Betriebseinnahmen:</td>
-                  <td style={{ ...tdV, color: colors.green }}>{fmtEur(report.revenue_total_net_minor)}</td>
+                  <td style={tdR}>{text("9040 Betriebseinnahmen:")}</td>
+                  <td style={{ ...tdV, color: colors.green }}>{fmtEur(report.revenue_total_net_minor, locale)}</td>
                 </tr>
                 {report.categories.map((cat: TaxCategory) => (
                   <tr key={cat.kz}>
-                    <td style={tdR}>{cat.kz} {cat.title}:</td>
-                    <td style={tdV}>{fmtEur(cat.total_net_minor)}</td>
+                    <td style={tdR}>{cat.kz} {text(cat.title)}:</td>
+                    <td style={tdV}>{fmtEur(cat.total_net_minor, locale)}</td>
                   </tr>
                 ))}
                 {report.unclassified.length > 0 && (
                   <tr>
-                    <td style={{ ...tdR, color: colors.red }}>Nicht zugeordnet:</td>
+                    <td style={{ ...tdR, color: colors.red }}>{text("Nicht zugeordnet:")}</td>
                     <td style={{ ...tdV, color: colors.red }}>
-                      {fmtEur(report.unclassified.reduce((s: number, l: TaxLine) => s + Math.abs(l.net_minor), 0))}
+                      {fmtEur(report.unclassified.reduce((s: number, l: TaxLine) => s + Math.abs(l.net_minor), 0), locale)}
                       {' '}({report.unclassified.length})
                     </td>
                   </tr>
                 )}
                 <tr style={{ borderTop: '2px solid #ddd' }}>
-                  <td style={{ ...tdR, fontWeight: 700 }}>Summe Ausgaben:</td>
-                  <td style={{ ...tdV, fontWeight: 700 }}>{fmtEur(report.expenses_total_net_minor)}</td>
+                  <td style={{ ...tdR, fontWeight: 700 }}>{text("Summe Ausgaben:")}</td>
+                  <td style={{ ...tdV, fontWeight: 700 }}>{fmtEur(report.expenses_total_net_minor, locale)}</td>
                 </tr>
                 <tr>
-                  <td style={{ ...tdR, fontWeight: 700 }}>Gewinn:</td>
+                  <td style={{ ...tdR, fontWeight: 700 }}>{text("Gewinn:")}</td>
                   <td style={{ ...tdV, fontWeight: 700, color: report.profit_minor >= 0 ? colors.green : colors.red }}>
-                    {report.profit_minor >= 0 ? '+' : '-'}{fmtEur(Math.abs(report.profit_minor))}
+                    {report.profit_minor >= 0 ? '+' : '-'}{fmtEur(Math.abs(report.profit_minor), locale)}
                   </td>
                 </tr>
               </tbody>
@@ -288,6 +292,8 @@ function CollapsibleCard({ kz, title, total, lines, color, showKzTags, onReload,
   kz: string; title: string; total: number; lines: TaxLine[]; color?: string;
   showKzTags?: boolean; onReload?: () => void; search?: string;
 }) {
+  const text = useLegacyText(legacyAccountingEnglish);
+  const locale = text('de-DE');
   const [open, setOpen] = useState(false);
   return (
     <Card style={{ marginBottom: 12 }}>
@@ -297,7 +303,7 @@ function CollapsibleCard({ kz, title, total, lines, color, showKzTags, onReload,
             <span style={{ background: '#2c3e50', color: '#fff', borderRadius: 4, padding: '2px 8px', fontSize: 12, fontWeight: 700 }}>
               {kz}
             </span>
-            <span style={{ fontWeight: 600, fontSize: 14 }}>{title}</span>
+            <span style={{ fontWeight: 600, fontSize: 14 }}>{text(title)}</span>
             <span style={{ color: '#999', fontSize: 12 }}>({lines.length})</span>
           </div>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexShrink: 0 }}>
@@ -327,6 +333,8 @@ const KZ_OPTIONS = [
 ];
 
 function KzTagRow({ line, onReload }: { line: TaxLine; onReload?: () => void }) {
+  const text = useLegacyText(legacyAccountingEnglish);
+  const locale = text('de-DE');
   const [saving, setSaving] = useState(false);
 
   const handleAssign = async (kz: string) => {
@@ -334,8 +342,8 @@ function KzTagRow({ line, onReload }: { line: TaxLine; onReload?: () => void }) 
     if (!vendor) return;
 
     const allVendor = confirm(
-      `Kategorie ${kz} zuweisen.\n\nFür ALLE Rechnungen von "${vendor}"?\n\n` +
-      `• OK = Alle (Vendor-Einstellung)\n• Abbrechen = Nur diese Rechnung`
+      text("Kategorie {p0} zuweisen.\n\nFür ALLE Rechnungen von \"{p1}\"?\n\n", { p0: kz, p1: vendor }) +
+      text("• OK = Alle (Vendor-Einstellung)\n• Abbrechen = Nur diese Rechnung")
     );
 
     setSaving(true);
@@ -349,7 +357,7 @@ function KzTagRow({ line, onReload }: { line: TaxLine; onReload?: () => void }) 
       }
       onReload?.();
     } catch (e: any) {
-      alert('Fehler: ' + e.message);
+      alert(text('Fehler: ') + e.message);
     } finally {
       setSaving(false);
     }
@@ -360,38 +368,38 @@ function KzTagRow({ line, onReload }: { line: TaxLine; onReload?: () => void }) 
   return (
     <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', alignItems: 'center' }}>
       {KZ_OPTIONS.map(o => (
-        <Tip key={o.kz} text={`KZ ${o.kz}: Dieser Kategorie zuweisen`}>
+        <Tip key={o.kz} text={text("KZ {p0}: Dieser Kategorie zuweisen", { p0: o.kz })}>
           <button onClick={() => handleAssign(o.kz)}
             style={{
               padding: '1px 6px', borderRadius: 3, fontSize: 10, cursor: 'pointer',
               background: '#ecf0f1', color: '#2c3e50', border: '1px solid #bdc3c7',
               fontWeight: 500, lineHeight: '16px',
             }}>
-            {o.label}
+            {text(o.label)}
           </button>
         </Tip>
       ))}
       <span style={{ borderLeft: '1px solid #ccc', height: 14, margin: '0 2px' }} />
       {line.gross_minor > 0 ? (
-        <Tip text="Als Einnahme klassifizieren (wird zu Betriebseinnahmen verschoben)">
+        <Tip text={text("Als Einnahme klassifizieren (wird zu Betriebseinnahmen verschoben)")}>
           <button onClick={() => handleAssign('9040')}
             style={{
               padding: '1px 6px', borderRadius: 3, fontSize: 10, cursor: 'pointer',
               background: '#d5f5e3', color: '#1e8449', border: '1px solid #82e0aa',
               fontWeight: 500, lineHeight: '16px',
             }}>
-            Einnahme
+            {text("Einnahme")}
           </button>
         </Tip>
       ) : (
-        <Tip text="Als Erstattung/Gutschrift klassifizieren">
+        <Tip text={text("Als Erstattung/Gutschrift klassifizieren")}>
           <button onClick={() => handleAssign('refund')}
             style={{
               padding: '1px 6px', borderRadius: 3, fontSize: 10, cursor: 'pointer',
               background: '#d6eaf8', color: '#2471a3', border: '1px solid #85c1e9',
               fontWeight: 500, lineHeight: '16px',
             }}>
-            Erstattung
+            {text("Erstattung")}
           </button>
         </Tip>
       )}
@@ -400,6 +408,8 @@ function KzTagRow({ line, onReload }: { line: TaxLine; onReload?: () => void }) 
 }
 
 function ReceiptUpload({ docId, onDone }: { docId: string; onDone?: () => void }) {
+  const text = useLegacyText(legacyAccountingEnglish);
+  const locale = text('de-DE');
   const fileRef = React.useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -410,10 +420,10 @@ function ReceiptUpload({ docId, onDone }: { docId: string; onDone?: () => void }
       form.append('files', file);
       form.append('document_id', docId);
       const res = await fetch('/api/documents/eigenbeleg/upload', { method: 'POST', body: form });
-      if (!res.ok) throw new Error((await res.json()).error || 'Upload fehlgeschlagen');
+      if (!res.ok) throw new Error((await res.json()).error || text("Upload fehlgeschlagen"));
       onDone?.();
     } catch (e: any) {
-      alert('Fehler: ' + e.message);
+      alert(text('Fehler: ') + e.message);
     } finally {
       setUploading(false);
     }
@@ -421,7 +431,7 @@ function ReceiptUpload({ docId, onDone }: { docId: string; onDone?: () => void }
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-      <span style={{ color: '#c0392b', fontSize: 11, fontWeight: 600 }}>Rechnung fehlt</span>
+      <span style={{ color: '#c0392b', fontSize: 11, fontWeight: 600 }}>{text("Rechnung fehlt")}</span>
       <button onClick={() => fileRef.current?.click()} disabled={uploading}
         style={{
           padding: '2px 8px', borderRadius: 4, fontSize: 10, cursor: 'pointer',
@@ -436,6 +446,8 @@ function ReceiptUpload({ docId, onDone }: { docId: string; onDone?: () => void }
 }
 
 function KzDropdown({ line, currentKz, onReload }: { line: TaxLine; currentKz: string; onReload?: () => void }) {
+  const text = useLegacyText(legacyAccountingEnglish);
+  const locale = text('de-DE');
   const [saving, setSaving] = useState(false);
 
   const handleChange = async (newKz: string) => {
@@ -444,8 +456,8 @@ function KzDropdown({ line, currentKz, onReload }: { line: TaxLine; currentKz: s
     if (!vendor) return;
 
     const allVendor = confirm(
-      `Kategorie auf ${newKz} ändern.\n\nFür ALLE Rechnungen von "${vendor}"?\n\n` +
-      `• OK = Alle (Vendor-Einstellung)\n• Abbrechen = Nur diese Rechnung`
+      text("Kategorie auf {p0} ändern.\n\nFür ALLE Rechnungen von \"{p1}\"?\n\n", { p0: newKz, p1: vendor }) +
+      text("• OK = Alle (Vendor-Einstellung)\n• Abbrechen = Nur diese Rechnung")
     );
 
     setSaving(true);
@@ -457,7 +469,7 @@ function KzDropdown({ line, currentKz, onReload }: { line: TaxLine; currentKz: s
       }
       onReload?.();
     } catch (e: any) {
-      alert('Fehler: ' + e.message);
+      alert(text('Fehler: ') + e.message);
     } finally {
       setSaving(false);
     }
@@ -469,17 +481,19 @@ function KzDropdown({ line, currentKz, onReload }: { line: TaxLine; currentKz: s
     <select value={currentKz} onChange={e => handleChange(e.target.value)}
       style={{ padding: '1px 4px', fontSize: 10, borderRadius: 3, border: '1px solid #ccc', background: '#fff', cursor: 'pointer' }}>
       {KZ_OPTIONS.map(o => (
-        <option key={o.kz} value={o.kz}>{o.kz} {o.label}</option>
+        <option key={o.kz} value={o.kz}>{o.kz} {text(o.label)}</option>
       ))}
     </select>
   );
 }
 
 function AcceptIssueButton({ docId, issue, onDone }: { docId: string; issue: string; onDone?: () => void }) {
+  const text = useLegacyText(legacyAccountingEnglish);
+  const locale = text('de-DE');
   const [saving, setSaving] = useState(false);
 
   const handleAccept = async () => {
-    const reason = prompt(`Grund für die Akzeptierung der Abweichung:\n(z.B. "Teilerstattung", "FX-Differenz", "Rabatt")`)
+    const reason = prompt(text("Grund für die Akzeptierung der Abweichung:\n(z.B. \"Teilerstattung\", \"FX-Differenz\", \"Rabatt\")"))
     if (!reason?.trim()) return;
     setSaving(true);
     try {
@@ -489,7 +503,7 @@ function AcceptIssueButton({ docId, issue, onDone }: { docId: string; issue: str
       });
       onDone?.();
     } catch (e: any) {
-      alert('Fehler: ' + e.message);
+      alert(text('Fehler: ') + e.message);
     } finally {
       setSaving(false);
     }
@@ -498,7 +512,7 @@ function AcceptIssueButton({ docId, issue, onDone }: { docId: string; issue: str
   return (
     <button onClick={handleAccept} disabled={saving}
       style={{ padding: '2px 8px', borderRadius: 3, fontSize: 10, cursor: 'pointer', background: '#fff', color: colors.green, border: '1px solid ' + colors.green, fontWeight: 600 }}>
-      {saving ? '...' : 'Akzeptieren'}
+      {saving ? '...' : text("Akzeptieren")}
     </button>
   );
 }
@@ -510,6 +524,8 @@ function InlineEdit({ docId, field, value, type, editingCell, setEditingCell, ed
   editingCell: string | null; setEditingCell: (k: string | null) => void;
   edits: Record<string, Record<string, any>>; setField: (docId: string, field: string, value: any) => void;
 }) {
+  const text = useLegacyText(legacyAccountingEnglish);
+  const locale = text('de-DE');
   const key = `${docId}:${field}`;
   const isEditing = editingCell === key;
   const editedValue = edits[docId]?.[field];
@@ -542,7 +558,7 @@ function InlineEdit({ docId, field, value, type, editingCell, setEditingCell, ed
       <span onClick={e => { e.stopPropagation(); setEditingCell(key); }}
         style={{ cursor: 'pointer', padding: '1px 4px', borderRadius: 3, borderBottom: '1px dashed #ccc',
           background: changed ? '#fff3cd' : undefined, color: minor < 0 ? colors.red : colors.green }}>
-        {minor < 0 ? '-' : ''}{fmtEur(Math.abs(minor))}
+        {minor < 0 ? '-' : ''}{fmtEur(Math.abs(minor), locale)}
       </span>
     );
   }
@@ -566,6 +582,8 @@ function InlineEdit({ docId, field, value, type, editingCell, setEditingCell, ed
 }
 
 function EditableDetails({ docId, details, onReload }: { docId: string; details: { category: string; lines: string[] }; onReload?: () => void }) {
+  const text = useLegacyText(legacyAccountingEnglish);
+  const locale = text('de-DE');
   const [lines, setLines] = useState(details.lines);
   const [category, setCategory] = useState(details.category);
   const [editIdx, setEditIdx] = useState<number | null>(null);
@@ -600,7 +618,7 @@ function EditableDetails({ docId, details, onReload }: { docId: string; details:
       setEditIdx(null);
       onReload?.();
     } catch (e: any) {
-      alert('Fehler: ' + e.message);
+      alert(text('Fehler: ') + e.message);
     } finally {
       setSaving(false);
     }
@@ -621,7 +639,7 @@ function EditableDetails({ docId, details, onReload }: { docId: string; details:
         {changed && (
           <button onClick={handleSave} disabled={saving}
             style={{ background: '#f39c12', color: '#fff', fontWeight: 700, border: 'none', borderRadius: 4, padding: '2px 10px', cursor: 'pointer', fontSize: 10 }}>
-            {saving ? '...' : 'Speichern'}
+            {saving ? '...' : text("Speichern")}
           </button>
         )}
       </div>
@@ -636,19 +654,21 @@ function EditableDetails({ docId, details, onReload }: { docId: string; details:
               <span onClick={() => setEditIdx(k)} style={{ cursor: 'pointer', borderBottom: '1px dashed transparent', flex: 1 }}
                 onMouseOver={e => (e.currentTarget.style.borderBottomColor = '#ccc')}
                 onMouseOut={e => (e.currentTarget.style.borderBottomColor = 'transparent')}>
-                {line || <span style={{ color: '#ccc' }}>(leer)</span>}
+                {line || <span style={{ color: '#ccc' }}>{text("(leer)")}</span>}
               </span>
             )}
-            <button onClick={() => removeLine(k)} style={{ border: 'none', background: 'none', color: '#ccc', cursor: 'pointer', fontSize: 12, padding: 0 }} title="Zeile entfernen">✕</button>
+            <button onClick={() => removeLine(k)} style={{ border: 'none', background: 'none', color: '#ccc', cursor: 'pointer', fontSize: 12, padding: 0 }} title={text("Zeile entfernen")}>✕</button>
           </li>
         ))}
       </ul>
-      <button onClick={addLine} style={{ border: 'none', background: 'none', color: '#2980b9', cursor: 'pointer', fontSize: 10, marginTop: 4, padding: 0 }}>+ Zeile hinzufügen</button>
+      <button onClick={addLine} style={{ border: 'none', background: 'none', color: '#2980b9', cursor: 'pointer', fontSize: 10, marginTop: 4, padding: 0 }}>{text("+ Zeile hinzufügen")}</button>
     </div>
   );
 }
 
 function DetailTable({ lines, showKzTags, onReload, currentKz, search }: { lines: TaxLine[]; showKzTags?: boolean; onReload?: () => void; currentKz?: string; search?: string }) {
+  const text = useLegacyText(legacyAccountingEnglish);
+  const locale = text('de-DE');
   const filtered = search
     ? lines.filter(l => {
         const s = search.toLowerCase();
@@ -681,7 +701,7 @@ function DetailTable({ lines, showKzTags, onReload, currentKz, search }: { lines
       setEdits(prev => { const n = { ...prev }; delete n[docId]; return n; });
       setEditingCell(null);
       onReload?.();
-    } catch (e: any) { alert('Fehler: ' + e.message); }
+    } catch (e: any) { alert(text('Fehler: ') + e.message); }
     finally { setSavingDoc(null); }
   };
   return (
@@ -689,14 +709,14 @@ function DetailTable({ lines, showKzTags, onReload, currentKz, search }: { lines
       <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
         <thead>
           <tr>
-            <th style={th}>Datum</th>
-            <th style={th}>Lieferant</th>
-            <th style={th}>Netto</th>
-            <th style={th}>USt</th>
-            <th style={th}>Brutto</th>
-            <th style={th}>Datei</th>
-            <th style={th}>Buchung</th>
-            <th style={th}>KZ</th>
+            <th style={th}>{text("Datum")}</th>
+            <th style={th}>{text("Lieferant")}</th>
+            <th style={th}>{text("Netto")}</th>
+            <th style={th}>{text("USt")}</th>
+            <th style={th}>{text("Brutto")}</th>
+            <th style={th}>{text("Datei")}</th>
+            <th style={th}>{text("Buchung")}</th>
+            <th style={th}>{text("KZ")}</th>
           </tr>
         </thead>
         <tbody>
@@ -708,10 +728,10 @@ function DetailTable({ lines, showKzTags, onReload, currentKz, search }: { lines
             return (
               <React.Fragment key={i}>
               <tr style={{ borderBottom: '1px solid #f0f0f0', background: edits[l.document_id] ? '#fffef5' : rowBg }}>
-                <td style={td}>{fmtDate(l.document_date)}</td>
+                <td style={td}>{fmtDate(l.document_date, locale)}</td>
                 <td style={td}>
                   {l.details ? (
-                    <span onClick={() => toggleExpand(l.document_id)} style={{ cursor: 'pointer', borderBottom: '1px dashed #999' }} title="Details anzeigen">
+                    <span onClick={() => toggleExpand(l.document_id)} style={{ cursor: 'pointer', borderBottom: '1px dashed #999' }} title={text("Details anzeigen")}>
                       <InlineEdit docId={l.document_id} field="supplier_name" value={l.supplier_name ?? ''} type="text"
                         editingCell={editingCell} setEditingCell={setEditingCell} edits={edits} setField={setField} />
                       {' '}{expandedIds.has(l.document_id) ? '\u25B2' : '\u25BC'}
@@ -752,14 +772,14 @@ function DetailTable({ lines, showKzTags, onReload, currentKz, search }: { lines
                           <a key={j}
                             href={`/?highlight=${encodeURIComponent(t.transaction_id)}&source=${encodeURIComponent(t.source_system)}`}
                             style={{ display: 'block', whiteSpace: 'nowrap', textDecoration: 'none', color: 'inherit', borderBottom: '1px dashed #2980b9', marginBottom: 2 }}>
-                            <span style={{ color: '#999' }}>{fmtDate(t.posting_at)}</span>
+                            <span style={{ color: '#999' }}>{fmtDate(t.posting_at, locale)}</span>
                             {' '}
                             <span style={{ fontWeight: 600, color: colors.blue }}>{t.source_system}</span>
                             {' '}
                             <span style={{ fontFamily: 'monospace', color: t.amount_minor < 0 ? colors.red : colors.green }}>
-                              {fmtEur(Math.abs(t.amount_minor))}
+                              {fmtEur(Math.abs(t.amount_minor), locale)}
                             </span>
-                            {mismatch && <span style={{ color: '#e67e22', marginLeft: 4 }} title={`Beleg: ${fmtEur(Math.abs(l.gross_minor))} ≠ Buchung: ${fmtEur(Math.abs(t.amount_minor))}`}>⚠</span>}
+                            {mismatch && <span style={{ color: '#e67e22', marginLeft: 4 }} title={text("Beleg: {p0} ≠ Buchung: {p1}", { p0: fmtEur(Math.abs(l.gross_minor), locale), p1: fmtEur(Math.abs(t.amount_minor), locale) })}>⚠</span>}
                           </a>
                         );
                       })}
@@ -778,7 +798,7 @@ function DetailTable({ lines, showKzTags, onReload, currentKz, search }: { lines
                   {edits[l.document_id] && Object.keys(edits[l.document_id]).length > 0 && (
                     <button onClick={() => handleSaveDoc(l.document_id)} disabled={savingDoc === l.document_id}
                       style={{ marginLeft: 6, background: '#f39c12', color: '#fff', fontWeight: 700, border: 'none', borderRadius: 4, padding: '2px 10px', cursor: 'pointer', fontSize: 10 }}>
-                      {savingDoc === l.document_id ? '...' : 'Übernehmen'}
+                      {savingDoc === l.document_id ? '...' : text("Übernehmen")}
                     </button>
                   )}
                 </td>
@@ -794,15 +814,15 @@ function DetailTable({ lines, showKzTags, onReload, currentKz, search }: { lines
             );
           })}
           <tr style={{ borderTop: '2px solid #ddd', background: '#f8f9fa' }}>
-            <td style={{ ...td, fontWeight: 700 }} colSpan={2}>Summe</td>
+            <td style={{ ...td, fontWeight: 700 }} colSpan={2}>{text("Summe")}</td>
             <td style={{ ...td, fontFamily: 'monospace', textAlign: 'right', fontWeight: 700 }}>
-              {fmtEur(Math.abs(filtered.reduce((s, l) => s + l.net_minor, 0)))}
+              {fmtEur(Math.abs(filtered.reduce((s, l) => s + l.net_minor, 0)), locale)}
             </td>
             <td style={{ ...td, fontFamily: 'monospace', textAlign: 'right', color: '#aaa' }}>
-              {fmtEur(Math.abs(filtered.reduce((s, l) => s + l.vat_minor, 0)))}
+              {fmtEur(Math.abs(filtered.reduce((s, l) => s + l.vat_minor, 0)), locale)}
             </td>
             <td style={{ ...td, fontFamily: 'monospace', textAlign: 'right', color: '#aaa' }}>
-              {fmtEur(Math.abs(filtered.reduce((s, l) => s + l.gross_minor, 0)))}
+              {fmtEur(Math.abs(filtered.reduce((s, l) => s + l.gross_minor, 0)), locale)}
             </td>
             <td colSpan={3}></td>
           </tr>
@@ -827,12 +847,12 @@ const labelStyle: React.CSSProperties = { fontSize: 13, fontWeight: 600 };
 const inputStyle: React.CSSProperties = { padding: '6px 10px', borderRadius: 4, border: '1px solid #ddd', fontSize: 13 };
 const btnSmall: React.CSSProperties = { padding: '4px 10px', borderRadius: 4, border: '1px solid #ddd', cursor: 'pointer', fontSize: 12, fontWeight: 600 };
 
-function fmtEur(minor: number): string {
-  return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(minor / 100);
+function fmtEur(minor: number, locale = 'de-DE'): string {
+  return new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(minor / 100);
 }
 
-function fmtDate(iso: string | null): string {
+function fmtDate(iso: string | null, locale = 'de-DE'): string {
   if (!iso) return '—';
   const [y, m, d] = iso.slice(0, 10).split('-');
-  return `${d}.${m}.${y}`;
+  return locale === 'de-DE' ? `${d}.${m}.${y}` : `${d}/${m}/${y}`;
 }

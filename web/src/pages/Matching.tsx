@@ -1,3 +1,5 @@
+import { useLegacyText } from '../i18n/legacy';
+import { legacyAccountingEnglish, accountingNoticeText, accountingNoticeSource, type AccountingNotice } from '../i18n/legacy-accounting';
 import React, { useState, useEffect } from 'react';
 import { Card, StatCard, colors, Badge, Amount, Button, Select, useWorkingYear } from '../components/shared';
 import { api } from '../api';
@@ -81,15 +83,17 @@ const SOURCE_LABELS: Record<string, string> = {
 };
 
 function RateCard({ label, stats }: { label: string; stats: AggregateStats }) {
+  const text = useLegacyText(legacyAccountingEnglish);
+  const locale = text('de-DE');
   const pctColor = stats.percent > 80 ? colors.green : stats.percent > 50 ? colors.orange : stats.percent === 0 ? colors.gray : colors.red;
   return (
     <div style={{
       background: '#fff', borderRadius: 8, padding: 16, boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
       textAlign: 'center', minWidth: 160,
     }}>
-      <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>{text(label)}</div>
       <div style={{ fontSize: 28, fontWeight: 700, color: pctColor }}>{stats.percent}%</div>
-      <div style={{ fontSize: 12, color: '#999' }}>{stats.matched} von {stats.total}</div>
+      <div style={{ fontSize: 12, color: '#999' }}>{stats.matched} {text("von")} {stats.total}</div>
     </div>
   );
 }
@@ -118,7 +122,9 @@ const CAT_COLORS: Record<string, string> = {
   sonstige: '#7f8c8d',
 };
 
-export function Matching() {
+export function Matching({ allowAutomation = true }: { allowAutomation?: boolean } = {}) {
+  const text = useLegacyText(legacyAccountingEnglish);
+  const locale = text('de-DE');
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<MatchResult | null>(null);
   const [error, setError] = useState('');
@@ -126,7 +132,7 @@ export function Matching() {
   const [expandedVendors, setExpandedVendors] = useState<Set<string>>(new Set());
   const [expandedDocVendors, setExpandedDocVendors] = useState<Set<string>>(new Set());
   const [botRunning, setBotRunning] = useState<string | null>(null);
-  const [botStatus, setBotStatus] = useState<Record<string, string>>({});
+  const [botStatus, setBotStatus] = useState<Record<string, AccountingNotice>>({});
   const [botFiles, setBotFiles] = useState<Record<string, any[]>>({});
   const [openSort, setOpenSort] = useState<'count' | 'amount' | 'name'>('count');
   const { workingYear, quarter } = useWorkingYear();
@@ -137,6 +143,7 @@ export function Matching() {
   }, [workingYear, quarter]);
 
   const handleMatch = async () => {
+    if (!allowAutomation) return;
     setRunning(true);
     setError('');
     try {
@@ -161,18 +168,19 @@ export function Matching() {
   };
 
   const handleFetchInvoices = async (vendor: string, minDate: string, maxDate: string) => {
+    if (!allowAutomation) return;
     setBotRunning(vendor);
-    setBotStatus(prev => ({ ...prev, [vendor]: 'Starte Bot-Browser...' }));
+    setBotStatus(prev => ({ ...prev, [vendor]: { key: "Starte Bot-Browser..." } }));
     try {
       await api.botLaunchBrowser();
-      setBotStatus(prev => ({ ...prev, [vendor]: 'Suche Portal...' }));
+      setBotStatus(prev => ({ ...prev, [vendor]: { key: "Suche Portal..." } }));
       const portals = await api.botGetPortals();
       const portal = portals.find((p: any) =>
         vendor.toLowerCase().includes(p.name.toLowerCase()) ||
         p.name.toLowerCase().includes(vendor.toLowerCase().split(' ')[0])
       );
       if (!portal) {
-        setBotStatus(prev => ({ ...prev, [vendor]: `Kein Portal für "${vendor}" konfiguriert.` }));
+        setBotStatus(prev => ({ ...prev, [vendor]: { key: "Kein Portal für \"{p0}\" konfiguriert.", values: { p0: vendor }, error: true } }));
         setBotRunning(null);
         return;
       }
@@ -180,9 +188,9 @@ export function Matching() {
       start.setDate(start.getDate() - 7);
       const startStr = start.toISOString().slice(0, 10);
       const endStr = maxDate.slice(0, 10);
-      setBotStatus(prev => ({ ...prev, [vendor]: `Sammlung ${portal.name} (${startStr} — ${endStr})...` }));
+      setBotStatus(prev => ({ ...prev, [vendor]: { key: "Sammlung {p0} ({p1} — {p2})...", values: { p0: portal.name, p1: startStr, p2: endStr } } }));
       const run = await api.botStartRun(portal.id, startStr, endStr);
-      setBotStatus(prev => ({ ...prev, [vendor]: `Run ${run.id} gestartet...` }));
+      setBotStatus(prev => ({ ...prev, [vendor]: { key: "Run {p0} gestartet...", values: { p0: run.id } } }));
 
       let finished = false;
       for (let i = 0; i < 120; i++) {
@@ -190,40 +198,41 @@ export function Matching() {
         const rd = await api.botGetRun(run.id);
         if (['completed', 'partial'].includes(rd.status)) {
           const stats = typeof rd.stats === 'string' ? JSON.parse(rd.stats) : rd.stats;
-          setBotStatus(prev => ({ ...prev, [vendor]: `${stats.downloaded} heruntergeladen, ${stats.imported} importiert` }));
+          setBotStatus(prev => ({ ...prev, [vendor]: { key: "{p0} heruntergeladen, {p1} importiert", values: { p0: stats.downloaded, p1: stats.imported } } }));
           finished = true;
           const runFiles = await api.botGetRunFiles(run.id).catch(() => []);
           if (runFiles.length > 0) setBotFiles(prev => ({ ...prev, [vendor]: runFiles }));
           if (stats.imported > 0 || stats.downloaded > 0) {
             const nr = await api.runMatching();
             setResult(nr);
-            setBotStatus(prev => ({ ...prev, [vendor]: prev[vendor] + ` — ${nr.newMatchedTransactions} neue Matches` }));
+            setBotStatus(prev => ({ ...prev, [vendor]: { key: "{p0} heruntergeladen, {p1} importiert — {p2} neue Matches", values: { p0: stats.downloaded, p1: stats.imported, p2: nr.newMatchedTransactions } } }));
           }
           break;
         }
         if (['failed', 'cancelled'].includes(rd.status)) {
-          setBotStatus(prev => ({ ...prev, [vendor]: `Fehlgeschlagen: ${rd.errorMessage || rd.status}` }));
+          setBotStatus(prev => ({ ...prev, [vendor]: { key: "Fehlgeschlagen: {p0}", values: { p0: rd.errorMessage || rd.status }, error: true } }));
           finished = true; break;
         }
         if (rd.status === 'waiting_for_login') {
-          setBotStatus(prev => ({ ...prev, [vendor]: 'Login nötig — bitte im Browser einloggen.' }));
+          setBotStatus(prev => ({ ...prev, [vendor]: { key: "Login nötig — bitte im Browser einloggen." } }));
           finished = true; break;
         }
         const events = await api.botGetRunEvents(run.id).catch(() => []);
         const last = events[events.length - 1];
-        if (last) setBotStatus(prev => ({ ...prev, [vendor]: last.message }));
+        if (last) setBotStatus(prev => ({ ...prev, [vendor]: { raw: last.message } }));
       }
-      if (!finished) setBotStatus(prev => ({ ...prev, [vendor]: 'Timeout — Run läuft im Hintergrund.' }));
+      if (!finished) setBotStatus(prev => ({ ...prev, [vendor]: { key: "Timeout — Run läuft im Hintergrund." } }));
     } catch (err: any) {
-      setBotStatus(prev => ({ ...prev, [vendor]: `Fehler: ${err.message}` }));
+      setBotStatus(prev => ({ ...prev, [vendor]: { key: "Fehler: {p0}", values: { p0: err.message }, error: true } }));
     } finally {
       setBotRunning(null);
     }
   };
 
   const handleInvoiceBot = async (vendorName: string, minDate: string, maxDate: string, amountHint: string) => {
+    if (!allowAutomation) return;
     setBotRunning(vendorName);
-    setBotStatus(prev => ({ ...prev, [vendorName]: 'Suche Portal-Profil...' }));
+    setBotStatus(prev => ({ ...prev, [vendorName]: { key: "Suche Portal-Profil..." } }));
     try {
       // Check if portal exists for this vendor
       const { portal } = await api.botFindPortalByVendor(vendorName);
@@ -231,10 +240,10 @@ export function Matching() {
 
       if (portal) {
         portalId = portal.id;
-        setBotStatus(prev => ({ ...prev, [vendorName]: `Portal "${portal.name}" gefunden — starte Sammlung...` }));
+        setBotStatus(prev => ({ ...prev, [vendorName]: { key: "Portal \"{p0}\" gefunden — starte Sammlung...", values: { p0: portal.name } } }));
       } else {
         // Auto-create new portal
-        setBotStatus(prev => ({ ...prev, [vendorName]: 'Erstelle neues Portal-Profil...' }));
+        setBotStatus(prev => ({ ...prev, [vendorName]: { key: "Erstelle neues Portal-Profil..." } }));
         const newPortal = await api.botAutoCreatePortal({
           vendorName,
           dateFrom: minDate.slice(0, 10),
@@ -242,12 +251,12 @@ export function Matching() {
           amountHint,
         });
         portalId = newPortal.id;
-        setBotStatus(prev => ({ ...prev, [vendorName]: `Portal "${newPortal.name}" erstellt — starte Sammlung...` }));
+        setBotStatus(prev => ({ ...prev, [vendorName]: { key: "Portal \"{p0}\" erstellt — starte Sammlung...", values: { p0: newPortal.name } } }));
       }
 
       // Start collection run
       const run = await api.botStartRun(portalId, minDate.slice(0, 10), maxDate.slice(0, 10));
-      setBotStatus(prev => ({ ...prev, [vendorName]: `Run ${run.id} gestartet...` }));
+      setBotStatus(prev => ({ ...prev, [vendorName]: { key: "Run {p0} gestartet...", values: { p0: run.id } } }));
 
       // Poll for completion
       let finished = false;
@@ -257,21 +266,21 @@ export function Matching() {
         if (['completed', 'partial'].includes(rd.status)) {
           const stats = rd.stats;
           setBotStatus(prev => ({
-            ...prev, [vendorName]: `${stats.downloaded} heruntergeladen, ${stats.imported} importiert`,
+            ...prev, [vendorName]: { key: "{p0} heruntergeladen, {p1} importiert", values: { p0: stats.downloaded, p1: stats.imported } },
           }));
           finished = true;
           if (stats.imported > 0 || stats.downloaded > 0) {
             const nr = await api.runMatching();
             setResult(nr);
             setBotStatus(prev => ({
-              ...prev, [vendorName]: prev[vendorName] + ` — ${nr.newMatchedTransactions} neue Matches`,
+              ...prev, [vendorName]: { key: "{p0} heruntergeladen, {p1} importiert — {p2} neue Matches", values: { p0: stats.downloaded, p1: stats.imported, p2: nr.newMatchedTransactions } },
             }));
           }
           break;
         }
         if (['failed', 'cancelled'].includes(rd.status)) {
           setBotStatus(prev => ({
-            ...prev, [vendorName]: `Fehlgeschlagen: ${rd.errorMessage || rd.status}`,
+            ...prev, [vendorName]: { key: "Fehlgeschlagen: {p0}", values: { p0: rd.errorMessage || rd.status }, error: true },
           }));
           finished = true;
           break;
@@ -279,17 +288,18 @@ export function Matching() {
         // Show progress from events
         const events = await api.botGetRunEvents(run.id).catch(() => []);
         const last = events[events.length - 1];
-        if (last) setBotStatus(prev => ({ ...prev, [vendorName]: last.message }));
+        if (last) setBotStatus(prev => ({ ...prev, [vendorName]: { raw: last.message } }));
       }
-      if (!finished) setBotStatus(prev => ({ ...prev, [vendorName]: 'Timeout — Run läuft im Hintergrund.' }));
+      if (!finished) setBotStatus(prev => ({ ...prev, [vendorName]: { key: "Timeout — Run läuft im Hintergrund." } }));
     } catch (err: any) {
-      setBotStatus(prev => ({ ...prev, [vendorName]: `Fehler: ${err.message}` }));
+      setBotStatus(prev => ({ ...prev, [vendorName]: { key: "Fehler: {p0}", values: { p0: err.message }, error: true } }));
     } finally {
       setBotRunning(null);
     }
   };
 
   const handleRequestEmail = async (vendor: VendorGroup) => {
+    if (!allowAutomation) return;
     const { email } = await api.getVendorEmail(vendor.vendor);
     const to = email ?? '';
     const n = vendor.count;
@@ -302,17 +312,17 @@ export function Matching() {
       return `${date} – ${amount} EUR – ${ref}${iban}`;
     }).join('\n');
 
-    const subject = `Anfrage: Fehlende Rechnung${n > 1 ? 'en' : ''} – ${vendor.vendor}`;
+    const subject = text(n > 1 ? 'Anfrage: Fehlende Rechnungen – {vendor}' : 'Anfrage: Fehlende Rechnung – {vendor}', { vendor: vendor.vendor });
     const body = [
-      'Sehr geehrte Damen und Herren,',
+      text("Sehr geehrte Damen und Herren,"),
       '',
-      `für die folgende${n > 1 ? 'n' : ''} ${n} Buchung${n > 1 ? 'en' : ''} konnten wir in unserer Ablage keine Rechnung zuordnen. Wir bitten Sie höflich, uns die entsprechenden Belege zukommen zu lassen:`,
+      text(n > 1 ? 'Für die folgenden {count} Buchungen konnten wir in unserer Ablage keine Rechnung zuordnen. Wir bitten Sie höflich, uns die entsprechenden Belege zukommen zu lassen:' : 'Für die folgende {count} Buchung konnten wir in unserer Ablage keine Rechnung zuordnen. Wir bitten Sie höflich, uns den entsprechenden Beleg zukommen zu lassen:', { count: n }),
       '',
       lines,
       '',
-      'Vielen Dank im Voraus.',
+      text("Vielen Dank im Voraus."),
       '',
-      'Mit freundlichen Grüßen',
+      text("Mit freundlichen Grüßen"),
     ].join('\n');
 
     await api.composeEmail(to, subject, body);
@@ -322,21 +332,23 @@ export function Matching() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 16, flexWrap: 'wrap', marginBottom: 16 }}>
         <div>
-          <h1 style={{ fontSize: 24, margin: 0, color: '#263244' }}>Matching-Zentrale</h1>
-          <div style={{ fontSize: 12, color: '#7b8593', marginTop: 5 }}>Zuordnen, prüfen und Abschlussqualität steuern · {quarter ? `Q${quarter} ` : ''}{workingYear}</div>
+          <h1 style={{ fontSize: 24, margin: 0, color: '#263244' }}>{text("Matching-Zentrale")}</h1>
+          <div style={{ fontSize: 12, color: '#7b8593', marginTop: 5 }}>{text("Zuordnen, prüfen und Abschlussqualität steuern ·")} {quarter ? `Q${quarter} ` : ''}{workingYear}</div>
         </div>
       </div>
 
+      {!allowAutomation && <p role="note" data-testid="matching-automation-disabled-note">{text("Automatische Regeln, Portalabruf und E-Mail sind in dieser Demo deaktiviert. Vorschläge können weiter geprüft und manuell zugeordnet werden.")}</p>}
+
       <Card style={{ marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <Button onClick={handleMatch} disabled={running} color={colors.green}>
-            {running ? 'Regeln werden ausgeführt…' : 'Matching-Regeln ausführen'}
+          <Button onClick={handleMatch} disabled={running || !allowAutomation} color={colors.green}>
+            {running ? text("Regeln werden ausgeführt…") : text("Matching-Regeln ausführen")}
           </Button>
-          <span style={{ color: '#7a8492', fontSize: 12 }}>Wendet Regeln auf offene Einträge an. Proposed-Gruppen werden dadurch nicht automatisch bestätigt.</span>
+          <span style={{ color: '#7a8492', fontSize: 12 }}>{text("Wendet Regeln auf offene Einträge an. Proposed-Gruppen werden dadurch nicht automatisch bestätigt.")}</span>
           {error && <span style={{ color: colors.red, fontSize: 13 }}>{error}</span>}
           {result && !running && (
             <span style={{ color: colors.green, fontSize: 13 }}>
-              {result.newMatchedTransactions} neue Matches gefunden
+              {result.newMatchedTransactions} {text("neue Matches gefunden")}
             </span>
           )}
         </div>
@@ -344,23 +356,23 @@ export function Matching() {
 
       {result && (
         <>
-          <MatchingGovernance result={result} year={workingYear} quarter={quarter} onChanged={refreshStatus} />
+          <MatchingGovernance allowOriginalFiles={allowAutomation} result={result} year={workingYear} quarter={quarter} onChanged={refreshStatus} />
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap', margin: '24px 0 10px' }}>
             <div>
-              <h2 style={{ margin: 0, fontSize: 18, color: '#2b3544' }}>Offene Arbeit</h2>
-              <div style={{ fontSize: 12, color: '#818b98', marginTop: 3 }}>Ungeklärte Buchungen und nicht zugeordnete Rechnungen</div>
+              <h2 style={{ margin: 0, fontSize: 18, color: '#2b3544' }}>{text("Offene Arbeit")}</h2>
+              <div style={{ fontSize: 12, color: '#818b98', marginTop: 3 }}>{text("Ungeklärte Buchungen und nicht zugeordnete Rechnungen")}</div>
             </div>
             <Select value={openSort} onChange={value => setOpenSort(value as 'count' | 'amount' | 'name')} options={[
-              { value: 'count', label: 'Nach Anzahl' },
-              { value: 'amount', label: 'Nach Betrag' },
-              { value: 'name', label: 'Alphabetisch' },
+              { value: 'count', label: text("Nach Anzahl") },
+              { value: 'amount', label: text("Nach Betrag") },
+              { value: 'name', label: text("Alphabetisch") },
             ]} />
           </div>
 
           {/* Categories */}
           {result.categories.length > 0 && (
-            <Card title={`Offene Einträge nach Buchungsart (${result.unmatchedTotal})`} style={{ marginBottom: 20 }}>
+            <Card title={text("Offene Einträge nach Buchungsart ({p0})", { p0: result.unmatchedTotal })} style={{ marginBottom: 20 }}>
               {[...result.categories].sort((a, b) => openSort === 'amount'
                 ? Math.abs(b.totalMinor) - Math.abs(a.totalMinor)
                 : openSort === 'name'
@@ -384,10 +396,10 @@ export function Matching() {
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <div style={{ width: 4, height: 24, borderRadius: 2, background: color }} />
-                        <span style={{ fontWeight: 600, fontSize: 14 }}>{label}</span>
+                        <span style={{ fontWeight: 600, fontSize: 14 }}>{text(label)}</span>
                         <Badge text={`${cat.count}`} color={color} />
                         <span style={{ fontSize: 12, color: '#999' }}>
-                          {cat.percent}% der offenen Einträge
+                          {cat.percent}{text("% der offenen Einträge")}
                         </span>
                       </div>
                       <Amount value={cat.totalMinor / 100} />
@@ -419,26 +431,27 @@ export function Matching() {
                                 {botStatus[vendor.vendor] && (
                                   <span style={{
                                     fontSize: 11, maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                                    color: botStatus[vendor.vendor].includes('Fehler') || botStatus[vendor.vendor].includes('Kein Portal')
-                                      ? colors.red : botStatus[vendor.vendor].includes('heruntergeladen') ? colors.green : colors.blue,
+                                    color: botStatus[vendor.vendor].error
+                                      ? colors.red : accountingNoticeSource(botStatus[vendor.vendor]).includes('heruntergeladen') ? colors.green : colors.blue,
                                   }}>
-                                    {botStatus[vendor.vendor]}
+                                    {accountingNoticeText(text, botStatus[vendor.vendor])}
                                   </span>
                                 )}
                                 <Button
                                   onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.stopPropagation(); handleFetchInvoices(vendor.vendor, vendor.minDate, vendor.maxDate); }}
-                                  disabled={botRunning !== null}
+                                  disabled={botRunning !== null || !allowAutomation}
                                   color={colors.blue}
                                   style={{ fontSize: 11, padding: '3px 8px' }}
                                 >
-                                  Rechnungen holen
+                                  {text("Rechnungen holen")}
                                 </Button>
                                 <Button
                                   onClick={async (e: React.MouseEvent<HTMLButtonElement>) => { e.stopPropagation(); await handleRequestEmail(vendor); }}
+                                  disabled={!allowAutomation}
                                   color="#e67e22"
                                   style={{ fontSize: 11, padding: '3px 8px' }}
                                 >
-                                  per Email anfordern
+                                  {text("per Email anfordern")}
                                 </Button>
                                 <Button
                                   onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -446,7 +459,7 @@ export function Matching() {
                                     await handleInvoiceBot(vendor.vendor, vendor.minDate, vendor.maxDate,
                                       Math.abs(vendor.totalMinor / 100).toFixed(2) + ' EUR');
                                   }}
-                                  disabled={botRunning !== null}
+                                  disabled={botRunning !== null || !allowAutomation}
                                   color="#8e24aa"
                                   style={{ fontSize: 11, padding: '3px 8px' }}
                                 >
@@ -479,7 +492,7 @@ export function Matching() {
                               <div style={{ padding: '0 28px 8px' }}>
                                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                                   <thead><tr>
-                                    <th style={thStyle}>Datum</th><th style={thStyle}>Betrag</th><th style={thStyle}>Beschreibung</th>
+                                    <th style={thStyle}>{text("Datum")}</th><th style={thStyle}>{text("Betrag")}</th><th style={thStyle}>{text("Beschreibung")}</th>
                                   </tr></thead>
                                   <tbody>
                                     {vendor.transactions.map(t => (
@@ -506,8 +519,8 @@ export function Matching() {
                       <div style={{ padding: '0 14px 10px', borderTop: '1px solid #eee' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                           <thead><tr style={{ background: '#f8f8f8' }}>
-                            <th style={thStyle}>Datum</th><th style={thStyle}>Betrag</th>
-                            <th style={thStyle}>Empfänger</th><th style={thStyle}>Beschreibung</th>
+                            <th style={thStyle}>{text("Datum")}</th><th style={thStyle}>{text("Betrag")}</th>
+                            <th style={thStyle}>{text("Empfänger")}</th><th style={thStyle}>{text("Beschreibung")}</th>
                           </tr></thead>
                           <tbody>
                             {cat.transactions.slice(0, 30).map(t => (
@@ -527,7 +540,7 @@ export function Matching() {
                         </table>
                         {cat.transactions.length > 30 && (
                           <div style={{ fontSize: 11, color: '#999', padding: 4 }}>
-                            ... und {cat.transactions.length - 30} weitere
+                            {text("... und")} {cat.transactions.length - 30} {text("weitere")}
                           </div>
                         )}
                       </div>
@@ -539,7 +552,7 @@ export function Matching() {
           )}
           {/* Unmatched Documents by Vendor */}
           {result.unmatchedDocs?.length > 0 && (
-            <Card title={`Offene Rechnungen nach Lieferant (${result.unmatchedDocs.reduce((s, v) => s + v.count, 0)})`} style={{ marginBottom: 20 }}>
+            <Card title={text("Offene Rechnungen nach Lieferant ({p0})", { p0: result.unmatchedDocs.reduce((s, v) => s + v.count, 0) })} style={{ marginBottom: 20 }}>
               {[...result.unmatchedDocs].sort((a, b) => openSort === 'amount'
                 ? Math.abs(b.totalMinor) - Math.abs(a.totalMinor)
                 : openSort === 'name' ? a.vendor.localeCompare(b.vendor) : b.count - a.count).map(vg => {
@@ -565,8 +578,8 @@ export function Matching() {
                       <div style={{ padding: '0 14px 8px' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                           <thead><tr style={{ background: '#f8f8f8' }}>
-                            <th style={thStyle}>Datum</th><th style={thStyle}>Betrag</th>
-                            <th style={thStyle}>Quelle</th><th style={thStyle}>Dokument</th>
+                            <th style={thStyle}>{text("Datum")}</th><th style={thStyle}>{text("Betrag")}</th>
+                            <th style={thStyle}>{text("Quelle")}</th><th style={thStyle}>{text("Dokument")}</th>
                           </tr></thead>
                           <tbody>
                             {vg.documents.map(d => (
@@ -576,7 +589,7 @@ export function Matching() {
                                 onMouseOut={e => (e.currentTarget.style.background = 'transparent')}>
                                 <td style={tdStyle}>{d.document_date?.slice(0, 10) ?? '—'}</td>
                                 <td style={tdStyle}><Amount value={d.total_amount_minor / 100} /></td>
-                                <td style={tdStyle}>{SOURCE_LABELS[d.source_system] || d.source_system}</td>
+                                <td style={tdStyle}>{text(SOURCE_LABELS[d.source_system] || d.source_system)}</td>
                                 <td style={{ ...tdStyle, maxWidth: 250, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                   {d.filename ?? d.document_id.slice(0, 20)}
                                 </td>

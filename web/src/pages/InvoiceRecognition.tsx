@@ -1,3 +1,5 @@
+import {useLegacyText} from '../i18n/legacy';
+import {legacyRecognitionEnglish} from '../i18n/legacy-recognition';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { api } from '../api';
 import { Card, Button, Badge, colors, usePageSize } from '../components/shared';
@@ -59,6 +61,7 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
   onOpenPayment: (batchId: string) => void;
   highlightScanId?: string | null;
 }) {
+  const lt=useLegacyText(legacyRecognitionEnglish);
   const [data, setData] = useState<any>(null);
   const [status, setStatus] = useState<StatusFilter>('');
   const [page, setPage] = useState(1);
@@ -103,7 +106,7 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
   };
   const deleteSelected = async () => {
     if (selected.size === 0) return;
-    if (!confirm(`${selected.size} Scan(s) wirklich löschen?`)) return;
+    if (!confirm(lt('{count} Scan(s) wirklich löschen?',{count:selected.size}))) return;
     for (const id of selected) {
       try { await api.deleteScan(id); } catch {}
     }
@@ -124,14 +127,14 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
       const missingIds = requestedIds.filter(id => !returnedIds.has(id));
       const unexpectedIds = [...returnedIds].filter(id => !requestedIds.includes(id));
       const lines = [
-        'Ergebnis der manuellen Zahlungsauswahl:',
+        lt("Ergebnis der manuellen Zahlungsauswahl:"),
         '',
         ...result.accepted.map(entry =>
-          `AKZEPTIERT: ${entry.document_id} (${entry.classification}${entry.validation_errors.length > 0 ? `; ${entry.validation_errors.map(issue => issue.message).join('; ')}` : ''})`),
+          lt('AKZEPTIERT: {id} ({classification}{issues})',{id:entry.document_id,classification:entry.classification,issues:entry.validation_errors.length > 0 ? `; ${entry.validation_errors.map(issue => issue.message).join('; ')}` : ''})),
         ...result.rejected.map(entry =>
-          `ABGELEHNT: ${entry.document_id} — ${entry.reason} (${entry.reason_code})`),
-        ...missingIds.map(id => `NICHT BEANTWORTET: ${id} — Serverantwort unvollständig`),
-        ...unexpectedIds.map(id => `UNERWARTET: ${id} — nicht angefragt`),
+          lt('ABGELEHNT: {id} — {reason} ({code})',{id:entry.document_id,reason:entry.reason,code:entry.reason_code})),
+        ...missingIds.map(id => lt('NICHT BEANTWORTET: {id} — Serverantwort unvollständig',{id})),
+        ...unexpectedIds.map(id => lt('UNERWARTET: {id} — nicht angefragt',{id})),
       ];
       alert(lines.join('\n'));
       if (missingIds.length > 0 || unexpectedIds.length > 0) return;
@@ -140,7 +143,7 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
         onOpenPayment(result.batch.batchId);
       }
     } catch (paymentError) {
-      alert(`Zahlungsauswahl fehlgeschlagen: ${paymentError instanceof Error ? paymentError.message : 'Unbekannter Fehler'}`);
+      alert(lt('Zahlungsauswahl fehlgeschlagen: {error}',{error:paymentError instanceof Error ? paymentError.message : lt('Unbekannter Fehler')}));
     } finally {
       setPaymentBusy(false);
     }
@@ -165,7 +168,7 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
   /** SSE stream reader — shared between folder import and file upload */
   const readSSEStream = async (response: Response) => {
     const reader = response.body?.getReader();
-    if (!reader) throw new Error('Kein Stream verfügbar');
+    if (!reader) throw new Error(lt("Kein Stream verfügbar"));
 
     const decoder = new TextDecoder();
     let buffer = '';
@@ -254,7 +257,7 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
   const processFiles = async (fileList: File[]) => {
     if (fileList.length === 0) return;
     const accepted = fileList.filter(f => /\.(pdf|jpe?g|png)$/i.test(f.name));
-    if (accepted.length === 0) { setUploadResult({ error: 'Keine unterstützten Dateien (PDF, JPG, PNG)' }); return; }
+    if (accepted.length === 0) { setUploadResult({ error: lt("Keine unterstützten Dateien (PDF, JPG, PNG)") }); return; }
     setUploading(true);
     setUploadResult(null);
     setProgress(null);
@@ -305,7 +308,7 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
 
   return (
     <div>
-      <h1 style={{ fontSize: 22, marginBottom: 16 }}>Belegerkennung</h1>
+      <h1 style={{ fontSize: 22, marginBottom: 16 }}>{lt("Belegerkennung")}</h1>
 
       {/* Folder import + file drop zone */}
       <div style={{ marginBottom: 16 }}>
@@ -314,7 +317,7 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
             <div style={{ fontSize: 14, color: '#333', marginBottom: 8, fontWeight: 600 }}>
               {progress
                 ? `Verarbeite ${progress.index + 1} von ${progress.total}${progress.filename ? `: ${progress.filename}` : ''}`
-                : 'Starte Import...'}
+                : lt("Starte Import...")}
             </div>
             {progress && (
               <>
@@ -331,27 +334,21 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
               </>
             )}
             <button onClick={() => abortController?.abort()}
-              style={{ marginTop: 8, padding: '4px 16px', borderRadius: 4, border: '1px solid #e74c3c', background: '#fee', color: '#e74c3c', cursor: 'pointer', fontSize: 12 }}>
-              Abbrechen
-            </button>
+              style={{ marginTop: 8, padding: '4px 16px', borderRadius: 4, border: '1px solid #e74c3c', background: '#fee', color: '#e74c3c', cursor: 'pointer', fontSize: 12 }}>{" "}{lt("Abbrechen")}{" "}</button>
           </div>
         ) : (
           <div style={{ display: 'flex', gap: 12, alignItems: 'stretch' }}>
             {/* Folder import (primary) */}
             <div style={{ flex: 1, padding: 16, borderRadius: 8, border: '2px solid #2980b9', background: '#f0f7ff' }}>
-              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 8, color: '#2c3e50' }}>Ordner-Import</div>
+              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 8, color: '#2c3e50' }}>{lt("Ordner-Import")}</div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <input type="text" value={importFolder} onChange={e => setImportFolder(e.target.value)}
                   placeholder="Belege/Import"
                   style={{ flex: 1, padding: '6px 10px', borderRadius: 4, border: '1px solid #ccc', fontSize: 13 }} />
                 <button onClick={startFolderImport}
-                  style={{ padding: '6px 16px', borderRadius: 4, border: 'none', background: '#2980b9', color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap' }}>
-                  Import starten
-                </button>
+                  style={{ padding: '6px 16px', borderRadius: 4, border: 'none', background: '#2980b9', color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap' }}>{" "}{lt("Import starten")}{" "}</button>
               </div>
-              <div style={{ fontSize: 11, color: '#888', marginTop: 4 }}>
-                Belege aus dem Ordner werden einzeln verarbeitet. Erfolgreiche → importiert/, Fehler → Fehlgeschlagen/
-              </div>
+              <div style={{ fontSize: 11, color: '#888', marginTop: 4 }}>{" "}{lt("Belege aus dem Ordner werden einzeln verarbeitet. Erfolgreiche → importiert/, Fehler → Fehlgeschlagen/")}{" "}</div>
             </div>
 
             {/* File drop/upload (secondary) */}
@@ -370,7 +367,7 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
               <input ref={fileRef} type="file" multiple accept=".pdf,.jpg,.jpeg,.png"
                 style={{ display: 'none' }} onChange={handleUpload} />
               <div style={{ fontSize: 22, color: '#999' }}>+</div>
-              <div style={{ fontSize: 11, color: '#999' }}>Einzelne Dateien</div>
+              <div style={{ fontSize: 11, color: '#999' }}>{lt("Einzelne Dateien")}</div>
             </div>
           </div>
         )}
@@ -379,8 +376,7 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
         )}
         {uploadResult?.results && !uploading && (
           <div style={{ marginTop: 8, fontSize: 13, color: colors.green }}>
-            {uploadResult.results.length} Datei(en) verarbeitet
-          </div>
+            {uploadResult.results.length}{" "}{lt("Datei(en) verarbeitet")}{" "}</div>
         )}
       </div>
 
@@ -388,12 +384,9 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
       {uploadSummary && !uploading && (
         <Card style={{ marginBottom: 16, background: '#f0f7f0', border: '1px solid #c3e6cb' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-            <span style={{ fontSize: 14, fontWeight: 700, color: '#2c3e50' }}>
-              Import abgeschlossen: {uploadSummary.count} Datei(en)
-              {uploadSummary.failed > 0 && (
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#2c3e50' }}>{" "}{lt("Import abgeschlossen:")}{" "}{uploadSummary.count}{" "}{lt("Datei(en)")}{" "}{uploadSummary.failed > 0 && (
                 <span style={{ color: colors.red, fontWeight: 600 }}>
-                  {' '}({uploadSummary.failed} fehlgeschlagen)
-                </span>
+                  {' '}({uploadSummary.failed}{" "}{lt("fehlgeschlagen)")}{" "}</span>
               )}
             </span>
             <button onClick={() => setUploadSummary(null)}
@@ -401,33 +394,31 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
           </div>
           {/* Summenzeile — immer anzeigen */}
           <div style={{ display: 'flex', gap: 24, padding: '8px 0 4px', borderTop: '1px solid #c3e6cb', fontSize: 13 }}>
-            <span>Gesamt: <b>{uploadSummary.count}</b> Belege</span>
+            <span>{lt("Gesamt:")}{" "}<b>{uploadSummary.count}</b>{" "}{lt("Belege")}</span>
             {uploadSummary.files.filter(f => f.ai_used).length > 0 && (
-              <span>davon <b>{uploadSummary.files.filter(f => f.ai_used).length}</b> mit KI</span>
+              <span>{lt("davon")}{" "}<b>{uploadSummary.files.filter(f => f.ai_used).length}</b>{" "}{lt("mit KI")}</span>
             )}
             {uploadSummary.files.filter(f => f.duplicate).length > 0 && (
               <span style={{ color: colors.orange }}>
-                <b>{uploadSummary.files.filter(f => f.duplicate).length}</b> Duplikat(e) übersprungen
-              </span>
+                <b>{uploadSummary.files.filter(f => f.duplicate).length}</b>{" "}{lt("Duplikat(e) übersprungen")}{" "}</span>
             )}
             <span style={{ fontFamily: 'monospace' }}>
               Tokens: <b>{(uploadSummary.totalTokens ?? 0).toLocaleString('de-DE')}</b>
             </span>
-            <span style={{ fontFamily: 'monospace' }}>
-              Kosten: <b>${formatCost(uploadSummary.totalCost ?? 0)}</b>
+            <span style={{ fontFamily: 'monospace' }}>{" "}{lt("Kosten:")}{" "}<b>${formatCost(uploadSummary.totalCost ?? 0)}</b>
             </span>
           </div>
           {/* Detail-Tabelle für KI-Dateien */}
           {uploadSummary.files.some(f => f.ai_used) && (
             <details style={{ marginTop: 6 }}>
-              <summary style={{ fontSize: 11, color: '#666', cursor: 'pointer' }}>KI-Details pro Datei</summary>
+              <summary style={{ fontSize: 11, color: '#666', cursor: 'pointer' }}>{lt("KI-Details pro Datei")}</summary>
               <table style={{ width: '100%', fontSize: 11, marginTop: 4, borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
-                    <th style={{ ...th, fontSize: 10 }}>Datei</th>
-                    <th style={{ ...th, fontSize: 10 }}>Verkäufer</th>
+                    <th style={{ ...th, fontSize: 10 }}>{lt("Datei")}</th>
+                    <th style={{ ...th, fontSize: 10 }}>{lt("Verkäufer")}</th>
                     <th style={{ ...th, fontSize: 10, textAlign: 'right' }}>Tokens</th>
-                    <th style={{ ...th, fontSize: 10, textAlign: 'right' }}>Kosten</th>
+                    <th style={{ ...th, fontSize: 10, textAlign: 'right' }}>{lt("Kosten")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -450,9 +441,7 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: -12, marginBottom: 12 }}>
         <button onClick={() => setShowAiSettings(!showAiSettings)}
-          style={{ padding: '4px 10px', borderRadius: 4, border: '1px solid #ddd', cursor: 'pointer', fontSize: 12, background: showAiSettings ? '#2c3e50' : '#ecf0f1', color: showAiSettings ? '#fff' : '#333' }}>
-          KI-Einstellungen
-        </button>
+          style={{ padding: '4px 10px', borderRadius: 4, border: '1px solid #ddd', cursor: 'pointer', fontSize: 12, background: showAiSettings ? '#2c3e50' : '#ecf0f1', color: showAiSettings ? '#fff' : '#333' }}>{" "}{lt("KI-Einstellungen")}{" "}</button>
       </div>
 
       {/* AI Settings panel */}
@@ -468,7 +457,7 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
               background: status === s ? '#2c3e50' : '#ecf0f1',
               color: status === s ? '#fff' : '#333',
             }}>
-            {s ? STATUS_LABELS[s] : 'Alle'}
+            {s ? lt(STATUS_LABELS[s]) : lt("Alle")}
           </button>
         ))}
       </div>
@@ -478,7 +467,7 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
         <Card>
           {selected.size > 0 && (
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
-              <span style={{ fontSize: 13 }}>{selected.size} ausgewählt</span>
+              <span style={{ fontSize: 13 }}>{selected.size}{" "}{lt("ausgewählt")}</span>
               <button
                 disabled={paymentBusy || selectedPaymentDocumentIds.length === 0}
                 onClick={() => void preparePayments(selectedPaymentDocumentIds)}
@@ -488,18 +477,14 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
                   color: selectedPaymentDocumentIds.length > 0 ? '#2471a3' : '#999',
                   cursor: selectedPaymentDocumentIds.length > 0 ? 'pointer' : 'not-allowed', fontSize: 12, fontWeight: 700,
                 }}
-                title="Nur ausgewählte, bestätigte Belege mit Dokument-ID werden angefragt"
+                title={lt("Nur ausgewählte, bestätigte Belege mit Dokument-ID werden angefragt")}
               >
-                {paymentBusy ? 'Bereite Zahlungen vor…' : `Zahlungen vorbereiten (${selectedPaymentDocumentIds.length})`}
+                {paymentBusy ? lt("Bereite Zahlungen vor…") : lt('Zahlungen vorbereiten ({count})',{count:selectedPaymentDocumentIds.length})}
               </button>
               <button onClick={deleteSelected}
-                style={{ padding: '4px 12px', borderRadius: 4, border: '1px solid #e74c3c', background: '#fee', color: '#e74c3c', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>
-                Ausgewählte löschen
-              </button>
+                style={{ padding: '4px 12px', borderRadius: 4, border: '1px solid #e74c3c', background: '#fee', color: '#e74c3c', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>{" "}{lt("Ausgewählte löschen")}{" "}</button>
               <button onClick={() => setSelected(new Set())}
-                style={{ padding: '4px 12px', borderRadius: 4, border: '1px solid #ddd', background: '#ecf0f1', cursor: 'pointer', fontSize: 12 }}>
-                Auswahl aufheben
-              </button>
+                style={{ padding: '4px 12px', borderRadius: 4, border: '1px solid #ddd', background: '#ecf0f1', cursor: 'pointer', fontSize: 12 }}>{" "}{lt("Auswahl aufheben")}{" "}</button>
             </div>
           )}
           <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
@@ -510,12 +495,12 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
                     checked={data.items.length > 0 && selected.size === data.items.length}
                     onChange={toggleAll} />
                 </th>
-                <SortTh label="Datei" sortKey="filename" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortTh label={lt("Datei")} sortKey="filename" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
                 <SortTh label="Scan" sortKey="scan_date" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
-                <SortTh label="Datum" sortKey="date" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
-                <SortTh label="Verkäufer" sortKey="seller" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
-                <SortTh label="Land" sortKey="country" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
-                <SortTh label="Brutto EUR" sortKey="gross" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortTh label={lt("Datum")} sortKey="date" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortTh label={lt("Verkäufer")} sortKey="seller" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortTh label={lt("Land")} sortKey="country" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortTh label={lt("Brutto EUR")} sortKey="gross" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
                 <th style={th}>FX</th>
                 <th style={th}>Status</th>
                 <th style={th}></th>
@@ -555,16 +540,15 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
                       : ''}
                   </td>
                   <td style={td}>
-                    <Badge text={STATUS_LABELS[item.status] ?? item.status} color={STATUS_COLORS[item.status] ?? colors.gray} />
+                    <Badge text={lt(STATUS_LABELS[item.status] ?? item.status)} color={STATUS_COLORS[item.status] ?? colors.gray} />
                     {item.payment_summary && (
-                      <div style={{ marginTop: 4, fontSize: 10, color: '#666' }}>
-                        Zahlung: {item.payment_summary.batch_status ?? item.payment_summary.classification}
+                      <div style={{ marginTop: 4, fontSize: 10, color: '#666' }}>{" "}{lt("Zahlung:")}{" "}{item.payment_summary.batch_status ?? item.payment_summary.classification}
                       </div>
                     )}
                   </td>
                   <td style={{ ...td, textAlign: 'center', whiteSpace: 'nowrap' }} onClick={e => e.stopPropagation()}>
                     <button onClick={async () => {
-                      if (!confirm(`"${item.original_filename}" wirklich löschen?`)) return;
+                      if (!confirm(lt('"{filename}" wirklich löschen?',{filename:item.original_filename}))) return;
                       try { await api.deleteScan(item.scan_id); load(); } catch {}
                     }}
                       style={{
@@ -572,7 +556,7 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
                         cursor: 'pointer', color: '#e74c3c', fontSize: 13, fontWeight: 700,
                         padding: '2px 8px', lineHeight: '18px',
                       }}
-                      title="Löschen">
+                      title={lt("Löschen")}>
                       X
                     </button>
                     {item.status === 'confirmed' && item.document_id && (
@@ -584,9 +568,7 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
                           border: '1px solid #2980b9', background: '#eaf4fd', color: '#2471a3',
                           cursor: paymentBusy ? 'wait' : 'pointer', fontSize: 12, fontWeight: 700,
                         }}
-                      >
-                        Jetzt bezahlen
-                      </button>
+                      >{" "}{lt("Jetzt bezahlen")}{" "}</button>
                     )}
                     {item.status === 'confirmed' && item.document_id && (
                       <a href={`/rechnungen?highlight=${encodeURIComponent(item.document_id)}`}
@@ -595,21 +577,21 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
                           color: '#555', fontSize: 13, fontWeight: 700, padding: '2px 8px', lineHeight: '18px',
                           textDecoration: 'none', display: 'inline-block',
                         }}
-                        title="In Rechnungen anzeigen">...</a>
+                        title={lt("In Rechnungen anzeigen")}>...</a>
                     )}
                   </td>
                 </tr>
               ))}
               {data.items.length === 0 && (
-                <tr><td colSpan={9} style={{ ...td, textAlign: 'center', color: '#999' }}>Keine Scans vorhanden</td></tr>
+                <tr><td colSpan={9} style={{ ...td, textAlign: 'center', color: '#999' }}>{lt("Keine Scans vorhanden")}</td></tr>
               )}
             </tbody>
           </table>
           {data.pages > 1 && (
             <div style={{ display: 'flex', gap: 4, justifyContent: 'center', marginTop: 12 }}>
-              <button disabled={page <= 1} onClick={() => setPage(page - 1)} style={btnS}>Zurück</button>
-              <span style={{ padding: '6px 12px', fontSize: 13 }}>Seite {page} von {data.pages}</span>
-              <button disabled={page >= data.pages} onClick={() => setPage(page + 1)} style={btnS}>Weiter</button>
+              <button disabled={page <= 1} onClick={() => setPage(page - 1)} style={btnS}>{lt("Zurück")}</button>
+              <span style={{ padding: '6px 12px', fontSize: 13 }}>{lt("Seite")}{" "}{page}{" "}{lt("von")}{" "}{data.pages}</span>
+              <button disabled={page >= data.pages} onClick={() => setPage(page + 1)} style={btnS}>{lt("Weiter")}</button>
             </div>
           )}
         </Card>
@@ -621,6 +603,7 @@ function ListView({ onOpenReview, onOpenPayment, highlightScanId }: {
 // ==================== REVIEW VIEW ====================
 
 function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack: () => void }) {
+  const lt=useLegacyText(legacyRecognitionEnglish);
   const [scans, setScans] = useState<any[]>([]);
   const [previewScanId, setPreviewScanId] = useState<string>(initialScanId);
   const reviewRowRefs = useRef<Record<string, HTMLTableRowElement | null>>({});
@@ -709,59 +692,59 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
   const confirmIfNeeded = (scanId: string, action: string): boolean => {
     const scan = scans.find((s: any) => s.scan_id === scanId);
     if (scan?.status === 'confirmed') {
-      return confirm(`Dieser Beleg ist bereits bestätigt und importiert.\n\n"${action}" trotzdem ausführen?`);
+      return confirm(lt('Dieser Beleg ist bereits bestätigt und importiert.\n\n"{action}" trotzdem ausführen?',{action}));
     }
     return true;
   };
 
   const handleOk = async (scanId: string) => {
-    if (!confirmIfNeeded(scanId, 'Erneut importieren')) return;
+    if (!confirmIfNeeded(scanId, lt("Erneut importieren"))) return;
     setBusyId(scanId);
     try {
       await api.confirmScan(scanId, true);
-      setMessage({ text: 'Importiert', color: colors.green });
+      setMessage({ text: lt("Importiert"), color: colors.green });
       loadAll();
     } catch (err: any) { setMessage({ text: err.message, color: colors.red }); }
     finally { setBusyId(null); }
   };
 
   const handleRescan = async (scanId: string) => {
-    if (!confirmIfNeeded(scanId, 'KI-Rescan')) return;
+    if (!confirmIfNeeded(scanId, lt("KI-Rescan"))) return;
     setBusyId(scanId);
-    setMessage({ text: 'KI-Rescan läuft...', color: colors.blue });
+    setMessage({ text: lt("KI-Rescan läuft..."), color: colors.blue });
     try {
       const proposal = await api.rescanScan(scanId, false);
       const changes = proposal.changes ?? [];
       if (changes.length === 0) {
-        setMessage({ text: 'KI-Rescan: keine Änderungen vorgeschlagen', color: colors.green });
+        setMessage({ text: lt("KI-Rescan: keine Änderungen vorgeschlagen"), color: colors.green });
         return;
       }
       const summary = changes.slice(0, 8).map((c: any) => `${c.field}: ${String(c.old_value ?? '—')} → ${String(c.new_value ?? '—')}`).join('\n');
-      if (!confirm(`KI-Vorschläge prüfen:\n\n${summary}\n\nDiese Änderungen übernehmen?`)) {
-        setMessage({ text: 'KI-Vorschläge verworfen', color: colors.gray });
+      if (!confirm(lt('KI-Vorschläge prüfen:\n\n{summary}\n\nDiese Änderungen übernehmen?',{summary}))) {
+        setMessage({ text: lt("KI-Vorschläge verworfen"), color: colors.gray });
         return;
       }
       await api.updateScanFields(scanId, proposal.fields);
-      setMessage({ text: `${changes.length} KI-Vorschlag/Vorschläge übernommen`, color: colors.green });
+      setMessage({ text: lt('{count} KI-Vorschlag/Vorschläge übernommen',{count:changes.length}), color: colors.green });
       loadAll();
     } catch (err: any) { setMessage({ text: err.message, color: colors.red }); }
     finally { setBusyId(null); }
   };
 
   const handleRuleRescan = async (scanId: string) => {
-    if (!confirmIfNeeded(scanId, 'Regelbasiert neu erkennen')) return;
+    if (!confirmIfNeeded(scanId, lt("Regelbasiert neu erkennen"))) return;
     setBusyId(scanId);
-    setMessage({ text: 'Regelbasierte Erkennung läuft...', color: colors.blue });
+    setMessage({ text: lt("Regelbasierte Erkennung läuft..."), color: colors.blue });
     try {
       await api.reparseScan(scanId);
-      setMessage({ text: 'Ohne KI neu erkannt', color: colors.green });
+      setMessage({ text: lt("Ohne KI neu erkannt"), color: colors.green });
       loadAll();
     } catch (err: any) { setMessage({ text: err.message, color: colors.red }); }
     finally { setBusyId(null); }
   };
 
   const handleDelete = async (scanId: string) => {
-    if (!confirm('Wirklich löschen?')) return;
+    if (!confirm(lt("Wirklich löschen?"))) return;
     try {
       await api.deleteScan(scanId);
       if (previewScanId === scanId) setPreviewScanId('');
@@ -779,7 +762,7 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
 
   const saveEdit = async () => {
     if (!editScanId || !editFields) return;
-    if (!confirmIfNeeded(editScanId, 'Änderungen speichern')) return;
+    if (!confirmIfNeeded(editScanId, lt("Änderungen speichern"))) return;
     setBusyId(editScanId);
     try {
       await api.updateScanFields(editScanId, { ...editFields, field_regions: editRegions });
@@ -788,21 +771,21 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
       setEditFields(null);
       setEditRegions({});
       setActiveField(null);
-      setMessage({ text: 'Gespeichert', color: colors.green });
+      setMessage({ text: lt("Gespeichert"), color: colors.green });
       loadAll();
     } catch (err: any) { setMessage({ text: err.message, color: colors.red }); }
     finally { setBusyId(null); }
   };
 
   const handleLearnRescan = async (scanId: string) => {
-    if (!confirmIfNeeded(scanId, 'Vorlage lernen')) return;
+    if (!confirmIfNeeded(scanId, lt("Vorlage lernen"))) return;
     setBusyId(scanId);
-    setMessage({ text: 'Vorlage wird gelernt...', color: colors.blue });
+    setMessage({ text: lt("Vorlage wird gelernt..."), color: colors.blue });
     try {
       const res = await api.learnAndRescan(scanId);
       const msg = res.rescanned_count > 0
-        ? `Vorlage "${res.template.vendor_name}" gelernt, ${res.rescanned_count} weitere Beleg(e) aktualisiert`
-        : `Vorlage "${res.template.vendor_name}" gelernt (keine weiteren Belege gefunden)`;
+        ? lt('Vorlage "{vendor}" gelernt, {count} weitere Beleg(e) aktualisiert',{vendor:res.template.vendor_name,count:res.rescanned_count})
+        : lt('Vorlage "{vendor}" gelernt (keine weiteren Belege gefunden)',{vendor:res.template.vendor_name});
       setMessage({ text: msg, color: colors.green });
       loadAll();
     } catch (err: any) { setMessage({ text: err.message, color: colors.red }); }
@@ -818,7 +801,7 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
     for (const id of selected) {
       try { await api.confirmScan(id, true); ok++; } catch { fail++; }
     }
-    setMessage({ text: `${ok} importiert${fail ? `, ${fail} fehlgeschlagen` : ''}`, color: fail ? colors.orange : colors.green });
+    setMessage({ text: lt('{count} importiert{failures}',{count:ok,failures:fail?lt(', {count} fehlgeschlagen',{count:fail}):''}), color: fail ? colors.orange : colors.green });
     setSelected(new Set());
     loadAll();
     setBulkBusy(false);
@@ -854,7 +837,7 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
         fail++;
       }
     }
-    const msg = `${ok} rescanned${fail ? `, ${fail} fehlgeschlagen` : ''}`;
+    const msg = `${ok} rescanned${fail ? lt(', {count} fehlgeschlagen',{count:fail}) : ''}`;
     setMessage({ text: errors.length > 0 ? `${msg} (${errors.join('; ')})` : msg, color: fail ? colors.orange : colors.green });
     setSelected(new Set());
     loadAll();
@@ -870,7 +853,7 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
         totalRescanned += res.rescanned_count ?? 0;
       } catch {}
     }
-    setMessage({ text: `Vorlagen gelernt, ${totalRescanned} weitere Beleg(e) aktualisiert`, color: colors.green });
+    setMessage({ text: lt('Vorlagen gelernt, {count} weitere Beleg(e) aktualisiert',{count:totalRescanned}), color: colors.green });
     setSelected(new Set());
     loadAll();
     setBulkBusy(false);
@@ -922,7 +905,7 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
         }
       } catch {}
     }
-    setMessage({ text: `${ok} Beleg(e) aktualisiert`, color: colors.green });
+    setMessage({ text: lt('{count} Beleg(e) aktualisiert',{count:ok}), color: colors.green });
     setSelected(new Set());
     setBulkEditing(false);
     setBulkFields({});
@@ -959,8 +942,8 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-        <Button onClick={onBack} color={colors.gray}>Zurück</Button>
-        <h1 style={{ fontSize: 18, margin: 0 }}>Belegerkennung — Detailansicht</h1>
+        <Button onClick={onBack} color={colors.gray}>{lt("Zurück")}</Button>
+        <h1 style={{ fontSize: 18, margin: 0 }}>{lt("Belegerkennung — Detailansicht")}</h1>
       </div>
       {message && <div style={{ color: message.color, marginBottom: 8, fontSize: 13 }}>{message.text}</div>}
 
@@ -975,7 +958,7 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
               isAnnotating={isEditing && editScanId === previewScanId}
               onRegionSelected={handleRegionSelected}
             />
-          ) : <span style={{ color: '#999' }}>Kein Beleg ausgewählt</span>}
+          ) : <span style={{ color: '#999' }}>{lt("Kein Beleg ausgewählt")}</span>}
         </Card>
 
         {/* Right: Scan table — scrollable independently */}
@@ -983,31 +966,29 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
           {/* Bulk action toolbar */}
           {selected.size > 0 && (
             <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 8, padding: '6px 8px', background: '#eef6ff', borderRadius: 4 }}>
-              <span style={{ fontSize: 12, fontWeight: 600 }}>{selected.size} ausgewählt:</span>
+              <span style={{ fontSize: 12, fontWeight: 600 }}>{selected.size}{" "}{lt("ausgewählt:")}</span>
               <button onClick={bulkOk} disabled={bulkBusy}
-                style={{ ...actionBtn, background: '#e8f5e9', color: colors.green, borderColor: colors.green, padding: '3px 10px' }}>OK alle</button>
+                style={{ ...actionBtn, background: '#e8f5e9', color: colors.green, borderColor: colors.green, padding: '3px 10px' }}>{lt("OK alle")}</button>
               <button onClick={bulkRescan} disabled={bulkBusy}
-                style={{ ...actionBtn, background: '#e3f2fd', color: colors.blue, borderColor: colors.blue, padding: '3px 10px' }}>Re alle</button>
+                style={{ ...actionBtn, background: '#e3f2fd', color: colors.blue, borderColor: colors.blue, padding: '3px 10px' }}>{lt("Re alle")}</button>
               <button onClick={startBulkEdit} disabled={bulkBusy}
-                style={{ ...actionBtn, background: '#fff3e0', color: colors.orange, borderColor: colors.orange, padding: '3px 10px' }}>Ed alle</button>
+                style={{ ...actionBtn, background: '#fff3e0', color: colors.orange, borderColor: colors.orange, padding: '3px 10px' }}>{lt("Ed alle")}</button>
               <button onClick={bulkLearn} disabled={bulkBusy}
-                style={{ ...actionBtn, background: '#f3e5f5', color: '#8e24aa', borderColor: '#8e24aa', padding: '3px 10px' }}>Lrn alle</button>
+                style={{ ...actionBtn, background: '#f3e5f5', color: '#8e24aa', borderColor: '#8e24aa', padding: '3px 10px' }}>{lt("Lrn alle")}</button>
               <button onClick={() => setSelected(new Set())}
-                style={{ ...actionBtn, padding: '3px 10px' }}>Auswahl aufheben</button>
+                style={{ ...actionBtn, padding: '3px 10px' }}>{lt("Auswahl aufheben")}</button>
             </div>
           )}
 
           {/* Bulk edit row */}
           {bulkEditing && selected.size > 0 && (
             <div style={{ marginBottom: 8, padding: 10, background: '#fffde7', borderRadius: 4, border: '1px solid #f0e68c' }}>
-              <div style={{ fontSize: 11, color: '#888', marginBottom: 6 }}>
-                Werte eingeben die auf alle {selected.size} ausgewählte(n) Beleg(e) übernommen werden. Leere Felder werden nicht geändert.
-              </div>
+              <div style={{ fontSize: 11, color: '#888', marginBottom: 6 }}>{" "}{lt("Werte eingeben die auf alle")}{" "}{selected.size}{" "}{lt("ausgewählte(n) Beleg(e) übernommen werden. Leere Felder werden nicht geändert.")}{" "}</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, fontSize: 12, alignItems: 'center' }}>
-                <EditField label="Verkäufer" value={bulkFields.seller_name ?? ''} onChange={v => setBulkFields({ ...bulkFields, seller_name: v })} />
-                <EditField label="Land" value={bulkFields.seller_country ?? ''} onChange={v => setBulkFields({ ...bulkFields, seller_country: v })} width={50} />
-                <EditField label="USt-ID" value={bulkFields.seller_vat_id ?? ''} onChange={v => setBulkFields({ ...bulkFields, seller_vat_id: v })} />
-                <EditField label="USt%" value={bulkFields.vat_rate ?? ''} onChange={v => setBulkFields({ ...bulkFields, vat_rate: v })} width={40} />
+                <EditField label={lt("Verkäufer")} value={bulkFields.seller_name ?? ''} onChange={v => setBulkFields({ ...bulkFields, seller_name: v })} />
+                <EditField label={lt("Land")} value={bulkFields.seller_country ?? ''} onChange={v => setBulkFields({ ...bulkFields, seller_country: v })} width={50} />
+                <EditField label={lt("USt-ID")} value={bulkFields.seller_vat_id ?? ''} onChange={v => setBulkFields({ ...bulkFields, seller_vat_id: v })} />
+                <EditField label={lt("USt%")} value={bulkFields.vat_rate ?? ''} onChange={v => setBulkFields({ ...bulkFields, vat_rate: v })} width={40} />
                 <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, cursor: 'pointer' }}>
                   <input type="checkbox" checked={!!bulkFields.is_usd}
                     onChange={e => setBulkFields({ ...bulkFields, is_usd: e.target.checked })} />
@@ -1016,14 +997,12 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
                 <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, cursor: 'pointer' }}>
                   <input type="checkbox" checked={!!bulkFields.is_eust}
                     onChange={e => setBulkFields({ ...bulkFields, is_eust: e.target.checked })} />
-                  <span style={{ fontWeight: 600, color: bulkFields.is_eust ? '#c0392b' : '#666' }}>EUSt</span>
+                  <span style={{ fontWeight: 600, color: bulkFields.is_eust ? '#c0392b' : '#666' }}>{lt("EUSt")}</span>
                 </label>
                 <button onClick={saveBulkEdit} disabled={bulkBusy}
-                  style={{ ...actionBtn, background: colors.green, color: '#fff', borderColor: colors.green, padding: '4px 12px' }}>
-                  Auf alle anwenden
-                </button>
+                  style={{ ...actionBtn, background: colors.green, color: '#fff', borderColor: colors.green, padding: '4px 12px' }}>{" "}{lt("Auf alle anwenden")}{" "}</button>
                 <button onClick={cancelBulkEdit}
-                  style={{ ...actionBtn, padding: '4px 12px' }}>Abbrechen</button>
+                  style={{ ...actionBtn, padding: '4px 12px' }}>{lt("Abbrechen")}</button>
               </div>
             </div>
           )}
@@ -1036,15 +1015,15 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
                     checked={scans.length > 0 && selected.size === scans.length}
                     onChange={toggleAllSelect} />
                 </th>
-                <SortTh label="Datei" sortKey="filename" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
-                <SortTh label="Datum" sortKey="date" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
-                <SortTh label="Verkäufer" sortKey="seller" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
-                <SortTh label="Land" sortKey="country" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
-                <SortTh label="Brutto EUR" sortKey="gross" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortTh label={lt("Datei")} sortKey="filename" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortTh label={lt("Datum")} sortKey="date" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortTh label={lt("Verkäufer")} sortKey="seller" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortTh label={lt("Land")} sortKey="country" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortTh label={lt("Brutto EUR")} sortKey="gross" current={sort.sortKey} dir={sort.sortDir} onToggle={sort.toggleSort} />
                 <th style={th}>FX</th>
-                <th style={th}>USt%</th>
+                <th style={th}>{lt("USt%")}</th>
                 <th style={th}>Status</th>
-                <th style={th}>Aktionen</th>
+                <th style={th}>{lt("Aktionen")}</th>
               </tr>
             </thead>
             <tbody>
@@ -1100,7 +1079,7 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
                         {f?.vat_rate != null ? `${Math.round(f.vat_rate * 100)}%` : '—'}
                       </td>
                       <td style={td}>
-                        <Badge text={STATUS_LABELS[item.status] ?? item.status}
+                        <Badge text={lt(STATUS_LABELS[item.status] ?? item.status)}
                           color={STATUS_COLORS[item.status] ?? colors.gray} />
                       </td>
                       <td style={{ ...td, whiteSpace: 'nowrap' }} onClick={e => e.stopPropagation()}>
@@ -1108,33 +1087,33 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
                           <div style={{ display: 'flex', gap: 3 }}>
                                 <button onClick={() => handleOk(item.scan_id)} disabled={isBusy}
                                   style={{ ...actionBtn, background: '#e8f5e9', color: colors.green, borderColor: colors.green }}
-                                  title="Importieren">OK</button>
+                                  title={lt("Importieren")}>OK</button>
                                 <button onClick={() => handleRuleRescan(item.scan_id)} disabled={isBusy}
                                   style={{ ...actionBtn, background: '#e3f2fd', color: colors.blue, borderColor: colors.blue }}
-                                  title="Ohne KI neu erkennen">Re</button>
+                                  title={lt("Ohne KI neu erkennen")}>Re</button>
                                 <button onClick={() => handleRescan(item.scan_id)} disabled={isBusy}
                                   style={{ ...actionBtn, background: '#fff4e5', color: '#b45f06', borderColor: '#b45f06' }}
-                                  title="Optionaler KI-Rescan mit Vorschau">KI</button>
+                                  title={lt("Optionaler KI-Rescan mit Vorschau")}>KI</button>
                                 <button onClick={() => handleLearnRescan(item.scan_id)} disabled={isBusy}
                                   style={{ ...actionBtn, background: '#f3e5f5', color: '#8e24aa', borderColor: '#8e24aa' }}
-                                  title="Vorlage lernen & andere Belege aktualisieren">Lrn</button>
+                                  title={lt("Vorlage lernen & andere Belege aktualisieren")}>Lrn</button>
                             <button onClick={() => startEdit(item.scan_id)}
                               style={{ ...actionBtn, background: '#fff3e0', color: colors.orange, borderColor: colors.orange }}
-                              title="Bearbeiten">Ed</button>
+                              title={lt("Bearbeiten")}>Ed</button>
                             <button onClick={() => {
                               if (item.document_id) {
                                 // Check if document is linked to a match
                                 const docId = item.document_id;
-                                if (!confirm(`Dieser Beleg ist bereits importiert${item.status === 'confirmed' ? ' und bestätigt' : ''}. Wenn er mit einer Buchung verknüpft ist, wird die Verknüpfung gelöst.\n\nWirklich löschen?`)) return;
+                                if (!confirm(lt('Dieser Beleg ist bereits importiert{confirmed}. Wenn er mit einer Buchung verknüpft ist, wird die Verknüpfung gelöst.\n\nWirklich löschen?',{confirmed:item.status==='confirmed'?lt(' und bestätigt'):''}))) return;
                               }
                               handleDelete(item.scan_id);
                             }}
                               style={{ ...actionBtn, background: '#fee', color: colors.red, borderColor: colors.red }}
-                              title="Löschen">X</button>
+                              title={lt("Löschen")}>X</button>
                             {isConfirmed && item.document_id && (
                               <a href={`/rechnungen?highlight=${encodeURIComponent(item.document_id)}`}
                                 style={{ ...actionBtn, background: '#f0f0f0', color: '#555', borderColor: '#bbb', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
-                                title="In Rechnungen anzeigen">...</a>
+                                title={lt("In Rechnungen anzeigen")}>...</a>
                             )}
                           </div>
                         )}
@@ -1144,26 +1123,24 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
                     {isEditingThis && editFields && (
                       <tr style={{ background: '#fffde7' }}>
                         <td colSpan={10} style={{ padding: 12 }}>
-                          <div style={{ fontSize: 11, color: '#888', marginBottom: 6 }}>
-                            Feld anklicken, dann im Beleg Bereich markieren (Klick + Ziehen)
-                          </div>
+                          <div style={{ fontSize: 11, color: '#888', marginBottom: 6 }}>{" "}{lt("Feld anklicken, dann im Beleg Bereich markieren (Klick + Ziehen)")}{" "}</div>
                           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, fontSize: 12, alignItems: 'center' }}>
-                            <AnnotatableField field="invoice_number" label="Re-Nr." value={editFields.invoice_number ?? ''}
+                            <AnnotatableField field="invoice_number" label={lt("Re-Nr.")} value={editFields.invoice_number ?? ''}
                               hasRegion={!!editRegions.invoice_number} active={activeField === 'invoice_number'}
                               onActivate={() => setActiveField(activeField === 'invoice_number' ? null : 'invoice_number')}
                               onChange={v => setEditFields({ ...editFields, invoice_number: v })} />
-                            <AnnotatableField field="invoice_date" label="Datum" value={editFields.invoice_date ?? ''}
+                            <AnnotatableField field="invoice_date" label={lt("Datum")} value={editFields.invoice_date ?? ''}
                               hasRegion={!!editRegions.invoice_date} active={activeField === 'invoice_date'}
                               onActivate={() => setActiveField(activeField === 'invoice_date' ? null : 'invoice_date')}
                               onChange={v => setEditFields({ ...editFields, invoice_date: v })} type="date" />
-                            <AnnotatableField field="seller_name" label="Verkäufer" value={editFields.seller_name ?? ''}
+                            <AnnotatableField field="seller_name" label={lt("Verkäufer")} value={editFields.seller_name ?? ''}
                               hasRegion={!!editRegions.seller_name} active={activeField === 'seller_name'}
                               onActivate={() => setActiveField(activeField === 'seller_name' ? null : 'seller_name')}
                               onChange={v => setEditFields({ ...editFields, seller_name: v })} />
-                            <EditField label="Land" value={editFields.seller_country ?? ''} onChange={v => setEditFields({ ...editFields, seller_country: v })} width={50} />
-                            <EditField label="USt-ID" value={editFields.seller_vat_id ?? ''} onChange={v => setEditFields({ ...editFields, seller_vat_id: v })} />
+                            <EditField label={lt("Land")} value={editFields.seller_country ?? ''} onChange={v => setEditFields({ ...editFields, seller_country: v })} width={50} />
+                            <EditField label={lt("USt-ID")} value={editFields.seller_vat_id ?? ''} onChange={v => setEditFields({ ...editFields, seller_vat_id: v })} />
                             <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, cursor: 'pointer' }}
-                              title="USD-Rechnung: Betrag in FX-Spalte, EUR bleibt leer bis Bank-Abgleich">
+                              title={lt("USD-Rechnung: Betrag in FX-Spalte, EUR bleibt leer bis Bank-Abgleich")}>
                               <input type="checkbox"
                                 checked={editFields.currency_code === 'USD' || editFields.meta?.original_currency === 'USD'}
                                 onChange={e => {
@@ -1191,7 +1168,7 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
                               <span style={{ fontWeight: 600, color: editFields.currency_code === 'USD' ? '#e67e22' : '#666' }}>USD</span>
                             </label>
                             <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, cursor: 'pointer' }}
-                              title="Gutschrift/Erstattung: Betrag wird positiv (Einnahme)">
+                              title={lt("Gutschrift/Erstattung: Betrag wird positiv (Einnahme)")}>
                               <input type="checkbox"
                                 checked={!!editFields.meta?.is_refund}
                                 onChange={e => {
@@ -1203,21 +1180,21 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
                                   }
                                   setEditFields({ ...editFields, meta });
                                 }} />
-                              <span style={{ fontWeight: 600, color: editFields.meta?.is_refund ? '#27ae60' : '#666' }}>Gutschrift</span>
+                              <span style={{ fontWeight: 600, color: editFields.meta?.is_refund ? '#27ae60' : '#666' }}>{lt("Gutschrift")}</span>
                             </label>
-                            <AnnotatableAmount field="gross_amount_minor" label="Brutto" value={editFields.gross_amount_minor}
+                            <AnnotatableAmount field="gross_amount_minor" label={lt("Brutto")} value={editFields.gross_amount_minor}
                               hasRegion={!!editRegions.gross_amount_minor} active={activeField === 'gross_amount_minor'}
                               onActivate={() => setActiveField(activeField === 'gross_amount_minor' ? null : 'gross_amount_minor')}
                               onChange={v => setEditFields({ ...editFields, gross_amount_minor: v })} />
-                            <AnnotatableAmount field="net_amount_minor" label="Netto" value={editFields.net_amount_minor}
+                            <AnnotatableAmount field="net_amount_minor" label={lt("Netto")} value={editFields.net_amount_minor}
                               hasRegion={!!editRegions.net_amount_minor} active={activeField === 'net_amount_minor'}
                               onActivate={() => setActiveField(activeField === 'net_amount_minor' ? null : 'net_amount_minor')}
                               onChange={v => setEditFields({ ...editFields, net_amount_minor: v })} />
-                            <EditAmount label="USt" value={editFields.vat_amount_minor} onChange={v => setEditFields({ ...editFields, vat_amount_minor: v })} />
-                            <EditField label="USt%" value={editFields.vat_rate != null ? String(Math.round(editFields.vat_rate * 100)) : ''}
+                            <EditAmount label={lt("USt")} value={editFields.vat_amount_minor} onChange={v => setEditFields({ ...editFields, vat_amount_minor: v })} />
+                            <EditField label={lt("USt%")} value={editFields.vat_rate != null ? String(Math.round(editFields.vat_rate * 100)) : ''}
                               onChange={v => setEditFields({ ...editFields, vat_rate: v ? parseFloat(v) / 100 : null })} width={40} />
                             <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, cursor: 'pointer' }}
-                              title="EUSt-Split: Rechnung mit Einfuhrumsatzsteuer (z.B. UPS, DHL, Zoll)">
+                              title={lt("EUSt-Split: Rechnung mit Einfuhrumsatzsteuer (z.B. UPS, DHL, Zoll)")}>
                               <input type="checkbox"
                                 checked={!!editFields.meta?.carrier_eust_split}
                                 onChange={e => {
@@ -1231,25 +1208,21 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
                                   }
                                   setEditFields({ ...editFields, meta });
                                 }} />
-                              <span style={{ fontWeight: 600, color: editFields.meta?.carrier_eust_split ? '#c0392b' : '#666' }}>EUSt</span>
+                              <span style={{ fontWeight: 600, color: editFields.meta?.carrier_eust_split ? '#c0392b' : '#666' }}>{lt("EUSt")}</span>
                             </label>
                             {editFields.meta?.carrier_eust_split && (
-                              <AnnotatableAmount field="eust_amount" label="EUSt-Betrag"
+                              <AnnotatableAmount field="eust_amount" label={lt("EUSt-Betrag")}
                                 value={editFields.meta?.eust_amount_minor ?? null}
                                 hasRegion={!!editRegions.eust_amount} active={activeField === 'eust_amount'}
                                 onActivate={() => setActiveField(activeField === 'eust_amount' ? null : 'eust_amount')}
                                 onChange={v => setEditFields({ ...editFields, meta: { ...editFields.meta, eust_amount_minor: v } })} />
                             )}
-                            <EditField label="E-Mail" value={editFields.meta?.seller_email ?? ''}
+                            <EditField label={lt("E-Mail")} value={editFields.meta?.seller_email ?? ''}
                               onChange={v => setEditFields({ ...editFields, meta: { ...editFields.meta, seller_email: v || undefined } })} width={160} />
                             <button onClick={saveEdit} disabled={isBusy}
-                              style={{ ...actionBtn, background: colors.green, color: '#fff', borderColor: colors.green, padding: '4px 12px' }}>
-                              Speichern
-                            </button>
+                              style={{ ...actionBtn, background: colors.green, color: '#fff', borderColor: colors.green, padding: '4px 12px' }}>{" "}{lt("Speichern")}{" "}</button>
                             <button onClick={cancelEdit}
-                              style={{ ...actionBtn, padding: '4px 12px' }}>
-                              Abbrechen
-                            </button>
+                              style={{ ...actionBtn, padding: '4px 12px' }}>{" "}{lt("Abbrechen")}{" "}</button>
                           </div>
                         </td>
                       </tr>
@@ -1258,7 +1231,7 @@ function ReviewView({ scanId: initialScanId, onBack }: { scanId: string; onBack:
                 );
               })}
               {scans.length === 0 && (
-                <tr><td colSpan={10} style={{ ...td, textAlign: 'center', color: '#999' }}>Keine Scans</td></tr>
+                <tr><td colSpan={10} style={{ ...td, textAlign: 'center', color: '#999' }}>{lt("Keine Scans")}</td></tr>
               )}
             </tbody>
           </table>
@@ -1355,6 +1328,7 @@ function AnnotatedPreview({ scan, activeField, fieldRegions, isAnnotating, onReg
   isAnnotating: boolean;
   onRegionSelected: (field: string, region: any, text: string) => void;
 }) {
+  const lt=useLegacyText(legacyRecognitionEnglish);
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -1580,8 +1554,7 @@ function AnnotatedPreview({ scan, activeField, fieldRegions, isAnnotating, onReg
           position: 'absolute', top: 4, left: 4, background: (FIELD_COLORS[activeField] ?? '#2196f3') + 'dd',
           color: '#fff', padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 700,
         }}>
-          {activeField.replace(/_minor$/, '').replace(/_/g, ' ')} markieren — ziehen Sie ein Rechteck
-        </div>
+          {activeField.replace(/_minor$/, '').replace(/_/g, ' ')}{" "}{lt("markieren — ziehen Sie ein Rechteck")}{" "}</div>
       )}
     </div>
   );
@@ -1592,10 +1565,11 @@ function AnnotatableField({ field, label, value, hasRegion, active, onActivate, 
   field: string; label: string; value: string; hasRegion: boolean; active: boolean;
   onActivate: () => void; onChange: (v: string) => void; type?: string;
 }) {
+  const lt=useLegacyText(legacyRecognitionEnglish);
   const color = FIELD_COLORS[field] ?? '#666';
   return (
     <label style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11 }}>
-      <button onClick={onActivate} title={active ? 'Markierung beenden' : 'Auf Beleg markieren'}
+      <button onClick={onActivate} title={active ? lt("Markierung beenden") : lt("Auf Beleg markieren")}
         style={{
           width: 16, height: 16, borderRadius: 3, border: `2px solid ${color}`,
           background: active ? color : hasRegion ? color + '40' : 'transparent',
@@ -1619,10 +1593,11 @@ function AnnotatableAmount({ field, label, value, hasRegion, active, onActivate,
   field: string; label: string; value: number | null; hasRegion: boolean; active: boolean;
   onActivate: () => void; onChange: (v: number | null) => void;
 }) {
+  const lt=useLegacyText(legacyRecognitionEnglish);
   const color = FIELD_COLORS[field] ?? '#666';
   return (
     <label style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11 }}>
-      <button onClick={onActivate} title={active ? 'Markierung beenden' : 'Auf Beleg markieren'}
+      <button onClick={onActivate} title={active ? lt("Markierung beenden") : lt("Auf Beleg markieren")}
         style={{
           width: 16, height: 16, borderRadius: 3, border: `2px solid ${color}`,
           background: active ? color : hasRegion ? color + '40' : 'transparent',
@@ -1687,10 +1662,11 @@ function AmountRow({ label, field, fields, confidence, onChange, disabled }: {
 }
 
 function ConfidenceDot({ value }: { value?: number }) {
+  const lt=useLegacyText(legacyRecognitionEnglish);
   if (value == null) return <span style={{ width: 12 }} />;
   const color = value >= 0.8 ? colors.green : value >= 0.5 ? colors.orange : colors.red;
   return (
-    <span title={`Konfidenz: ${Math.round(value * 100)}%`}
+    <span title={lt('Konfidenz: {value}%',{value:Math.round(value*100)})}
       style={{ width: 10, height: 10, borderRadius: '50%', background: color, display: 'inline-block', flexShrink: 0 }} />
   );
 }
@@ -1728,6 +1704,7 @@ function EditAmount({ label, value, onChange }: {
 // ==================== KI-KOSTENVERLAUF ====================
 
 function AiCostPanel() {
+  const lt=useLegacyText(legacyRecognitionEnglish);
   const [snapshot, setSnapshot] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [expanded, setExpanded] = useState(true);
@@ -1759,21 +1736,17 @@ function AiCostPanel() {
   return (
     <Card style={{ marginBottom: 16, background: '#f8f9fa' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3 style={{ margin: 0, fontSize: 14 }}>
-          KI-Kostenverlauf
-          {s && (
-            <span style={{ fontSize: 11, color: colors.green, marginLeft: 8, fontWeight: 400 }}>
-              Aktive Session: {s.callCount} Aufrufe, {s.totalTokens.toLocaleString('de-DE')} Tokens, ${formatCost(s.totalCostUsd)}
+        <h3 style={{ margin: 0, fontSize: 14 }}>{" "}{lt("KI-Kostenverlauf")}{" "}{s && (
+            <span style={{ fontSize: 11, color: colors.green, marginLeft: 8, fontWeight: 400 }}>{" "}{lt("Aktive Session:")}{" "}{s.callCount}{" "}{lt("Aufrufe,")}{" "}{s.totalTokens.toLocaleString('de-DE')} Tokens, ${formatCost(s.totalCostUsd)}
             </span>
           )}
         </h3>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <span style={{ fontSize: 11, color: '#888', fontFamily: 'monospace' }}>
-            Heute: ${formatCost(snapshot.todayTotalUsd)} ({snapshot.todayTotalTokens.toLocaleString('de-DE')} Tok)
+          <span style={{ fontSize: 11, color: '#888', fontFamily: 'monospace' }}>{" "}{lt("Heute: $")}{formatCost(snapshot.todayTotalUsd)} ({snapshot.todayTotalTokens.toLocaleString('de-DE')} Tok)
           </span>
           <button onClick={() => setExpanded(!expanded)}
             style={{ padding: '2px 8px', borderRadius: 4, border: '1px solid #ddd', cursor: 'pointer', fontSize: 10, background: expanded ? '#2c3e50' : '#ecf0f1', color: expanded ? '#fff' : '#333' }}>
-            {expanded ? 'Einklappen' : 'Verlauf'}
+            {expanded ? lt("Einklappen") : lt("Verlauf")}
           </button>
         </div>
       </div>
@@ -1783,9 +1756,9 @@ function AiCostPanel() {
           {/* Totals */}
           <div style={{ display: 'flex', gap: 16, fontSize: 11, padding: '6px 8px', background: '#eee', borderRadius: 4, marginBottom: 6 }}>
             <span><b>{history.length}</b> Sessions</span>
-            <span><b>{totalCalls}</b> Aufrufe</span>
+            <span><b>{totalCalls}</b>{" "}{lt("Aufrufe")}</span>
             <span style={{ fontFamily: 'monospace' }}><b>{totalTokens.toLocaleString('de-DE')}</b> Tokens</span>
-            <span style={{ fontFamily: 'monospace', fontWeight: 700 }}>Gesamt: ${formatCost(totalCost)}</span>
+            <span style={{ fontFamily: 'monospace', fontWeight: 700 }}>{lt("Gesamt: $")}{formatCost(totalCost)}</span>
           </div>
 
           <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
@@ -1793,11 +1766,11 @@ function AiCostPanel() {
               <tr>
                 <th style={{ ...th, width: 16 }}></th>
                 <th style={th}>Start</th>
-                <th style={th}>Aufrufe</th>
+                <th style={th}>{lt("Aufrufe")}</th>
                 <th style={{ ...th, textAlign: 'right' }}>Prompt</th>
                 <th style={{ ...th, textAlign: 'right' }}>Completion</th>
                 <th style={{ ...th, textAlign: 'right' }}>Tokens</th>
-                <th style={{ ...th, textAlign: 'right' }}>Kosten</th>
+                <th style={{ ...th, textAlign: 'right' }}>{lt("Kosten")}</th>
                 <th style={th}>Status</th>
               </tr>
             </thead>
@@ -1817,7 +1790,7 @@ function AiCostPanel() {
                       <span style={{ fontSize: 9, padding: '1px 4px', borderRadius: 3,
                         background: h.status === 'active' ? '#e8f5e9' : h.status === 'limit_reached' ? '#fee' : '#f0f0f0',
                         color: h.status === 'active' ? colors.green : h.status === 'limit_reached' ? colors.red : '#666',
-                      }}>{h.status === 'active' ? 'Aktiv' : h.status === 'completed' ? 'Beendet' : h.status}</span>
+                      }}>{h.status === 'active' ? lt("Aktiv") : h.status === 'completed' ? lt("Beendet") : h.status}</span>
                     </td>
                   </tr>
                   {expandedSession === h.id && (
@@ -1825,17 +1798,17 @@ function AiCostPanel() {
                       <td colSpan={8} style={{ padding: 0 }}>
                         <div style={{ background: '#fafafa', padding: '4px 12px 4px 24px', borderBottom: '2px solid #ddd' }}>
                           {entries.length === 0 ? (
-                            <div style={{ fontSize: 10, color: '#999' }}>Keine Einträge</div>
+                            <div style={{ fontSize: 10, color: '#999' }}>{lt("Keine Einträge")}</div>
                           ) : (
                             <table style={{ width: '100%', fontSize: 10, borderCollapse: 'collapse' }}>
                               <thead>
                                 <tr>
-                                  <th style={{ ...th, fontSize: 9 }}>Zeit</th>
-                                  <th style={{ ...th, fontSize: 9 }}>Modell</th>
+                                  <th style={{ ...th, fontSize: 9 }}>{lt("Zeit")}</th>
+                                  <th style={{ ...th, fontSize: 9 }}>{lt("Modell")}</th>
                                   <th style={{ ...th, fontSize: 9, textAlign: 'right' }}>Prompt</th>
                                   <th style={{ ...th, fontSize: 9, textAlign: 'right' }}>Completion</th>
                                   <th style={{ ...th, fontSize: 9, textAlign: 'right' }}>Tokens</th>
-                                  <th style={{ ...th, fontSize: 9, textAlign: 'right' }}>Kosten</th>
+                                  <th style={{ ...th, fontSize: 9, textAlign: 'right' }}>{lt("Kosten")}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -1865,7 +1838,7 @@ function AiCostPanel() {
       )}
 
       {expanded && history.length === 0 && (
-        <div style={{ marginTop: 8, fontSize: 12, color: '#999' }}>Noch keine KI-Aufrufe. Nach dem nächsten Import erscheinen hier die Kosten.</div>
+        <div style={{ marginTop: 8, fontSize: 12, color: '#999' }}>{lt("Noch keine KI-Aufrufe. Nach dem nächsten Import erscheinen hier die Kosten.")}</div>
       )}
     </Card>
   );
@@ -1899,6 +1872,7 @@ function fmtDate(iso: string | null): string {
 // ==================== AI SETTINGS PANEL ====================
 
 function AiSettingsPanel() {
+  const lt=useLegacyText(legacyRecognitionEnglish);
   const [aiStatus, setAiStatus] = useState<any>(null);
   const [apiKey, setApiKey] = useState('');
   const [models, setModels] = useState<any[]>([]);
@@ -1923,7 +1897,7 @@ function AiSettingsPanel() {
       setModels(res.models ?? []);
       if (res.current_model) setSelectedModel(res.current_model);
     } catch (err: any) {
-      setMessage({ text: 'Modelle laden fehlgeschlagen: ' + err.message, color: colors.red });
+      setMessage({ text: lt("Modelle laden fehlgeschlagen: ") + err.message, color: colors.red });
     } finally { setLoadingModels(false); }
   };
 
@@ -1935,7 +1909,7 @@ function AiSettingsPanel() {
       if (apiKey) setApiKey('');
       const s = await api.getAiStatus();
       setAiStatus(s);
-      setMessage({ text: 'Gespeichert', color: colors.green });
+      setMessage({ text: lt("Gespeichert"), color: colors.green });
     } catch (err: any) {
       setMessage({ text: err.message, color: colors.red });
     } finally { setSaving(false); }
@@ -1945,7 +1919,7 @@ function AiSettingsPanel() {
     await api.deleteAiConfig();
     setAiStatus({ enabled: false, model: null, fallback_model: null, masked_key: null });
     setModels([]);
-    setMessage({ text: 'API-Key entfernt', color: colors.orange });
+    setMessage({ text: lt("API-Key entfernt"), color: colors.orange });
   };
 
   const modelSelect = (value: string, onChange: (v: string) => void, placeholder: string) => {
@@ -1968,12 +1942,10 @@ function AiSettingsPanel() {
 
   return (
     <Card style={{ marginBottom: 16, background: '#f8f9fa' }}>
-      <h3 style={{ fontSize: 14, margin: '0 0 12px' }}>
-        KI-Erkennung (OpenRouter)
-        {aiStatus?.enabled ? (
-          <Badge text="Aktiv" color={colors.green} />
+      <h3 style={{ fontSize: 14, margin: '0 0 12px' }}>{" "}{lt("KI-Erkennung (OpenRouter)")}{" "}{aiStatus?.enabled ? (
+          <Badge text={lt("Aktiv")} color={colors.green} />
         ) : (
-          <span style={{ color: '#999', fontSize: 12, marginLeft: 8 }}>Nicht konfiguriert</span>
+          <span style={{ color: '#999', fontSize: 12, marginLeft: 8 }}>{lt("Nicht konfiguriert")}</span>
         )}
       </h3>
 
@@ -1982,16 +1954,13 @@ function AiSettingsPanel() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <label style={aiLabel}>API-Key:</label>
           {aiStatus?.masked_key && !apiKey && (
-            <span style={{ fontSize: 12, color: '#666' }}>
-              Gespeichert: <code>{aiStatus.masked_key}</code>
+            <span style={{ fontSize: 12, color: '#666' }}>{" "}{lt("Gespeichert:")}{" "}<code>{aiStatus.masked_key}</code>
               <button onClick={handleDelete}
-                style={{ marginLeft: 8, fontSize: 11, color: colors.red, background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
-                entfernen
-              </button>
+                style={{ marginLeft: 8, fontSize: 11, color: colors.red, background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>{" "}{lt("entfernen")}{" "}</button>
             </span>
           )}
           <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)}
-            placeholder={aiStatus?.masked_key ? 'Neuen Key eingeben (optional)' : 'sk-or-v1-...'}
+            placeholder={aiStatus?.masked_key ? lt("Neuen Key eingeben (optional)") : 'sk-or-v1-...'}
             style={{ flex: 1, padding: '4px 8px', borderRadius: 4, border: '1px solid #ddd', fontSize: 13 }} />
         </div>
 
@@ -2001,7 +1970,7 @@ function AiSettingsPanel() {
           {modelSelect(selectedModel, setSelectedModel, 'google/gemini-2.0-flash-001')}
           <button onClick={loadModels} disabled={loadingModels || !aiStatus?.enabled}
             style={{ padding: '4px 10px', borderRadius: 4, border: '1px solid #ddd', cursor: 'pointer', fontSize: 11, background: '#ecf0f1' }}>
-            {loadingModels ? '...' : 'Modelle laden'}
+            {loadingModels ? '...' : lt("Modelle laden")}
           </button>
         </div>
 
@@ -2009,23 +1978,19 @@ function AiSettingsPanel() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <label style={aiLabel}>Fallback:</label>
           {modelSelect(selectedFallback, setSelectedFallback, 'anthropic/claude-sonnet-4')}
-          <span style={{ fontSize: 11, color: '#999', width: 90, flexShrink: 0 }}>bei Problemen</span>
+          <span style={{ fontSize: 11, color: '#999', width: 90, flexShrink: 0 }}>{lt("bei Problemen")}</span>
         </div>
 
         {/* Actions */}
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <Button onClick={handleSave} disabled={saving} color="#2c3e50">
-            {saving ? '...' : 'Speichern'}
+            {saving ? '...' : lt("Speichern")}
           </Button>
           {message && <span style={{ fontSize: 12, color: message.color }}>{message.text}</span>}
         </div>
 
         <div style={{ fontSize: 11, color: '#999', lineHeight: 1.5 }}>
-          <b>Standard-Modell</b> (schnell + günstig) wird zuerst versucht.
-          Wenn weniger als 3 von 4 Pflichtfeldern erkannt werden, wird automatisch
-          das <b>Fallback-Modell</b> (stärker) eingesetzt.
-          KI nur aktiv wenn Regex/Vorlage nicht ausreichen.
-        </div>
+          <b>{lt("Standard-Modell")}</b>{" "}{lt("(schnell + günstig) wird zuerst versucht. Wenn weniger als 3 von 4 Pflichtfeldern erkannt werden, wird automatisch das")}{" "}<b>{lt("Fallback-Modell")}</b>{" "}{lt("(stärker) eingesetzt. KI nur aktiv wenn Regex/Vorlage nicht ausreichen.")}{" "}</div>
       </div>
     </Card>
   );

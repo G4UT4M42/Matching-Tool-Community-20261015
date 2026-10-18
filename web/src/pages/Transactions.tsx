@@ -1,3 +1,5 @@
+import {useLegacyText} from '../i18n/legacy';
+import {legacyCoreEnglish} from '../i18n/legacy-core';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { api } from '../api';
@@ -26,7 +28,8 @@ function loadTxnState(): { tab: string; page: number; scroll: number; status: st
   } catch { return null; }
 }
 
-export function Transactions() {
+export function Transactions({allowImport=true,allowAnnotations=true}:{allowImport?:boolean;allowAnnotations?:boolean} = {}) {
+  const lt = useLegacyText(legacyCoreEnglish);
   const [searchParams] = useSearchParams();
   const hasUrlParams = searchParams.has('highlight') || searchParams.has('source');
   const saved = hasUrlParams ? null : loadTxnState();
@@ -177,7 +180,7 @@ export function Transactions() {
     (counts[t.key]?.total ?? 0) > 0 || FILE_IMPORT_SOURCES.includes(t.key) || t.key === 'paypal' || t.key === 'stripe' || t.key === 'enablebanking'
   );
 
-  const hasImport = FILE_IMPORT_SOURCES.includes(activeTab) || activeTab === 'paypal' || activeTab === 'stripe' || activeTab === 'enablebanking';
+  const hasImport = allowImport && (FILE_IMPORT_SOURCES.includes(activeTab) || activeTab === 'paypal' || activeTab === 'stripe' || activeTab === 'enablebanking');
 
   const openPrivatDialog = (txn: any) => setPrivatDialog({ txn });
 
@@ -198,11 +201,11 @@ export function Transactions() {
     load();
   };
 
-  if (!data) return <p>Loading...</p>;
+  if (!data) return <p>{lt("Wird geladen...")}</p>;
 
   return (
     <div>
-      <h1 style={{ fontSize: 22, marginBottom: 16 }}>Konten</h1>
+      <h1 style={{ fontSize: 22, marginBottom: 16 }}>{lt("Konten")}</h1>
 
       {/* Tabs */}
       <div style={{ display: 'flex', borderBottom: '2px solid #eee', marginBottom: 16 }}>
@@ -254,49 +257,49 @@ export function Transactions() {
               color: showImport ? '#27ae60' : '#555',
             }}
           >
-            {showImport ? 'Import ausblenden' : 'Import'}
+            {showImport ? lt("Import ausblenden") : 'Import'}
           </button>
         )}
-        <Select value={status} onChange={(v) => { setStatus(v); setPage(1); }} options={[
-          { value: '', label: 'Alle Status' },
-          { value: 'matched', label: 'Matched' },
-          { value: 'unmatched', label: 'Unmatched' },
+        <Select accessibleName={lt("Buchungsstatus")} value={status} onChange={(v) => { setStatus(v); setPage(1); }} options={[
+          { value: '', label: lt("Alle Status") },
+          { value: 'matched', label: lt("Zugeordnet") },
+          { value: 'unmatched', label: lt("Nicht zugeordnet") },
         ]} />
-        <SearchInput value={search} onChange={setSearch} placeholder="Suche Beschreibung/Gegenkonto..." />
-        <button onClick={doSearch} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #ddd', cursor: 'pointer' }}>Suchen</button>
-        <Tip text="Nur Buchungen des Arbeitszeitraums anzeigen oder alle Jahre">
+        <SearchInput value={search} onChange={setSearch} placeholder={lt("Suche Beschreibung/Gegenkonto...")} />
+        <button onClick={doSearch} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #ddd', cursor: 'pointer' }}>{lt("Suchen")}</button>
+        <Tip text={lt("Nur Buchungen des Arbeitszeitraums anzeigen oder alle Jahre")}>
           <button onClick={() => { const v = !periodFilter; setPeriodFilter(v); localStorage.setItem('txn_periodFilter', String(v)); setPage(1); }}
             style={{
               padding: '6px 12px', borderRadius: 6, fontSize: 12, cursor: 'pointer', fontWeight: 600,
               background: periodFilter ? '#2c3e50' : '#ecf0f1', color: periodFilter ? '#fff' : '#333',
               border: periodFilter ? '1px solid #2c3e50' : '1px solid #ddd',
             }}>
-            {periodFilter ? `${workingYear}${quarter ? ' Q' + quarter : ''}` : 'Alle Jahre'}
+            {periodFilter ? `${workingYear}${quarter ? ' Q' + quarter : ''}` : lt("Alle Jahre")}
           </button>
         </Tip>
-        <span style={{ fontSize: 13, color: '#666' }}>{data.total} Ergebnisse</span>
+        <span style={{ fontSize: 13, color: '#666' }}>{data.total} {" " + lt("Ergebnisse")}</span>
         <div style={{ marginLeft: 'auto' }}>
-          <select value={String(pageSize)} onChange={e => setPageSize(Number(e.target.value))}
+          <select aria-label={lt("Zeilen pro Seite")} value={String(pageSize)} onChange={e => setPageSize(Number(e.target.value))}
             style={{ padding: '6px 10px', borderRadius: 6, border: '1px solid #ddd', fontSize: 13 }}>
             <option value="100">100</option>
             <option value="500">500</option>
             <option value="1000">1000</option>
-            <option value="99999">Alle</option>
+            <option value="99999">{lt("Alle")}</option>
           </select>
         </div>
       </div>
 
       {/* Import panel (conditionally shown) */}
-      {showImport && FILE_IMPORT_SOURCES.includes(activeTab) && (
+      {allowImport && showImport && FILE_IMPORT_SOURCES.includes(activeTab) && (
         <FileImportPanel source={activeTab as 'sparkasse' | 'visa'} onDone={onImportDone} />
       )}
-      {showImport && activeTab === 'paypal' && (
+      {allowImport && showImport && activeTab === 'paypal' && (
         <PayPalImportPanel onDone={onImportDone} />
       )}
-      {showImport && activeTab === 'stripe' && (
+      {allowImport && showImport && activeTab === 'stripe' && (
         <StripeImportPanel onDone={onImportDone} />
       )}
-      {showImport && activeTab === 'enablebanking' && (
+      {allowImport && showImport && activeTab === 'enablebanking' && (
         <div style={{ marginBottom: 16 }}>
           <BankImport startDate={defaultStartDate()} endDate={defaultEndDate()} />
         </div>
@@ -309,12 +312,12 @@ export function Transactions() {
             <thead>
               <tr>
                 {([
-                  { label: 'Datum', field: 'posting_at' },
-                  { label: 'Beschreibung', field: 'description_raw' },
-                  { label: 'Gegenkonto', field: 'counterparty_name' },
-                  { label: 'Betrag', field: 'amount_minor' },
+                  { label: lt("Datum"), field: 'posting_at' },
+                  { label: lt("Beschreibung"), field: 'description_raw' },
+                  { label: lt("Gegenkonto"), field: 'counterparty_name' },
+                  { label: lt("Betrag"), field: 'amount_minor' },
                   ...(['visa', 'paypal'].includes(activeTab) ? [{ label: 'FX', field: '' }] : []),
-                  { label: 'Beleg', field: '' },
+                  { label: lt("Beleg"), field: '' },
                   { label: 'Status', field: 'status' },
                   { label: '', field: '' },
                 ] as { label: string; field: string }[]).map((col, i) => (
@@ -382,9 +385,9 @@ export function Transactions() {
                             const mismatch = isCombo ? false : singleMismatch;
                             return (
                               <div key={d.document_id}>
-                                <FileLink filename={d.filename || d.source_document_ref} />
+                                {allowAnnotations ? <FileLink filename={d.filename || d.source_document_ref} /> : <span>{d.filename || d.source_document_ref}</span>}
                                 {mismatch && (
-                                  <span title={`Beleg: ${(Math.abs(d.total_amount_minor)/100).toFixed(2)}€ ≠ Buchung: ${(Math.abs(t.amount_minor)/100).toFixed(2)}€`}
+                                  <span title={lt("Beleg: {value0}€ ≠ Buchung: {value1}€", {value0: (Math.abs(d.total_amount_minor)/100).toFixed(2), value1: (Math.abs(t.amount_minor)/100).toFixed(2)})}
                                     style={{ color: '#e67e22', fontSize: 10, marginLeft: 4, cursor: 'help' }}>
                                     ⚠
                                   </span>
@@ -394,9 +397,8 @@ export function Transactions() {
                           });
                           if (isCombo && sumMismatch) {
                             return [...result, <div key="sum-warn" style={{ fontSize: 10, color: '#e67e22', marginTop: 2 }}
-                              title={`Summe Belege: ${(docsSum/100).toFixed(2)}€ ≠ Buchung: ${(Math.abs(t.amount_minor)/100).toFixed(2)}€`}>
-                              ⚠ Summe weicht ab
-                            </div>];
+                              title={lt("Summe Belege: {value0}€ ≠ Buchung: {value1}€", {value0: (docsSum/100).toFixed(2), value1: (Math.abs(t.amount_minor)/100).toFixed(2)})}>
+                              {lt("⚠ Summe weicht ab")}</div>];
                           }
                           return result;
                           })()
@@ -407,30 +409,29 @@ export function Transactions() {
                       {t.disposition === 'ok_no_match'
                         ? <Badge text="OK" color={colors.gray} />
                         : t.disposition === 'steuerzahlung'
-                          ? <Badge text="Steuerzahlung" color={colors.gray} />
+                          ? <Badge text={lt("Steuerzahlung")} color={colors.gray} />
                           : t.disposition === 'privat'
-                            ? <Badge text="Privat" color={colors.gray} />
+                            ? <Badge text={lt("Privat")} color={colors.gray} />
                             : <StatusBadge matched={t.is_matched} />
                       }
                     </td>
                     <td style={{ ...tdStyle, whiteSpace: 'nowrap' }} onClick={e => e.stopPropagation()}>
-                      {(t.disposition === 'privat' || t.disposition === 'steuerzahlung' || t.disposition === 'ok_no_match') ? (
+                      {allowAnnotations && ((t.disposition === 'privat' || t.disposition === 'steuerzahlung' || t.disposition === 'ok_no_match') ? (
                         <button
                           onClick={() => handleResetPrivat(t.transaction_id)}
                           style={{ ...privatBtnStyle, color: colors.blue }}
-                          title="Status aufheben"
+                          title={lt("Status aufheben")}
                         >
-                          Zurücksetzen
-                        </button>
+                          {lt("Zurücksetzen")}</button>
                       ) : (
                         <button
                           onClick={() => openPrivatDialog(t)}
                           style={privatBtnStyle}
                         >
-                          Privat
-                        </button>
-                      )}
+                          {lt("Privat")}</button>
+                      ))}
                       <TxnRowMenu
+                        allowAnnotations={allowAnnotations}
                         txn={t}
                         isOpen={openMenu === t.transaction_id}
                         onToggle={() => setOpenMenu(openMenu === t.transaction_id ? null : t.transaction_id)}
@@ -462,7 +463,7 @@ export function Transactions() {
 
                   {expanded === t.transaction_id && detail && (
                     <tr><td colSpan={7} style={{ padding: 0 }}>
-                      <TransactionDetail detail={detail} currentId={t.transaction_id} onJump={jumpTo} dispositionNote={t.disposition_note} disposition={t.disposition} onRefresh={() => { api.getTransaction(t.transaction_id).then(setDetail); load(); }} />
+                      <TransactionDetail allowAnnotations={allowAnnotations} detail={detail} currentId={t.transaction_id} onJump={jumpTo} dispositionNote={t.disposition_note} disposition={t.disposition} onRefresh={() => { api.getTransaction(t.transaction_id).then(setDetail); load(); }} />
                     </td></tr>
                   )}
                 </React.Fragment>
@@ -475,7 +476,7 @@ export function Transactions() {
       </Card>
 
       {/* Privat Dialog */}
-      {privatDialog && (
+      {allowAnnotations && privatDialog && (
         <div style={{
           position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
@@ -487,12 +488,12 @@ export function Transactions() {
             }}
             onClick={e => e.stopPropagation()}
           >
-            <h3 style={{ margin: '0 0 12px', fontSize: 16 }}>Als privat markieren</h3>
+            <h3 style={{ margin: '0 0 12px', fontSize: 16 }}>{lt("Als privat markieren")}</h3>
             <p style={{ fontSize: 13, color: '#555', margin: '0 0 8px' }}>
               <b>{formatDate(privatDialog.txn.posting_at)}</b> — {privatDialog.txn.description_raw?.slice(0, 60)}
             </p>
             <p style={{ fontSize: 13, color: '#555', margin: '0 0 20px' }}>
-              Gegenkonto: <b>{privatDialog.txn.counterparty_name ?? '—'}</b> — <Amount value={privatDialog.txn.amount} currency={privatDialog.txn.currency_code} />
+              {lt("Gegenkonto:")}{' '}<b>{privatDialog.txn.counterparty_name ?? '—'}</b> — <Amount value={privatDialog.txn.amount} currency={privatDialog.txn.currency_code} />
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -507,11 +508,9 @@ export function Transactions() {
                   onMouseOut={e => (e.currentTarget.style.background = '#fff')}
                 >
                   <div style={{ fontWeight: 600, marginBottom: 4 }}>
-                    Alle Zahlungen an "{privatDialog.txn.counterparty_name}" als privat markieren
-                  </div>
+                    {lt("Alle Zahlungen an \"")}{privatDialog.txn.counterparty_name}{lt("\" als privat markieren")}</div>
                   <div style={{ fontSize: 12, color: '#888' }}>
-                    Vendor wird zur Privat-Liste hinzugefügt. Zukünftige Zahlungen werden automatisch als privat markiert.
-                  </div>
+                    {lt("Vendor wird zur Privat-Liste hinzugefügt. Zukünftige Zahlungen werden automatisch als privat markiert.")}</div>
                 </button>
               )}
               <button
@@ -524,11 +523,9 @@ export function Transactions() {
                 onMouseOut={e => (e.currentTarget.style.background = '#fff')}
               >
                 <div style={{ fontWeight: 600, marginBottom: 4 }}>
-                  Nur diese Zahlung als privat markieren
-                </div>
+                  {lt("Nur diese Zahlung als privat markieren")}</div>
                 <div style={{ fontSize: 12, color: '#888' }}>
-                  Nur diese einzelne Buchung wird als privat gesetzt.
-                </div>
+                  {lt("Nur diese einzelne Buchung wird als privat gesetzt.")}</div>
               </button>
               <button
                 onClick={() => setPrivatDialog(null)}
@@ -537,8 +534,7 @@ export function Transactions() {
                   cursor: 'pointer', fontSize: 13, color: '#666', marginTop: 4,
                 }}
               >
-                Abbrechen
-              </button>
+                {lt("Abbrechen")}</button>
             </div>
           </div>
         </div>
@@ -550,7 +546,7 @@ export function Transactions() {
           onDone={() => { setManualMatchDialog(null); load(); refreshCounts(); }}
         />
       )}
-      {provisionalDialog && (
+      {allowAnnotations && provisionalDialog && (
         <ProvisionalReleaseDialog
           txn={provisionalDialog.txn}
           onClose={() => setProvisionalDialog(null)}
@@ -562,14 +558,15 @@ export function Transactions() {
 }
 
 function ProvisionalReleaseDialog({ txn, onClose, onDone }: { txn: any; onClose: () => void; onDone: () => void }) {
+  const lt = useLegacyText(legacyCoreEnglish);
   const [vendor, setVendor] = useState(txn.counterparty_name ?? '');
   const [country, setCountry] = useState('AT');
   const [description, setDescription] = useState('');
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
-    if (!vendor.trim()) return alert('Bitte Vendor eingeben');
-    if (!country.trim()) return alert('Bitte Land eingeben');
+    if (!vendor.trim()) return alert(lt("Bitte Vendor eingeben"));
+    if (!country.trim()) return alert(lt("Bitte Land eingeben"));
     setSaving(true);
     try {
       await api.createEigenbeleg(
@@ -581,7 +578,7 @@ function ProvisionalReleaseDialog({ txn, onClose, onDone }: { txn: any; onClose:
       );
       onDone();
     } catch (e: any) {
-      alert('Fehler: ' + e.message);
+      alert("" + lt("Fehler:") + " " + e.message);
     } finally {
       setSaving(false);
     }
@@ -600,10 +597,9 @@ function ProvisionalReleaseDialog({ txn, onClose, onDone }: { txn: any; onClose:
         background: '#fff', borderRadius: 12, padding: 24, maxWidth: 420, width: '90%',
         boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
       }} onClick={e => e.stopPropagation()}>
-        <h3 style={{ margin: '0 0 12px', fontSize: 16, color: '#e67e22' }}>Vorübergehend freigeben</h3>
+        <h3 style={{ margin: '0 0 12px', fontSize: 16, color: '#e67e22' }}>{lt("Vorübergehend freigeben")}</h3>
         <p style={{ fontSize: 12, color: '#888', margin: '0 0 16px' }}>
-          Erstellt einen Eigenbeleg und gibt die Buchung für Berichte frei. Die Rechnung kann nachträglich hochgeladen werden.
-        </p>
+          {lt("Erstellt einen Eigenbeleg und gibt die Buchung für Berichte frei. Die Rechnung kann nachträglich hochgeladen werden.")}</p>
         <p style={{ fontSize: 13, color: '#555', margin: '0 0 16px' }}>
           <b>{formatDate(txn.posting_at)}</b> — <Amount value={txn.amount} currency={txn.currency_code} />
           <br /><span style={{ color: '#888' }}>{txn.description_raw?.slice(0, 60)}</span>
@@ -611,16 +607,16 @@ function ProvisionalReleaseDialog({ txn, onClose, onDone }: { txn: any; onClose:
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: '#555' }}>Vendor *</label>
-            <input value={vendor} onChange={e => setVendor(e.target.value)} style={inputStyle} placeholder="z.B. Spotify AB" />
+            <label style={{ fontSize: 12, fontWeight: 600, color: '#555' }}>{lt("Vendor *")}</label>
+            <input value={vendor} onChange={e => setVendor(e.target.value)} style={inputStyle} placeholder={lt("z.B. Spotify AB")} />
           </div>
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: '#555' }}>Land *</label>
-            <input value={country} onChange={e => setCountry(e.target.value)} style={inputStyle} placeholder="z.B. AT, DE, SE" />
+            <label style={{ fontSize: 12, fontWeight: 600, color: '#555' }}>{lt("Land *")}</label>
+            <input value={country} onChange={e => setCountry(e.target.value)} style={inputStyle} placeholder={lt("z.B. AT, DE, SE")} />
           </div>
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: '#555' }}>Beschreibung</label>
-            <input value={description} onChange={e => setDescription(e.target.value)} style={inputStyle} placeholder="z.B. Spotify Premium Abo" />
+            <label style={{ fontSize: 12, fontWeight: 600, color: '#555' }}>{lt("Beschreibung")}</label>
+            <input value={description} onChange={e => setDescription(e.target.value)} style={inputStyle} placeholder={lt("z.B. Spotify Premium Abo")} />
           </div>
           <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
             <button onClick={handleSave} disabled={saving}
@@ -628,12 +624,11 @@ function ProvisionalReleaseDialog({ txn, onClose, onDone }: { txn: any; onClose:
                 flex: 1, padding: '10px', borderRadius: 6, border: 'none', fontSize: 13,
                 background: '#e67e22', color: '#fff', fontWeight: 600, cursor: saving ? 'default' : 'pointer',
               }}>
-              {saving ? 'Wird erstellt...' : 'Freigeben'}
+              {saving ? lt("Wird erstellt...") : lt("Freigeben")}
             </button>
             <button onClick={onClose}
               style={{ padding: '10px 16px', borderRadius: 6, border: 'none', background: '#f0f0f0', cursor: 'pointer', fontSize: 13 }}>
-              Abbrechen
-            </button>
+              {lt("Abbrechen")}</button>
           </div>
         </div>
       </div>
@@ -642,6 +637,7 @@ function ProvisionalReleaseDialog({ txn, onClose, onDone }: { txn: any; onClose:
 }
 
 function ManualMatchDialog({ txn, onClose, onDone }: { txn: any; onClose: () => void; onDone: () => void }) {
+  const lt = useLegacyText(legacyCoreEnglish);
   const [docs, setDocs] = useState<any[]>([]);
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -676,7 +672,7 @@ function ManualMatchDialog({ txn, onClose, onDone }: { txn: any; onClose: () => 
       await api.createMatch([txn.transaction_id], [...selected], 'manual_match_dialog');
       onDone();
     } catch (e: any) {
-      alert('Fehler: ' + e.message);
+      alert("" + lt("Fehler:") + " " + e.message);
     } finally {
       setMatching(false);
     }
@@ -690,7 +686,7 @@ function ManualMatchDialog({ txn, onClose, onDone }: { txn: any; onClose: () => 
         {/* Header */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #ddd', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h3 style={{ margin: 0, fontSize: 16 }}>Manuell verknüpfen</h3>
+            <h3 style={{ margin: 0, fontSize: 16 }}>{lt("Manuell verknüpfen")}</h3>
             <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
               {formatDate(txn.posting_at)} — <Amount value={txn.amount} currency={txn.currency_code} /> — {txn.description_raw?.slice(0, 50)}
             </div>
@@ -702,13 +698,13 @@ function ManualMatchDialog({ txn, onClose, onDone }: { txn: any; onClose: () => 
         <div style={{ padding: '12px 20px', borderBottom: '1px solid #f0f0f0', display: 'flex', gap: 8, alignItems: 'center' }}>
           <input value={search} onChange={e => setSearch(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') doSearch(); }}
-            placeholder="Suche (Lieferant, Datei, Betrag)..."
+            placeholder={lt("Suche (Lieferant, Datei, Betrag)...")}
             style={{ flex: 1, padding: '8px 12px', borderRadius: 6, border: '1px solid #ddd', fontSize: 13 }} />
-          <button onClick={doSearch} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #ddd', cursor: 'pointer', fontSize: 13 }}>Suchen</button>
+          <button onClick={doSearch} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #ddd', cursor: 'pointer', fontSize: 13 }}>{lt("Suchen")}</button>
           {selected.size > 0 && (
             <button onClick={handleMatch} disabled={matching}
               style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: colors.green, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
-              {matching ? '...' : `${selected.size} verknüpfen`}
+              {matching ? '...' : lt("{value0} verknüpfen", {value0: selected.size})}
             </button>
           )}
         </div>
@@ -716,18 +712,18 @@ function ManualMatchDialog({ txn, onClose, onDone }: { txn: any; onClose: () => 
         {/* Documents list */}
         <div style={{ flex: 1, overflow: 'auto', padding: '0' }}>
           {loading ? (
-            <div style={{ padding: 20, textAlign: 'center', color: '#888' }}>Laden...</div>
+            <div style={{ padding: 20, textAlign: 'center', color: '#888' }}>{lt("Laden...")}</div>
           ) : docs.length === 0 ? (
-            <div style={{ padding: 20, textAlign: 'center', color: '#888' }}>Keine offenen Rechnungen gefunden</div>
+            <div style={{ padding: 20, textAlign: 'center', color: '#888' }}>{lt("Keine offenen Rechnungen gefunden")}</div>
           ) : (
             <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8f9fa' }}>
                   <th style={{ padding: '6px 8px', width: 30 }}></th>
-                  <th style={{ padding: '6px 8px', textAlign: 'left', color: '#666' }}>Datum</th>
-                  <th style={{ padding: '6px 8px', textAlign: 'left', color: '#666' }}>Dokument</th>
-                  <th style={{ padding: '6px 8px', textAlign: 'left', color: '#666' }}>Lieferant</th>
-                  <th style={{ padding: '6px 8px', textAlign: 'right', color: '#666' }}>Betrag</th>
+                  <th style={{ padding: '6px 8px', textAlign: 'left', color: '#666' }}>{lt("Datum")}</th>
+                  <th style={{ padding: '6px 8px', textAlign: 'left', color: '#666' }}>{lt("Dokument")}</th>
+                  <th style={{ padding: '6px 8px', textAlign: 'left', color: '#666' }}>{lt("Lieferant")}</th>
+                  <th style={{ padding: '6px 8px', textAlign: 'right', color: '#666' }}>{lt("Betrag")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -765,10 +761,10 @@ function ManualMatchDialog({ txn, onClose, onDone }: { txn: any; onClose: () => 
         {/* Pagination */}
         <div style={{ padding: '8px 20px', borderTop: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1}
-            style={{ padding: '4px 12px', borderRadius: 4, border: '1px solid #ddd', cursor: 'pointer', fontSize: 12 }}>← Zurück</button>
-          <span style={{ fontSize: 12, color: '#666' }}>Seite {page}</span>
+            style={{ padding: '4px 12px', borderRadius: 4, border: '1px solid #ddd', cursor: 'pointer', fontSize: 12 }}>{lt("← Zurück")}</button>
+          <span style={{ fontSize: 12, color: '#666' }}>{lt("Seite") + " "}{page}</span>
           <button onClick={() => { setPage(p => p + 1); }} disabled={docs.length < LIMIT}
-            style={{ padding: '4px 12px', borderRadius: 4, border: '1px solid #ddd', cursor: 'pointer', fontSize: 12 }}>Weiter →</button>
+            style={{ padding: '4px 12px', borderRadius: 4, border: '1px solid #ddd', cursor: 'pointer', fontSize: 12 }}>{lt("Weiter →")}</button>
         </div>
       </div>
     </div>
@@ -780,6 +776,7 @@ function ManualMatchDialog({ txn, onClose, onDone }: { txn: any; onClose: () => 
 // ============================================================
 
 function FileImportPanel({ source, onDone }: { source: 'sparkasse' | 'visa'; onDone: () => void }) {
+  const lt = useLegacyText(legacyCoreEnglish);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [result, setResult] = useState<any>(null);
@@ -806,7 +803,7 @@ function FileImportPanel({ source, onDone }: { source: 'sparkasse' | 'visa'; onD
   return (
     <Card style={{ marginBottom: 16 }}>
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 14, fontWeight: 600, color: '#333' }}>{label} Datei importieren (XLSX)</span>
+        <span style={{ fontSize: 14, fontWeight: 600, color: '#333' }}>{label} {" " + lt("Datei importieren (XLSX)")}</span>
         <input
           type="file"
           accept=".xlsx,.xls"
@@ -827,7 +824,7 @@ function FileImportPanel({ source, onDone }: { source: 'sparkasse' | 'visa'; onD
             opacity: (status === 'loading' || !selectedFile) ? 0.6 : 1,
           }}
         >
-          {status === 'loading' ? 'Importiere...' : 'Importieren'}
+          {status === 'loading' ? lt("Importiere...") : lt("Importieren")}
         </button>
       </div>
 
@@ -840,9 +837,9 @@ function FileImportPanel({ source, onDone }: { source: 'sparkasse' | 'visa'; onD
       {result && (
         <div style={{ marginTop: 12 }}>
           <div style={{ display: 'flex', gap: 20, marginBottom: 10 }}>
-            <StatBox label="Gelesen" value={result.fetched} />
-            <StatBox label="Neu importiert" value={result.imported} color={colors.green} />
-            <StatBox label="Bereits vorhanden" value={result.skipped} color={colors.darkGray} />
+            <StatBox label={lt("Gelesen")} value={result.fetched} />
+            <StatBox label={lt("Neu importiert")} value={result.imported} color={colors.green} />
+            <StatBox label={lt("Bereits vorhanden")} value={result.skipped} color={colors.darkGray} />
           </div>
           {result.transactions?.length > 0 && (
             <div style={{ maxHeight: 300, overflow: 'auto' }}>
@@ -850,16 +847,16 @@ function FileImportPanel({ source, onDone }: { source: 'sparkasse' | 'visa'; onD
                 <thead>
                   <tr style={{ borderBottom: '2px solid #eee' }}>
                     <th style={importThStyle}>Status</th>
-                    <th style={importThStyle}>Datum</th>
-                    <th style={importThStyle}>Beschreibung</th>
-                    <th style={importThStyle}>Gegenkonto</th>
-                    <th style={{ ...importThStyle, textAlign: 'right' }}>Betrag</th>
+                    <th style={importThStyle}>{lt("Datum")}</th>
+                    <th style={importThStyle}>{lt("Beschreibung")}</th>
+                    <th style={importThStyle}>{lt("Gegenkonto")}</th>
+                    <th style={{ ...importThStyle, textAlign: 'right' }}>{lt("Betrag")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {result.transactions.map((t: any, i: number) => (
                     <tr key={i} style={{ borderBottom: '1px solid #f0f0f0', background: t.is_new ? '#f0fff0' : 'transparent' }}>
-                      <td style={importTdStyle}><Badge text={t.is_new ? 'NEU' : 'existiert'} color={t.is_new ? colors.green : colors.gray} /></td>
+                      <td style={importTdStyle}><Badge text={t.is_new ? lt("NEU") : lt("existiert")} color={t.is_new ? colors.green : colors.gray} /></td>
                       <td style={importTdStyle}>{formatDate(t.date)}</td>
                       <td style={{ ...importTdStyle, maxWidth: 250 }}>{t.description || '—'}</td>
                       <td style={importTdStyle}>{t.counterparty || '—'}</td>
@@ -877,6 +874,7 @@ function FileImportPanel({ source, onDone }: { source: 'sparkasse' | 'visa'; onD
 }
 
 function StripeImportPanel({ onDone }: { onDone: () => void }) {
+  const lt = useLegacyText(legacyCoreEnglish);
   const [startDate, setStartDate] = useState(defaultStartDate());
   const [endDate, setEndDate] = useState(defaultEndDate());
   const [apiKey, setApiKey] = useState('');
@@ -920,14 +918,14 @@ function StripeImportPanel({ onDone }: { onDone: () => void }) {
       <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', flexWrap: 'wrap', marginBottom: 12 }}>
         <span style={{ fontSize: 14, fontWeight: 600, color: '#333', alignSelf: 'center' }}>Stripe API Import</span>
         <div>
-          <label style={labelStyle}>Von</label>
+          <label style={labelStyle}>{lt("Von")}</label>
           <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} style={inputStyle} />
         </div>
         <div>
-          <label style={labelStyle}>Bis</label>
+          <label style={labelStyle}>{lt("Bis")}</label>
           <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} style={inputStyle} />
         </div>
-        {getQuarterPresets().map(p => (
+        {getQuarterPresets(lt).map(p => (
           <button
             key={p.label}
             onClick={() => { setStartDate(p.start); setEndDate(p.end); }}
@@ -944,26 +942,25 @@ function StripeImportPanel({ onDone }: { onDone: () => void }) {
 
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap', marginBottom: 12 }}>
         <div>
-          <label style={labelStyle}>API Key</label>
+          <label style={labelStyle}>{lt("API-Schlüssel")}</label>
           {savedKeyInfo?.is_set && !apiKey ? (
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               padding: '6px 12px', background: '#f0fff0', border: '1px solid #27ae60',
               borderRadius: 4, fontSize: 12,
             }}>
-              <span style={{ color: '#27ae60', fontWeight: 600 }}>Gespeichert</span>
+              <span style={{ color: '#27ae60', fontWeight: 600 }}>{lt("Gespeichert")}</span>
               <code style={{ fontSize: 11 }}>{savedKeyInfo.masked}</code>
               <button
                 onClick={() => api.deleteSetting('stripe_api_key').then(() => setSavedKeyInfo({ is_set: false, masked: null }))}
                 style={{ background: 'none', border: 'none', color: '#e74c3c', cursor: 'pointer', fontSize: 11, textDecoration: 'underline' }}
               >
-                entfernen
-              </button>
+                {lt("entfernen")}</button>
             </div>
           ) : (
             <input
               type="password"
-              placeholder="sk_live_... oder sk_test_..."
+              placeholder={lt("sk_live_... oder sk_test_...")}
               value={apiKey}
               onChange={e => setApiKey(e.target.value)}
               style={{ ...inputStyle, width: 300 }}
@@ -979,7 +976,7 @@ function StripeImportPanel({ onDone }: { onDone: () => void }) {
             opacity: status === 'loading' ? 0.6 : 1, alignSelf: 'flex-end',
           }}
         >
-          {status === 'loading' ? 'Importiere...' : 'Stripe Import starten'}
+          {status === 'loading' ? lt("Importiere...") : lt("Stripe Import starten")}
         </button>
       </div>
 
@@ -990,9 +987,9 @@ function StripeImportPanel({ onDone }: { onDone: () => void }) {
       {result && (
         <div style={{ marginTop: 12 }}>
           <div style={{ display: 'flex', gap: 20, marginBottom: 10 }}>
-            <StatBox label="Abgerufen" value={result.fetched} />
-            <StatBox label="Neu importiert" value={result.imported} color={colors.green} />
-            <StatBox label="Bereits vorhanden" value={result.skipped} color={colors.darkGray} />
+            <StatBox label={lt("Abgerufen")} value={result.fetched} />
+            <StatBox label={lt("Neu importiert")} value={result.imported} color={colors.green} />
+            <StatBox label={lt("Bereits vorhanden")} value={result.skipped} color={colors.darkGray} />
           </div>
           {result.transactions?.length > 0 && (
             <div style={{ maxHeight: 300, overflow: 'auto' }}>
@@ -1000,17 +997,17 @@ function StripeImportPanel({ onDone }: { onDone: () => void }) {
                 <thead>
                   <tr style={{ borderBottom: '2px solid #eee' }}>
                     <th style={importThStyle}>Status</th>
-                    <th style={importThStyle}>Datum</th>
-                    <th style={importThStyle}>Typ</th>
-                    <th style={importThStyle}>Beschreibung</th>
-                    <th style={{ ...importThStyle, textAlign: 'right' }}>Betrag</th>
-                    <th style={{ ...importThStyle, textAlign: 'right' }}>Gebühr</th>
+                    <th style={importThStyle}>{lt("Datum")}</th>
+                    <th style={importThStyle}>{lt("Typ")}</th>
+                    <th style={importThStyle}>{lt("Beschreibung")}</th>
+                    <th style={{ ...importThStyle, textAlign: 'right' }}>{lt("Betrag")}</th>
+                    <th style={{ ...importThStyle, textAlign: 'right' }}>{lt("Gebühr")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {result.transactions.map((t: any, i: number) => (
                     <tr key={i} style={{ borderBottom: '1px solid #f0f0f0', background: t.is_new ? '#f0fff0' : 'transparent' }}>
-                      <td style={importTdStyle}><Badge text={t.is_new ? 'NEU' : 'existiert'} color={t.is_new ? colors.green : colors.gray} /></td>
+                      <td style={importTdStyle}><Badge text={t.is_new ? lt("NEU") : lt("existiert")} color={t.is_new ? colors.green : colors.gray} /></td>
                       <td style={importTdStyle}>{formatDate(t.date)}</td>
                       <td style={importTdStyle}><Badge text={t.type} color={typeBadgeColor[t.type] ?? colors.gray} /></td>
                       <td style={{ ...importTdStyle, maxWidth: 250 }}>
@@ -1029,10 +1026,10 @@ function StripeImportPanel({ onDone }: { onDone: () => void }) {
           )}
           {result.fee_summaries?.length > 0 && (
             <div style={{ marginTop: 12 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 4 }}>Monatliche Gebühren-Belege:</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 4 }}>{lt("Monatliche Gebühren-Belege:")}{' '}</div>
               {result.fee_summaries.map((fs: any) => (
                 <div key={fs.month} style={{ display: 'flex', gap: 16, fontSize: 12, padding: '4px 0', borderBottom: '1px solid #f0f0f0' }}>
-                  <Badge text={fs.is_new ? 'NEU' : 'aktualisiert'} color={fs.is_new ? colors.green : colors.blue} />
+                  <Badge text={fs.is_new ? lt("NEU") : lt("aktualisiert")} color={fs.is_new ? colors.green : colors.blue} />
                   <span>{fs.month}</span>
                   <span>{fs.charge_count} Charges</span>
                   <Amount value={-fs.total_fee_minor / 100} currency="EUR" />
@@ -1047,6 +1044,7 @@ function StripeImportPanel({ onDone }: { onDone: () => void }) {
 }
 
 function PayPalImportPanel({ onDone }: { onDone: () => void }) {
+  const lt = useLegacyText(legacyCoreEnglish);
   const [startDate, setStartDate] = useState(defaultStartDate());
   const [endDate, setEndDate] = useState(defaultEndDate());
   const [clientId, setClientId] = useState('');
@@ -1101,14 +1099,14 @@ function PayPalImportPanel({ onDone }: { onDone: () => void }) {
       <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', flexWrap: 'wrap', marginBottom: 12 }}>
         <span style={{ fontSize: 14, fontWeight: 600, color: '#333', alignSelf: 'center' }}>PayPal API Import</span>
         <div>
-          <label style={labelStyle}>Von</label>
+          <label style={labelStyle}>{lt("Von")}</label>
           <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} style={inputStyle} />
         </div>
         <div>
-          <label style={labelStyle}>Bis</label>
+          <label style={labelStyle}>{lt("Bis")}</label>
           <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} style={inputStyle} />
         </div>
-        {getQuarterPresets().map(p => (
+        {getQuarterPresets(lt).map(p => (
           <button
             key={p.label}
             onClick={() => { setStartDate(p.start); setEndDate(p.end); }}
@@ -1132,14 +1130,13 @@ function PayPalImportPanel({ onDone }: { onDone: () => void }) {
               padding: '6px 12px', background: '#f0fff0', border: '1px solid #27ae60',
               borderRadius: 4, fontSize: 12,
             }}>
-              <span style={{ color: '#27ae60', fontWeight: 600 }}>Gespeichert</span>
+              <span style={{ color: '#27ae60', fontWeight: 600 }}>{lt("Gespeichert")}</span>
               <code style={{ fontSize: 11 }}>{savedId.masked}</code>
               <button
                 onClick={() => api.deleteSetting('paypal_client_id').then(() => setSavedId({ is_set: false, masked: null }))}
                 style={{ background: 'none', border: 'none', color: '#e74c3c', cursor: 'pointer', fontSize: 11, textDecoration: 'underline' }}
               >
-                entfernen
-              </button>
+                {lt("entfernen")}</button>
             </div>
           ) : (
             <input
@@ -1159,14 +1156,13 @@ function PayPalImportPanel({ onDone }: { onDone: () => void }) {
               padding: '6px 12px', background: '#f0fff0', border: '1px solid #27ae60',
               borderRadius: 4, fontSize: 12,
             }}>
-              <span style={{ color: '#27ae60', fontWeight: 600 }}>Gespeichert</span>
+              <span style={{ color: '#27ae60', fontWeight: 600 }}>{lt("Gespeichert")}</span>
               <code style={{ fontSize: 11 }}>{savedSecret.masked}</code>
               <button
                 onClick={() => api.deleteSetting('paypal_client_secret').then(() => setSavedSecret({ is_set: false, masked: null }))}
                 style={{ background: 'none', border: 'none', color: '#e74c3c', cursor: 'pointer', fontSize: 11, textDecoration: 'underline' }}
               >
-                entfernen
-              </button>
+                {lt("entfernen")}</button>
             </div>
           ) : (
             <input
@@ -1191,7 +1187,7 @@ function PayPalImportPanel({ onDone }: { onDone: () => void }) {
             opacity: status === 'loading' ? 0.6 : 1, alignSelf: 'flex-end',
           }}
         >
-          {status === 'loading' ? 'Importiere...' : 'PayPal Import starten'}
+          {status === 'loading' ? lt("Importiere...") : lt("PayPal Import starten")}
         </button>
       </div>
 
@@ -1202,9 +1198,9 @@ function PayPalImportPanel({ onDone }: { onDone: () => void }) {
       {result && (
         <div style={{ marginTop: 12 }}>
           <div style={{ display: 'flex', gap: 20, marginBottom: 10 }}>
-            <StatBox label="Abgerufen" value={result.fetched} />
-            <StatBox label="Neu importiert" value={result.imported} color={colors.green} />
-            <StatBox label="Bereits vorhanden" value={result.skipped} color={colors.darkGray} />
+            <StatBox label={lt("Abgerufen")} value={result.fetched} />
+            <StatBox label={lt("Neu importiert")} value={result.imported} color={colors.green} />
+            <StatBox label={lt("Bereits vorhanden")} value={result.skipped} color={colors.darkGray} />
           </div>
           {result.transactions?.length > 0 && (
             <div style={{ maxHeight: 300, overflow: 'auto' }}>
@@ -1212,18 +1208,18 @@ function PayPalImportPanel({ onDone }: { onDone: () => void }) {
                 <thead>
                   <tr style={{ borderBottom: '2px solid #eee' }}>
                     <th style={importThStyle}>Status</th>
-                    <th style={importThStyle}>Datum</th>
-                    <th style={importThStyle}>Typ</th>
-                    <th style={importThStyle}>Beschreibung</th>
-                    <th style={importThStyle}>Gegenkonto</th>
-                    <th style={{ ...importThStyle, textAlign: 'right' }}>Betrag</th>
-                    <th style={{ ...importThStyle, textAlign: 'right' }}>Gebühr</th>
+                    <th style={importThStyle}>{lt("Datum")}</th>
+                    <th style={importThStyle}>{lt("Typ")}</th>
+                    <th style={importThStyle}>{lt("Beschreibung")}</th>
+                    <th style={importThStyle}>{lt("Gegenkonto")}</th>
+                    <th style={{ ...importThStyle, textAlign: 'right' }}>{lt("Betrag")}</th>
+                    <th style={{ ...importThStyle, textAlign: 'right' }}>{lt("Gebühr")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {result.transactions.map((t: any, i: number) => (
                     <tr key={i} style={{ borderBottom: '1px solid #f0f0f0', background: t.is_new ? '#f0fff0' : 'transparent' }}>
-                      <td style={importTdStyle}><Badge text={t.is_new ? 'NEU' : 'existiert'} color={t.is_new ? colors.green : colors.gray} /></td>
+                      <td style={importTdStyle}><Badge text={t.is_new ? lt("NEU") : lt("existiert")} color={t.is_new ? colors.green : colors.gray} /></td>
                       <td style={importTdStyle}>{formatDate(t.date)}</td>
                       <td style={importTdStyle}><Badge text={t.type} color={typeBadgeColor[t.type] ?? colors.gray} /></td>
                       <td style={{ ...importTdStyle, maxWidth: 250 }}>{t.description || '—'}</td>
@@ -1240,12 +1236,12 @@ function PayPalImportPanel({ onDone }: { onDone: () => void }) {
           )}
           {result.fee_summaries?.length > 0 && (
             <div style={{ marginTop: 12 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 4 }}>Monatliche Gebühren-Belege:</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 4 }}>{lt("Monatliche Gebühren-Belege:")}{' '}</div>
               {result.fee_summaries.map((fs: any) => (
                 <div key={fs.month} style={{ display: 'flex', gap: 16, fontSize: 12, padding: '4px 0', borderBottom: '1px solid #f0f0f0' }}>
-                  <Badge text={fs.is_new ? 'NEU' : 'aktualisiert'} color={fs.is_new ? colors.green : colors.blue} />
+                  <Badge text={fs.is_new ? lt("NEU") : lt("aktualisiert")} color={fs.is_new ? colors.green : colors.blue} />
                   <span>{fs.month}</span>
-                  <span>{fs.txn_count} Transaktionen</span>
+                  <span>{fs.txn_count} {" " + lt("Transaktionen")}</span>
                   <Amount value={-fs.total_fee_minor / 100} currency="EUR" />
                 </div>
               ))}
@@ -1261,9 +1257,10 @@ function PayPalImportPanel({ onDone }: { onDone: () => void }) {
 // Transaction detail sub-components
 // ============================================================
 
-function TransactionDetail({ detail, currentId, onJump, dispositionNote, disposition, onRefresh }: {
-  detail: any; currentId: string; onJump: (id: string) => void; dispositionNote?: string | null; disposition?: string; onRefresh?: () => void;
+function TransactionDetail({ detail, currentId, onJump, dispositionNote, disposition, onRefresh, allowAnnotations=true }: {
+  detail: any; currentId: string; onJump: (id: string) => void; dispositionNote?: string | null; disposition?: string; onRefresh?: () => void; allowAnnotations?: boolean;
 }) {
+  const lt = useLegacyText(legacyCoreEnglish);
   const mg = detail.match_group;
   const linkedTxnIds: string[] = mg ? (mg.transaction_ids as string[]).filter((id: string) => id !== currentId) : [];
   const linkedDocIds: string[] = mg ? (mg.document_ids as string[]) : [];
@@ -1275,7 +1272,7 @@ function TransactionDetail({ detail, currentId, onJump, dispositionNote, disposi
 
   const handleFiles = async (files: File[]) => {
     const accepted = files.filter(f => /\.(pdf|jpe?g|png)$/i.test(f.name) || f.type === 'application/pdf' || f.type?.startsWith('image/'));
-    if (!accepted.length) { setUploadResult({ error: 'Nur PDF, JPG, PNG — Datei: ' + files.map(f => `${f.name} (${f.type})`).join(', ') }); return; }
+    if (!accepted.length) { setUploadResult({ error: "" + lt("Nur PDF, JPG, PNG — Datei:") + " " + files.map(f => `${f.name} (${f.type})`).join(', ') }); return; }
     setUploading(true);
     setUploadResult(null);
     try {
@@ -1293,58 +1290,58 @@ function TransactionDetail({ detail, currentId, onJump, dispositionNote, disposi
     <div style={{ padding: 16, background: '#f8f9fa', borderBottom: '2px solid #e0e0e0', fontSize: 13 }}>
       <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: 280 }}>
-          <h4 style={{ margin: '0 0 8px', fontSize: 14 }}>Detail</h4>
+          <h4 style={{ margin: '0 0 8px', fontSize: 14 }}>{lt("Details")}</h4>
           <DetailRow label="ID" value={<code style={{ fontSize: 11, wordBreak: 'break-all' }}>{detail.transaction_id}</code>} />
-          <DetailRow label="Beschreibung" value={detail.description_raw} />
-          <DetailRow label="Betrag" value={<Amount value={detail.amount} currency={detail.currency_code} />} />
-          <DetailRow label="Datum" value={formatDate(detail.posting_at)} />
-          <DetailRow label="Gegenkonto" value={detail.counterparty_name ?? '—'} />
+          <DetailRow label={lt("Beschreibung")} value={detail.description_raw} />
+          <DetailRow label={lt("Betrag")} value={<Amount value={detail.amount} currency={detail.currency_code} />} />
+          <DetailRow label={lt("Datum")} value={formatDate(detail.posting_at)} />
+          <DetailRow label={lt("Gegenkonto")} value={detail.counterparty_name ?? '—'} />
           <DetailRow label="IBAN" value={detail.counterparty_iban ?? '—'} />
-          <DetailRow label="Buchungsreferenz" value={detail.booking_reference ?? '—'} />
-          <DetailRow label="Zahlungsreferenz" value={detail.payment_reference ?? '—'} />
-          {dispositionNote && <DetailRow label="Notiz" value={<span style={{ fontStyle: 'italic' }}>{dispositionNote}</span>} />}
+          <DetailRow label={lt("Buchungsreferenz")} value={detail.booking_reference ?? '—'} />
+          <DetailRow label={lt("Zahlungsreferenz")} value={detail.payment_reference ?? '—'} />
+          {dispositionNote && <DetailRow label={lt("Notiz")} value={<span style={{ fontStyle: 'italic' }}>{dispositionNote}</span>} />}
 
           {/* PayPal enriched details */}
           {detail.meta?.enriched && (
             <div style={{ marginTop: 8, padding: '6px 10px', background: '#f0f7ff', borderRadius: 6, border: '1px solid #d0e3f7', fontSize: 12 }}>
-              <div style={{ fontWeight: 600, marginBottom: 4, color: '#2471a3' }}>PayPal Details</div>
-              {detail.meta.payer_name && <DetailRow label="Zahler" value={detail.meta.payer_name} />}
-              {detail.meta.payer_email && <DetailRow label="E-Mail" value={detail.meta.payer_email} />}
-              {detail.meta.subject && <DetailRow label="Betreff" value={detail.meta.subject} />}
-              {detail.meta.note && <DetailRow label="Notiz" value={detail.meta.note} />}
-              {detail.meta.invoice_id && <DetailRow label="Rechnungsnr." value={detail.meta.invoice_id} />}
+              <div style={{ fontWeight: 600, marginBottom: 4, color: '#2471a3' }}>{lt("PayPal-Details")}</div>
+              {detail.meta.payer_name && <DetailRow label={lt("Zahler")} value={detail.meta.payer_name} />}
+              {detail.meta.payer_email && <DetailRow label={lt("E-Mail")} value={detail.meta.payer_email} />}
+              {detail.meta.subject && <DetailRow label={lt("Betreff")} value={detail.meta.subject} />}
+              {detail.meta.note && <DetailRow label={lt("Notiz")} value={detail.meta.note} />}
+              {detail.meta.invoice_id && <DetailRow label={lt("Rechnungsnr.")} value={detail.meta.invoice_id} />}
               {detail.meta.cart_items?.length > 0 && (
-                <DetailRow label="Artikel" value={detail.meta.cart_items.map((i: any) => `${i.name}${i.quantity ? ' x' + i.quantity : ''}`).join(', ')} />
+                <DetailRow label={lt("Artikel")} value={detail.meta.cart_items.map((i: any) => `${i.name}${i.quantity ? ' x' + i.quantity : ''}`).join(', ')} />
               )}
-              {detail.meta.fee_minor !== 0 && <DetailRow label="PayPal-Gebühr" value={`${(detail.meta.fee_minor / 100).toFixed(2)} ${detail.meta.fee_currency ?? 'EUR'}`} />}
+              {detail.meta.fee_minor !== 0 && <DetailRow label={lt("PayPal-Gebühr")} value={`${(detail.meta.fee_minor / 100).toFixed(2)} ${detail.meta.fee_currency ?? 'EUR'}`} />}
               {detail.meta.paypal_txn_id && <DetailRow label="PP-Txn-ID" value={<code style={{ fontSize: 10 }}>{detail.meta.paypal_txn_id}</code>} />}
             </div>
           )}
 
           {/* Enrich button for PayPal transactions without details */}
-          {detail.source_system === 'paypal' && !detail.meta?.enriched && (
+          {allowAnnotations && detail.source_system === 'paypal' && !detail.meta?.enriched && (
             <PayPalEnrichButton txnId={currentId} onDone={() => onRefresh?.()} />
           )}
         </div>
 
         {mg && (
           <div style={{ flex: 1, minWidth: 280 }}>
-            <h4 style={{ margin: '0 0 8px', fontSize: 14 }}>Verknüpfung</h4>
-            <DetailRow label="Regel" value={<code style={{ fontSize: 11 }}>{mg.rule_id}</code>} />
+            <h4 style={{ margin: '0 0 8px', fontSize: 14 }}>{lt("Verknüpfung")}</h4>
+            <DetailRow label={lt("Regel")} value={<code style={{ fontSize: 11 }}>{mg.rule_id}</code>} />
             <DetailRow label="Status" value={mg.status} />
 
             {(mg.evidence?.paypal_split || mg.evidence?.type === 'paypal_split_payment') && (
               <div style={{ marginTop: 8, padding: '6px 10px', background: '#eaf4fd', borderRadius: 6, border: '1px solid #c5ddf0', fontSize: 12 }}>
-                <div style={{ fontWeight: 600, marginBottom: 4, color: '#2471a3' }}>PayPal Splitzahlung</div>
-                <div>PayPal-Guthaben: <strong>{(((mg.evidence.split_balance_portion ?? mg.evidence.balance_portion ?? 0)) / 100).toFixed(2)} EUR</strong></div>
-                <div>Karte/Bank: <strong>{(((mg.evidence.split_card_portion ?? mg.evidence.card_portion ?? 0)) / 100).toFixed(2)} EUR</strong></div>
-                <div style={{ borderTop: '1px solid #c5ddf0', marginTop: 4, paddingTop: 4 }}>Gesamt: <strong>{(((mg.evidence.split_total ?? mg.evidence.total ?? 0)) / 100).toFixed(2)} EUR</strong></div>
+                <div style={{ fontWeight: 600, marginBottom: 4, color: '#2471a3' }}>{lt("PayPal Splitzahlung")}</div>
+                <div>{lt("PayPal-Guthaben:") + " "}<strong>{(((mg.evidence.split_balance_portion ?? mg.evidence.balance_portion ?? 0)) / 100).toFixed(2)} EUR</strong></div>
+                <div>{lt("Karte/Bank:") + " "}<strong>{(((mg.evidence.split_card_portion ?? mg.evidence.card_portion ?? 0)) / 100).toFixed(2)} EUR</strong></div>
+                <div style={{ borderTop: '1px solid #c5ddf0', marginTop: 4, paddingTop: 4 }}>{lt("Gesamt:") + " "}<strong>{(((mg.evidence.split_total ?? mg.evidence.total ?? 0)) / 100).toFixed(2)} EUR</strong></div>
               </div>
             )}
 
             {linkedTxnIds.length > 0 && (
               <div style={{ marginTop: 10 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 6 }}>Verknüpfte Transaktionen:</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 6 }}>{lt("Verknüpfte Transaktionen:")}{' '}</div>
                 {linkedTxnIds.map((id: string) => (
                   <LinkedTransactionRow key={id} txnId={id} onJump={onJump} />
                 ))}
@@ -1353,9 +1350,9 @@ function TransactionDetail({ detail, currentId, onJump, dispositionNote, disposi
 
             {linkedDocIds.length > 0 && (
               <div style={{ marginTop: 10 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 6 }}>Verknüpfte Dokumente:</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 6 }}>{lt("Verknüpfte Dokumente:")}{' '}</div>
                 {linkedDocIds.map((id: string) => (
-                  <LinkedDocumentRow key={id} docId={id} onRefresh={onRefresh} />
+                  <LinkedDocumentRow key={id} docId={id} onRefresh={onRefresh} allowAnnotations={allowAnnotations} />
                 ))}
               </div>
             )}
@@ -1363,8 +1360,8 @@ function TransactionDetail({ detail, currentId, onJump, dispositionNote, disposi
         )}
 
         {/* Drop zone for invoice upload */}
-        <div style={{ flex: '0 0 180px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <h4 style={{ margin: '0 0 8px', fontSize: 14 }}>Beleg zuordnen</h4>
+        {allowAnnotations && <div style={{ flex: '0 0 180px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <h4 style={{ margin: '0 0 8px', fontSize: 14 }}>{lt("Beleg zuordnen")}</h4>
           <div
             onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
             onDragLeave={() => setDragging(false)}
@@ -1381,11 +1378,11 @@ function TransactionDetail({ detail, currentId, onJump, dispositionNote, disposi
             <input ref={fileRef} type="file" multiple accept=".pdf,.jpg,.jpeg,.png" style={{ display: 'none' }}
               onChange={(e) => { if (e.target.files) handleFiles(Array.from(e.target.files)); e.target.value = ''; }} />
             {uploading ? (
-              <span style={{ color: '#888', fontSize: 12 }}>Wird verarbeitet...</span>
+              <span style={{ color: '#888', fontSize: 12 }}>{lt("Wird verarbeitet...")}</span>
             ) : (
               <>
                 <span style={{ fontSize: 20, marginBottom: 4 }}>+</span>
-                <span style={{ color: '#888', fontSize: 11, lineHeight: 1.3 }}>Rechnung hierher ziehen<br/>oder klicken</span>
+                <span style={{ color: '#888', fontSize: 11, lineHeight: 1.3 }}>{lt("Rechnung hierher ziehen")}<br/>{lt("oder klicken")}</span>
               </>
             )}
           </div>
@@ -1395,7 +1392,7 @@ function TransactionDetail({ detail, currentId, onJump, dispositionNote, disposi
               {uploadResult.results?.map((r: any, i: number) => (
                 <div key={i}>
                   <div style={{ color: r.error ? '#c0392b' : '#27ae60' }}>
-                    {r.error ? `${r.filename}: ${r.error}` : `${r.filename} verknüpft`}
+                    {r.error ? `${r.filename}: ${r.error}` : lt("{value0} verknüpft", {value0: r.filename})}
                   </div>
                   {r.warning && (
                     <div style={{ color: '#e67e22', background: '#fef9e7', border: '1px solid #f0c36d', borderRadius: 4, padding: '4px 6px', marginTop: 4 }}>
@@ -1404,15 +1401,15 @@ function TransactionDetail({ detail, currentId, onJump, dispositionNote, disposi
                   )}
                   {r.matchInfo && r.matchInfo.length > 0 && (
                     <div style={{ background: '#fef0f0', border: '1px solid #e6a0a0', borderRadius: 4, padding: '6px 8px', marginTop: 4 }}>
-                      <div style={{ fontWeight: 600, color: '#c0392b', marginBottom: 4 }}>Beleg bereits verknüpft mit:</div>
+                      <div style={{ fontWeight: 600, color: '#c0392b', marginBottom: 4 }}>{lt("Beleg bereits verknüpft mit:")}{' '}</div>
                       {r.matchInfo.map((m: any, j: number) => (
                         <div key={j} style={{ marginBottom: 4 }}>
-                          <div style={{ fontSize: 10, color: '#888' }}>Regel: {m.rule_id}</div>
+                          <div style={{ fontSize: 10, color: '#888' }}>{lt("Regel:") + " "}{m.rule_id}</div>
                           {m.transaction_ids?.map((tid: string) => (
                             <a key={tid}
                               href={`/?highlight=${encodeURIComponent(tid)}`}
                               style={{ display: 'block', color: colors.blue, textDecoration: 'none', fontSize: 11, borderBottom: '1px dashed #2980b9' }}>
-                              Buchung: {tid.slice(0, 20)}...
+                              {lt("Buchung:")}{tid.slice(0, 20)}...
                             </a>
                           ))}
                         </div>
@@ -1424,13 +1421,14 @@ function TransactionDetail({ detail, currentId, onJump, dispositionNote, disposi
             </div>
           )}
           <EigenbelegButton txn={detail} onDone={onRefresh || (() => {})} />
-        </div>
+        </div>}
       </div>
     </div>
   );
 }
 
 function PayPalEnrichButton({ txnId, onDone }: { txnId: string; onDone: () => void }) {
+  const lt = useLegacyText(legacyCoreEnglish);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<{ ok?: boolean; error?: string } | null>(null);
 
@@ -1455,7 +1453,7 @@ function PayPalEnrichButton({ txnId, onDone }: { txnId: string; onDone: () => vo
           padding: '6px 12px', borderRadius: 6, fontSize: 12, cursor: busy ? 'wait' : 'pointer',
           background: '#2471a3', color: '#fff', border: 'none', fontWeight: 600,
         }}>
-        {busy ? 'Lade PayPal-Details...' : 'PayPal-Details laden'}
+        {busy ? lt("Lade PayPal-Details...") : lt("PayPal-Details laden")}
       </button>
       {result?.error && <span style={{ marginLeft: 8, color: '#c0392b', fontSize: 11 }}>{result.error}</span>}
     </div>
@@ -1463,30 +1461,31 @@ function PayPalEnrichButton({ txnId, onDone }: { txnId: string; onDone: () => vo
 }
 
 function EigenbelegButton({ txn, onDone }: { txn: any; onDone: () => void }) {
+  const lt = useLegacyText(legacyCoreEnglish);
   const [show, setShow] = useState(false);
   const [vendor, setVendor] = useState(txn.counterparty_name ?? '');
   const [country, setCountry] = useState('');
   const [description, setDescription] = useState('');
   const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
+  const [result, setResult] = useState<{key: string; values: Record<string, string | number>} | null>(null);
 
   const handleCreate = async () => {
-    if (!vendor.trim()) return alert('Bitte Vendor eingeben');
-    if (!country.trim()) return alert('Bitte Land eingeben (z.B. AT, DE, IE)');
+    if (!vendor.trim()) return alert(lt("Bitte Vendor eingeben"));
+    if (!country.trim()) return alert(lt("Bitte Land eingeben (z.B. AT, DE, IE)"));
     setBusy(true);
     try {
       const res = await api.createEigenbeleg(txn.transaction_id, vendor.trim(), country.trim().toUpperCase(), description || undefined);
-      setResult(`Eigenbeleg ${res.eigenbelegNumber} erstellt`);
+      setResult({key: "Eigenbeleg {value0} erstellt", values: {value0: res.eigenbelegNumber}});
       setShow(false);
       onDone();
     } catch (e: any) {
-      alert('Fehler: ' + e.message);
+      alert("" + lt("Fehler:") + " " + e.message);
     } finally {
       setBusy(false);
     }
   };
 
-  if (result) return <div style={{ fontSize: 11, color: '#27ae60', marginTop: 8 }}>{result}</div>;
+  if (result) return <div style={{ fontSize: 11, color: '#27ae60', marginTop: 8 }}>{lt(result.key, result.values)}</div>;
 
   if (!show) {
     return (
@@ -1495,8 +1494,7 @@ function EigenbelegButton({ txn, onDone }: { txn: any; onDone: () => void }) {
           marginTop: 8, padding: '6px 12px', borderRadius: 6, fontSize: 11, cursor: 'pointer',
           background: '#fff', color: '#e67e22', border: '1px solid #e67e22', fontWeight: 600, width: '100%',
         }}>
-        Eigenbeleg erstellen
-      </button>
+        {lt("Eigenbeleg erstellen")}</button>
     );
   }
 
@@ -1504,29 +1502,28 @@ function EigenbelegButton({ txn, onDone }: { txn: any; onDone: () => void }) {
 
   return (
     <div style={{ marginTop: 8, background: '#fffef5', border: '1px solid #f0c36d', borderRadius: 6, padding: 10 }}>
-      <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Eigenbeleg erstellen</div>
+      <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>{lt("Eigenbeleg erstellen")}</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         <div>
-          <label style={{ fontSize: 11, color: '#666' }}>Vendor *</label>
-          <input value={vendor} onChange={e => setVendor(e.target.value)} style={inputStyle} placeholder="z.B. Google One" />
+          <label style={{ fontSize: 11, color: '#666' }}>{lt("Vendor *")}</label>
+          <input value={vendor} onChange={e => setVendor(e.target.value)} style={inputStyle} placeholder={lt("z.B. Google One")} />
         </div>
         <div>
-          <label style={{ fontSize: 11, color: '#666' }}>Land *</label>
-          <input value={country} onChange={e => setCountry(e.target.value)} style={inputStyle} placeholder="z.B. IE, AT, DE" />
+          <label style={{ fontSize: 11, color: '#666' }}>{lt("Land *")}</label>
+          <input value={country} onChange={e => setCountry(e.target.value)} style={inputStyle} placeholder={lt("z.B. IE, AT, DE")} />
         </div>
         <div>
-          <label style={{ fontSize: 11, color: '#666' }}>Beschreibung</label>
-          <input value={description} onChange={e => setDescription(e.target.value)} style={inputStyle} placeholder="z.B. Teilerstattung Google One" />
+          <label style={{ fontSize: 11, color: '#666' }}>{lt("Beschreibung")}</label>
+          <input value={description} onChange={e => setDescription(e.target.value)} style={inputStyle} placeholder={lt("z.B. Teilerstattung Google One")} />
         </div>
         <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
           <button onClick={handleCreate} disabled={busy}
             style={{ flex: 1, padding: '6px', borderRadius: 4, fontSize: 11, cursor: 'pointer', background: '#e67e22', color: '#fff', border: 'none', fontWeight: 600 }}>
-            {busy ? '...' : 'Erstellen'}
+            {busy ? '...' : lt("Erstellen")}
           </button>
           <button onClick={() => setShow(false)}
             style={{ padding: '6px 10px', borderRadius: 4, fontSize: 11, cursor: 'pointer', background: '#eee', border: 'none' }}>
-            Abbrechen
-          </button>
+            {lt("Abbrechen")}</button>
         </div>
       </div>
     </div>
@@ -1534,12 +1531,13 @@ function EigenbelegButton({ txn, onDone }: { txn: any; onDone: () => void }) {
 }
 
 function LinkedTransactionRow({ txnId, onJump }: { txnId: string; onJump: (id: string) => void }) {
+  const lt = useLegacyText(legacyCoreEnglish);
   const [txn, setTxn] = useState<any>(null);
   useEffect(() => {
     api.getTransaction(txnId).then(setTxn).catch(() => {});
   }, [txnId]);
 
-  if (!txn) return <div style={{ padding: '4px 0', color: '#999', fontSize: 12 }}>Laden...</div>;
+  if (!txn) return <div style={{ padding: '4px 0', color: '#999', fontSize: 12 }}>{lt("Laden...")}</div>;
 
   return (
     <div
@@ -1552,7 +1550,7 @@ function LinkedTransactionRow({ txnId, onJump }: { txnId: string; onJump: (id: s
       }}
       onMouseOver={e => (e.currentTarget.style.borderColor = '#2980b9')}
       onMouseOut={e => (e.currentTarget.style.borderColor = '#e0e0e0')}
-      title="Klicken um zur Transaktion zu springen"
+      title={lt("Klicken um zur Transaktion zu springen")}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <SourceBadge source={txn.source_system} />
@@ -1564,7 +1562,8 @@ function LinkedTransactionRow({ txnId, onJump }: { txnId: string; onJump: (id: s
   );
 }
 
-function LinkedDocumentRow({ docId, onRefresh }: { docId: string; onRefresh?: () => void }) {
+function LinkedDocumentRow({ docId, onRefresh, allowAnnotations=true }: { docId: string; onRefresh?: () => void; allowAnnotations?: boolean }) {
+  const lt = useLegacyText(legacyCoreEnglish);
   const [doc, setDoc] = useState<any>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -1586,11 +1585,11 @@ function LinkedDocumentRow({ docId, onRefresh }: { docId: string; onRefresh?: ()
       form.append('files', file);
       form.append('document_id', docId);
       const res = await fetch('/api/documents/eigenbeleg/upload', { method: 'POST', body: form });
-      if (!res.ok) throw new Error((await res.json()).error || 'Upload fehlgeschlagen');
+      if (!res.ok) throw new Error((await res.json()).error || lt("Upload fehlgeschlagen"));
       api.getDocument(docId).then(setDoc); // refresh
       onRefresh?.();
     } catch (e: any) {
-      alert('Fehler: ' + e.message);
+      alert("" + lt("Fehler:") + " " + e.message);
     } finally {
       setUploading(false);
     }
@@ -1604,18 +1603,18 @@ function LinkedDocumentRow({ docId, onRefresh }: { docId: string; onRefresh?: ()
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
-          {filename ? <FileLink filename={filename} /> : <span style={{ color: '#999' }}>{docId.slice(0, 20)}</span>}
+          {filename ? (allowAnnotations ? <FileLink filename={filename} /> : <span>{filename}</span>) : <span style={{ color: '#999' }}>{docId.slice(0, 20)}</span>}
           {supplier && <span style={{ color: '#888', marginLeft: 8 }}>{supplier}</span>}
           {amount != null && <span style={{ fontFamily: 'monospace', marginLeft: 8, color: amount < 0 ? '#c0392b' : '#27ae60' }}>{(Math.abs(amount) / 100).toFixed(2)} EUR</span>}
           {date && <span style={{ color: '#aaa', marginLeft: 8 }}>{formatDate(date)}</span>}
-          {needsReceipt && <span style={{ marginLeft: 8, color: '#c0392b', fontWeight: 600, fontSize: 11 }}>Rechnung fehlt</span>}
+          {needsReceipt && <span style={{ marginLeft: 8, color: '#c0392b', fontWeight: 600, fontSize: 11 }}>{lt("Rechnung fehlt")}</span>}
         </div>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-          {needsReceipt && (
+          {allowAnnotations && needsReceipt && (
             <>
               <button onClick={() => fileRef.current?.click()} disabled={uploading}
                 style={{ padding: '2px 8px', borderRadius: 4, fontSize: 10, cursor: 'pointer', background: '#e74c3c', color: '#fff', border: 'none', fontWeight: 600 }}>
-                {uploading ? '...' : 'Rechnung hochladen'}
+                {uploading ? '...' : lt("Rechnung hochladen")}
               </button>
               <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png" style={{ display: 'none' }}
                 onChange={e => { if (e.target.files?.[0]) handleUpload(e.target.files[0]); e.target.value = ''; }} />
@@ -1624,13 +1623,11 @@ function LinkedDocumentRow({ docId, onRefresh }: { docId: string; onRefresh?: ()
           {scanId ? (
             <a href={`/belegerkennung?scan=${encodeURIComponent(scanId)}`}
               style={{ fontSize: 11, color: '#2980b9', textDecoration: 'none', whiteSpace: 'nowrap' }}>
-              Scan anzeigen
-            </a>
+              {lt("Scan anzeigen")}</a>
           ) : doc?.source_system === 'invoice_scan' && doc?.document_id ? (
             <a href={`/belegerkennung?doc=${encodeURIComponent(doc.document_id)}`}
               style={{ fontSize: 11, color: '#2980b9', textDecoration: 'none', whiteSpace: 'nowrap' }}>
-              Scan anzeigen
-            </a>
+              {lt("Scan anzeigen")}</a>
           ) : null}
         </div>
       </div>
@@ -1670,7 +1667,7 @@ function defaultEndDate() {
   return new Date().toISOString().slice(0, 10);
 }
 
-function getQuarterPresets() {
+function getQuarterPresets(lt: (text: string, values?: Record<string, string | number>) => string) {
   const now = new Date();
   const year = now.getFullYear();
   const presets = [];
@@ -1690,14 +1687,15 @@ function getQuarterPresets() {
     const end = `${year - 1}-${String(endMonth + 1).padStart(2, '0')}-${lastDay}`;
     presets.push({ label: `Q${q + 1} ${year - 1}`, start, end });
   }
-  presets.push({ label: `Ganzes Jahr ${year}`, start: `${year}-01-01`, end: `${year}-12-31` });
-  presets.push({ label: `Ganzes Jahr ${year - 1}`, start: `${year - 1}-01-01`, end: `${year - 1}-12-31` });
+  presets.push({ label: lt("Ganzes Jahr {value0}", {value0: year}), start: `${year}-01-01`, end: `${year}-12-31` });
+  presets.push({ label: lt("Ganzes Jahr {value0}", {value0: year - 1}), start: `${year - 1}-01-01`, end: `${year - 1}-12-31` });
   return presets;
 }
 
-function TxnRowMenu({ txn, isOpen, onToggle, onClose, onOk, onUnmatch, onInvoiceBot, onProvisionalRelease, onManualMatch }: {
-  txn: any; isOpen: boolean; onToggle: () => void; onClose: () => void; onOk: (txnId: string, note: string) => void; onUnmatch: (mgId: string) => void; onInvoiceBot?: (vendorName: string, date: string, amount: number) => void; onProvisionalRelease?: (txn: any) => void; onManualMatch?: (txn: any) => void;
+function TxnRowMenu({ txn, isOpen, onToggle, onClose, onOk, onUnmatch, onInvoiceBot, onProvisionalRelease, onManualMatch, allowAnnotations=true }: {
+  txn: any; isOpen: boolean; onToggle: () => void; onClose: () => void; onOk: (txnId: string, note: string) => void; onUnmatch: (mgId: string) => void; onInvoiceBot?: (vendorName: string, date: string, amount: number) => void; onProvisionalRelease?: (txn: any) => void; onManualMatch?: (txn: any) => void; allowAnnotations?: boolean;
 }) {
+  const lt = useLegacyText(legacyCoreEnglish);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -1712,12 +1710,12 @@ function TxnRowMenu({ txn, isOpen, onToggle, onClose, onOk, onUnmatch, onInvoice
   const menuItems: Array<{ label: string; href?: string; onClick?: () => void; color?: string; tip?: string }> = [];
 
   // "OK" — mark as ok_no_match with optional note
-  if (txn.disposition !== 'ok_no_match') {
+  if (allowAnnotations && txn.disposition !== 'ok_no_match') {
     menuItems.push({
       label: 'OK',
-      tip: 'Buchung als geprüft markieren (kein Beleg nötig)',
+      tip: lt("Buchung als geprüft markieren (kein Beleg nötig)"),
       onClick: () => {
-        const note = prompt('Beschreibung (optional):') ?? '';
+        const note = prompt(lt("Beschreibung (optional):")) ?? '';
         onOk(txn.transaction_id, note || 'ok');
         onClose();
       },
@@ -1728,8 +1726,8 @@ function TxnRowMenu({ txn, isOpen, onToggle, onClose, onOk, onUnmatch, onInvoice
   if (txn.linked_txn_ids?.length > 0) {
     for (const linkedId of txn.linked_txn_ids) {
       menuItems.push({
-        label: 'Gegenbuchung',
-        tip: 'Zur verknüpften Gegenbuchung (Umbuchung) springen',
+        label: lt("Gegenbuchung"),
+        tip: lt("Zur verknüpften Gegenbuchung (Umbuchung) springen"),
         href: `/?highlight=${encodeURIComponent(linkedId)}`,
       });
     }
@@ -1738,11 +1736,11 @@ function TxnRowMenu({ txn, isOpen, onToggle, onClose, onOk, onUnmatch, onInvoice
   // "Beleg ansehen" — navigate to linked document in Rechnungen/Einkuenfte
   if (txn.linked_docs?.length > 0) {
     for (const doc of txn.linked_docs) {
-      const label = doc.source_system === 'income' ? 'Einkunft ansehen' : 'Rechnung ansehen';
+      const label = doc.source_system === 'income' ? lt("Einkunft ansehen") : lt("Rechnung ansehen");
       const target = doc.source_system === 'income'
         ? `/einkuenfte?highlight=${encodeURIComponent(doc.document_id)}`
         : `/rechnungen?highlight=${encodeURIComponent(doc.document_id)}`;
-      menuItems.push({ label, href: target, tip: 'Verknüpften Beleg in Rechnungen/Einnahmen anzeigen' });
+      menuItems.push({ label, href: target, tip: lt("Verknüpften Beleg in Rechnungen/Einnahmen anzeigen") });
     }
   }
 
@@ -1750,10 +1748,10 @@ function TxnRowMenu({ txn, isOpen, onToggle, onClose, onOk, onUnmatch, onInvoice
   if (txn.is_matched && txn.match_group_id) {
     menuItems.push({
       label: 'Unmatch',
-      tip: 'Verknüpfung zwischen Buchung und Beleg aufheben',
+      tip: lt("Verknüpfung zwischen Buchung und Beleg aufheben"),
       color: colors.red,
       onClick: () => {
-        if (!confirm('Verknüpfung wirklich aufheben?')) return;
+        if (!confirm(lt("Verknüpfung wirklich aufheben?"))) return;
         onUnmatch(txn.match_group_id);
       },
     });
@@ -1762,30 +1760,30 @@ function TxnRowMenu({ txn, isOpen, onToggle, onClose, onOk, onUnmatch, onInvoice
   // "Manuell verknüpfen" — open document picker to match
   if (!txn.is_matched && onManualMatch) {
     menuItems.push({
-      label: 'Manuell verknüpfen',
-      tip: 'Rechnung aus der Belegliste auswählen und mit dieser Buchung verknüpfen',
+      label: lt("Manuell verknüpfen"),
+      tip: lt("Rechnung aus der Belegliste auswählen und mit dieser Buchung verknüpfen"),
       color: colors.blue,
       onClick: () => onManualMatch(txn),
     });
   }
 
   // "Vorübergehend freigeben" — create provisional document for unmatched transactions
-  if (!txn.is_matched && onProvisionalRelease) {
+  if (allowAnnotations && !txn.is_matched && onProvisionalRelease) {
     menuItems.push({
-      label: 'Vorübergehend freigeben',
-      tip: 'Buchung für Berichte freigeben (Platzhalter bis echte Rechnung vorliegt)',
+      label: lt("Vorübergehend freigeben"),
+      tip: lt("Buchung für Berichte freigeben (Platzhalter bis echte Rechnung vorliegt)"),
       color: '#e67e22',
       onClick: () => onProvisionalRelease(txn),
     });
   }
 
   // "Invoice Bot" — auto-collect invoice for unmatched transactions
-  if (!txn.is_matched && txn.amount_minor < 0 && onInvoiceBot) {
+  if (allowAnnotations && !txn.is_matched && txn.amount_minor < 0 && onInvoiceBot) {
     const vendorName = txn.counterparty_name || txn.description_raw?.slice(0, 40);
     if (vendorName) {
       menuItems.push({
         label: 'Invoice Bot',
-        tip: 'Rechnung automatisch vom Portal des Vendors holen',
+        tip: lt("Rechnung automatisch vom Portal des Vendors holen"),
         color: '#8e24aa',
         onClick: () => {
           onInvoiceBot(vendorName, txn.posting_at, txn.amount_minor);
@@ -1803,7 +1801,7 @@ function TxnRowMenu({ txn, isOpen, onToggle, onClose, onOk, onUnmatch, onInvoice
           fontSize: 18, padding: '2px 6px', color: '#888', borderRadius: 4,
           lineHeight: 1,
         }}
-        title="Optionen"
+        title={lt("Optionen")}
       >...</button>
       {isOpen && menuItems.length > 0 && (
         <div style={{

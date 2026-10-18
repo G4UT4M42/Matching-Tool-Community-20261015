@@ -1,3 +1,5 @@
+import { useLegacyText } from '../i18n/legacy';
+import { legacyDocumentsEnglish } from '../i18n/legacy-documents';
 import React, { useEffect, useState } from 'react';
 import { api } from '../api';
 import { Card, Badge, colors } from '../components/shared';
@@ -18,6 +20,9 @@ const STATUS_LABELS: Record<string, string> = {
 const IMPORT_COLORS: Record<string, string> = {
   pending: colors.gray, imported: colors.green, duplicate: colors.orange, failed: colors.red,
 };
+const IMPORT_LABELS: Record<string, string> = {
+  pending: 'Ausstehend', imported: 'Importiert', duplicate: 'Duplikat', failed: 'Import fehlgeschlagen',
+};
 
 export function InvoiceBot() {
   const [view, setView] = useState<View>('portals');
@@ -32,6 +37,7 @@ export function InvoiceBot() {
 // ==================== PORTALS & RUNS ====================
 
 function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   const [portals, setPortals] = useState<any[]>([]);
   const [runs, setRuns] = useState<any[]>([]);
   const [showCreate, setShowCreate] = useState(false);
@@ -83,7 +89,7 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
     try {
       const run = await api.botStartRun(runForm.portalId, runForm.start, runForm.end);
       setRunForm(null);
-      setMessage({ text: 'Sammlung gestartet', color: colors.green });
+      setMessage({ text: "Sammlung gestartet", color: colors.green });
       load();
       onViewRun(run.id);
     } catch (err: any) { setMessage({ text: err.message, color: colors.red }); }
@@ -107,7 +113,7 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
       {message && (
         <div style={{ color: message.color, marginBottom: 8, fontSize: 13, cursor: 'pointer' }}
           onClick={() => setMessage(null)}>
-          {message.text}
+          {lt(message.text)}
         </div>
       )}
 
@@ -119,9 +125,7 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
       }}>
         {executorBusy ? (
           <div style={{ fontSize: 12, color: '#e67e22', fontWeight: 600 }}>
-            Browser wird gerade für eine Sammlung verwendet. Bitte nicht im Bot-Browser navigieren.
-            Session-Prüfung und neue Sammlungen sind gesperrt.
-          </div>
+            {lt("Browser wird gerade für eine Sammlung verwendet. Bitte nicht im Bot-Browser navigieren. Session-Prüfung und neue Sammlungen sind gesperrt.")}</div>
         ) : (
           <div>
             <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 8 }}>
@@ -131,12 +135,12 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
                   background: browserStatus?.running ? colors.green : '#ddd',
                 }} />
                 <span style={{ fontSize: 13, fontWeight: 600 }}>
-                  {browserStatus?.running ? 'Bot-Browser läuft' : 'Bot-Browser nicht gestartet'}
+                  {browserStatus?.running ? lt("Bot-Browser läuft") : lt("Bot-Browser nicht gestartet")}
                 </span>
               </div>
               <button onClick={() => handleLaunchBrowser()} disabled={launching}
                 style={{ ...btnStyle, fontSize: 12, padding: '4px 14px', background: colors.blue, color: '#fff', border: 'none' }}>
-                {launching ? 'Wird gestartet...' : 'Bot-Browser starten'}
+                {launching ? lt("Wird gestartet...") : lt("Bot-Browser starten")}
               </button>
             </div>
 
@@ -152,12 +156,11 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
             )}
 
             <div style={{ fontSize: 11, color: '#888', lineHeight: 1.6 }}>
-              <b>Bot-Browser</b> = dediziertes Chrome-Profil für den Invoice Bot.{' '}
-              Dort beim Portal einloggen und Zugangsdaten im Chrome-Passwortmanager speichern.{' '}
-              Dies ist <b>kein</b> Session-Check — danach "Session prüfen" klicken.
-              {browserStatus && !browserStatus.chromeFound && (
+              <b>{lt("Bot-Browser")}</b> {lt("= dediziertes Chrome-Profil für den Invoice Bot.")}{' '}
+              {lt("Dort beim Portal einloggen und Zugangsdaten im Chrome-Passwortmanager speichern.")}{' '}
+              {lt("Dies ist") + " "}<b>{lt("kein")}</b> {lt("Session-Check — danach \"Session prüfen\" klicken.")}{browserStatus && !browserStatus.chromeFound && (
                 <span style={{ color: colors.red, display: 'block', marginTop: 4 }}>
-                  Chrome nicht gefunden. Pfad: {browserStatus.chromePath || '(nicht konfiguriert)'}
+                  {lt("Chrome nicht gefunden. Pfad:") + " "}{browserStatus.chromePath || lt("(nicht konfiguriert)")}
                 </span>
               )}
             </div>
@@ -168,58 +171,56 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
       {/* Portals */}
       <Card style={{ marginBottom: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <h3 style={{ margin: 0, fontSize: 15 }}>Portale</h3>
+          <h3 style={{ margin: 0, fontSize: 15 }}>{lt("Portale")}</h3>
           <button onClick={() => setShowCreate(!showCreate)} style={btnStyle}>
-            {showCreate ? 'Abbrechen' : '+ Portal'}
+            {showCreate ? lt("Abbrechen") : lt("+ Portal")}
           </button>
         </div>
 
         {showCreate && (
           <div style={{ marginBottom: 12, padding: 12, background: '#f8f9fa', borderRadius: 6 }}>
             <div style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-              <input placeholder="Name (z.B. Lieferant X)" value={newPortal.name}
+              <input placeholder={lt("Name (z.B. Lieferant X)")} value={newPortal.name}
                 onChange={e => setNewPortal({ ...newPortal, name: e.target.value })}
                 style={inputStyle} />
-              <input placeholder="URL (z.B. https://portal.example.com)" value={newPortal.baseUrl}
+              <input placeholder={lt("URL (z.B. https://portal.example.com)")} value={newPortal.baseUrl}
                 onChange={e => setNewPortal({ ...newPortal, baseUrl: e.target.value })}
                 style={{ ...inputStyle, flex: 2 }} />
               <select value={newPortal.portalType}
                 onChange={e => setNewPortal({ ...newPortal, portalType: e.target.value })}
                 style={inputStyle}>
-                <option value="browser_use">Browser-Use (KI)</option>
+                <option value="browser_use">{lt("Browser-Use (KI)")}</option>
                 <option value="amazon">Amazon</option>
-                <option value="generic">Generisch</option>
+                <option value="generic">{lt("Generisch")}</option>
               </select>
             </div>
             {newPortal.portalType === 'browser_use' && (
               <div style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                <textarea placeholder="Task-Prompt: z.B. 'Gehe zu Rechnungen, lade alle PDFs herunter'"
+                <textarea placeholder={lt("Task-Prompt: z.B. 'Gehe zu Rechnungen, lade alle PDFs herunter'")}
                   value={newPortal.taskPrompt}
                   onChange={e => setNewPortal({ ...newPortal, taskPrompt: e.target.value })}
                   style={{ ...inputStyle, flex: 1, minHeight: 40, resize: 'vertical' }} />
                 <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, cursor: 'pointer' }}>
                   <input type="checkbox" checked={newPortal.requiresHumanLogin}
                     onChange={e => setNewPortal({ ...newPortal, requiresHumanLogin: e.target.checked })} />
-                  Manueller Login nötig
-                </label>
+                  {lt("Manueller Login nötig")}</label>
               </div>
             )}
             <button onClick={createPortal} style={{ ...btnStyle, background: colors.green, color: '#fff' }}>
-              Erstellen
-            </button>
+              {lt("Erstellen")}</button>
           </div>
         )}
 
         {portals.length === 0 ? (
-          <div style={{ color: '#999', fontSize: 13 }}>Keine Portale konfiguriert</div>
+          <div style={{ color: '#999', fontSize: 13 }}>{lt("Keine Portale konfiguriert")}</div>
         ) : (
           <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
             <thead>
               <tr>
                 <th style={th}>Name</th>
-                <th style={th}>Typ</th>
+                <th style={th}>{lt("Typ")}</th>
                 <th style={th}>Session</th>
-                <th style={th}>Aktionen</th>
+                <th style={th}>{lt("Aktionen")}</th>
               </tr>
             </thead>
             <tbody>
@@ -239,25 +240,25 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
                             <SessionDot ok={session.browserReachable} label="Chrome" />
                             <SessionDot ok={session.portalReachable} label="Portal" />
                             <SessionDot ok={session.loggedIn} label="Login" />
-                            <SessionDot ok={session.invoiceAreaAccessible} label="Rechnungen" />
+                            <SessionDot ok={session.invoiceAreaAccessible} label={lt("Rechnungen")} />
                           </div>
                           <div style={{ fontSize: 10, color: '#888', marginTop: 2 }}>{session.message}</div>
                         </div>
                       ) : (
-                        <span style={{ color: '#999', fontSize: 11 }}>Nicht geprüft</span>
+                        <span style={{ color: '#999', fontSize: 11 }}>{lt("Nicht geprüft")}</span>
                       )}
                     </td>
                     <td style={td}>
                       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                         <button onClick={() => checkSession(p.id)}
                           disabled={checkingSession === p.id || executorBusy}
-                          title={executorBusy ? 'Browser wird gerade verwendet' : 'Session-Status prüfen'}
+                          title={executorBusy ? lt("Browser wird gerade verwendet") : lt("Session-Status prüfen")}
                           style={{ ...btnStyle, fontSize: 11, padding: '2px 8px' }}>
                           {checkingSession === p.id ? '...' : 'Session'}
                         </button>
                         <button onClick={() => setRunForm({ portalId: p.id, start: '', end: '' })}
                           disabled={executorBusy}
-                          title="Rechnungssammlung starten"
+                          title={lt("Rechnungssammlung starten")}
                           style={{
                             ...btnStyle, fontSize: 11, padding: '2px 8px',
                             background: !executorBusy ? colors.green : '#eee',
@@ -270,7 +271,7 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
                           Edit
                         </button>
                         <button onClick={async () => {
-                          if (!confirm(`Portal "${p.name}" und alle zugehörigen Runs wirklich löschen?`)) return;
+                          if (!confirm(lt("Portal \"{name}\" und alle zugehörigen Runs wirklich löschen?", { name: p.name }))) return;
                           try {
                             await api.botDeletePortal(p.id);
                             load();
@@ -299,7 +300,7 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
             background: '#fff', borderRadius: 12, padding: 24, maxWidth: 540, width: '90%',
             boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
           }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ margin: '0 0 16px', fontSize: 16 }}>Portal bearbeiten</h3>
+            <h3 style={{ margin: '0 0 16px', fontSize: 16 }}>{lt("Portal bearbeiten")}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <label style={{ fontSize: 12, fontWeight: 600 }}>Name
                 <input value={editPortal.name} onChange={e => setEditPortal({ ...editPortal, name: e.target.value })}
@@ -309,8 +310,7 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
                 <input value={editPortal.baseUrl} onChange={e => setEditPortal({ ...editPortal, baseUrl: e.target.value })}
                   style={{ ...inputStyle, width: '100%', display: 'block', marginTop: 4 }} />
               </label>
-              <label style={{ fontSize: 12, fontWeight: 600 }}>Task-Prompt
-                <textarea value={editPortal.taskPrompt ?? ''} onChange={e => setEditPortal({ ...editPortal, taskPrompt: e.target.value })}
+              <label style={{ fontSize: 12, fontWeight: 600 }}>{lt("Task-Prompt")}<textarea value={editPortal.taskPrompt ?? ''} onChange={e => setEditPortal({ ...editPortal, taskPrompt: e.target.value })}
                   style={{ ...inputStyle, width: '100%', display: 'block', marginTop: 4, minHeight: 60, resize: 'vertical' }} />
               </label>
               <div style={{ display: 'flex', gap: 12 }}>
@@ -318,17 +318,17 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
                   <select value={editPortal.adapterType ?? 'amazon'}
                     onChange={e => setEditPortal({ ...editPortal, adapterType: e.target.value, portalType: e.target.value })}
                     style={{ ...inputStyle, width: '100%', display: 'block', marginTop: 4 }}>
-                    <option value="browser_use">Browser-Use (KI)</option>
+                    <option value="browser_use">{lt("Browser-Use (KI)")}</option>
                     <option value="amazon">Amazon</option>
-                    <option value="manual">Manuell</option>
+                    <option value="manual">{lt("Manuell")}</option>
                   </select>
                 </label>
                 <label style={{ fontSize: 12, fontWeight: 600, flex: 1 }}>Login
                   <select value={editPortal.loginStrategy ?? 'existing_session'}
                     onChange={e => setEditPortal({ ...editPortal, loginStrategy: e.target.value })}
                     style={{ ...inputStyle, width: '100%', display: 'block', marginTop: 4 }}>
-                    <option value="existing_session">Bestehende Session</option>
-                    <option value="manual">Manuell</option>
+                    <option value="existing_session">{lt("Bestehende Session")}</option>
+                    <option value="manual">{lt("Manuell")}</option>
                     <option value="credentials">Credentials</option>
                   </select>
                 </label>
@@ -336,9 +336,9 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
                   <select value={editPortal.reviewPolicy ?? 'review_if_uncertain'}
                     onChange={e => setEditPortal({ ...editPortal, reviewPolicy: e.target.value })}
                     style={{ ...inputStyle, width: '100%', display: 'block', marginTop: 4 }}>
-                    <option value="auto_import">Auto-Import</option>
-                    <option value="review_if_uncertain">Review wenn unsicher</option>
-                    <option value="always_review">Immer Review</option>
+                    <option value="auto_import">{lt("Auto-Import")}</option>
+                    <option value="review_if_uncertain">{lt("Review wenn unsicher")}</option>
+                    <option value="always_review">{lt("Immer Review")}</option>
                   </select>
                 </label>
               </div>
@@ -346,10 +346,8 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
                 <label style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
                   <input type="checkbox" checked={!!editPortal.requiresHumanLogin}
                     onChange={e => setEditPortal({ ...editPortal, requiresHumanLogin: e.target.checked })} />
-                  Manueller Login nötig
-                </label>
-                <label style={{ fontSize: 12, fontWeight: 600 }}>Max. Kosten/Run (USD)
-                  <input type="number" step="0.5" value={editPortal.maxCostPerRun ?? ''}
+                  {lt("Manueller Login nötig")}</label>
+                <label style={{ fontSize: 12, fontWeight: 600 }}>{lt("Max. Kosten/Run (USD)")}<input type="number" step="0.5" value={editPortal.maxCostPerRun ?? ''}
                     onChange={e => setEditPortal({ ...editPortal, maxCostPerRun: e.target.value ? parseFloat(e.target.value) : null })}
                     style={{ ...inputStyle, width: 80, marginLeft: 6 }} />
                 </label>
@@ -357,7 +355,7 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
             </div>
             <div style={{ display: 'flex', gap: 8, marginTop: 16, justifyContent: 'flex-end' }}>
               <button onClick={() => setEditPortal(null)}
-                style={{ ...btnStyle, padding: '8px 16px' }}>Abbrechen</button>
+                style={{ ...btnStyle, padding: '8px 16px' }}>{lt("Abbrechen")}</button>
               <button onClick={async () => {
                 try {
                   await api.botUpdatePortal(editPortal.id, editPortal);
@@ -365,7 +363,7 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
                   load();
                 } catch (err: any) { setMessage({ text: err.message, color: colors.red }); }
               }}
-                style={{ ...btnStyle, padding: '8px 16px', background: colors.green, color: '#fff' }}>Speichern</button>
+                style={{ ...btnStyle, padding: '8px 16px', background: colors.green, color: '#fff' }}>{lt("Speichern")}</button>
             </div>
           </div>
         </div>
@@ -378,7 +376,7 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
       {/* Run creation form */}
       {runForm && (
         <Card style={{ marginBottom: 16, background: '#f0f7ff', border: '1px solid #b3d4fc' }}>
-          <h3 style={{ margin: '0 0 8px', fontSize: 14 }}>Rechnungssammlung starten</h3>
+          <h3 style={{ margin: '0 0 8px', fontSize: 14 }}>{lt("Rechnungssammlung starten")}</h3>
 
           {/* Quick date range presets */}
           <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
@@ -389,43 +387,42 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
                   background: runForm.start === p.start && runForm.end === p.end ? '#2980b9' : '#ecf0f1',
                   color: runForm.start === p.start && runForm.end === p.end ? '#fff' : '#333',
                 }}>
-                {p.label}
+                {lt(p.label)}
               </button>
             ))}
           </div>
 
           {/* Manual date range */}
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <label style={{ fontSize: 12 }}>Von:</label>
+            <label style={{ fontSize: 12 }}>{lt("Von:")}</label>
             <input type="date" value={runForm.start}
               onChange={e => setRunForm({ ...runForm, start: e.target.value })} style={inputStyle} />
-            <label style={{ fontSize: 12 }}>Bis:</label>
+            <label style={{ fontSize: 12 }}>{lt("Bis:")}</label>
             <input type="date" value={runForm.end}
               onChange={e => setRunForm({ ...runForm, end: e.target.value })} style={inputStyle} />
             <button onClick={startRun}
               disabled={!runForm.start || !runForm.end}
               style={{ ...btnStyle, background: colors.green, color: '#fff' }}>
-              Starten
-            </button>
-            <button onClick={() => setRunForm(null)} style={btnStyle}>Abbrechen</button>
+              {lt("Starten")}</button>
+            <button onClick={() => setRunForm(null)} style={btnStyle}>{lt("Abbrechen")}</button>
           </div>
         </Card>
       )}
 
       {/* Recent Runs */}
       <Card>
-        <h3 style={{ margin: '0 0 12px', fontSize: 15 }}>Letzte Sammlungen</h3>
+        <h3 style={{ margin: '0 0 12px', fontSize: 15 }}>{lt("Letzte Sammlungen")}</h3>
         {runs.length === 0 ? (
-          <div style={{ color: '#999', fontSize: 13 }}>Keine Sammlungen</div>
+          <div style={{ color: '#999', fontSize: 13 }}>{lt("Keine Sammlungen")}</div>
         ) : (
           <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
             <thead>
               <tr>
                 <th style={th}>Portal</th>
-                <th style={th}>Zeitraum</th>
+                <th style={th}>{lt("Zeitraum")}</th>
                 <th style={th}>Status</th>
-                <th style={th}>Dateien</th>
-                <th style={th}>Erstellt</th>
+                <th style={th}>{lt("Dateien")}</th>
+                <th style={th}>{lt("Erstellt")}</th>
                 <th style={th}></th>
               </tr>
             </thead>
@@ -437,15 +434,15 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
                   <tr key={r.id} style={{ borderBottom: '1px solid #f0f0f0', cursor: 'pointer' }}
                     onClick={() => onViewRun(r.id)}>
                     <td style={td}>{portal?.name ?? '?'}</td>
-                    <td style={{ ...td, fontSize: 11 }}>{fmtDate(r.requestedStart)} — {fmtDate(r.requestedEnd)}</td>
+                    <td style={{ ...td, fontSize: 11 }}>{fmtDate(r.requestedStart, lt("de-DE"))} — {fmtDate(r.requestedEnd, lt("de-DE"))}</td>
                     <td style={td}>
-                      <Badge text={STATUS_LABELS[r.status] ?? r.status}
+                      <Badge text={lt(STATUS_LABELS[r.status] ?? r.status)}
                         color={STATUS_COLORS[r.status] ?? colors.gray} />
                     </td>
                     <td style={{ ...td, fontSize: 11 }}>
                       {s.found > 0 && <span>{s.downloaded}/{s.found} </span>}
-                      {s.imported > 0 && <span style={{ color: colors.green }}>({s.imported} imp.) </span>}
-                      {s.failed > 0 && <span style={{ color: colors.red }}>({s.failed} err)</span>}
+                      {s.imported > 0 && <span style={{ color: colors.green }}>({s.imported} {lt("imp.)") + " "}</span>}
+                      {s.failed > 0 && <span style={{ color: colors.red }}>({s.failed} {lt("err)")}</span>}
                     </td>
                     <td style={{ ...td, fontSize: 11, color: '#888' }}>{fmtDateTime(r.createdAt)}</td>
                     <td style={td} onClick={e => e.stopPropagation()}>
@@ -468,6 +465,7 @@ function PortalsAndRuns({ onViewRun }: { onViewRun: (id: string) => void }) {
 // ==================== RUN DETAIL ====================
 
 function RunDetail({ runId, onBack }: { runId: string; onBack: () => void }) {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   const [run, setRun] = useState<any>(null);
   const [files, setFiles] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
@@ -483,18 +481,18 @@ function RunDetail({ runId, onBack }: { runId: string; onBack: () => void }) {
     return () => clearInterval(t);
   }, [runId]);
 
-  if (!run) return <div>Laden...</div>;
+  if (!run) return <div>{lt("Laden...")}</div>;
 
   const isTerminal = ['completed', 'partial', 'failed', 'cancelled'].includes(run.status);
 
   return (
     <div>
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 16 }}>
-        <button onClick={onBack} style={btnStyle}>Zurück</button>
-        <h1 style={{ fontSize: 18, margin: 0 }}>Sammlung</h1>
-        <Badge text={STATUS_LABELS[run.status] ?? run.status}
+        <button onClick={onBack} style={btnStyle}>{lt("Zurück")}</button>
+        <h1 style={{ fontSize: 18, margin: 0 }}>{lt("Sammlung")}</h1>
+        <Badge text={lt(STATUS_LABELS[run.status] ?? run.status)}
           color={STATUS_COLORS[run.status] ?? colors.gray} />
-        {run.isActive && <span style={{ fontSize: 11, color: colors.blue }}>wird ausgeführt...</span>}
+        {run.isActive && <span style={{ fontSize: 11, color: colors.blue }}>{lt("wird ausgeführt...")}</span>}
       </div>
 
       {run.errorMessage && (
@@ -508,17 +506,16 @@ function RunDetail({ runId, onBack }: { runId: string; onBack: () => void }) {
       {run.status === 'completed' && run.stats?.found === 0 && (
         <div style={{ background: '#f0f7ff', border: '1px solid #b3d4fc', borderRadius: 4,
           padding: 8, marginBottom: 12, fontSize: 13, color: colors.blue }}>
-          Keine Rechnungen im gewählten Zeitraum gefunden. Das ist kein Fehler — es gibt einfach keine passenden Belege.
-        </div>
+          {lt("Keine Rechnungen im gewählten Zeitraum gefunden. Das ist kein Fehler — es gibt einfach keine passenden Belege.")}</div>
       )}
 
       {/* Stats */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
-        <StatBox label="Gefunden" value={run.stats?.found ?? 0} />
+        <StatBox label={lt("Gefunden")} value={run.stats?.found ?? 0} />
         <StatBox label="Download" value={run.stats?.downloaded ?? 0} />
-        <StatBox label="Importiert" value={run.stats?.imported ?? 0} color={colors.green} />
-        <StatBox label="Duplikate" value={run.stats?.duplicates ?? 0} color={colors.orange} />
-        <StatBox label="Fehler" value={run.stats?.failed ?? 0}
+        <StatBox label={lt("Importiert")} value={run.stats?.imported ?? 0} color={colors.green} />
+        <StatBox label={lt("Duplikate")} value={run.stats?.duplicates ?? 0} color={colors.orange} />
+        <StatBox label={lt("Fehler")} value={run.stats?.failed ?? 0}
           color={run.stats?.failed > 0 ? colors.red : undefined} />
       </div>
 
@@ -526,26 +523,26 @@ function RunDetail({ runId, onBack }: { runId: string; onBack: () => void }) {
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
         {(run.status === 'failed' || run.status === 'waiting_for_login') && (
           <button onClick={async () => { await api.botRetryRun(runId); load(); }}
-            style={{ ...btnStyle, background: colors.blue, color: '#fff' }}>Erneut versuchen</button>
+            style={{ ...btnStyle, background: colors.blue, color: '#fff' }}>{lt("Erneut versuchen")}</button>
         )}
         {!isTerminal && (
           <button onClick={async () => { await api.botCancelRun(runId); load(); }}
-            style={{ ...btnStyle, background: colors.red, color: '#fff' }}>Abbrechen</button>
+            style={{ ...btnStyle, background: colors.red, color: '#fff' }}>{lt("Abbrechen")}</button>
         )}
       </div>
 
       <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
         {/* Files */}
         <Card style={{ flex: 1 }}>
-          <h3 style={{ margin: '0 0 8px', fontSize: 14 }}>Dateien ({files.length})</h3>
+          <h3 style={{ margin: '0 0 8px', fontSize: 14 }}>{lt("Dateien (")}{files.length})</h3>
           {files.length === 0 ? (
-            <div style={{ color: '#999', fontSize: 13 }}>Keine Dateien</div>
+            <div style={{ color: '#999', fontSize: 13 }}>{lt("Keine Dateien")}</div>
           ) : (
             <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
-                  <th style={th}>Datei</th>
-                  <th style={th}>Datum</th>
+                  <th style={th}>{lt("Datei")}</th>
+                  <th style={th}>{lt("Datum")}</th>
                   <th style={th}>Import</th>
                   <th style={th}>ID</th>
                 </tr>
@@ -562,7 +559,7 @@ function RunDetail({ runId, onBack }: { runId: string; onBack: () => void }) {
                     </td>
                     <td style={td}>{f.invoiceDate ?? '—'}</td>
                     <td style={td}>
-                      <Badge text={f.importStatus}
+                      <Badge text={lt(IMPORT_LABELS[f.importStatus] ?? f.importStatus)}
                         color={IMPORT_COLORS[f.importStatus] ?? colors.gray} />
                     </td>
                     <td style={{ ...td, fontSize: 10, fontFamily: 'monospace', color: '#888' }}>
@@ -579,7 +576,7 @@ function RunDetail({ runId, onBack }: { runId: string; onBack: () => void }) {
         <Card style={{ flex: 1, maxHeight: 400, overflow: 'auto' }}>
           <h3 style={{ margin: '0 0 8px', fontSize: 14 }}>Log ({events.length})</h3>
           {events.length === 0 ? (
-            <div style={{ color: '#999', fontSize: 13 }}>Keine Ereignisse</div>
+            <div style={{ color: '#999', fontSize: 13 }}>{lt("Keine Ereignisse")}</div>
           ) : (
             events.map(e => (
               <div key={e.id} style={{
@@ -606,6 +603,7 @@ function RunDetail({ runId, onBack }: { runId: string; onBack: () => void }) {
 // ==================== COST MONITOR ====================
 
 function CostMonitor() {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   const [snapshot, setSnapshot] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [showHistory, setShowHistory] = useState(true);
@@ -648,25 +646,23 @@ function CostMonitor() {
       {snapshot.paused && (
         <div style={{ background: '#fee', borderRadius: 4, padding: 8, marginBottom: 8, display: 'flex', gap: 12, alignItems: 'center' }}>
           <span style={{ color: colors.red, fontWeight: 700, fontSize: 13 }}>
-            Kostenlimit erreicht (${snapshot.limitUsd?.toFixed(2)})
+            {lt("Kostenlimit erreicht ($")}{snapshot.limitUsd?.toFixed(2)})
           </span>
           <button onClick={handleContinue}
             style={{ ...btnStyle, background: colors.green, color: '#fff', fontSize: 12 }}>
-            Weiter arbeiten
-          </button>
+            {lt("Weiter arbeiten")}</button>
         </div>
       )}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3 style={{ margin: 0, fontSize: 14 }}>KI-Kosten</h3>
+        <h3 style={{ margin: 0, fontSize: 14 }}>{lt("KI-Kosten")}</h3>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           {/* Today's total */}
           <span style={{ fontSize: 12, color: '#666', fontFamily: 'monospace' }}>
-            Heute: ${fmtCost(snapshot.todayTotalUsd)} ({snapshot.todayTotalTokens.toLocaleString('de-DE')} Tok)
-          </span>
+            {lt("Heute: $")}{fmtCost(snapshot.todayTotalUsd)} ({snapshot.todayTotalTokens.toLocaleString(lt("de-DE"))} {lt("Tok)")}</span>
           <button onClick={() => { setShowHistory(!showHistory); if (!showHistory) loadHistory(); }}
             style={{ ...btnStyle, fontSize: 10, padding: '2px 6px' }}>
-            {showHistory ? 'Schliessen' : 'Verlauf'}
+            {showHistory ? lt("Schliessen") : lt("Verlauf")}
           </button>
         </div>
       </div>
@@ -679,8 +675,8 @@ function CostMonitor() {
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: s.status === 'active' ? colors.green : s.status === 'limit_reached' ? colors.red : colors.gray, display: 'inline-block' }} />
               Session
             </span>
-            <span style={{ fontFamily: 'monospace' }}>{s.callCount} Aufrufe</span>
-            <span style={{ fontFamily: 'monospace' }}>{s.totalTokens.toLocaleString('de-DE')} Tokens</span>
+            <span style={{ fontFamily: 'monospace' }}>{s.callCount} {lt("Aufrufe")}</span>
+            <span style={{ fontFamily: 'monospace' }}>{s.totalTokens.toLocaleString(lt("de-DE"))} Tokens</span>
             <span style={{ fontFamily: 'monospace', fontWeight: 700 }}>${fmtCost(s.totalCostUsd)}</span>
           </div>
 
@@ -708,7 +704,7 @@ function CostMonitor() {
         {editingLimit ? (
           <>
             <input value={limitInput} onChange={e => setLimitInput(e.target.value)}
-              placeholder="z.B. 0.50" style={{ width: 70, padding: '2px 6px', borderRadius: 3, border: '1px solid #ddd', fontSize: 12 }} />
+              placeholder={lt("z.B. 0.50")} style={{ width: 70, padding: '2px 6px', borderRadius: 3, border: '1px solid #ddd', fontSize: 12 }} />
             <span style={{ color: '#999' }}>USD</span>
             <button onClick={saveLimit} style={{ ...btnStyle, fontSize: 10, padding: '1px 6px' }}>OK</button>
             <button onClick={() => setEditingLimit(false)} style={{ ...btnStyle, fontSize: 10, padding: '1px 6px' }}>X</button>
@@ -716,13 +712,13 @@ function CostMonitor() {
         ) : (
           <>
             <span style={{ fontFamily: 'monospace' }}>
-              {snapshot.limitUsd != null ? `$${snapshot.limitUsd.toFixed(2)}` : 'Kein Limit'}
+              {snapshot.limitUsd != null ? `$${snapshot.limitUsd.toFixed(2)}` : lt("Kein Limit")}
             </span>
             <button onClick={() => { setLimitInput(snapshot.limitUsd?.toString() ?? ''); setEditingLimit(true); }}
-              style={{ ...btnStyle, fontSize: 10, padding: '1px 6px' }}>Ändern</button>
+              style={{ ...btnStyle, fontSize: 10, padding: '1px 6px' }}>{lt("Ändern")}</button>
             {snapshot.limitUsd != null && (
               <button onClick={async () => { await api.botSetCostLimit(null); loadSnapshot(); }}
-                style={{ ...btnStyle, fontSize: 10, padding: '1px 6px', color: colors.red }}>Entfernen</button>
+                style={{ ...btnStyle, fontSize: 10, padding: '1px 6px', color: colors.red }}>{lt("Entfernen")}</button>
             )}
           </>
         )}
@@ -743,6 +739,7 @@ const STATUS_LABELS_COST: Record<string, string> = {
 };
 
 function CostHistory({ history, onRefresh }: { history: any[]; onRefresh: () => void }) {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [entries, setEntries] = useState<any[]>([]);
 
@@ -766,34 +763,34 @@ function CostHistory({ history, onRefresh }: { history: any[]; onRefresh: () => 
   return (
     <div style={{ marginTop: 8 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: '#444' }}>Kostenverlauf</div>
-        <button onClick={onRefresh} style={{ ...btnStyle, fontSize: 10, padding: '1px 6px' }}>Aktualisieren</button>
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#444' }}>{lt("Kostenverlauf")}</div>
+        <button onClick={onRefresh} style={{ ...btnStyle, fontSize: 10, padding: '1px 6px' }}>{lt("Aktualisieren")}</button>
       </div>
 
       {/* Totals bar */}
       {history.length > 0 && (
         <div style={{ display: 'flex', gap: 16, fontSize: 11, padding: '6px 8px', background: '#f0f0f0', borderRadius: 4, marginBottom: 6 }}>
           <span><b>{history.length}</b> Sessions</span>
-          <span><b>{totalCalls}</b> Aufrufe</span>
-          <span style={{ fontFamily: 'monospace' }}><b>{totalTokens.toLocaleString('de-DE')}</b> Tokens</span>
-          <span style={{ fontFamily: 'monospace', fontWeight: 700 }}>Gesamt: ${fmtCost(totalCost)}</span>
+          <span><b>{totalCalls}</b> {lt("Aufrufe")}</span>
+          <span style={{ fontFamily: 'monospace' }}><b>{totalTokens.toLocaleString(lt("de-DE"))}</b> Tokens</span>
+          <span style={{ fontFamily: 'monospace', fontWeight: 700 }}>{lt("Gesamt: $")}{fmtCost(totalCost)}</span>
         </div>
       )}
 
       {history.length === 0 ? (
-        <div style={{ fontSize: 11, color: '#999' }}>Keine Sessions vorhanden</div>
+        <div style={{ fontSize: 11, color: '#999' }}>{lt("Keine Sessions vorhanden")}</div>
       ) : (
         <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
           <thead>
             <tr>
               <th style={{ ...th, width: 20 }}></th>
               <th style={th}>Start</th>
-              <th style={th}>Ende</th>
-              <th style={th}>Aufrufe</th>
+              <th style={th}>{lt("Ende")}</th>
+              <th style={th}>{lt("Aufrufe")}</th>
               <th style={{ ...th, textAlign: 'right' }}>Prompt</th>
               <th style={{ ...th, textAlign: 'right' }}>Completion</th>
               <th style={{ ...th, textAlign: 'right' }}>Tokens</th>
-              <th style={{ ...th, textAlign: 'right' }}>Kosten</th>
+              <th style={{ ...th, textAlign: 'right' }}>{lt("Kosten")}</th>
               <th style={th}>Status</th>
             </tr>
           </thead>
@@ -806,9 +803,9 @@ function CostHistory({ history, onRefresh }: { history: any[]; onRefresh: () => 
                   <td style={td}>{h.startedAt?.slice(0, 16).replace('T', ' ')}</td>
                   <td style={td}>{h.endedAt ? h.endedAt.slice(11, 19) : '—'}</td>
                   <td style={{ ...td, textAlign: 'center' }}>{h.callCount}</td>
-                  <td style={{ ...td, textAlign: 'right', fontFamily: 'monospace' }}>{(h.promptTokens ?? 0).toLocaleString('de-DE')}</td>
-                  <td style={{ ...td, textAlign: 'right', fontFamily: 'monospace' }}>{(h.completionTokens ?? 0).toLocaleString('de-DE')}</td>
-                  <td style={{ ...td, textAlign: 'right', fontFamily: 'monospace' }}>{h.totalTokens.toLocaleString('de-DE')}</td>
+                  <td style={{ ...td, textAlign: 'right', fontFamily: 'monospace' }}>{(h.promptTokens ?? 0).toLocaleString(lt("de-DE"))}</td>
+                  <td style={{ ...td, textAlign: 'right', fontFamily: 'monospace' }}>{(h.completionTokens ?? 0).toLocaleString(lt("de-DE"))}</td>
+                  <td style={{ ...td, textAlign: 'right', fontFamily: 'monospace' }}>{h.totalTokens.toLocaleString(lt("de-DE"))}</td>
                   <td style={{ ...td, textAlign: 'right', fontFamily: 'monospace', fontWeight: 600 }}>${fmtCost(h.totalCostUsd)}</td>
                   <td style={td}>
                     <span style={{
@@ -816,7 +813,7 @@ function CostHistory({ history, onRefresh }: { history: any[]; onRefresh: () => 
                       background: h.status === 'active' ? '#e8f5e9' : h.status === 'limit_reached' ? '#fee' : '#f0f0f0',
                       color: h.status === 'active' ? colors.green : h.status === 'limit_reached' ? colors.red : '#666',
                     }}>
-                      {STATUS_LABELS_COST[h.status] ?? h.status}
+                      {lt(STATUS_LABELS_COST[h.status] ?? h.status)}
                     </span>
                   </td>
                 </tr>
@@ -826,18 +823,18 @@ function CostHistory({ history, onRefresh }: { history: any[]; onRefresh: () => 
                     <td colSpan={9} style={{ padding: 0 }}>
                       <div style={{ background: '#fafafa', padding: '6px 12px 6px 28px', borderBottom: '2px solid #ddd' }}>
                         {entries.length === 0 ? (
-                          <div style={{ fontSize: 10, color: '#999' }}>Keine Einträge</div>
+                          <div style={{ fontSize: 10, color: '#999' }}>{lt("Keine Einträge")}</div>
                         ) : (
                           <table style={{ width: '100%', fontSize: 10, borderCollapse: 'collapse' }}>
                             <thead>
                               <tr>
-                                <th style={{ ...th, fontSize: 9 }}>Zeit</th>
-                                <th style={{ ...th, fontSize: 9 }}>Modell</th>
-                                <th style={{ ...th, fontSize: 9 }}>Quelle</th>
+                                <th style={{ ...th, fontSize: 9 }}>{lt("Zeit")}</th>
+                                <th style={{ ...th, fontSize: 9 }}>{lt("Modell")}</th>
+                                <th style={{ ...th, fontSize: 9 }}>{lt("Quelle")}</th>
                                 <th style={{ ...th, fontSize: 9, textAlign: 'right' }}>Prompt</th>
                                 <th style={{ ...th, fontSize: 9, textAlign: 'right' }}>Completion</th>
                                 <th style={{ ...th, fontSize: 9, textAlign: 'right' }}>Tokens</th>
-                                <th style={{ ...th, fontSize: 9, textAlign: 'right' }}>Kosten</th>
+                                <th style={{ ...th, fontSize: 9, textAlign: 'right' }}>{lt("Kosten")}</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -847,9 +844,9 @@ function CostHistory({ history, onRefresh }: { history: any[]; onRefresh: () => 
                                   <td style={{ ...td, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                                     title={e.model}>{e.model?.split('/')[1] ?? e.model}</td>
                                   <td style={td}>{e.source}</td>
-                                  <td style={{ ...td, textAlign: 'right', fontFamily: 'monospace' }}>{e.promptTokens?.toLocaleString('de-DE')}</td>
-                                  <td style={{ ...td, textAlign: 'right', fontFamily: 'monospace' }}>{e.completionTokens?.toLocaleString('de-DE')}</td>
-                                  <td style={{ ...td, textAlign: 'right', fontFamily: 'monospace' }}>{e.totalTokens?.toLocaleString('de-DE')}</td>
+                                  <td style={{ ...td, textAlign: 'right', fontFamily: 'monospace' }}>{e.promptTokens?.toLocaleString(lt("de-DE"))}</td>
+                                  <td style={{ ...td, textAlign: 'right', fontFamily: 'monospace' }}>{e.completionTokens?.toLocaleString(lt("de-DE"))}</td>
+                                  <td style={{ ...td, textAlign: 'right', fontFamily: 'monospace' }}>{e.totalTokens?.toLocaleString(lt("de-DE"))}</td>
                                   <td style={{ ...td, textAlign: 'right', fontFamily: 'monospace' }}>${fmtCost(e.costUsd ?? 0)}</td>
                                 </tr>
                               ))}
@@ -879,6 +876,7 @@ function fmtCost(usd: number): string {
 // ==================== BOT AI SETTINGS ====================
 
 function BotAiSettings() {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   const [config, setConfig] = useState<any>(null);
   const [expanded, setExpanded] = useState(false);
   const [apiKey, setApiKey] = useState('');
@@ -905,7 +903,7 @@ function BotAiSettings() {
       });
       if (apiKey) setApiKey('');
       loadConfig();
-      setMsg({ text: 'Gespeichert', color: colors.green });
+      setMsg({ text: "Gespeichert", color: colors.green });
     } catch (err: any) { setMsg({ text: err.message, color: colors.red }); }
     finally { setSaving(false); }
   };
@@ -913,7 +911,7 @@ function BotAiSettings() {
   const deleteKey = async () => {
     await api.botDeleteAiKey();
     loadConfig();
-    setMsg({ text: 'Bot-API-Key entfernt (Fallback auf Belegerkennung-Key)', color: colors.orange });
+    setMsg({ text: "Bot-API-Key entfernt (Fallback auf Belegerkennung-Key)", color: colors.orange });
   };
 
   if (!config) return null;
@@ -922,24 +920,23 @@ function BotAiSettings() {
     <Card style={{ marginBottom: 16, background: '#f8f9fa' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h3 style={{ margin: 0, fontSize: 14 }}>
-          KI-Modelle
-          {config.enabled ? (
+          {lt("KI-Modelle")}{config.enabled ? (
             <span style={{ fontSize: 11, color: colors.green, marginLeft: 8, fontWeight: 400 }}>
-              {config.dedicatedKey ? 'Eigener Key' : 'Belegerkennung-Key'}
+              {config.dedicatedKey ? lt("Eigener Key") : lt("Belegerkennung-Key")}
             </span>
           ) : (
-            <span style={{ fontSize: 11, color: '#999', marginLeft: 8, fontWeight: 400 }}>Nicht konfiguriert</span>
+            <span style={{ fontSize: 11, color: '#999', marginLeft: 8, fontWeight: 400 }}>{lt("Nicht konfiguriert")}</span>
           )}
         </h3>
         <button onClick={() => setExpanded(!expanded)}
           style={{ ...btnStyle, fontSize: 11, padding: '2px 8px', background: expanded ? '#2c3e50' : '#ecf0f1', color: expanded ? '#fff' : '#333' }}>
-          {expanded ? 'Schliessen' : 'Einstellungen'}
+          {expanded ? lt("Schliessen") : lt("Einstellungen")}
         </button>
       </div>
 
       {expanded && (
         <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {msg && <div style={{ fontSize: 12, color: msg.color }}>{msg.text}</div>}
+          {msg && <div style={{ fontSize: 12, color: msg.color }}>{lt(msg.text)}</div>}
 
           {/* API Key */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -950,28 +947,26 @@ function BotAiSettings() {
                 {config.dedicatedKey && (
                   <button onClick={deleteKey}
                     style={{ marginLeft: 6, fontSize: 10, color: colors.red, background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
-                    entfernen
-                  </button>
+                    {lt("entfernen")}</button>
                 )}
               </span>
             )}
             <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)}
-              placeholder={config.maskedKey ? 'Neuen Key eingeben' : 'sk-or-v1-...'}
+              placeholder={config.maskedKey ? lt("Neuen Key eingeben") : 'sk-or-v1-...'}
               style={{ flex: 1, padding: '3px 8px', borderRadius: 4, border: '1px solid #ddd', fontSize: 12 }} />
           </div>
 
           {/* Model tiers */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <label style={aiLbl} title="Schnell + günstig: Klassifikation, OCR-Qualitäts-Check, Ja/Nein-Entscheidungen">
-              Einfach:
-            </label>
+            <label style={aiLbl} title={lt("Schnell + günstig: Klassifikation, OCR-Qualitäts-Check, Ja/Nein-Entscheidungen")}>
+              {lt("Einfach:")}</label>
             <input value={models.simple} onChange={e => setModels({ ...models, simple: e.target.value })}
               placeholder="google/gemini-2.0-flash-001"
               style={{ flex: 1, padding: '3px 8px', borderRadius: 4, border: '1px solid #ddd', fontSize: 12 }} />
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <label style={aiLbl} title="Ausgewogen: Rechnungserkennung, Feld-Extraktion, normale Aufgaben">
+            <label style={aiLbl} title={lt("Ausgewogen: Rechnungserkennung, Feld-Extraktion, normale Aufgaben")}>
               Standard:
             </label>
             <input value={models.standard} onChange={e => setModels({ ...models, standard: e.target.value })}
@@ -980,9 +975,8 @@ function BotAiSettings() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <label style={aiLbl} title="Leistungsstark: Supervision, komplexe Layouts, wenn Standard versagt">
-              Erweitert:
-            </label>
+            <label style={aiLbl} title={lt("Leistungsstark: Supervision, komplexe Layouts, wenn Standard versagt")}>
+              {lt("Erweitert:")}</label>
             <input value={models.advanced} onChange={e => setModels({ ...models, advanced: e.target.value })}
               placeholder="anthropic/claude-opus-4"
               style={{ flex: 1, padding: '3px 8px', borderRadius: 4, border: '1px solid #ddd', fontSize: 12 }} />
@@ -990,15 +984,14 @@ function BotAiSettings() {
 
           <button onClick={save} disabled={saving}
             style={{ ...btnStyle, alignSelf: 'flex-start', background: '#2c3e50', color: '#fff' }}>
-            {saving ? '...' : 'Speichern'}
+            {saving ? '...' : lt("Speichern")}
           </button>
 
           <div style={{ fontSize: 10, color: '#999', lineHeight: 1.5 }}>
-            <b>Einfach</b> = schnell + günstig für Klassifikation und einfache Prüfungen.{' '}
-            <b>Standard</b> = ausgewogen für reguläre Rechnungserkennung.{' '}
-            <b>Erweitert</b> = leistungsstark für komplexe Fälle und wenn Standard versagt.{' '}
-            Eigener API-Key ist optional — ohne wird der Belegerkennung-Key verwendet.
-          </div>
+            <b>{lt("Einfach")}</b> {lt("= schnell + günstig für Klassifikation und einfache Prüfungen.")}{' '}
+            <b>Standard</b> {lt("= ausgewogen für reguläre Rechnungserkennung.")}{' '}
+            <b>{lt("Erweitert")}</b> {lt("= leistungsstark für komplexe Fälle und wenn Standard versagt.")}{' '}
+            {lt("Eigener API-Key ist optional — ohne wird der Belegerkennung-Key verwendet.")}</div>
         </div>
       )}
     </Card>
@@ -1008,6 +1001,7 @@ function BotAiSettings() {
 const aiLbl: React.CSSProperties = { width: 70, fontSize: 12, fontWeight: 600, flexShrink: 0 };
 
 function SessionDot({ ok, label }: { ok: boolean; label: string }) {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10 }}>
       <span style={{
@@ -1020,6 +1014,7 @@ function SessionDot({ ok, label }: { ok: boolean; label: string }) {
 }
 
 function StatBox({ label, value, color }: { label: string; value: number; color?: string }) {
+  const lt = useLegacyText(legacyDocumentsEnglish);
   return (
     <div style={{ background: '#f8f9fa', borderRadius: 6, padding: '8px 16px', textAlign: 'center', minWidth: 70 }}>
       <div style={{ fontSize: 18, fontWeight: 700, color: color ?? '#2c3e50' }}>{value}</div>
@@ -1057,10 +1052,10 @@ const datePresets = (() => {
   ];
 })();
 
-function fmtDate(iso: string | null): string {
+function fmtDate(iso: string | null, locale: string): string {
   if (!iso) return '—';
   const [y, m, d] = iso.slice(0, 10).split('-');
-  return `${d}.${m}.${y}`;
+  return locale === "de-DE" ? `${d}.${m}.${y}` : `${d}/${m}/${y}`;
 }
 
 function fmtDateTime(iso: string | null): string {

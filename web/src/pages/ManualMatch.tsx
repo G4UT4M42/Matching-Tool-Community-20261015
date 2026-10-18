@@ -1,8 +1,12 @@
+import { useLegacyText } from '../i18n/legacy';
+import { legacyAccountingEnglish, accountingNoticeText, type AccountingNotice } from '../i18n/legacy-accounting';
 import React, { useEffect, useState } from 'react';
 import { api } from '../api';
 import { Card, Button, SearchInput, Amount, SourceBadge, FileLink, colors, formatDate, useWorkingYear } from '../components/shared';
 
-export function ManualMatch() {
+export function ManualMatch({allowOriginalFiles=true}:{allowOriginalFiles?:boolean}={}) {
+  const text = useLegacyText(legacyAccountingEnglish);
+  const locale = text('de-DE');
   const [txnSearch, setTxnSearch] = useState('');
   const [docSearch, setDocSearch] = useState('');
   const [txnResults, setTxnResults] = useState<any[]>([]);
@@ -10,7 +14,7 @@ export function ManualMatch() {
   const [selectedTxns, setSelectedTxns] = useState<string[]>([]);
   const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
   const [reason, setReason] = useState('');
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState<AccountingNotice | null>(null);
   const { workingYear, quarter } = useWorkingYear();
 
   const searchTxns = async () => {
@@ -37,7 +41,7 @@ export function ManualMatch() {
     if (selectedTxns.length === 0 && selectedDocs.length === 0) return;
     try {
       const result = await api.createMatch(selectedTxns, selectedDocs, reason);
-      setMessage(`Match created: ${result.match_group_id}`);
+      setMessage({ key: "Zuordnung erstellt: {p0}", values: { p0: result.match_group_id } });
       setSelectedTxns([]);
       setSelectedDocs([]);
       setReason('');
@@ -45,35 +49,35 @@ export function ManualMatch() {
       if (txnSearch) searchTxns();
       if (docSearch) searchDocs();
     } catch (err: any) {
-      setMessage(`Error: ${err.message}`);
+      setMessage({ key: "Fehler: {p0}", values: { p0: err.message }, error: true });
     }
   };
 
   return (
     <div>
-      <h1 style={{ fontSize: 22, marginBottom: 16 }}>Manual Match</h1>
+      <h1 style={{ fontSize: 22, marginBottom: 16 }}>{text("Manuelle Zuordnung")}</h1>
 
       {message && (
         <div style={{
           padding: 12, marginBottom: 16, borderRadius: 6, fontSize: 13,
-          background: message.startsWith('Error') ? '#fce4ec' : '#e8f5e9',
-          color: message.startsWith('Error') ? colors.red : colors.green,
+          background: message.error ? '#fce4ec' : '#e8f5e9',
+          color: message.error ? colors.red : colors.green,
         }}>
-          {message}
+          {accountingNoticeText(text, message)}
         </div>
       )}
 
       <div style={{ display: 'flex', gap: 16 }}>
         {/* Left panel: Transactions */}
-        <Card title="Select Transactions" style={{ flex: 1 }}>
+        <Card title={text("Transaktionen auswählen")} style={{ flex: 1 }}>
           <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-            <SearchInput value={txnSearch} onChange={setTxnSearch} placeholder="Search transactions..." />
-            <Button onClick={searchTxns}>Search</Button>
+            <SearchInput value={txnSearch} onChange={setTxnSearch} placeholder={text("Transaktionen suchen...")} />
+            <Button onClick={searchTxns}>{text("Suchen")}</Button>
           </div>
 
           {selectedTxns.length > 0 && (
             <div style={{ marginBottom: 8, fontSize: 12, color: colors.blue }}>
-              {selectedTxns.length} transaction(s) selected
+              {selectedTxns.length} {text("Transaktionen ausgewählt")}
             </div>
           )}
 
@@ -81,6 +85,9 @@ export function ManualMatch() {
             {txnResults.map((t: any) => (
               <div
                 key={t.transaction_id}
+                data-demo-selection="transaction"
+                role="button" tabIndex={0} aria-pressed={selectedTxns.includes(t.transaction_id)} aria-label={t.transaction_id}
+                onKeyDown={event=>{if(event.target===event.currentTarget&&(event.key==='Enter'||event.key===' ')){event.preventDefault();toggleTxn(t.transaction_id);}}}
                 onClick={() => toggleTxn(t.transaction_id)}
                 style={{
                   padding: '8px 12px', marginBottom: 4, borderRadius: 4, cursor: 'pointer', fontSize: 12,
@@ -100,15 +107,15 @@ export function ManualMatch() {
         </Card>
 
         {/* Right panel: Documents */}
-        <Card title="Select Documents" style={{ flex: 1 }}>
+        <Card title={text("Dokumente auswählen")} style={{ flex: 1 }}>
           <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-            <SearchInput value={docSearch} onChange={setDocSearch} placeholder="Search documents..." />
-            <Button onClick={searchDocs}>Search</Button>
+            <SearchInput value={docSearch} onChange={setDocSearch} placeholder={text("Dokumente suchen...")} />
+            <Button onClick={searchDocs}>{text("Suchen")}</Button>
           </div>
 
           {selectedDocs.length > 0 && (
             <div style={{ marginBottom: 8, fontSize: 12, color: colors.blue }}>
-              {selectedDocs.length} document(s) selected
+              {selectedDocs.length} {text("Dokumente ausgewählt")}
             </div>
           )}
 
@@ -116,6 +123,9 @@ export function ManualMatch() {
             {docResults.map((d: any) => (
               <div
                 key={d.document_id}
+                data-demo-selection="document"
+                role="button" tabIndex={0} aria-pressed={selectedDocs.includes(d.document_id)} aria-label={d.document_id}
+                onKeyDown={event=>{if(event.target===event.currentTarget&&(event.key==='Enter'||event.key===' ')){event.preventDefault();toggleDoc(d.document_id);}}}
                 onClick={() => toggleDoc(d.document_id)}
                 style={{
                   padding: '8px 12px', marginBottom: 4, borderRadius: 4, cursor: 'pointer', fontSize: 12,
@@ -127,7 +137,7 @@ export function ManualMatch() {
                   <span><SourceBadge source={d.source_system} /> {formatDate(d.document_date)}</span>
                   <Amount value={d.amount} currency={d.currency_code} />
                 </div>
-                <div style={{ color: '#666', marginTop: 2 }}><FileLink filename={d.filename ?? d.source_document_ref} /></div>
+                <div style={{ color: '#666', marginTop: 2 }}>{allowOriginalFiles?<FileLink filename={d.filename ?? d.source_document_ref} />:<span>{d.filename ?? d.source_document_ref}</span>}</div>
                 <div style={{ color: '#999', marginTop: 1 }}>{d.supplier_name ?? ''}</div>
               </div>
             ))}
@@ -142,7 +152,8 @@ export function ManualMatch() {
             type="text"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            placeholder="Reason for manual match (optional)"
+            aria-label={text("Grund für manuelle Zuordnung (optional)")}
+            placeholder={text("Grund für manuelle Zuordnung (optional)")}
             style={{ flex: 1, padding: '8px 12px', borderRadius: 6, border: '1px solid #ddd', fontSize: 13 }}
           />
           <Button
@@ -150,7 +161,7 @@ export function ManualMatch() {
             disabled={selectedTxns.length === 0 && selectedDocs.length === 0}
             color={colors.green}
           >
-            Create Match ({selectedTxns.length} txn + {selectedDocs.length} doc)
+            {text("Zuordnung erstellen (")}{selectedTxns.length} {text("Buchungen +")} {selectedDocs.length} {text("Dokumente)")}
           </Button>
         </div>
       </Card>
