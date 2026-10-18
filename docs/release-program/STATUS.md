@@ -1,13 +1,16 @@
 # Release execution status and historical baseline
 
-Current private internal development update (2026-10-16): the active checkout is
-`<isolated-worktrees>/Matching-Community-Payout-Completion-20261016`, branch
-`community/payout-finalization-20261016`. AIS consent and PayPal financial
-corrections are committed at 9ae; app571/571 passed and its Node suite was still
-running at this update. New standard-automatic Stripe payout reconciliation is
-implemented and focused-tested; its logical commit and complete exact-candidate
-qualification remain pending. See [current status](../feature-parity/STATUS.md)
-and [payout contract](../feature-parity/STRIPE_PAYOUT_RECONCILIATION.md).
+Current private internal development update (2026-10-18): active checkout
+`<isolated-worktrees>/Matching-Community-Sandbox-Payments-20261016`, branch
+`community/sandbox-payments-20261016`, extends d521. AIS consent, PayPal financial
+corrections and standard-automatic Stripe payout reconciliation are committed
+in d521; its historical complete local app 587/587 and Node 90/90 passed.
+New sandbox-only single SEPA EUR PIS is implemented and focused-tested (62/62),
+independently reviewed in bounded snapshots and exercised by a separate source
+normal journey (1/1). Current PIS committed/full/installed/CI qualification is
+pending. See [current status](../feature-parity/STATUS.md),
+[sandbox contract](../feature-parity/SANDBOX_PAYMENT_CONTRACT.md) and
+[payout contract](../feature-parity/STRIPE_PAYOUT_RECONCILIATION.md).
 
 A separate PRIVATE Community repository and sealed-fbf hosted CI already exist.
 Do not infer newer-source CI from that result. Owner-selected scope is private

@@ -2,12 +2,12 @@ import type Database from 'better-sqlite3';
 import { randomUUID, createHash } from 'node:crypto';
 import type { PaymentBatch, PaymentItem, PaymentStatus, Principal } from './types.js';
 
-type BatchRow = { id:string; workspace_id:string; debtor_iban:string; debtor_name:string; provider:string; environment:'mock'|'live'; status:PaymentStatus; revision:number; detail_digest:string; reviewer:string|null; approver:string|null; approval_revision:number|null; approval_digest:string|null; claim_id:string|null; provider_reference:string|null; created_at:string };
+type BatchRow = { id:string; workspace_id:string; debtor_iban:string; debtor_name:string; provider:string; environment:'mock'|'live'|'sandbox'; status:PaymentStatus; revision:number; detail_digest:string; reviewer:string|null; approver:string|null; approval_revision:number|null; approval_digest:string|null; claim_id:string|null; provider_reference:string|null; created_at:string };
 type ItemRow = { id:string; document_id:string; invoice_id:string; source_hash:string; creditor_name:string; creditor_iban:string; amount_minor:number; currency:'EUR'; reference:string; due_date:string; match_ids_json:string };
 export const digest = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 export class PaymentRepository {
   constructor(readonly db:Database.Database, readonly now:()=>Date=()=>new Date()) {}
-  private event(batch:PaymentBatch,p:Principal,action:string,detail:unknown={}):void {
+  event(batch:PaymentBatch,p:Principal,action:string,detail:unknown={}):void {
     this.db.prepare('INSERT INTO community_payment_events(id,batch_id,workspace_id,actor,action,revision,detail_digest,at,detail_json) VALUES (?,?,?,?,?,?,?,?,?)')
       .run(randomUUID(),batch.id,p.workspace_id,p.subject,action,batch.revision,batch.detailDigest,this.now().toISOString(),JSON.stringify(detail));
   }
@@ -33,7 +33,7 @@ export class PaymentRepository {
       const next=this.get(id,p.workspace_id)!;this.event(next,p,'material_edit');return next;
     })();
   }
-  create(p:Principal,debtorIban:string,debtorName:string,provider:string,environment:'mock'|'live',items:PaymentItem[]):PaymentBatch {
+  create(p:Principal,debtorIban:string,debtorName:string,provider:string,environment:'mock'|'live'|'sandbox',items:PaymentItem[]):PaymentBatch {
     return this.db.transaction(()=>{
       const id=randomUUID(), now=this.now().toISOString();
       items=[...items].sort((a,b)=>a.id.localeCompare(b.id));

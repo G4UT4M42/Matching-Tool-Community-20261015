@@ -1,6 +1,10 @@
 # Work package index
 
-> Internal update 2026-10-16: P06-W03 now implements the previously missing AIS
+> Internal update 2026-10-18: P11-W02 now implements sandbox-only single SEPA EUR
+> provider authorization, exact intent, callback/readback and GET-only recovery.
+> Focused backend62/62 and a separate source journey pass; current complete frozen,
+> installed and hosted qualification remain pending. Production initiation is disabled.
+> P06-W03 now implements the previously missing AIS
 > consent/state/account-selection contract; P04-W02 now retains PayPal event
 > semantics and prevents uncertain settlement windows from being skipped.
 > Focused synthetic tests pass, but the new complete exact-candidate and installed

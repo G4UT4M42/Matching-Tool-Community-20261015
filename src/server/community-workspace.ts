@@ -31,6 +31,9 @@ import { communitySimulatedPaymentAdapter } from '../community/payments/simulate
 import { CommunityPaymentService } from '../community/payments/service.js';
 import { PaymentRepository } from '../community/payments/repository.js';
 import { createCommunityPaymentsRouter } from './routes/community-payments.js';
+import {createCommunityPaymentAuthorizationRouter,sandboxPaymentCallback} from './routes/community-payment-authorization.js';
+import {SandboxPaymentCoordinator} from '../community/payments/pis-coordinator.js';
+import {EnableBankingPisClient} from '../community/payments/enablebanking-pis.js';
 import type { Principal as PaymentPrincipal,PaymentAdapter } from '../community/payments/types.js';
 import { InvoiceBotCoordinator,type PortalAdapter,type BrowserSessionCallbacks } from '../community/invoice-bot/coordinator.js';
 import { createCommunityInvoiceBotRouter } from './routes/community-invoice-bot.js';
@@ -62,6 +65,9 @@ export const COMMUNITY_WORKSPACE_ROUTES:readonly CommunityRouteRule[]=[
   rule('POST','^/community/integrations/(?:paypal/(?:sandbox|live)|stripe/(?:test|live))/sync$','integrations:sync'),
   rule('DELETE','^/community/integrations/(?:paypal/(?:sandbox|live)|stripe/(?:test|live))$','integrations:configure'),
   rule('GET','^/community-payments/(?:candidates|batches)$','finance:read'),
+  rule('GET','^/community-payments/sandbox/status$','finance:read'),
+  rule('GET','^/community-payments/sandbox/banks$','payments:submit',true),
+  rule('POST','^/community-payments/batches/'+id+'/(?:sandbox-confirmation|sandbox-authorization|sandbox-complete)$','payments:submit',true),
   rule('GET','^/community-banking/(?:status|capabilities|accounts)$','integrations:read'),
   rule('POST','^/community-banking/(?:configure|disconnect)$','integrations:configure',true),
   rule('POST','^/community-banking/(?:application|consents)$','integrations:configure',true),
@@ -110,6 +116,9 @@ export interface WorkspaceOptions{
   providerTransport?:Transport;
   /** Trusted composition only: never configurable by request or environment. */
   bankTransport?:typeof fetch;
+  /** Trusted synthetic composition only; no HTTP/environment transport selection. */
+  paymentTransport?:typeof fetch;
+  paymentCallbackUrl?:string;
   /** Exact registered loopback callback from the actual listener composition. */
   bankCallbackUrl?:string;
   /** Lifecycle observer for controlled embedding/failure qualification; never configured by HTTP or environment. */
@@ -147,6 +156,7 @@ export function createCommunityWorkspace(options:WorkspaceOptions){
   const providerVault=new CredentialVault(join(options.runtimeRoot,'identity','provider-vault'));
   const bankVault=new BankCredentialVault(join(options.runtimeRoot,'identity','bank-vault'));
   const applicationVault=new BankApplicationVault(join(options.runtimeRoot,'identity','bank-vault'));
+  let sandboxPayments:SandboxPaymentCoordinator;
   const bankServices=new Map<BankEnvironment,CommunityBankingService>();
   const bankCallbackUrl=options.bankCallbackUrl??'http://127.0.0.1:3000/api/community-banking/callback';
   const bankConsent=new BankConsentCoordinator(applicationVault,new BankConsentClient(options.bankTransport),bankCallbackUrl,(principal,permission)=>{
@@ -199,6 +209,7 @@ export function createCommunityWorkspace(options:WorkspaceOptions){
   };
   function rebuild():void{
     bankConsent.invalidate();bankServices.clear();
+    sandboxPayments?.invalidate();
     const routes=Router();
     const documents=new CommunityDocumentService({workspaceId:options.auth.workspaceId,root:join(options.runtimeRoot,'documents'),getState:options.getState,persistAndActivate:commit,localLanguageDir:options.localLanguageDir});
     routes.use('/community/documents',createCommunityDocumentsRouter(documents,can));
@@ -280,7 +291,15 @@ export function createCommunityWorkspace(options:WorkspaceOptions){
       },
       adapter:options.paymentAdapter??communitySimulatedPaymentAdapter,
     });
-    routes.use('/community-payments',createCommunityPaymentsRouter(payments));
+    sandboxPayments=new SandboxPaymentCoordinator(payments,applicationVault,new EnableBankingPisClient(options.paymentTransport),options.paymentCallbackUrl??'http://127.0.0.1:3000/api/community-payments/sandbox/callback',(principal,recent)=>{
+      const permission=recent?'payments:submit':'finance:read',actor=requireCurrent(permission),scope=context.getStore()!;
+      if(actor.subject!==principal.subject||actor.workspace_id!==principal.workspace_id||actor.session_id!==principal.session_id)throw new Error('UNAUTHENTICATED');
+      const session=currentPaymentSession(principal);if(!session)throw new Error('UNAUTHENTICATED');if(recent)options.auth.requireRecentAuthentication(session);
+      const token=scope.token,epoch=generation;
+      return{validate:()=>{if(epoch!==generation||exclusiveActive)throw new Error('PIS_FLOW_REVOKED');const activeSession=options.auth.authenticate(token);if(!activeSession||activeSession.principal.subject!==principal.subject||activeSession.principal.workspace_id!==principal.workspace_id||activeSession.principal.session_id!==principal.session_id||!hasCommunityPermission(activeSession.principal,principal.workspace_id,permission))throw new Error('PIS_FLOW_REVOKED');}};
+    });
+    routes.use('/community-payments',createCommunityPaymentAuthorizationRouter(sandboxPayments));
+    routes.use('/community-payments',createCommunityPaymentsRouter(payments,sandboxPayments));
     routes.use(createCommunityAccountingRouter({workspaceId:options.auth.workspaceId,getState:options.getState,can,persistAndActivate:commit}));
     const dataSnapshot=()=>{const state=options.getState();return{sha256:createHash('sha256').update(serializeCommunityState(state)).digest('hex'),transactions:state.transactions.size,documents:state.documents.size,audits:state.audit_events.length};};
     const dataStarts=new Map<string,ReturnType<typeof dataSnapshot>>();
@@ -354,5 +373,5 @@ export function createCommunityWorkspace(options:WorkspaceOptions){
     context.run({principal,token,permission:policy.permission,csrf:request.get('X-CSRF-Token'),generation},next);
   });
   router.use((request,response,next)=>currentRouter(request,response,next));
-  return{router,bankCallback:bankConsentCallback(bankConsent),commit,withExclusiveAccess,rebuild,requireCurrent,close:async()=>{bankConsent.invalidate();await portalSessions.close();await options.invoiceBot?.close?.();}};
+  return{router,bankCallback:bankConsentCallback(bankConsent),paymentCallback:sandboxPaymentCallback(()=>sandboxPayments),commit,withExclusiveAccess,rebuild,requireCurrent,close:async()=>{bankConsent.invalidate();sandboxPayments.invalidate();await portalSessions.close();await options.invoiceBot?.close?.();}};
 }

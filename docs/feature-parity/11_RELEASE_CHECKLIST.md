@@ -2,15 +2,7 @@
 
 # Final release checklist
 
-Current internal development update (2026-10-16): the owner selected private
-internal use and deferred the pristine Windows VM test. AIS consent and
-PayPal event-semantic corrections are committed at 9ae (app571/571; its Node
-run still pending at this update). New standard-automatic Stripe payout
-reconciliation is implemented and focused-tested, but not yet committed or
-fully qualified. Earlier measurements do not qualify the newer source. Runtime notice companion02 has an
-independent bounded engineering review. Ownership/MIT authority was not
-confirmed. Checkboxes remain full-release gates rather than permission to
-execute privately; no missing implementation is classified as external.
+Current internal development update (2026-10-18): private internal use remains the owner-selected scope; pristine Windows VM testing is OWNER_DEFERRED. d521 includes AIS consent, PayPal corrections and standard-automatic Stripe payout reconciliation, with historical local app 587/587 and Node 90/90. New sandbox-only single SEPA EUR PIS is implemented, focused-tested (backend 62/62), independently reviewed in bounded snapshots and observed in a separate source normal journey (1/1). Current PIS committed/full/installed/CI qualification is still pending. Runtime notice companion02 has an independent bounded review; ownership/MIT authority remains unverified. Checkboxes are full-release gates, not private-execution permission or claims that local PIS code is missing.
 
 These checkboxes denote final release acceptance, not merely implemented local contracts. The feature matrix,41-package registry and exact-source run manifests separately record software behavior and precise external limitations. The private repository and sealed-fbf hosted CI exist; current source needs a new exact-head run. The owner-deferred pristine VM is not an active requested action or PASS. Actual provider authority and unverified ownership facts remain distinct from locally implementable criteria.
 
@@ -26,7 +18,7 @@ These checkboxes denote final release acceptance, not merely implemented local c
 - [ ] OCR and recognition (F10)
 - [ ] Invoice Bot (F11)
 - [ ] Payment preparation/SEPA (F12)
-- [ ] Authorized bank payment execution (F13)
+- [ ] AIS and sandbox-only PIS complete current qualification (F13); actual provider/live acceptance remains separate, production PIS disabled
 - [ ] Settings and user integrations (F14)
 - [ ] Audit history (F15)
 - [ ] Backup/restore (F16)

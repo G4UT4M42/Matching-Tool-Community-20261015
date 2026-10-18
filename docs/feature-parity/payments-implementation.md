@@ -1,5 +1,20 @@
 # Community payments and controlled banking implementation
 
+> Current sandbox addendum (2026-10-18): the text below is the historical initial
+> simulator/read-only banking implementation record. Its statements that PIS is
+> unregistered and AIS consent must be supplied separately describe that earlier
+> snapshot, not the current sandbox branch. d521 includes owner-driven AIS consent.
+> The new [sandbox PIS contract](SANDBOX_PAYMENT_CONTRACT.md) and
+> [intent compatibility decision](../migration-decisions/009-sandbox-payment-intent.md)
+> define the implemented sandbox-only single SEPA EUR request, exact approval,
+> one durable CREATE claim, callback/status checks and GET-only unknown recovery.
+> Focused backend 62/62 and a separate source normal journey 1/1 passed; new
+> committed/full/installed/CI qualification remains pending. Production PIS is
+> hard-disabled. Private internal scope and OWNER_DEFERRED VM testing remain.
+> Historical counts, failed retrievals and earlier limitations below are retained
+> as evidence; no denied request is retried and no live/provider acceptance follows.
+
+
 ## Source inventory and chosen behavior
 
 The preexisting Community source includes `src/payments/candidates.ts` (OCR/raw-text creditor extraction and classification), `validation.ts`, `sepa.ts`, `service.ts` (candidate refresh, batch edits, review, XML export and cancel), `automation-service.ts` (George import/release state), `browser/george-*`, `src/server/routes/payments.ts`, `src/import/enablebanking-api.ts`, and `web/src/components/payments/PaymentReview.tsx`. The Community preview guard denies the payment routes and `src/server/index.ts` rejects bank automation. Source presence did not demonstrate an authorized payment.

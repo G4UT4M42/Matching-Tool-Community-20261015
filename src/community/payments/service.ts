@@ -32,13 +32,14 @@ export class CommunityPaymentService<State> {
       const c=candidate(e); if([p.workspace_id,...(e.paymentWorkspaceIds??[]),...(e.originalWorkspaceId?[e.originalWorkspaceId]:[])].some(workspace=>this.repo.hasDocument(workspace,e.documentId))) { c.issues.push('CANDIDATE_ALREADY_CREATED'); c.eligible=false; } return c;
     });
   }
-  createDraft(p:Principal,documentIds:string[],debtorIban:string,debtorName:string):PaymentBatch {
+  createDraft(p:Principal,documentIds:string[],debtorIban:string,debtorName:string,mode?:unknown):PaymentBatch {
     this.require(p,'payments:prepare');
+    if(mode!==undefined&&mode!=='enablebanking-sandbox')return fail('PAYMENT_MODE_UNSUPPORTED');
     if(!Array.isArray(documentIds) || documentIds.length===0 || documentIds.length>100 || new Set(documentIds).size!==documentIds.length) return fail('INVALID_DOCUMENT_SELECTION');
     if(!validIban(debtorIban) || !validText(debtorName,70)) return fail('INVALID_DEBTOR');
     const found=this.candidates(p).filter(c=>documentIds.includes(c.evidence.documentId));
     if(found.length!==documentIds.length || found.some(c=>!c.eligible)) return fail('CANDIDATE_REVIEW_REQUIRED');
-    return this.repo.create(p,debtorIban.replace(/\s/g,'').toUpperCase(),debtorName,this.d.adapter.provider,this.d.adapter.environment,found.map(itemFromCandidate));
+    return this.repo.create(p,debtorIban.replace(/\s/g,'').toUpperCase(),debtorName,mode==='enablebanking-sandbox'?'enablebanking-pis':this.d.adapter.provider,mode==='enablebanking-sandbox'?'sandbox':this.d.adapter.environment,found.map(itemFromCandidate));
   }
   private currentEvidence(p:Principal,b:PaymentBatch):void {
     const state=this.d.accounting.loadState();
@@ -80,22 +81,24 @@ export class CommunityPaymentService<State> {
   export(p:Principal,id:string):ReturnType<typeof sepaExport> {
     this.require(p,'finance:read'); const b=this.repo.get(id,p.workspace_id); if(!b) return fail('BATCH_NOT_FOUND'); return sepaExport(b);
   }
-  issueConfirmation(p:Principal,id:string,revision:number):{token:string;expiresAt:string;batch:PaymentBatch} {
+  issueConfirmation(p:Principal,id:string,revision:number,sandbox=false):{token:string;expiresAt:string;batch:PaymentBatch} {
     this.require(p,'payments:submit');
     if(!this.d.recentAuth(p)) return fail('RECENT_AUTH_REQUIRED');
     const b=this.repo.get(id,p.workspace_id); if(!b || b.status!=='approved' || b.revision!==revision || b.approvalRevision!==revision || b.approvalDigest!==b.detailDigest) return fail('APPROVAL_STALE');
+    if(sandbox?b.provider!=='enablebanking-pis'||b.environment!=='sandbox':b.provider!==this.d.adapter.provider||b.environment!==this.d.adapter.environment)return fail('PAYMENT_PROVIDER_MISMATCH');
     this.currentEvidence(p,b);
     const token=randomBytes(32).toString('base64url'), expiresAt=new Date(this.time().getTime()+120000).toISOString();
     this.d.db.prepare('INSERT INTO community_payment_confirmations(token_hash,batch_id,workspace_id,subject,session_id,provider,debtor_iban,revision,detail_digest,expires_at) VALUES (?,?,?,?,?,?,?,?,?,?)')
       .run(tokenHash(token),id,p.workspace_id,p.subject,p.session_id,b.provider,b.debtorIban,revision,b.detailDigest,expiresAt);
     return {token,expiresAt,batch:b};
   }
-  async submit(p:Principal,id:string,revision:number,token:string):Promise<PaymentBatch> {
+  claimSubmission(p:Principal,id:string,revision:number,token:string,sandbox=false):{claimed:PaymentBatch;claimId:string} {
     this.require(p,'payments:submit'); if(!this.d.recentAuth(p)) return fail('RECENT_AUTH_REQUIRED');
     if(typeof token!=='string' || token.length<30) return fail('CONFIRMATION_REQUIRED');
     const claim=this.d.db.transaction(()=>{
       const b=this.repo.get(id,p.workspace_id);
       if(!b || b.status!=='approved' || b.revision!==revision || b.approvalRevision!==revision || b.approvalDigest!==b.detailDigest) return fail('APPROVAL_STALE');
+      if(sandbox?b.provider!=='enablebanking-pis'||b.environment!=='sandbox':b.provider!==this.d.adapter.provider||b.environment!==this.d.adapter.environment)return fail('PAYMENT_PROVIDER_MISMATCH');
       this.currentEvidence(p,b);
       const row=this.d.db.prepare('SELECT * FROM community_payment_confirmations WHERE token_hash=?').get(tokenHash(token)) as Record<string,unknown>|undefined;
       if(!row || row.used_at || row.batch_id!==id || row.workspace_id!==p.workspace_id || row.subject!==p.subject || row.session_id!==p.session_id || row.provider!==b.provider || row.debtor_iban!==b.debtorIban || row.revision!==revision || row.detail_digest!==b.detailDigest || String(row.expires_at)<=this.time().toISOString()) return fail('CONFIRMATION_INVALID');
@@ -104,6 +107,10 @@ export class CommunityPaymentService<State> {
       const claimed=this.repo.transition(p,id,revision,['approved'],'submission_claimed','submission_claimed',{claim_id:claimId});
       return {claimed,claimId};
     })();
+    return claim;
+  }
+  async submit(p:Principal,id:string,revision:number,token:string):Promise<PaymentBatch> {
+    const claim=this.claimSubmission(p,id,revision,token);
     // The durable claim precedes the only transport call. Any exception is uncertain.
     let result:{outcome:'acknowledged'|'failed'|'unknown';reference?:string};
     try { const credential=await this.d.credentialResolver.resolve({subject:p.subject,workspaceId:p.workspace_id,provider:claim.claimed.provider,environment:claim.claimed.environment,vaultRef:this.vaultRef(p,claim.claimed)}); result=await this.d.adapter.submit({claimId:claim.claimId,batch:claim.claimed,credential}); }
@@ -121,6 +128,7 @@ export class CommunityPaymentService<State> {
   }
   async reconcileProvider(p:Principal,id:string,revision:number):Promise<PaymentBatch> {
     this.require(p,'payments:submit'); const b=this.repo.get(id,p.workspace_id); if(!b || !b.claimId || !['unknown','submission_claimed','acknowledged'].includes(b.status) || b.revision!==revision) return fail('REVISION_CONFLICT');
+    if(b.provider!==this.d.adapter.provider||b.environment!==this.d.adapter.environment)return fail('PAYMENT_PROVIDER_MISMATCH');
     let outcome:{outcome:'acknowledged'|'failed'|'unknown';reference?:string};
     try { const credential=await this.d.credentialResolver.resolve({subject:p.subject,workspaceId:p.workspace_id,provider:b.provider,environment:b.environment,vaultRef:this.vaultRef(p,b)}); outcome=await this.d.adapter.readStatus({claimId:b.claimId,reference:b.providerReference,credential}); }
     catch { outcome={outcome:'unknown'}; }

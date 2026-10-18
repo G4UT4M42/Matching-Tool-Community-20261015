@@ -1,27 +1,32 @@
 # Matching Tool Community — current status
 
-> Current private internal development, 2026-10-16: active branch
-> `community/payout-finalization-20261016` in
-> `<isolated-worktrees>/Matching-Community-Payout-Completion-20261016` extends
-> `9ae282fd86cb67ac00d875f580141efeb5321b2e`; sealed `fbf40e85` artifacts are preserved.
-> AIS consent and PayPal event corrections are committed at 9ae; its app suite
-> passed 571/571. Its complete Node run ended with 88/89 passing and one timeout in the isolated payment-browser restart harness; that run remains FAILED. The test-owned Vite/HTTP shutdown ordering was repaired and the same focused journey passed 1/1 without weakening assertions.
-> New Stripe payout reconciliation is implemented with focused synthetic
-> evidence; it is not yet committed or fully qualified as a final candidate.
-> See [bank consent](BANK_CONSENT_CONTRACT.md), [PayPal events](PAYPAL_EVENT_CONTRACT.md),
+> Current private internal development, 2026-10-18: active branch
+> `community/sandbox-payments-20261016` in
+> `<isolated-worktrees>/Matching-Community-Sandbox-Payments-20261016` extends
+> `d5210593b5d70f4a292e2b891273857bc4ac37f4`; sealed earlier artifacts are preserved.
+> d521 includes AIS consent, PayPal event corrections and standard-automatic Stripe
+> payout reconciliation. Its complete local app 587/587 and Node 90/90 results are
+> historical evidence for d521, which did not yet implement the supported PIS flow.
+> New sandbox-only SEPA EUR PIS is implemented with exact intent, one-use claim,
+> callback/status verification and GET-only recovery. Focused backend tests passed
+> 62/62, independent financial/security reviews found no remaining defect in their
+> bounded snapshots, and the source-mode normal PIS journey passed 1/1. These are
+> separate focused invocations, not a frozen/full/installed/CI acceptance result.
+> See [sandbox payment contract](SANDBOX_PAYMENT_CONTRACT.md),
+> [bank consent](BANK_CONSENT_CONTRACT.md), [PayPal events](PAYPAL_EVENT_CONTRACT.md),
 > [Stripe payouts](STRIPE_PAYOUT_RECONCILIATION.md) and
 > [private internal scope](../compliance/PRIVATE_INTERNAL_USE.md).
-> A separate private Community repository and sealed-fbf hosted CI are verified.
-> Later source needs its own qualification. VM testing is OWNER_DEFERRED, not PASS.
-> No blanket ownership/MIT, legal, distribution or release clearance is inferred.
+> A separate private Community repository and historical hosted CI are verified.
+> Current PIS source needs its own committed qualification. VM testing is
+> OWNER_DEFERRED, not PASS. No ownership/MIT, legal or release clearance is inferred.
 
-Status: IN_PROGRESS. Updated 2026-10-16. This document describes the current isolated candidate; historical counts remain evidence for their own source snapshots.
+Status: IN_PROGRESS. Updated 2026-10-18. This document describes the current isolated candidate; historical counts remain evidence for their own source snapshots.
 
 > Historical checkpoint (2026-10-15; superseded, measurements retained for their original snapshots): local contracts are implemented for34of41 work packages;2packages have explicit external account/hosted-CI requirements and5final qualification/release packages retain separate gates. All11 controlled portal choices, explicit workspace recovery, generation isolation and original-preserving operational migration are integrated. New known-history composition passes89/89; independent new-file review38/38 plus envelope/REAL/null-MIME/backup-tamper probes. Expanded source journey passes in105651.872ms with9 historical rows,2linked originals,48 interface combinations and actual exit86/rollback/retry; no unexplained browser errors. Standalone OCR harness now uses packaged languages and passes1/1. Full4867 app run507/508 failed only the old owner fixture, repaired focused1/1; all failed evidence remains. Final clean candidate complete suites and installed3replacement/4supplement journey are recorded in external exact-final run manifests after this immutable freeze. No final PASS is inferred here. Repository/software/release milestones remain false until their own actual gates pass.
 
 ## Source and recovery
 
-The current development checkout is `<isolated-worktrees>/Matching-Community-Payout-Completion-20261016`, branch `community/payout-finalization-20261016`. The earlier `Matching-Tool-Community-Private-Candidate-20261015` / `community-sanitized` checkout is retained historical evidence. Its parentless source root is `0f3ba3487349324885987d46c2a6b48f478b9a59`. Original V2 ancestry and the quarantined preliminary local roots must never be pushed. The original final worktree and all uncommitted work were preserved in a hash-verified external recovery checkpoint before copying.
+The current development checkout is `<isolated-worktrees>/Matching-Community-Sandbox-Payments-20261016`, branch `community/sandbox-payments-20261016`. The earlier `Matching-Tool-Community-Private-Candidate-20261015` / `community-sanitized` checkout is retained historical evidence. Its parentless source root is `0f3ba3487349324885987d46c2a6b48f478b9a59`. Original V2 ancestry and the quarantined preliminary local roots must never be pushed. The original final worktree and all uncommitted work were preserved in a hash-verified external recovery checkpoint before copying.
 
 Reviewed commits after the safe root:
 
@@ -39,7 +44,7 @@ Owner setup, login/logout, account roles, recent password confirmation, session-
 
 PayPal and Stripe use official read-only contracts and verified merchant account identities. The 9ae PayPal correction separates event type from amount sign, preserves S/V cash rows and blocks unresolved windows before checkpoint advancement. New read-only Stripe payout reconciliation preserves exact components and actual settlement fees as immutable audit evidence without new cash/revenue. Supported membership is limited to completed standard automatic payouts; manual/instant/unavailable cases stay explicit, and pending evidence has a separate retry. Durable financial commits precede checkpoints; historical restore replay and ambiguous legacy bindings remain explicit. Focused evidence is not final candidate or live/sandbox provider acceptance.
 
-Read-only AIS now includes normal owner-driven application configuration, bank discovery, consent callback, account selection, reconnect/cancel and protected credential binding. Its local consent flow is implemented; live bank authorization remains separately unqualified. Read-only AIS, SEPA preparation and simulated payment submission are separate capabilities. One-use confirmation, exact payment digests, durable claims and uncertain-outcome safeguards are implemented. No automated test makes a real transfer.
+Read-only AIS now includes normal owner-driven application configuration, bank discovery, consent callback, account selection, reconnect/cancel and protected credential binding. Its local consent flow is implemented; live bank authorization remains separately unqualified. Read-only AIS, SEPA preparation, local simulation and the new sandbox-only payment-initiation adapter are separate capabilities. Normal owner controls prepare one SEPA EUR instruction, review exact bank/PSU/debtor/creditor/amount/reference/date, consume one-use authority before the sole CREATE, receive a state-bound callback and verify GET status. Unknown outcomes and restored claims cannot be recreated. Provider acknowledgment never marks an invoice paid or reconciled. Production PIS remains hard-disabled; provider registration, bank authentication and actual sandbox/live acceptance are separate external facts. See [sandbox contract](SANDBOX_PAYMENT_CONTRACT.md). No automated test makes a real transfer.
 
 Document review is appended to canonical immutable audit before updating its derived index. Missing indexes recover original fields, history and typed provenance. Backup references include unconfirmed original blobs from audit; restore confirmation fingerprints those blobs too. Historical financial records remain exact through restore; separate identity-store audit records operational backup/restore/migration history.
 

@@ -1,6 +1,6 @@
 # Provider contracts and qualification
 
-Updated 2026-10-16. Scope: private internal use, branch `community/payout-finalization-20261016`. Local software and external provider acceptance are separate. AIS consent/PayPal changes are committed at 9ae (app571/571; complete Node run pending at this update); the new payout implementation is focused-tested and awaits its own committed final qualification.
+Updated 2026-10-18. Scope: private internal use, branch `community/sandbox-payments-20261016`, extending d521. AIS consent, PayPal corrections and standard-automatic Stripe payout reconciliation are committed in d521 (historical app 587/587 and Node 90/90). New sandbox PIS is implemented and focused-tested; current committed/full/installed/CI qualification remains pending. Local software and external provider acceptance are separate.
 
 |Integration|Implemented supported contract|Observed local qualification|Remaining external evidence|
 |---|---|---|---|
@@ -9,9 +9,9 @@ Updated 2026-10-16. Scope: private internal use, branch `community/payout-finali
 |Bank account information|Enable Banking supported read-only application/session/account contract; fixed official endpoints, expiry and booking-direction validation|9ae normal application credentials/discovery, owner consent callback, account selection, cancel/reconnect, protected binding and permission checks; atomic bank/audit persistence, synthetic paging/import and recovery|Provider registration and owner consent/session required; no live AIS acceptance|
 |Offline OCR|Local PDF/image render, Tesseract English/German and explicit manual review|Real OCR in source and earlier installed financial browser; input/resource bounds, corrections and explicit confirmation|No private cloud API used; three frozen source-built replacements independently qualified; final exact installed package regression remains separate|
 |Invoice Bot|Eleven assisted fresh user-owned browser/download or explicit receipt-evidence choices listed in INVOICE_PORTAL_INVENTORY.md|Controlled egress, explicit selection, original bytes/provenance, dedupe, cancellation/reconnect and normal synthetic portal import|All actual provider logins and regional document availability remain unaccepted. Consumer Post and Bambu EU have separate controlled paths; AliExpress capture is unconfirmed receipt evidence, with no asserted authoritative tax-invoice contract|
-|Payments|Exact SEPA preparation and local simulated authorization/submission with durable one-use claims|Normal draft/review/approval, exact digest and sum, stale/replay denial, unknown outcome without automatic resubmission|No actual payment-initiation provider enabled; provider capability/registration/consent and independent live qualification required; automated real transfers forbidden|
+|Payments|Exact SEPA export/local simulation plus Enable Banking sandbox-only single SEPA EUR PIS; immutable bank/PSU/request intent and one-use durable claim before the sole CREATE|Normal request review/authorization/callback/status/restart controls; focused backend 62/62, independent bounded financial/security reviews and separate source normal journey 1/1; exact details/status conflicts reject; no cash or paid/reconciled inference; full new candidate pending|Sandbox application registration and bank authentication/availability not exercised against the provider. Production initiation hard-disabled; actual live PISP authority/provider enablement is external. No real transfer qualified|
 
 Primary contract references and detailed limitations are retained in
-[SOURCES](SOURCES.md), [provider implementation](integrations-implementation.md),
+[SOURCES](SOURCES.md), [sandbox payments](SANDBOX_PAYMENT_CONTRACT.md), [provider implementation](integrations-implementation.md),
 [banking/portal package](packages/FINAL-P02-banking-and-portals.md) and the portal
 inventory. Official read-only contract support does not prove live account acceptance.

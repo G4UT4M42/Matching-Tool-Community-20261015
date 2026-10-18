@@ -512,15 +512,23 @@
     "source_files": [
       "src/payments/service.ts",
       "src/payments/automation-service.ts",
-      "src/payments/browser"
+      "src/payments/browser",
+      "src/community/payments/enablebanking-pis.ts",
+      "src/community/payments/pis-coordinator.ts",
+      "src/community/payments/service.ts",
+      "web/src/pages/SandboxPaymentAuthorization.tsx"
     ],
-    "design": "Keep prepare/review/approve/submit/acknowledge/reconcile states separate. Require fresh approval bound to exact batch hash/recipient/amount, provider SCA and idempotency. A timeout after submission becomes unknown and must not auto-resubmit. Demo cannot call real submission. Qualify local mock submission, stale approval, replay, MFA pause, ambiguous acknowledgment and reconciliation; real-money activation requires independent security approval.",
+    "design": "Keep prepare/review/approve/submit/acknowledge/reconcile states separate. Require fresh approval bound to exact batch hash/recipient/amount, provider SCA and idempotency. A timeout after submission becomes unknown and must not auto-resubmit. Demo cannot call real submission. Qualify local mock submission, stale approval, replay, MFA pause, ambiguous acknowledgment and reconciliation; real-money activation requires independent security approval. Current sandbox implementation adds one supported standard SEPA EUR instruction with exact bank/PSU/application/request intent, single durable CREATE claim, bound callback, provider/item status verification and GET-only uncertain recovery. Production PIS is disabled; provider acknowledgment never marks accounting paid/reconciled. Historical commit/evidence below describes the simulator baseline; new sandbox source is focused-tested and awaits its own committed full/installed/CI qualification.",
     "status": "IMPLEMENTED",
     "commit": "3819415",
     "evidence": [
       "committed-app-01-vitest.json",
       "integrated-installed-01/integrated-acceptance/result.json",
-      "integrated-interface-source-07/integrated-acceptance/result.json"
+      "integrated-interface-source-07/integrated-acceptance/result.json",
+      "tests/community-sandbox-payments.test.ts (62/62 focused backend/payment/consent invocation; 32 sandbox cases)",
+      "tests/community-sandbox-payment-main.e2e.mjs (separate source normal journey 1/1)",
+      "docs/feature-parity/SANDBOX_PAYMENT_CONTRACT.md",
+      "docs/migration-decisions/009-sandbox-payment-intent.md"
     ]
   },
   {

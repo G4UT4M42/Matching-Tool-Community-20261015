@@ -10,7 +10,11 @@ import {checkedApplication,type BankApplication} from './consent-client.js';
 export interface StoredBankApplication {revision:string;application:BankApplication}
 /** Identity-only authority, excluded from financial backups. No callback/code/state persists. */
 export class BankApplicationVault{
+ private readonly epochs=new Map<string,number>();
  constructor(readonly directory:string,private readonly protector:KeyProtector=new WindowsDpapiProtector()){}
+ /** Process-local retirement fence; restart discards every ephemeral authorization flow. */
+ generation(p:Principal):number{return this.epochs.get(this.scope(p).file)??0;}
+ private advance(file:string):void{this.epochs.set(file,(this.epochs.get(file)??0)+1);}
  private scope(p:Principal){
   if([p.subject,p.workspace_id].some(x=>typeof x!=='string'||!x||x.length>256||/[\x00-\x1f\x7f]/.test(x)))throw new Error('BANK_APPLICATION_UNAVAILABLE');
   const scope=['bank-application-v1',p.workspace_id,p.subject],name=createHash('sha256').update(JSON.stringify(scope)).digest('hex')+'.credential';return{scope,file:join(this.directory,name)};
@@ -29,8 +33,8 @@ export class BankApplicationVault{
   guard();const plain=Buffer.from(JSON.stringify(value));let sealed:Buffer;try{sealed=this.protector.protect(plain,Buffer.from(JSON.stringify([...scope,application.environment])));}finally{plain.fill(0);}
   const temp=join(this.directory,randomBytes(32).toString('hex')+'.credential');
   try{const handle=await open(temp,'wx',0o600);try{await handle.writeFile(JSON.stringify({version:1,environment:application.environment,ciphertext:sealed.toString('base64')}));await handle.sync();}finally{await handle.close();}
-   await inspectVaultMember(this.directory,file,65536);guard();renameSync(temp,file);return value;
+   await inspectVaultMember(this.directory,file,65536);guard();renameSync(temp,file);this.advance(file);return value;
   }finally{sealed.fill(0);await rm(temp,{force:true});}
  }
- async remove(p:Principal,guard:()=>void):Promise<void>{const {file}=this.scope(p);const existing=await this.get(p);if(!existing)return;await inspectVaultMember(this.directory,file,65536);guard();unlinkSync(file);}
+ async remove(p:Principal,guard:()=>void):Promise<void>{const {file}=this.scope(p);const existing=await this.get(p);if(!existing)return;await inspectVaultMember(this.directory,file,65536);guard();unlinkSync(file);this.advance(file);}
 }

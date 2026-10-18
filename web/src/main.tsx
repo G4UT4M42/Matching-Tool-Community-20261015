@@ -63,7 +63,7 @@ function App() {
               {to:'/accounting',label:language==='de'?'Abstimmung und Berichte':'Reconciliation and reports',tip:language==='de'?'Teilzahlungen und exakte Berichte':'Partial payments and exact reports'},
               ...(account.principal?.permissions.includes('data:backup')?[{to:'/data',label:language==='de'?'Sicherung und Migration':'Backup and migration',tip:language==='de'?'Geprüfte Sicherung und Wiederherstellung':'Verified backups and restoration'}]:[]),
               ...(account.principal?.permissions.includes('integrations:read') ? [{ to: '/integrations', label: language === 'de' ? 'Integrationen' : 'Integrations', tip: language === 'de' ? 'Eigene PayPal- und Stripe-Verbindungen verwalten' : 'Manage your PayPal and Stripe connections' }] : []),
-              ...(mayPayments ? [{ to: '/payments', label: language === 'de' ? 'Zahlungssimulation' : 'Payment simulation', tip: language === 'de' ? 'SEPA-Entwürfe und lokale simulierte Übermittlung' : 'SEPA drafts and local simulated submission' }] : []),
+              ...(mayPayments ? [{ to: '/payments', label: language === 'de' ? 'Zahlungen' : 'Payments', tip: language === 'de' ? 'SEPA-Entwürfe, lokale Simulation und Sandbox-Autorisierung' : 'SEPA drafts, local simulation and sandbox authorization' }] : []),
               ...(account.principal?.permissions.includes('integrations:read') ? [{to:'/banking',label:language==='de'?'Bankverbindung':'Bank connection',tip:language==='de'?'Autorisierte Kontoinformationen lesen':'Read authorized account information'}] : []),
             ] : []),
             { to: '/rechnungen', label: t('navigation.invoices'), tip: t('navigation.invoicesHelp') },
