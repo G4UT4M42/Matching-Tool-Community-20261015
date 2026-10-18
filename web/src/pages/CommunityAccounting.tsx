@@ -72,8 +72,10 @@ export function CommunityAccounting({ apiBase = '/api', locale = 'en', permissio
   const loadReport = async () => setReport(await request(`/accounting/reports?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`));
   const reload = async () => {
     if(writing.current)return;
+    setBusy(true);
     try{setError('');await refresh();setReloadRequired(false);}
     catch(cause){setError(cause instanceof Error?cause.message:t.error);}
+    finally{setBusy(false);}
   };
   const action = async (path: string, body: unknown, method = 'POST') => {
     if(writing.current)return false;
@@ -121,8 +123,8 @@ export function CommunityAccounting({ apiBase = '/api', locale = 'en', permissio
   };
   return <section style={{ maxWidth: 1100, margin: 'auto', padding: 20, fontFamily: 'system-ui' }}>
     <h1>{t.title}</h1>{error && <p role="alert" style={{ color: '#a00' }}>{error}</p>}
-    <fieldset disabled={busy} style={{border:0,padding:0,margin:0,minWidth:0}}>
-    <button onClick={() => void reload()}>{t.refresh}</button>{' '}
+    <button disabled={busy} onClick={() => void reload()}>{t.refresh}</button>{' '}
+    <fieldset disabled={busy||!snapshot} style={{border:0,padding:0,margin:0,minWidth:0}}>
     {mayMatch&&<button onClick={() => void action('/accounting/proposals', {})}>{t.proposals}</button>}
     <section><h2>{t.matches}</h2><ul>{snapshot?.match_groups.map(group => <li key={group.match_group_id} data-match-id={group.match_group_id}>
       {group.match_group_id}: {valueLabel(group.status)} · {group.transaction_ids.join(', ')} → {group.document_ids.join(', ')} · {group.amount_total_minor} {group.currency_code} · {group.reason_codes.join(', ')}{' '}
