@@ -37,3 +37,13 @@ does not certify a later commit. Final exact-candidate qualification is required
 
 No product, live-provider, legal or release acceptance is implied by this
 bounded benchmark.
+
+The complete sequential application group retains a 20-minute aggregate bound.
+The expanded Node group has a 45-minute aggregate bound, and the hosted Windows
+job allows 75 minutes for installation, build and both groups. Separate fresh
+package installation journeys cover AIS, sandbox PIS, Stripe payouts, upgrades
+and the integrated financial workflow. The historical d521 Node group took
+1,435,425.5177ms; the separately added f330 PIS journey took 271,398.8114ms.
+These are distinct observed durations, not a completed combined qualification.
+Individual test deadlines, financial assertions, error checks and discovery
+requirements are unchanged. An aggregate deadline failure remains a failed run.

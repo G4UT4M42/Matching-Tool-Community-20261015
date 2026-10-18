@@ -1,5 +1,11 @@
 # FINAL-P03 — Normal application, migration, providers and installation
 
+> Current controlling checkpoint: [STATUS](../STATUS.md) and [protected demo contract](../DEMO_CONTRACT.md).
+> Older counts below remain historical to their named revisions. Current demo
+> localization/fixture correction requires its own clean exact-candidate tests;
+> f330 Node timed out, hosted CI did not start (account billing/spending admission),
+> and the owner deferred pristine-VM testing. No release acceptance is inferred.
+
 Status: IN_PROGRESS. No product or release acceptance is implied.
 
 ## Requirement and ownership

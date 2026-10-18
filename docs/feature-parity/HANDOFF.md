@@ -1,5 +1,11 @@
 # Matching Tool Community — current continuation handoff
 
+> Current controlling checkpoint: [STATUS](STATUS.md) and [protected demo contract](DEMO_CONTRACT.md).
+> Older counts below remain historical to their named revisions. Current demo
+> localization/fixture correction requires its own clean exact-candidate tests;
+> f330 Node timed out, hosted CI did not start (account billing/spending admission),
+> and the owner deferred pristine-VM testing. No release acceptance is inferred.
+
 > Current private internal development, 2026-10-18: active branch
 > `community/sandbox-payments-20261016` in
 > `<isolated-worktrees>/Matching-Community-Sandbox-Payments-20261016` extends

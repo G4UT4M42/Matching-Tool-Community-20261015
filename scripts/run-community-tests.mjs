@@ -38,7 +38,9 @@ export function collectCommunityTests(root, mode) {
 export async function runCommunityTests(mode) {
   if (!process.versions.node.startsWith('22.')) throw new Error('Use the qualified isolated Node 22 runtime for the current native dependency build');
   const files = collectCommunityTests(repository, mode);
-  const deadlineMs=(mode==='node'?30:20)*60*1000;
+  // The sequential Node group includes separate installed AIS, PIS, payout and
+  // upgrade journeys. Keep every case and assertion; bound their aggregate time.
+  const deadlineMs=(mode==='node'?45:20)*60*1000;
   if (!files.length) throw new Error('No executable test entrypoints were discovered');
   const runId = process.env.MATCHING_TEST_RUN_ID ?? `run-${Date.now()}`;
   if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$/.test(runId)) throw new Error('Invalid test evidence run identifier');

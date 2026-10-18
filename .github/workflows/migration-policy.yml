@@ -12,7 +12,7 @@ jobs:
   privacy-and-build:
     name: Windows privacy, migration, build and acceptance
     runs-on: windows-latest
-    timeout-minutes: 40
+    timeout-minutes: 75
     defaults:
       run:
         shell: pwsh

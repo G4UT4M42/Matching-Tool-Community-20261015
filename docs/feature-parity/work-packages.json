@@ -686,7 +686,12 @@
       "scripts/generate-synthetic-demo.mjs",
       "examples/synthetic",
       "tests",
-      "tests/helpers/legacy-operational-fixture.mjs"
+      "tests/helpers/legacy-operational-fixture.mjs",
+      "src/server/community-demo-preview.ts",
+      "web/src/pages/CommunityDemoViews.tsx",
+      "tests/community-demo-complete.test.ts",
+      "tests/community-demo-browser.test.mjs",
+      "docs/feature-parity/DEMO_CONTRACT.md"
     ],
     "design": "Generate transactions/invoices/accounts, PayPal/Stripe fees/refunds/FX, duplicate imports, partial/split payments, accepted/rejected proposals, tax exceptions, fictional SEPA, unknown payment outcomes, historical schemas and corrupt files from an explicit seed. Publish independent expected counts/hashes/per-currency totals. Never derive examples from owner records.",
     "status": "IMPLEMENTED",
@@ -700,16 +705,21 @@
   {
     "id": "P15-W02",
     "phase": "P15",
-    "title": "Demo environment isolation and safe reset",
+    "title": "Demo environment isolation and fresh profiles",
     "dependencies": [
       "P15-W01",
       "P02-W02"
     ],
     "source_files": [
       "src/server/community-demo-state.ts",
-      "scripts/Start-Community-Demo.ps1"
+      "scripts/Start-Community-Demo.ps1",
+      "src/server/community-demo-preview.ts",
+      "web/src/pages/CommunityDemoViews.tsx",
+      "tests/community-demo-complete.test.ts",
+      "tests/community-demo-browser.test.mjs",
+      "docs/feature-parity/DEMO_CONTRACT.md"
     ],
-    "design": "Mark synthetic runtimes, isolate them from personal data and forbid any live provider or payment action. Reset only a verified demo profile after explicit UI confirmation; preserve non-demo paths and refuse junctions/unknown databases. Test reset, foreign root, restart, stale credentials and environment switching.",
+    "design": "Mark synthetic runtimes, isolate them from personal data and forbid live provider or payment actions. Create a fresh explicitly named demo profile without deleting or replacing an existing profile. Preserve non-demo paths; refuse junctions/unknown databases. Test foreign roots, restart, stale credentials and environment switching. Earlier template wording claiming an in-place reset UI was incorrect; original F21 requires independent isolation, not destructive reset.",
     "status": "IMPLEMENTED",
     "commit": "3819415",
     "evidence": [

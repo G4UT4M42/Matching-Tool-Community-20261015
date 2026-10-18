@@ -2,7 +2,7 @@
   "format": "matching-community-source-map-v1",
   "source_representation": "Canonical Git index blobs (line-ending independent)",
   "scope": "Tracked Community implementation source; legacy v2_source inventory remains a frozen reference, not runtime acceptance.",
-  "source_content_sha256": "030846ad50c3a6a002299d5730712b3be8921e99c424decd690613e53fb15da0",
+  "source_content_sha256": "2a977bb9abdee685c91cb80b733271603ed0eea323bca411cb820d3aa91ee36e",
   "files": [
     {
       "path": "src/app/cli.ts",
@@ -2015,8 +2015,8 @@
     },
     {
       "path": "src/server/application.ts",
-      "sha256": "f8a19c9ccd884218e65891e8bb7cb7919460b6ca75557d9f88e8b453fcd47938",
-      "bytes": 8001,
+      "sha256": "c87f8a88a7c51c627eb88967eae943ab7cc5aae0667ce2d77e02b0619fc4dd75",
+      "bytes": 8328,
       "exports": [
         "CommunityApplicationOptions",
         "createCommunityApplication"
@@ -2047,17 +2047,29 @@
       ]
     },
     {
+      "path": "src/server/community-demo-preview.ts",
+      "sha256": "8f2f37dc1179de397be1edfb58efc2439149f8182251a2d9ff1544a3a06ee371",
+      "bytes": 14174,
+      "exports": [
+        "DEMO_WORKSPACE",
+        "DEMO_TIME",
+        "enrichCommunityDemoState",
+        "ensureCommunityDemoDraft",
+        "communityDemoProjection"
+      ]
+    },
+    {
       "path": "src/server/community-demo-state.ts",
-      "sha256": "58105512b30ddbb55fc8b38ca5384ebe6e24d02936a4dde19d17602f0d6aa34d",
-      "bytes": 3267,
+      "sha256": "4205475717790d93a38fe0889d744c529c077ef1904d3952b36c3b013573e7dd",
+      "bytes": 3365,
       "exports": [
         "createCommunityDemoState"
       ]
     },
     {
       "path": "src/server/community-guard.ts",
-      "sha256": "01fc85a1a7c9acb309d2124a8839c93e3cf04ea3d88510484f5c82d6a03e2f8e",
-      "bytes": 4256,
+      "sha256": "b8b3dc13f21b6f2d0cc2b8526a4cd2b3f3d3b954eadac196dc8faacbfd8fbf39",
+      "bytes": 4290,
       "exports": [
         "createCommunityGuard",
         "hasAllowedOrigin"
@@ -2474,16 +2486,16 @@
     },
     {
       "path": "web/src/components/matching/MatchingGovernance.tsx",
-      "sha256": "a9367f1fcd48488377bda6c559ba41e7c939eca94cf6dcba79466867b7ec706f",
-      "bytes": 26874,
+      "sha256": "71969ab07627706c527b3cf251c35ce08862a74cffe98b8cc9ad78e456a3d91b",
+      "bytes": 28981,
       "exports": [
         "MatchingGovernance"
       ]
     },
     {
       "path": "web/src/components/payments/PaymentReview.tsx",
-      "sha256": "00e6a63f96760e1380741d18f712c60787f8211211b67363a23a78c52e614db1",
-      "bytes": 40480,
+      "sha256": "e10625c64d5e5d65607ff42310ad62db31c702f24fb45619879603992c5ee189",
+      "bytes": 41388,
       "exports": [
         "PaymentReviewProps",
         "PaymentReview"
@@ -2523,8 +2535,8 @@
     },
     {
       "path": "web/src/components/shared.tsx",
-      "sha256": "7bd2587013bf920026bbf6f185c07bbb07237e82c1351a5ca0187d6dc74441a0",
-      "bytes": 18858,
+      "sha256": "02bcbe9a8b9079862a086d128b798b0b9926a8364486c86ef7503b4a78420423",
+      "bytes": 20311,
       "exports": [
         "colors",
         "Card",
@@ -2666,14 +2678,61 @@
       ]
     },
     {
+      "path": "web/src/i18n/legacy-accounting.ts",
+      "sha256": "bb6c0fa67ad83a4eb15e81cb5b1d9a861f760b1c95e769690d2ad5a8b775594c",
+      "bytes": 25571,
+      "exports": [
+        "legacyAccountingEnglish",
+        "AccountingText",
+        "AccountingNotice",
+        "accountingNoticeText",
+        "accountingNoticeSource",
+        "accountingEnumText",
+        "accountingWarningText"
+      ]
+    },
+    {
+      "path": "web/src/i18n/legacy-core.ts",
+      "sha256": "d4e00c94da1fd03038110e1001414de999a1efac54f9cb189e1579cdbe9ca632",
+      "bytes": 14112,
+      "exports": [
+        "legacyCoreEnglish"
+      ]
+    },
+    {
+      "path": "web/src/i18n/legacy-documents.ts",
+      "sha256": "cd4d0afa2460d338757ec980e3808030f6f06224ba2e96015dd9085b5a940a4b",
+      "bytes": 12278,
+      "exports": [
+        "legacyDocumentsEnglish"
+      ]
+    },
+    {
+      "path": "web/src/i18n/legacy-recognition.ts",
+      "sha256": "3f6166188f17fb03b986f87fad41555241010524af5d3c1f21dd4376de53b245",
+      "bytes": 16028,
+      "exports": [
+        "legacyRecognitionEnglish"
+      ]
+    },
+    {
+      "path": "web/src/i18n/legacy.ts",
+      "sha256": "bc135e5f341cf2c170198b432723a62014dbe1a80300950a3043982d5ee10bde",
+      "bytes": 853,
+      "exports": [
+        "useLegacyText"
+      ]
+    },
+    {
       "path": "web/src/i18n/locale.tsx",
-      "sha256": "d77ca1fd51f372c2b4f6d8a85704c94a00835b99cec19c73ca55b0d41a41a64c",
-      "bytes": 4893,
+      "sha256": "b44610446f96fcdc266622e4ce4d0b64ea0d93fab5af6b43626572159876b2b9",
+      "bytes": 5068,
       "exports": [
         "LocaleCode",
         "registerLocale",
         "LanguageProvider",
-        "useLanguage"
+        "useLanguage",
+        "useOptionalLanguage"
       ]
     },
     {
@@ -2695,22 +2754,22 @@
     },
     {
       "path": "web/src/main.tsx",
-      "sha256": "6fa45e4eb1ca42e3dd669f27aa7c8833910ee8f7e675587b988583d80286a884",
-      "bytes": 12938,
+      "sha256": "6578e2627c4f23b5a12ebb81ffbe2bd2cb024e74668ca1676a072d3235788b43",
+      "bytes": 13709,
       "exports": []
     },
     {
       "path": "web/src/pages/AuditTrail.tsx",
-      "sha256": "01cf421ce14fd27c88c3882291e4197414b8b2064f2785e42f817a1476ee5dda",
-      "bytes": 1516,
+      "sha256": "41ef675ad9c8210bf2f7c38342240d15818b6d88b87bd3eebe66581558434f5c",
+      "bytes": 1888,
       "exports": [
         "AuditTrail"
       ]
     },
     {
       "path": "web/src/pages/BankImport.tsx",
-      "sha256": "655c17b88d6b93cff5ea29bd29bf34200e5c75e54dcc11f6f210b722b9375cad",
-      "bytes": 13065,
+      "sha256": "75a356fb358c6f3cd37945510e072aa4e0790ec06f73288789b691fcaef335a9",
+      "bytes": 13362,
       "exports": [
         "BankImport"
       ]
@@ -2753,6 +2812,17 @@
       "bytes": 11523,
       "exports": [
         "CommunityDataManagement"
+      ]
+    },
+    {
+      "path": "web/src/pages/CommunityDemoViews.tsx",
+      "sha256": "b373b7488ce6c3b3e07653ca6d897bf866f99fcfd6d87f5d4248331219afad2b",
+      "bytes": 18577,
+      "exports": [
+        "DemoProjection",
+        "DemoView",
+        "checkedDemoProjection",
+        "CommunityDemoViews"
       ]
     },
     {
@@ -2814,64 +2884,64 @@
     },
     {
       "path": "web/src/pages/Dashboard.tsx",
-      "sha256": "caf829e00575bc0e402558ec7e7646cb17ba450f37a8bd8edfc156ca7b554174",
-      "bytes": 9391,
+      "sha256": "2653aaef5a68619d4e3a1d9efe4b00fe2327eefbbec8c1da17dc19f6804e51be",
+      "bytes": 10220,
       "exports": [
         "Dashboard"
       ]
     },
     {
       "path": "web/src/pages/Einkuenfte.tsx",
-      "sha256": "c29b4988227c1443577ee1a4547e16af1855c2e215733f9c6baaadebb1756187",
-      "bytes": 28743,
+      "sha256": "3a898c9d51b3f5459e8d27f365f7102591715ce9db14c585c3ea9c9ee45d277c",
+      "bytes": 29438,
       "exports": [
         "Einkuenfte"
       ]
     },
     {
       "path": "web/src/pages/Exclusions.tsx",
-      "sha256": "890ef488bcc34c756a53f6fb615adf7c0baccce0c6e0b463448e02e95cdf0042",
-      "bytes": 4068,
+      "sha256": "e81d0125e28843a5619a0987cd8b663227dc964f6df9b220c3c6c0e46c8ef9c1",
+      "bytes": 4932,
       "exports": [
         "Exclusions"
       ]
     },
     {
       "path": "web/src/pages/Import.tsx",
-      "sha256": "23c03ec9f190d4d29c47a2f1129bbc8001abdcbc51754aa2a3e67768de552fb7",
-      "bytes": 19587,
+      "sha256": "23aed1b07e77b5aa9e7d255b82d52631a80da1ff42625e5f5f35f2607cc5ee47",
+      "bytes": 20131,
       "exports": [
         "Import"
       ]
     },
     {
       "path": "web/src/pages/IncomeTaxReport.tsx",
-      "sha256": "59d4e6ab097b037dc181ddd27b41410319e4e109bf63c73047728f65ab9bf70d",
-      "bytes": 39505,
+      "sha256": "d19504697bb8a896cbd79a7dff956e1b9c56321ded57309ef21dddea358960a0",
+      "bytes": 41352,
       "exports": [
         "IncomeTaxReport"
       ]
     },
     {
       "path": "web/src/pages/InvoiceBot.tsx",
-      "sha256": "a7bce4365467e7937fe15cfb9a662e5c699c87208243552ba5d55c31b5d23d58",
-      "bytes": 51753,
+      "sha256": "08227921a6a803b6ae5451b5b07c50731940b5159c82b20409442cdc19a9c8de",
+      "bytes": 53211,
       "exports": [
         "InvoiceBot"
       ]
     },
     {
       "path": "web/src/pages/InvoiceRecognition.tsx",
-      "sha256": "f44e148479448c4116293331fb06097c02cc729392a1ee7793b91f9ffbbe0cb1",
-      "bytes": 101810,
+      "sha256": "71f00e6f46c5ba92028d329dabcfc11a3e3fcc7ca307649918af3c6a0bb5ba01",
+      "bytes": 103308,
       "exports": [
         "InvoiceRecognition"
       ]
     },
     {
       "path": "web/src/pages/ManualMatch.tsx",
-      "sha256": "8c0fb3ed5ac6d84bc3243594a931bf5d5558cc7c881bbe08562f5c41a5682035",
-      "bytes": 6738,
+      "sha256": "b0194833e2a974d803d0fa69fa11f7836376daf18e590016a98b160ccd42bdf5",
+      "bytes": 8139,
       "exports": [
         "ManualMatch"
       ]
@@ -2886,32 +2956,32 @@
     },
     {
       "path": "web/src/pages/Matching.tsx",
-      "sha256": "cbd0b1c720be1fa0b7b7581ded212b3abc2b69ec9845bf0d586baeb318798577",
-      "bytes": 29844,
+      "sha256": "12c5d83e5c548a8f954a3a0524db8ce0c93f666dd73fc37fb610030df6bb2e2c",
+      "bytes": 32055,
       "exports": [
         "Matching"
       ]
     },
     {
       "path": "web/src/pages/Rechnungen.tsx",
-      "sha256": "661892d3c3acb908bd48334b8ed1c9558508edd5eff4ce7a4cabac25c1abe532",
-      "bytes": 52638,
+      "sha256": "cb16330147052540b12795eae20c9fb6aaf8ca871db5add9419ff2d57606c79e",
+      "bytes": 54058,
       "exports": [
         "Rechnungen"
       ]
     },
     {
       "path": "web/src/pages/Reports.tsx",
-      "sha256": "8c746aa2c10351e83476da12618f06491c9b283ae1e153768ebc569172c6df86",
-      "bytes": 8948,
+      "sha256": "86fb5d1e1cefd45bda6f1de355c46a4784d382a3482391dc5894d6e0b810ca64",
+      "bytes": 9814,
       "exports": [
         "Reports"
       ]
     },
     {
       "path": "web/src/pages/ReviewQueue.tsx",
-      "sha256": "cf0943ac95cacf9b4578ea4928c77d1a58cc7494ca263043be718910069c5486",
-      "bytes": 1512,
+      "sha256": "3922dbf5b78854a9a297e3f0166d8dba20b58ade4efffa6c45f98fbbb76727d8",
+      "bytes": 1790,
       "exports": [
         "ReviewQueue"
       ]
@@ -2926,8 +2996,8 @@
     },
     {
       "path": "web/src/pages/Settings.tsx",
-      "sha256": "da1ae8a1e0cb01cf000a419abf3b8aa27b27036ae3be56890ec36c502b2accaf",
-      "bytes": 17556,
+      "sha256": "db825e9bde8e48eb109eb4cbede7be32ebe233f81d98738d97fc001add627983",
+      "bytes": 18854,
       "exports": [
         "Settings"
       ]
@@ -2942,16 +3012,16 @@
     },
     {
       "path": "web/src/pages/Transactions.tsx",
-      "sha256": "4ea6800355ddece695f7067ae83239c961cf58011ba3327f9d227296b297dfa6",
-      "bytes": 86441,
+      "sha256": "b8ca71b0397d9de2f9f5f365eb66ab9ef8eb4b8aefcb7d88a30cc147fac824c1",
+      "bytes": 89313,
       "exports": [
         "Transactions"
       ]
     },
     {
       "path": "web/src/pages/VatReport.tsx",
-      "sha256": "3b423a44bb4ebf911a77560b7f4a78c7a06c3345bb39f224ad462c362782ea9d",
-      "bytes": 31517,
+      "sha256": "6444d0d34c77e8010a18c59b09833db0b70990d9cb69a9058dd64bdf12590cd9",
+      "bytes": 32949,
       "exports": [
         "VatReport"
       ]

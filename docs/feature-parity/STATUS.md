@@ -1,24 +1,25 @@
 # Matching Tool Community — current status
 
 > Current private internal development, 2026-10-18: active branch
-> `community/sandbox-payments-20261016` in
-> `<isolated-worktrees>/Matching-Community-Sandbox-Payments-20261016` extends
-> `d5210593b5d70f4a292e2b891273857bc4ac37f4`; sealed earlier artifacts are preserved.
-> d521 includes AIS consent, PayPal event corrections and standard-automatic Stripe
-> payout reconciliation. Its complete local app 587/587 and Node 90/90 results are
-> historical evidence for d521, which did not yet implement the supported PIS flow.
-> New sandbox-only SEPA EUR PIS is implemented with exact intent, one-use claim,
-> callback/status verification and GET-only recovery. Focused backend tests passed
-> 62/62, independent financial/security reviews found no remaining defect in their
-> bounded snapshots, and the source-mode normal PIS journey passed 1/1. These are
-> separate focused invocations, not a frozen/full/installed/CI acceptance result.
-> See [sandbox payment contract](SANDBOX_PAYMENT_CONTRACT.md),
-> [bank consent](BANK_CONSENT_CONTRACT.md), [PayPal events](PAYPAL_EVENT_CONTRACT.md),
-> [Stripe payouts](STRIPE_PAYOUT_RECONCILIATION.md) and
-> [private internal scope](../compliance/PRIVATE_INTERNAL_USE.md).
-> A separate private Community repository and historical hosted CI are verified.
-> Current PIS source needs its own committed qualification. VM testing is
-> OWNER_DEFERRED, not PASS. No ownership/MIT, legal or release clearance is inferred.
+> `community/demo-localization-20261018` in
+> `<isolated-worktrees>/Matching-Community-Demo-Localization-20261018` extends
+> clean historical `f3307bbd4e7fa9b0751e9ff79d72f46bb29acc6d`.
+> f330 includes the AIS, PayPal-event, standard automatic Stripe payout and
+> sandbox SEPA EUR PIS corrections. Its full app run passed 621/621; its Node
+> run exceeded the old 30-minute aggregate deadline and is not a passing suite.
+> The latest bounded feature review found an additional local F19/F21 defect:
+> legacy demo pages ignored the selected language and invoked forbidden APIs.
+> The active correction adds explicit presentation localization, protected
+> read-only demo views and a richer canonical fixture with a persisted,
+> unsubmitted simulator draft. See [demo contract](DEMO_CONTRACT.md).
+> Current exact-candidate qualification remains pending until the new source is
+> committed and complete app/Node/installed checks actually pass.
+> GitHub run39105165072 did not start any runner or test because the account's
+> payment/spending-limit admission check failed. This is a separate external
+> hosted-CI blocker; no billing settings are changed by the product work.
+> VM testing is OWNER_DEFERRED. Provider account acceptance, MIT ownership,
+> public distribution and release clearance are not inferred.
+> Sealed earlier source, packages and failed evidence remain preserved.
 
 Status: IN_PROGRESS. Updated 2026-10-18. This document describes the current isolated candidate; historical counts remain evidence for their own source snapshots.
 
@@ -26,7 +27,7 @@ Status: IN_PROGRESS. Updated 2026-10-18. This document describes the current iso
 
 ## Source and recovery
 
-The current development checkout is `<isolated-worktrees>/Matching-Community-Sandbox-Payments-20261016`, branch `community/sandbox-payments-20261016`. The earlier `Matching-Tool-Community-Private-Candidate-20261015` / `community-sanitized` checkout is retained historical evidence. Its parentless source root is `0f3ba3487349324885987d46c2a6b48f478b9a59`. Original V2 ancestry and the quarantined preliminary local roots must never be pushed. The original final worktree and all uncommitted work were preserved in a hash-verified external recovery checkpoint before copying.
+The current development checkout is `<isolated-worktrees>/Matching-Community-Demo-Localization-20261018`, branch `community/demo-localization-20261018`. The earlier `Matching-Tool-Community-Private-Candidate-20261015` / `community-sanitized` checkout is retained historical evidence. Its parentless source root is `0f3ba3487349324885987d46c2a6b48f478b9a59`. Original V2 ancestry and the quarantined preliminary local roots must never be pushed. The original final worktree and all uncommitted work were preserved in a hash-verified external recovery checkpoint before copying.
 
 Reviewed commits after the safe root:
 
@@ -56,13 +57,13 @@ English is default; German is selectable. Role controls, responsive dashboard, k
 
 Self-contained Windows development candidates contain Node22/ABI127, native dependencies, OCR languages, launcher/install/upgrade/uninstall and source/notice evidence. A complete installed journey with source-built canvas passed before the final verifier allowlist; the 5/5 historical installation/launcher and 4/4 later package results are separate intermediate invocations. The diagnostic64-test run found3 failures and1 timeout, with all failed evidence retained; precise204 classification, stale history fixture/response handling and measured installation deadlines were repaired without removing assertions. Final exact-commit qualification is still required. The owner deferred pristine-OS/VM testing. Native source/relink evidence is independently scoped below; it is not legal or ownership clearance. Public/third-party redistribution and signing are outside the selected private internal scope.
 
-The refreshed inventory contains517 locked installations (374 installed,143 absent),381 notice occurrences,235 distinct texts and52 binary/font/OCR assets. Candidate version metadata changed without changing locked dependency versions or integrity. Three frozen source-built replacements cover canvas/Skia/Rust, sharp WASM with its actual source closure, and native Windows libvips with unchanged reviewed C++/Node companions. Each has independently checked source, actual build/runtime proof and exact hashes. Four supplements supply original source/notices plus detailed WASM and Node SBOMs. The native source review accounts for164 broad public-profile findings in unchanged upstream source/metadata, with zero private/local findings; these are disclosed rather than falsely reported as zero generic matches. Replacement/source-build qualification does not prove app ownership, legal compatibility, historical binary reproduction or a fresh Windows OS installation. Redistribution and legal gates remain false.
+The refreshed inventory contains517 locked installations (374 installed,143 absent),381 notice occurrences,235 distinct texts and52 binary/font/OCR assets. Candidate version metadata changed without changing locked dependency versions or integrity. Three frozen source-built replacements cover canvas/Skia/Rust, sharp WASM with its actual source closure, and native Windows libvips with unchanged reviewed C++/Node companions. Each has independently checked source, actual build/runtime proof and exact hashes. Five supplements supply original source/notices plus detailed WASM and Node SBOMs. The native source review accounts for164 broad public-profile findings in unchanged upstream source/metadata, with zero private/local findings; these are disclosed rather than falsely reported as zero generic matches. Replacement/source-build qualification does not prove app ownership, legal compatibility, historical binary reproduction or a fresh Windows OS installation. Redistribution and legal gates remain false.
 
 A separate PRIVATE Community repository, sanitized source push and sealed-fbf hosted Actions are verified. Available protection configuration remains constrained by the recorded hosted permission/plan response; it is not a missing local application feature. No later source CI or release result is inferred from sealed-fbf. Never substitute the existing private V2 repository.
 
 ## Required continuation
 
-1. Repeat the complete installed browser interruption scenario and locale/role matrix on the clean final candidate with all three frozen replacements and four supplements; include all newly discovered regression entrypoints.
+1. Repeat the complete installed browser interruption scenario and locale/role matrix on the clean final candidate with all three frozen replacements and five supplements; include all newly discovered regression entrypoints.
 2. Commit reviewed logical units; run all discovered app and Node tests, typechecks, build, migration policy, production audit and full current-tree/index/reachable-history privacy scans on the exact candidate.
 3. Build a new revision-bound package with the reviewed source/notice inputs, including separately qualified runtime-notice companion02; verify actual bytes and record hashes. Preserve sealed packages and unresolved ownership/distribution facts.
 4. Reuse the verified separate PRIVATE Community repository after current source/index/history checks; push only the explicitly authorized sanitized branch and qualify exact-commit Actions. Retain the existing protection limitation and never infer hosted success for newer source.
