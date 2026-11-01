@@ -2,12 +2,19 @@
 
 ## Source dependency refresh — 2026-11-01
 
-The root lock now selects body-parser 1.20.9, multer 2.5.0 and qs 6.16.1.
-No other dependency version or integrity changed. The source-controlled SBOM
-and summary were regenerated from a fresh Node 22.23.3 installation. Collection
-self-tests passed; 517 installations, 374 installed, 143 absent, 381 notice-file
-occurrences and 235 distinct original legal texts were observed. Both root and
-frontend production audits reported zero advisories at this review. These are
+The initial runtime refresh at `564c0ab` selected body-parser 1.20.9, multer
+2.5.0 and qs 6.16.1. A subsequent full development/frontend audit identified
+additional tooling advisories. Targeted compatible updates now include tsx
+4.23.15/esbuild 0.28.2 and Vite 6.4.5, plus affected frontend compiler, glob,
+CSS/source-map and browser-data dependencies. No application framework
+major-version migration or application-source change was made.
+
+The source-controlled SBOM and summary were regenerated from a fresh Node
+22.23.3 installation. Collection self-tests passed; 515 installations, 372
+installed, 143 absent, 379 notice-file occurrences and 233 distinct original
+legal texts were observed. Complete root and frontend audits, including
+development dependencies, each reported zero advisories at this review. CI
+now checks both scopes in addition to its existing production audit. These are
 technical inventory results; the historical review and limitations below remain
 identified with their original snapshots. Source publication and distribution
 of prepared native/binary packages require separate scope decisions.

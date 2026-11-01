@@ -1,16 +1,16 @@
 {
   "format": "matching-community-compliance-v1",
   "sourceLockSha256": {
-    "package-lock.json": "498be74b74f374e963d04b60239d7a4df2ca59cba4d3e6203d78c8e8b99474be",
-    "web/package-lock.json": "8e93fe21fe9b612726062a2643d9d86e48f6e32c606bb00fbb3796c8417529f8"
+    "package-lock.json": "b875c5d984665528da85ffcf96c73c74543bcde09ea047f4951d2990051b3cd5",
+    "web/package-lock.json": "7be6bd036d6059451c73348828c9ef66a1b910e54a3b11b6db6066120d9ac2ef"
   },
-  "packageInstallations": 517,
-  "installed": 374,
+  "packageInstallations": 515,
+  "installed": 372,
   "absent": 143,
   "installedWithoutLicenseMetadata": 3,
-  "absentWithoutLicenseMetadata": 95,
-  "noticeFiles": 381,
-  "distinctNoticeTexts": 235,
+  "absentWithoutLicenseMetadata": 70,
+  "noticeFiles": 379,
+  "distinctNoticeTexts": 233,
   "assets": 52,
   "unresolvedDependencyEdges": [
     {
@@ -165,67 +165,67 @@
     },
     {
       "workspace": "web",
-      "from": "web:node_modules/vite@6.4.1",
+      "from": "web:node_modules/vite@6.4.5",
       "name": "@types/node",
       "optional": true
     },
     {
       "workspace": "web",
-      "from": "web:node_modules/vite@6.4.1",
+      "from": "web:node_modules/vite@6.4.5",
       "name": "jiti",
       "optional": true
     },
     {
       "workspace": "web",
-      "from": "web:node_modules/vite@6.4.1",
+      "from": "web:node_modules/vite@6.4.5",
       "name": "less",
       "optional": true
     },
     {
       "workspace": "web",
-      "from": "web:node_modules/vite@6.4.1",
+      "from": "web:node_modules/vite@6.4.5",
       "name": "lightningcss",
       "optional": true
     },
     {
       "workspace": "web",
-      "from": "web:node_modules/vite@6.4.1",
+      "from": "web:node_modules/vite@6.4.5",
       "name": "sass",
       "optional": true
     },
     {
       "workspace": "web",
-      "from": "web:node_modules/vite@6.4.1",
+      "from": "web:node_modules/vite@6.4.5",
       "name": "sass-embedded",
       "optional": true
     },
     {
       "workspace": "web",
-      "from": "web:node_modules/vite@6.4.1",
+      "from": "web:node_modules/vite@6.4.5",
       "name": "stylus",
       "optional": true
     },
     {
       "workspace": "web",
-      "from": "web:node_modules/vite@6.4.1",
+      "from": "web:node_modules/vite@6.4.5",
       "name": "sugarss",
       "optional": true
     },
     {
       "workspace": "web",
-      "from": "web:node_modules/vite@6.4.1",
+      "from": "web:node_modules/vite@6.4.5",
       "name": "terser",
       "optional": true
     },
     {
       "workspace": "web",
-      "from": "web:node_modules/vite@6.4.1",
+      "from": "web:node_modules/vite@6.4.5",
       "name": "tsx",
       "optional": true
     },
     {
       "workspace": "web",
-      "from": "web:node_modules/vite@6.4.1",
+      "from": "web:node_modules/vite@6.4.5",
       "name": "yaml",
       "optional": true
     }

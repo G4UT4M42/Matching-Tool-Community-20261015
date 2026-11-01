@@ -6,6 +6,7 @@ This file tracks Community source-preparation changes. No public stable release 
 
 - Updated body-parser to 1.20.9, multer to 2.5.0 and the qs override to 6.16.1 to address GHSA-27r3-jxmh-p828, GHSA-q7qp-rjg7-q26m and GHSA-6pq8-jhm2-2vcw.
 - Refreshed the exact-lock dependency inventory. Application behavior, stored financial contracts and provider connections are unchanged.
+- Updated the affected development dependency chains, including tsx/esbuild and Vite 6, and added full root/frontend advisory checks to CI. No application framework major-version migration was made.
 
 ## Unreleased — 2026-10-13
 

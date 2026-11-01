@@ -23,11 +23,11 @@
       },
       {
         "name": "matching:lock_sha256:package-lock.json",
-        "value": "498be74b74f374e963d04b60239d7a4df2ca59cba4d3e6203d78c8e8b99474be"
+        "value": "b875c5d984665528da85ffcf96c73c74543bcde09ea047f4951d2990051b3cd5"
       },
       {
         "name": "matching:lock_sha256:web/package-lock.json",
-        "value": "8e93fe21fe9b612726062a2643d9d86e48f6e32c606bb00fbb3796c8417529f8"
+        "value": "7be6bd036d6059451c73348828c9ef66a1b910e54a3b11b6db6066120d9ac2ef"
       }
     ]
   },
@@ -92,20 +92,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/aix-ppc64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/aix-ppc64@0.28.2",
       "name": "@esbuild/aix-ppc64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/aix-ppc64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/aix-ppc64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "f5f24c4cd153599321e6ac2b048b6ece2bbcdf878e094704ab29921fba58fb3a0c544660de070fb813711f512f7d561ef61d31fcfb70f0a073bfbab16fb97c76"
+          "content": "5c4c5c3be76f2cabd5b4d4e26d24c17a3d4d0806da1a15a7f56c3564fc7cd2ab1a8613c57bff238163f421c84d7b41771f0914ee7f1e8e11fc6e3a27aa1b7c99"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/aix-ppc64/-/aix-ppc64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/aix-ppc64/-/aix-ppc64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -131,7 +136,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -145,20 +150,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/android-arm@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/android-arm@0.28.2",
       "name": "@esbuild/android-arm",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/android-arm@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/android-arm@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "8b90f584f63b1884265e55e1b36c3c0161e17a76f4d3e1b18f1467712d9933b60d54635f68cc60cd21ae3bca3c489cd173fa19c14d9b71272f544464d37421cc"
+          "content": "9175e888f55519072721818e79aa2fc0e511a678830694aae00d37aa443e04c42ab461ba1d86a9df19def42d4ed72a384d1deac65097e48aaa997e9f168d8baa"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/android-arm/-/android-arm-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/android-arm/-/android-arm-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -184,7 +194,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -198,20 +208,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/android-arm64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/android-arm64@0.28.2",
       "name": "@esbuild/android-arm64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/android-arm64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/android-arm64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "61d8213d85268ff157d9260a274399c5ffa268a80cb0a1d53c5d4c02afcff168ab9d2a424adcca2458ce8f3b16d1043ba0802271c1dd72a8db1e627145bfdd9a"
+          "content": "e587ca79e23ca967c16485febb6c590b76656f73acfe02d2dac6c428cf88e1939cb169874b658bcac09c4190c0151b250d45393a2ab8e207fa3d8375bc6c06e4"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -237,7 +252,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -251,20 +266,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/android-x64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/android-x64@0.28.2",
       "name": "@esbuild/android-x64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/android-x64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/android-x64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "20dff404d4e41ed93c96438cf09580605838391c4191941ff735e210e7c4457fc2cf15b7560d5ec00854ed0496429548cd35be6fc5f2fa51b37585d5e9464e6d"
+          "content": "3b7f3b8ad7bb4b353209ccb72505f83f86cbb4403b6cb2e4c7e7acbdee491e7c987cd4f1715a57668f6385d07495328de38833b442d3754ee74bc36bd7a16cd5"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/android-x64/-/android-x64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/android-x64/-/android-x64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -290,7 +310,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -304,20 +324,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/darwin-arm64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/darwin-arm64@0.28.2",
       "name": "@esbuild/darwin-arm64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/darwin-arm64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/darwin-arm64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "45ee3dd64ec1c93551cb4b7710a59a8dd2c8af4833da428a7f369f92d87843c0399f5c531eb92a6602cb8c5107543f805dd50681032af86a1d7eae39986a422a"
+          "content": "9f82aa90e42badac4725c82333546fc1b8a07d028828956933bc69f8ab318b2512ad17485e7b7bdd586b3c0c747d5e388607e62152a3c4c37d275b798f249593"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -343,7 +368,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -357,20 +382,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/darwin-x64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/darwin-x64@0.28.2",
       "name": "@esbuild/darwin-x64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/darwin-x64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/darwin-x64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "bc793f840effd407248c6cd1aa2eb06e8fa3692873468c188a9eabb7aabb5581035f82c4cb5a597c3a5dc420671ad97e039ceaf225c3732bb1c2dbf784db4716"
+          "content": "baaeacb885983f7eeacc675d04a3f0e501103e2e8788b1ac3bb5269297f2698350dc3fab37ac3a59fc07fa7baa7065d6bdac06c31384ae83b86069c587de5acf"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -396,7 +426,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -410,20 +440,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/freebsd-arm64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/freebsd-arm64@0.28.2",
       "name": "@esbuild/freebsd-arm64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/freebsd-arm64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/freebsd-arm64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "8a94d83367e3b779100183afa3abdcc49c779c1600ccf8e04c293b4048191bc0143b7c9d521bde96686b6ce85e32718e95a4855281d707aba7f80eeae32818f7"
+          "content": "9fe234053491228cbe77a44f2a7115c2a979530049a25cadbd8e2600e204268aca96a80f208f22c7ab25555adf6794e78fb825219be5a3295b07f1093cc5845f"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/freebsd-arm64/-/freebsd-arm64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/freebsd-arm64/-/freebsd-arm64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -449,7 +484,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -463,20 +498,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/freebsd-x64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/freebsd-x64@0.28.2",
       "name": "@esbuild/freebsd-x64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/freebsd-x64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/freebsd-x64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "7439345fced3ee623a5372bd5635ad1ce5eac0030904d376afb6de8c3b1cfa3d374848ed0fd1eb3a5f2054507278cd1a264b2852e51553d4c16996b6ae08f4a0"
+          "content": "efc5c94c992f3ecd24cf6c3ad77d353c98d797883bab726a898319fccff2548ef710706b0914e0921bbda2a1bbbcfaaaf9aff269d116f1a0fe6a02a5939c6b9a"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/freebsd-x64/-/freebsd-x64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/freebsd-x64/-/freebsd-x64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -502,7 +542,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -516,20 +556,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/linux-arm@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/linux-arm@0.28.2",
       "name": "@esbuild/linux-arm",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/linux-arm@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/linux-arm@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "b3a9cfbf64244aea49c0b6327d2fa0c1d8ab9b4ba4c9314d9772938191008890ddfa21d971b4cf3dc582711607f9694d6f00a1807d90904f4d4a536b313f067f"
+          "content": "5e50e7bb6ab9ca8a9e9acfb16b2eb0480720f430c3ecaf512ca64404e3199b7724369241bce5f6d2d49f6f2f0a7ebae120d0f2bfd57661564a63f4a9a06248f3"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/linux-arm/-/linux-arm-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/linux-arm/-/linux-arm-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -555,7 +600,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -569,20 +614,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/linux-arm64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/linux-arm64@0.28.2",
       "name": "@esbuild/linux-arm64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/linux-arm64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/linux-arm64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "b193ae173ff15a7678287dd87c5aca09fd56c8f6476a45734e2aa38b7583734042976901c2224b097a732f35012e09a9e2f78565dbcde42856e04abff0573616"
+          "content": "a56e000b43f78adf1cedda3d315338a79d45cc7cdd33f4d9adeaeeae045c1c9d964dad55435088ab5f319dc7e9049c38a23922659aca5b6c8805604ff768fa52"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -608,7 +658,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -622,20 +672,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/linux-ia32@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/linux-ia32@0.28.2",
       "name": "@esbuild/linux-ia32",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/linux-ia32@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/linux-ia32@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "c86950623771b4b761d1ade31e3bb03abc508ce6580ff0bd3df75b809245dd32195a79bfb4c77f45c3622e7822bb88b070100e7b376748b0304033ea4e6b5362"
+          "content": "0986e78fbf07b08780f8386050a80509fbcdb131c584c32b8a752b319a435c95ca37c4f75d589367ffb0b47795c44598f1ec12cd314dfa74664b03b6b5968b51"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/linux-ia32/-/linux-ia32-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/linux-ia32/-/linux-ia32-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -661,7 +716,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -675,20 +730,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/linux-loong64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/linux-loong64@0.28.2",
       "name": "@esbuild/linux-loong64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/linux-loong64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/linux-loong64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "58eeb44a7f25cb782dce1ca30130e089e24d7adfcaaac0e55f99d10b9637a1315c4b59742966daf9211af496b519f0ea485d73ea189ffd29294096cbeb772038"
+          "content": "6eec2477c9eca61e11f9a8d1bf0d2a3391e36bf4d7428c37a6dcd63b611b1bf72a70890796846b76506d425b21c98193345bdf91f279b693cb5646380edb0f7d"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/linux-loong64/-/linux-loong64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/linux-loong64/-/linux-loong64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -714,7 +774,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -728,20 +788,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/linux-mips64el@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/linux-mips64el@0.28.2",
       "name": "@esbuild/linux-mips64el",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/linux-mips64el@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/linux-mips64el@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "00fb3299803ab06719e290fa93e5316c38ce152bcf5b26618da88fca5fdfefdc4ac704e7ae7e505275d1e69aef7adb9a48cb1be2381e1dec080c2216963ad2c7"
+          "content": "655ca46c3ca4ef9d7d57088d6fd2dc8fd9bc5cceafe55f6e28fbeb10c92411e7557b07fed22b6485a869e070e98044578702d1a56172a6c19b1bf27cb3442324"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/linux-mips64el/-/linux-mips64el-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/linux-mips64el/-/linux-mips64el-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -767,7 +832,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -781,20 +846,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/linux-ppc64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/linux-ppc64@0.28.2",
       "name": "@esbuild/linux-ppc64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/linux-ppc64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/linux-ppc64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "7a2cc19d378179fa23b436fd9d2878bef550dd5f507fd0dfd353df6b03dc473247e2015282b39bc3e2ef794c83a0a5379318b9fbd4494c25a58f816361754f10"
+          "content": "0805e5f83b5df5452e25df2928a77087a30b9b7314322a8c3e6859ded4d25cfa9fc90def0e5e91e6165d67f918a232b8a1f5ed75f4afd6d16af17cd6c7785e35"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/linux-ppc64/-/linux-ppc64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/linux-ppc64/-/linux-ppc64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -820,7 +890,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -834,20 +904,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/linux-riscv64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/linux-riscv64@0.28.2",
       "name": "@esbuild/linux-riscv64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/linux-riscv64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/linux-riscv64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "dc49b0874af9c267e6decb13591412c9585b387bea7a050345dd168665ca5f69a41c97b548508c2616a052578cabe51c8b7e302d28a97fc2da82de0b96944559"
+          "content": "19e5c27a3e0842d53507e4250d5f16fd146f6f32373bf4adb2cfbf6c25efe25665b3958646dbb66bedc9900de2e2a21494c5e970779b5a917c024261013a30b8"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/linux-riscv64/-/linux-riscv64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/linux-riscv64/-/linux-riscv64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -873,7 +948,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -887,20 +962,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/linux-s390x@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/linux-s390x@0.28.2",
       "name": "@esbuild/linux-s390x",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/linux-s390x@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/linux-s390x@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "a411d4c7d2f35d605cecc1481042f4c83fd956d3602f2b6fc7ad20112dbc19c58caa297c12509847892f6d5d810eab073af54346b3b11b248133d15cbfbe3887"
+          "content": "dc7d707936193f1b7f58e841caccd06726d2f70e652b3527d450ccb2010285b1d64301d841045f071802719bcf8631df2b22632227afbcc98451ac09add63d0e"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/linux-s390x/-/linux-s390x-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/linux-s390x/-/linux-s390x-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -926,7 +1006,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -940,20 +1020,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/linux-x64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/linux-x64@0.28.2",
       "name": "@esbuild/linux-x64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/linux-x64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/linux-x64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "0b38bccb35d458841802d2ffdb2eafa20111f29bdcb0eb24e5ca702f81a4e6726a1f9519895072218f04a2b9b9475de0abe0d0298834f89c90a32b4b41ab3874"
+          "content": "e314d9af5154992a105b85c85a68addedcd0ad44d933e3773f45d5f3144e298179d177c8ef178ef74fb56d9bcdc3122e7d0f610d0551247e588603d517c03f1d"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -979,7 +1064,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -993,20 +1078,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/netbsd-arm64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/netbsd-arm64@0.28.2",
       "name": "@esbuild/netbsd-arm64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/netbsd-arm64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/netbsd-arm64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "b03a64d118264c247fe4782e2196bd9fdbbe1d529fe347db114b7e893cd29c2686bd8f6414fd18281599b496ab6a89c59ea79fe52949f3f4e23c0c73c92f94a0"
+          "content": "b120134633de0c1837a5d807a107e8601a1bd752a4d4519af65ba2e51207642a029096bd40a96f977fef2b3daeb02998623b3bca6251ff6367b2a7be1e3b799f"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/netbsd-arm64/-/netbsd-arm64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/netbsd-arm64/-/netbsd-arm64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -1032,7 +1122,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -1046,20 +1136,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/netbsd-x64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/netbsd-x64@0.28.2",
       "name": "@esbuild/netbsd-x64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/netbsd-x64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/netbsd-x64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "3f5e2514a265fc375a134d0b22d02e9147593b98aa347efe3e3a019be7cb423b717dc7c5136d177f90ab2ec99976ae4b1456736f924c67d82b530bed558ce388"
+          "content": "96a9f3095fa633480800368a8a188283a89f81f5362f7879137deb35004dd58e0c6951a7cebcb39afbdfed41f1a6ba50744f21a6a2e8949f5197e4a42110e9cb"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/netbsd-x64/-/netbsd-x64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/netbsd-x64/-/netbsd-x64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -1085,7 +1180,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -1099,20 +1194,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/openbsd-arm64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/openbsd-arm64@0.28.2",
       "name": "@esbuild/openbsd-arm64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/openbsd-arm64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/openbsd-arm64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "00870c3fbec0be2ac66d197f519153ab98635cafb6c02eea1511a81d20eb679bf96fc0cafc66295d6dc23d12f9dcd92f0ea6fd0fe6a50620bf755d056fb78973"
+          "content": "00bdaa2482c7ee5363ac3982403bddc4c7c0508bfc28c3593afaf0010f22f3ffe7b4bf457e584ec8c27c39948c05bf3f0165dedffe6fe52db4cb7cc2a1958aa1"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/openbsd-arm64/-/openbsd-arm64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/openbsd-arm64/-/openbsd-arm64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -1138,7 +1238,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -1152,20 +1252,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/openbsd-x64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/openbsd-x64@0.28.2",
       "name": "@esbuild/openbsd-x64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/openbsd-x64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/openbsd-x64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "0e75b6b11ac1cc0f989c4ef42caaa73373fecfcbde85f2561d71026f00661ff094e75cfa162a934131c57a73e51e6a376bc520a4bc87dcf4fef3b39588e87501"
+          "content": "42d8ae3f2b5c851c82e2bc142a17b125d40abc3b99ea15a5a22de282a3d03542424b5feff4488edd44ce5d1e80dc5a0ca387e700a6d625da9a23084ece1f2a13"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/openbsd-x64/-/openbsd-x64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/openbsd-x64/-/openbsd-x64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -1191,7 +1296,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -1205,20 +1310,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/openharmony-arm64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/openharmony-arm64@0.28.2",
       "name": "@esbuild/openharmony-arm64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/openharmony-arm64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/openharmony-arm64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "3629c0120aff7ad1113d3b1927b684650bef83f03a22c646fcb819cbef35c0e37686e57b4ab2b77baddd5345e1c993f844a1b24e6eda3a09909346c6a747f2da"
+          "content": "5a48580e6a538cbbc6952700d6bc234549a197893ca174777086eda969842e053f7457871e51259710ef75670d255f6b6f309ec41e6fcfc82d35ec162e0093ed"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/openharmony-arm64/-/openharmony-arm64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/openharmony-arm64/-/openharmony-arm64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -1244,7 +1354,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -1258,20 +1368,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/sunos-x64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/sunos-x64@0.28.2",
       "name": "@esbuild/sunos-x64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/sunos-x64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/sunos-x64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "3da9d9fa7133f9e5a8049f3f7fc1cac534c3d7bd922b075779b6749dd77de7782dd474416e132c68daa34f260b18b3dda161f2e332d4edb0d5273b45e5fdc11c"
+          "content": "18f3129133ad327bf653617c8317b8228eaa995b3e60aca9f37d84b6aab1af48459e0997437af3c32b5e966dc6227ed3e15be245495fdec3a004e89376f69fee"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -1297,7 +1412,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -1311,20 +1426,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/win32-arm64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/win32-arm64@0.28.2",
       "name": "@esbuild/win32-arm64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/win32-arm64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/win32-arm64@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "076b79f6559662b6d10f0fed8e258ebb34ac161d58fc4f79a1f2b3eeb2156124245180637d281fea87983cd5874e8151af6cf1e7624a02921c012fc3e535019c"
+          "content": "3c886112413db8f06579106b404269527ecc06789b6736c6cd858f998df1f98a1583ff79cdb8c1e02c4f3ce43c979b5860ce2631a0ad845f3fd4321f05043259"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/win32-arm64/-/win32-arm64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/win32-arm64/-/win32-arm64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -1350,7 +1470,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -1364,20 +1484,25 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/win32-ia32@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/win32-ia32@0.28.2",
       "name": "@esbuild/win32-ia32",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/win32-ia32@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/win32-ia32@0.28.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "40b29215e5cd4bcfad1d6eed66932d8e535bec729abb4403a709b8f6ed2f529f72d56385f8f133914f38cbd1aa61a0155bc687f1fdc6701724dba8e1e78717e1"
+          "content": "62625b7d396f53b49d9fd041fb83d1112e2807aa71812dfb30038d8fe841aff7295d2d5a04f297c4d9c36eef900963e3d28f5d832c5eabbf60e9ce4ff0a7ae60"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/win32-ia32/-/win32-ia32-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/win32-ia32/-/win32-ia32-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -1403,7 +1528,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "missing"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -1417,10 +1542,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/@esbuild/win32-x64@0.27.3",
+      "bom-ref": "root:node_modules/@esbuild/win32-x64@0.28.2",
       "name": "@esbuild/win32-x64",
-      "version": "0.27.3",
-      "purl": "pkg:npm/%40esbuild/win32-x64@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/%40esbuild/win32-x64@0.28.2",
       "licenses": [
         {
           "expression": "MIT"
@@ -1429,13 +1554,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "e2e24686cc6ea6dbb739ca55033962fbf816bac546c196474e54bade187ef9e844c64553f1282211feffb82fcf725acf3e42e166a1a00938ddd1558ba3ac4ca8"
+          "content": "e5e6e9c6bde758cceb2ffae7508ef9e4992e79ed1b1cbfc6ab459317d96f729bfbdf0029e5ebbc31f0548162bd6e15af6638fbc97f1eb5fffcb48f0d7b2ebde6"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -1461,7 +1586,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -10236,10 +10361,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/esbuild@0.27.3",
+      "bom-ref": "root:node_modules/esbuild@0.28.2",
       "name": "esbuild",
-      "version": "0.27.3",
-      "purl": "pkg:npm/esbuild@0.27.3",
+      "version": "0.28.2",
+      "purl": "pkg:npm/esbuild@0.28.2",
       "licenses": [
         {
           "expression": "MIT"
@@ -10248,13 +10373,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "f15c0c9f218238d22ce9c5ae7b621da47c479c08f3c67c3666becc915c41daf8e64368afa8615be0b106dd2327bf419bd85fc6ff6c80f3351a88bd60cb00c20a"
+          "content": "1ca54b4bc76f208fb1a0a5bd926ab16d12ab9d61177c926bfc56618499a2a880747b4e7740d605a8e068b9330efe4e6c203e0cbc28940afbfc6fd338877db020"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/esbuild/-/esbuild-0.27.3.tgz"
+          "url": "https://registry.npmjs.org/esbuild/-/esbuild-0.28.2.tgz"
         }
       ],
       "properties": [
@@ -10280,7 +10405,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -11718,64 +11843,6 @@
         {
           "name": "matching:dependency_kind",
           "value": "production"
-        },
-        {
-          "name": "matching:optional",
-          "value": "false"
-        },
-        {
-          "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
-        },
-        {
-          "name": "matching:integrity_verification",
-          "value": "lock_declaration_only_not_downloaded"
-        },
-        {
-          "name": "matching:redistribution_rights_verified",
-          "value": "false"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "root:node_modules/get-tsconfig@4.13.6",
-      "name": "get-tsconfig",
-      "version": "4.13.6",
-      "purl": "pkg:npm/get-tsconfig@4.13.6",
-      "licenses": [
-        {
-          "expression": "MIT"
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "b21653fd032248773f6012f1c4e90cb604a27791c5a1abaa084dff7b17ec11cc20d5691eaa31be578d3205b06bb03fa35b61c35dcb36f3139f71b9b68c8f0377"
-        }
-      ],
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/get-tsconfig/-/get-tsconfig-4.13.6.tgz"
-        }
-      ],
-      "properties": [
-        {
-          "name": "matching:workspace",
-          "value": "root"
-        },
-        {
-          "name": "matching:installation_path",
-          "value": "node_modules/get-tsconfig"
-        },
-        {
-          "name": "matching:installed",
-          "value": "true"
-        },
-        {
-          "name": "matching:dependency_kind",
-          "value": "development"
         },
         {
           "name": "matching:optional",
@@ -17244,64 +17311,6 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/resolve-pkg-maps@1.0.0",
-      "name": "resolve-pkg-maps",
-      "version": "1.0.0",
-      "purl": "pkg:npm/resolve-pkg-maps@1.0.0",
-      "licenses": [
-        {
-          "expression": "MIT"
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "b1e4b64e3dba4c154e0b6348736ace7b6cb664eede7f1213b4b65c1923a71c734e43b0a489405fc34230d9c93ac642213f02e128d2d2f013be844a6781096acf"
-        }
-      ],
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/resolve-pkg-maps/-/resolve-pkg-maps-1.0.0.tgz"
-        }
-      ],
-      "properties": [
-        {
-          "name": "matching:workspace",
-          "value": "root"
-        },
-        {
-          "name": "matching:installation_path",
-          "value": "node_modules/resolve-pkg-maps"
-        },
-        {
-          "name": "matching:installed",
-          "value": "true"
-        },
-        {
-          "name": "matching:dependency_kind",
-          "value": "development"
-        },
-        {
-          "name": "matching:optional",
-          "value": "false"
-        },
-        {
-          "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
-        },
-        {
-          "name": "matching:integrity_verification",
-          "value": "lock_declaration_only_not_downloaded"
-        },
-        {
-          "name": "matching:redistribution_rights_verified",
-          "value": "false"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "bom-ref": "root:node_modules/restructure@3.0.2",
       "name": "restructure",
       "version": "3.0.2",
@@ -20023,10 +20032,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "root:node_modules/tsx@4.21.0",
+      "bom-ref": "root:node_modules/tsx@4.23.15",
       "name": "tsx",
-      "version": "4.21.0",
-      "purl": "pkg:npm/tsx@4.21.0",
+      "version": "4.23.15",
+      "purl": "pkg:npm/tsx@4.23.15",
       "licenses": [
         {
           "expression": "MIT"
@@ -20035,13 +20044,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "e42d6c838512b3595f1b41856f644b5ec7695ea05212101a03fd243cbd35c31ce932a2c82cdc48c4838a8882f3f9c760fe92e7394c4560e479ca11d4ebaeb06f"
+          "content": "6227b1d4ebe7f33db13e9396724222cac575492c91318f4190b17efaad322a20f10aa461a2c29f320de36a72a488b07067973f62bca5a0ac0665cac49adc312b"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/tsx/-/tsx-4.21.0.tgz"
+          "url": "https://registry.npmjs.org/tsx/-/tsx-4.23.15.tgz"
         }
       ],
       "properties": [
@@ -20067,7 +20076,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -21827,10 +21836,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/@babel/code-frame@7.29.0",
+      "bom-ref": "web:node_modules/@babel/code-frame@7.29.7",
       "name": "@babel/code-frame",
-      "version": "7.29.0",
-      "purl": "pkg:npm/%40babel/code-frame@7.29.0",
+      "version": "7.29.7",
+      "purl": "pkg:npm/%40babel/code-frame@7.29.7",
       "licenses": [
         {
           "expression": "MIT"
@@ -21839,13 +21848,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "f4d8427988eaf7edeec6076da76d0b4a225726f37415e0ad346a49c6e3056752afddc59435be833a127052f7150b328647ae9cc389e3c0cea1ac92ea80ec1b73"
+          "content": "02ea7b69439fa5b01483644e38937a230e5ff43301973bb4988926fe66a52d014dfd84203b8f300a3d0ac5adec10726f3d5160eec891faa4489f05dddaa8502b"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.29.0.tgz"
+          "url": "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.29.7.tgz"
         }
       ],
       "properties": [
@@ -21871,7 +21880,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -21885,10 +21894,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/@babel/compat-data@7.29.0",
+      "bom-ref": "web:node_modules/@babel/compat-data@7.29.7",
       "name": "@babel/compat-data",
-      "version": "7.29.0",
-      "purl": "pkg:npm/%40babel/compat-data@7.29.0",
+      "version": "7.29.7",
+      "purl": "pkg:npm/%40babel/compat-data@7.29.7",
       "licenses": [
         {
           "expression": "MIT"
@@ -21897,13 +21906,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "4f534226a4ff8fdf9c9fc7ef92dee3b706cb05f2c2ff5cb573b36d09e5c5460cc64ec69f8baf0c46ff32ce46126a9067140e8bdd4d9549cd367220f3a0026126"
+          "content": "968713910c8abf0204801cd5ae7f3af7779b73dec5d94f191e36d7c035c9e459f64c2a4dc1394a71a28b91d1e8a7973f89c38513baaded0f490b986728d6ba1a"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@babel/compat-data/-/compat-data-7.29.0.tgz"
+          "url": "https://registry.npmjs.org/@babel/compat-data/-/compat-data-7.29.7.tgz"
         }
       ],
       "properties": [
@@ -21929,7 +21938,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -21943,10 +21952,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/@babel/core@7.29.0",
+      "bom-ref": "web:node_modules/@babel/core@7.29.7",
       "name": "@babel/core",
-      "version": "7.29.0",
-      "purl": "pkg:npm/%40babel/core@7.29.0",
+      "version": "7.29.7",
+      "purl": "pkg:npm/%40babel/core@7.29.7",
       "licenses": [
         {
           "expression": "MIT"
@@ -21955,13 +21964,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "08639f389a968e0daa5bf31beb336c0e6faee6f150f03c577db334f73ebda7967afa61358a43f68d45f0fa3e363dfd574d8103d919e2e5ff799e961ebb030340"
+          "content": "4601c10afb636ce2b681748d04d22436811cf6aa1512d6aede18fc804a8a42e2f71d90226ca6ab585108dcb7e6e8460a90b6a53a1f1e4ab8fd6fe721f47fd504"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@babel/core/-/core-7.29.0.tgz"
+          "url": "https://registry.npmjs.org/@babel/core/-/core-7.29.7.tgz"
         }
       ],
       "properties": [
@@ -21987,7 +21996,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -22001,10 +22010,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/@babel/generator@7.29.1",
+      "bom-ref": "web:node_modules/@babel/generator@7.29.12",
       "name": "@babel/generator",
-      "version": "7.29.1",
-      "purl": "pkg:npm/%40babel/generator@7.29.1",
+      "version": "7.29.12",
+      "purl": "pkg:npm/%40babel/generator@7.29.12",
       "licenses": [
         {
           "expression": "MIT"
@@ -22013,13 +22022,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "aac685fbd41c9b642ff1244830cb1c02f1b83b7949d05d46b8ca391d1fc1a74d8ba293609d9042fc491b7af1c5786b3896cfe83f3f6ff81b26cdb91b7bed1d53"
+          "content": "d96efa9a18eba5014ed652b97bc22f1980760f4619ed2d91d59d818ced99518b96f9a99ca4aff3eb453a6599b3b24c286bbb09e97a213ff5a0f07e4ac5723f20"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@babel/generator/-/generator-7.29.1.tgz"
+          "url": "https://registry.npmjs.org/@babel/generator/-/generator-7.29.12.tgz"
         }
       ],
       "properties": [
@@ -22045,7 +22054,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -22059,10 +22068,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/@babel/helper-compilation-targets@7.28.6",
+      "bom-ref": "web:node_modules/@babel/helper-compilation-targets@7.29.7",
       "name": "@babel/helper-compilation-targets",
-      "version": "7.28.6",
-      "purl": "pkg:npm/%40babel/helper-compilation-targets@7.28.6",
+      "version": "7.29.7",
+      "purl": "pkg:npm/%40babel/helper-compilation-targets@7.29.7",
       "licenses": [
         {
           "expression": "MIT"
@@ -22071,13 +22080,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "258b65b3786a8b5e5f731e4669234bed209327630d9a3ae41d7838152a4e03f82bc4af0ac326796ee6c7b02abc1570a4b9aeb186e69a062b7eddbefe55945f70"
+          "content": "c1e9ba59a063e0d69561574d84b3cf55a7044ba649f8a0417d2913303dd86716cfdeb9b70e2f39b4953996369436168eca7b7e023d31aee858bb3401b7c9fbd6"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@babel/helper-compilation-targets/-/helper-compilation-targets-7.28.6.tgz"
+          "url": "https://registry.npmjs.org/@babel/helper-compilation-targets/-/helper-compilation-targets-7.29.7.tgz"
         }
       ],
       "properties": [
@@ -22103,7 +22112,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -22117,10 +22126,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/@babel/helper-globals@7.28.0",
+      "bom-ref": "web:node_modules/@babel/helper-globals@7.29.7",
       "name": "@babel/helper-globals",
-      "version": "7.28.0",
-      "purl": "pkg:npm/%40babel/helper-globals@7.28.0",
+      "version": "7.29.7",
+      "purl": "pkg:npm/%40babel/helper-globals@7.29.7",
       "licenses": [
         {
           "expression": "MIT"
@@ -22129,13 +22138,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "f96e9c21291715ad635ec0c475803c1de7af413fc550b871cd1f7da71a6196d65c55aba0a6ce774c709e89603c4a0bb1c694a9de028f8ae61f496a2990b43887"
+          "content": "de7415500b6f90a1fdcda85f5a0c3de8973fb853a68c0084d64433f3613696a5a61c1823cdb365b02db69ee4137da86659e42d4eae6743fe0d9ddd80d708f8cc"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@babel/helper-globals/-/helper-globals-7.28.0.tgz"
+          "url": "https://registry.npmjs.org/@babel/helper-globals/-/helper-globals-7.29.7.tgz"
         }
       ],
       "properties": [
@@ -22161,7 +22170,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -22175,10 +22184,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/@babel/helper-module-imports@7.28.6",
+      "bom-ref": "web:node_modules/@babel/helper-module-imports@7.29.7",
       "name": "@babel/helper-module-imports",
-      "version": "7.28.6",
-      "purl": "pkg:npm/%40babel/helper-module-imports@7.28.6",
+      "version": "7.29.7",
+      "purl": "pkg:npm/%40babel/helper-module-imports@7.29.7",
       "licenses": [
         {
           "expression": "MIT"
@@ -22187,13 +22196,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "9795e464aeebef06bd2ee706c3d2f0672c8252c71be31dfb2564cfcfbb30c0513fd05310006a62594667f2ef43ce448158470adb98e6bee6dfa70d9d9c031d6f"
+          "content": "7a31f0ad0418726f719d38af4a19f62033a5233227377e005ec92fabd42272f0ad133ab5573725bbfb4a17c26ad4283c246d862fafc49a382c093ee55dea44de"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@babel/helper-module-imports/-/helper-module-imports-7.28.6.tgz"
+          "url": "https://registry.npmjs.org/@babel/helper-module-imports/-/helper-module-imports-7.29.7.tgz"
         }
       ],
       "properties": [
@@ -22219,7 +22228,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -22233,10 +22242,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/@babel/helper-module-transforms@7.28.6",
+      "bom-ref": "web:node_modules/@babel/helper-module-transforms@7.29.7",
       "name": "@babel/helper-module-transforms",
-      "version": "7.28.6",
-      "purl": "pkg:npm/%40babel/helper-module-transforms@7.28.6",
+      "version": "7.29.7",
+      "purl": "pkg:npm/%40babel/helper-module-transforms@7.29.7",
       "licenses": [
         {
           "expression": "MIT"
@@ -22245,13 +22254,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "ebba1714062bd9c0cb0d518b5d3100063741259e9dac4954488ed62a9ef436ba72212b28de9946f52006105eb2ef36e16bfc0ecd40725964c9bc40d534850670"
+          "content": "50f5154b25db3a1eb6eca8822064128305b319e04a2e4689f4f24476b9e0230312cf12d1e234b8f9fd5fd636fb57305b83c9c52da628b6f54f1424ea76b99302"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@babel/helper-module-transforms/-/helper-module-transforms-7.28.6.tgz"
+          "url": "https://registry.npmjs.org/@babel/helper-module-transforms/-/helper-module-transforms-7.29.7.tgz"
         }
       ],
       "properties": [
@@ -22277,7 +22286,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -22349,10 +22358,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/@babel/helper-string-parser@7.27.1",
+      "bom-ref": "web:node_modules/@babel/helper-string-parser@7.29.11",
       "name": "@babel/helper-string-parser",
-      "version": "7.27.1",
-      "purl": "pkg:npm/%40babel/helper-string-parser@7.27.1",
+      "version": "7.29.11",
+      "purl": "pkg:npm/%40babel/helper-string-parser@7.29.11",
       "licenses": [
         {
           "expression": "MIT"
@@ -22361,13 +22370,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "a8c952c4a6e946502b89d0c4c64f769d2a1bc837693e28d4ab60d6ea80e752a77488e1b19908f2aa13088a123dfb3bf82cfc997518ded9c6af58f6c26d69b778"
+          "content": "b2765b3bb3040cea1ffa1bcd6bdec48c463ba83ee1da4c2f42be40242dd9850b9d296e5d9de8fa93790ff4d415f3c849c1a4bcbc3a912c5a3dae2bcb12195eda"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@babel/helper-string-parser/-/helper-string-parser-7.27.1.tgz"
+          "url": "https://registry.npmjs.org/@babel/helper-string-parser/-/helper-string-parser-7.29.11.tgz"
         }
       ],
       "properties": [
@@ -22393,7 +22402,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -22407,10 +22416,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/@babel/helper-validator-identifier@7.28.5",
+      "bom-ref": "web:node_modules/@babel/helper-validator-identifier@7.29.7",
       "name": "@babel/helper-validator-identifier",
-      "version": "7.28.5",
-      "purl": "pkg:npm/%40babel/helper-validator-identifier@7.28.5",
+      "version": "7.29.7",
+      "purl": "pkg:npm/%40babel/helper-validator-identifier@7.29.7",
       "licenses": [
         {
           "expression": "MIT"
@@ -22419,13 +22428,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "a92b3889fc33289495dfdb9c363b2f73a5951ece9bed2d37b0e87639c1c5f541df54fa965802d4b0d515ce1481888b63459a0b1f1ee721aad58ea295bac519d5"
+          "content": "a9e8711a4463e7987f7dff0431a27e71887268a947231a980e7ebcdb0403ed1369f54ba3390b07a20dae4b4af6bf3af8a56fac5dff7435e79aca370d697ddf16"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@babel/helper-validator-identifier/-/helper-validator-identifier-7.28.5.tgz"
+          "url": "https://registry.npmjs.org/@babel/helper-validator-identifier/-/helper-validator-identifier-7.29.7.tgz"
         }
       ],
       "properties": [
@@ -22451,7 +22460,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -22465,10 +22474,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/@babel/helper-validator-option@7.27.1",
+      "bom-ref": "web:node_modules/@babel/helper-validator-option@7.29.7",
       "name": "@babel/helper-validator-option",
-      "version": "7.27.1",
-      "purl": "pkg:npm/%40babel/helper-validator-option@7.27.1",
+      "version": "7.29.7",
+      "purl": "pkg:npm/%40babel/helper-validator-option@7.29.7",
       "licenses": [
         {
           "expression": "MIT"
@@ -22477,13 +22486,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "62f8c9a30f45c5b84514a0d2b859d509ed96c57935cd6736d9f15e3d5344696244bbc22b65595d6ba374b87c3366b50cd6297b342f4c969e0c68961b61df494a"
+          "content": "37d644aeb0fec96e607820ed06a9cea31991f3eb4d2a21aec4a943a6e2717ecaa96b674571ec5ace218013faa81cb8830eb79534cba9c46992a0d972bec03783"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@babel/helper-validator-option/-/helper-validator-option-7.27.1.tgz"
+          "url": "https://registry.npmjs.org/@babel/helper-validator-option/-/helper-validator-option-7.29.7.tgz"
         }
       ],
       "properties": [
@@ -22509,7 +22518,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -22523,10 +22532,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/@babel/helpers@7.28.6",
+      "bom-ref": "web:node_modules/@babel/helpers@7.29.10",
       "name": "@babel/helpers",
-      "version": "7.28.6",
-      "purl": "pkg:npm/%40babel/helpers@7.28.6",
+      "version": "7.29.10",
+      "purl": "pkg:npm/%40babel/helpers@7.29.10",
       "licenses": [
         {
           "expression": "MIT"
@@ -22535,13 +22544,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "c4e06fc2af3a1c7741ed65034df29f4ff56ec61ee012543e49fb62d82cbac8858d5b4e4ff2252c94e55c678fec29b13efe341aba4400773fe07f7ef6e2461dab"
+          "content": "10c0b1dc0199dd67c097a86dec0c90a0f9b62e1f8119810c75ce10e877fbb9208339916e2eae38a8dc0bfa26a29bc565c98851028e17e37fb079a74af1907862"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@babel/helpers/-/helpers-7.28.6.tgz"
+          "url": "https://registry.npmjs.org/@babel/helpers/-/helpers-7.29.10.tgz"
         }
       ],
       "properties": [
@@ -22567,7 +22576,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -22581,10 +22590,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/@babel/parser@7.29.0",
+      "bom-ref": "web:node_modules/@babel/parser@7.29.12",
       "name": "@babel/parser",
-      "version": "7.29.0",
-      "purl": "pkg:npm/%40babel/parser@7.29.0",
+      "version": "7.29.12",
+      "purl": "pkg:npm/%40babel/parser@7.29.12",
       "licenses": [
         {
           "expression": "MIT"
@@ -22593,13 +22602,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "2320e0155e467835155f861d17fdc23d42ed5464975cc2e1d7154881d0a0c40a64b6a9d0574afbffc36ab6183ef182c6680b5dc88968daa21d66b6c2bf8fbbc3"
+          "content": "589ec9069fd0e3ecff226c9db48ee34ba355728e7efbadf613105e9925fe62c6fe1b5942c10e41568dd263e8c618e7195c8e1971c6d94944892cd056e9e12926"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@babel/parser/-/parser-7.29.0.tgz"
+          "url": "https://registry.npmjs.org/@babel/parser/-/parser-7.29.12.tgz"
         }
       ],
       "properties": [
@@ -22625,7 +22634,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -22755,10 +22764,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/@babel/template@7.28.6",
+      "bom-ref": "web:node_modules/@babel/template@7.29.7",
       "name": "@babel/template",
-      "version": "7.28.6",
-      "purl": "pkg:npm/%40babel/template@7.28.6",
+      "version": "7.29.7",
+      "purl": "pkg:npm/%40babel/template@7.29.7",
       "licenses": [
         {
           "expression": "MIT"
@@ -22767,13 +22776,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "600e8c6b62ac09d19bf960ba5290551491972f9f0c0c0ea8c8e35b8f217ffb9b0183163f7709212e881b313d865d7c94f38fc8851c3fd83d4eb3507f822cfe05"
+          "content": "a6eabe19fdf9a08db815e375d4b92851016abfdbb035e5a9c57662fc98b7ad1228280cca9f145a67e1a48f4bca4bd6428931127e783537d2f23b25efa3e9be1a"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@babel/template/-/template-7.28.6.tgz"
+          "url": "https://registry.npmjs.org/@babel/template/-/template-7.29.7.tgz"
         }
       ],
       "properties": [
@@ -22799,7 +22808,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -22813,10 +22822,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/@babel/traverse@7.29.0",
+      "bom-ref": "web:node_modules/@babel/traverse@7.29.12",
       "name": "@babel/traverse",
-      "version": "7.29.0",
-      "purl": "pkg:npm/%40babel/traverse@7.29.0",
+      "version": "7.29.12",
+      "purl": "pkg:npm/%40babel/traverse@7.29.12",
       "licenses": [
         {
           "expression": "MIT"
@@ -22825,13 +22834,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "e073e242bd17efec1a1dfc973d9a563df58bfc9edd70dd66c7d80be9675054c6cf9c5dfe66148cb3cb42c4dee81dd74913d7e1344efe9717679727a629f251b8"
+          "content": "32c7177bf34065c3a4604b116a31d916ddf29ec6f6d8f522e824eba7953bf91632711f41cbce269fd985379e1881f2138aa2b8845c7726eded652cb37e94b97b"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@babel/traverse/-/traverse-7.29.0.tgz"
+          "url": "https://registry.npmjs.org/@babel/traverse/-/traverse-7.29.12.tgz"
         }
       ],
       "properties": [
@@ -22857,7 +22866,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -22871,10 +22880,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/@babel/types@7.29.0",
+      "bom-ref": "web:node_modules/@babel/types@7.29.11",
       "name": "@babel/types",
-      "version": "7.29.0",
-      "purl": "pkg:npm/%40babel/types@7.29.0",
+      "version": "7.29.11",
+      "purl": "pkg:npm/%40babel/types@7.29.11",
       "licenses": [
         {
           "expression": "MIT"
@@ -22883,13 +22892,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "2f07591e949c338433f17c3688a4b34be71f825673246be87d0202cbb5bbbf871aaeee046809b252e3ba046adbc90da6615d755b453c8f998185dd7875ddc1d0"
+          "content": "582b1e996e340a973a828b82d52ad8e8f05a67ea0b46511563d5c1bd9048ee297f1f252b6f69c9e74e70135307105c8364d9eb58312ecb88cbe745951df4d349"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@babel/types/-/types-7.29.0.tgz"
+          "url": "https://registry.npmjs.org/@babel/types/-/types-7.29.11.tgz"
         }
       ],
       "properties": [
@@ -22915,7 +22924,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -27163,10 +27172,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/baseline-browser-mapping@2.10.0",
+      "bom-ref": "web:node_modules/baseline-browser-mapping@2.11.34",
       "name": "baseline-browser-mapping",
-      "version": "2.10.0",
-      "purl": "pkg:npm/baseline-browser-mapping@2.10.0",
+      "version": "2.11.34",
+      "purl": "pkg:npm/baseline-browser-mapping@2.11.34",
       "licenses": [
         {
           "expression": "Apache-2.0"
@@ -27175,13 +27184,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "948ca0d2ccd17d86e2cbaee3f4a37c232783eeaee1726aa727575d5a636dd7d22d1a934deb89a79659b150d14839d3a6e9bcbdee394beb07e94d326b9a78d600"
+          "content": "02aafc980d6422fc89dd463960063b89bf0b4a8d4398331b32756a18fb6c296d4bc5a1501709fd11bdf2bead9f50a26c46f6978e7015ed1e68b2a1136a9ccd88"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/baseline-browser-mapping/-/baseline-browser-mapping-2.10.0.tgz"
+          "url": "https://registry.npmjs.org/baseline-browser-mapping/-/baseline-browser-mapping-2.11.34.tgz"
         }
       ],
       "properties": [
@@ -27207,7 +27216,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -27221,10 +27230,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/browserslist@4.28.1",
+      "bom-ref": "web:node_modules/browserslist@4.29.5",
       "name": "browserslist",
-      "version": "4.28.1",
-      "purl": "pkg:npm/browserslist@4.28.1",
+      "version": "4.29.5",
+      "purl": "pkg:npm/browserslist@4.29.5",
       "licenses": [
         {
           "expression": "MIT"
@@ -27233,13 +27242,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "642e417742e02578301aa5249d963fbe4510d38afc3579c9677c988b8bc3992899982fe975237435b3513f16696ed3b8b807c350015f7cef086683371a3f0890"
+          "content": "9214e62aee4d1984e8b6a718a3c05ec3693844013d3ee5d14854571b695006b084407c9e43fbd7ea028cc5fa24c32c01b0b89764c9c7b2658c1b5a673bc27bb9"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/browserslist/-/browserslist-4.28.1.tgz"
+          "url": "https://registry.npmjs.org/browserslist/-/browserslist-4.29.5.tgz"
         }
       ],
       "properties": [
@@ -27265,7 +27274,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -27279,10 +27288,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/caniuse-lite@1.0.30001774",
+      "bom-ref": "web:node_modules/caniuse-lite@1.0.30001820",
       "name": "caniuse-lite",
-      "version": "1.0.30001774",
-      "purl": "pkg:npm/caniuse-lite@1.0.30001774",
+      "version": "1.0.30001820",
+      "purl": "pkg:npm/caniuse-lite@1.0.30001820",
       "licenses": [
         {
           "expression": "CC-BY-4.0"
@@ -27291,13 +27300,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "0c37703c6cfdf6798812fdb5ea129280b0fe0f88a41d01e3042fec785f7c37d08fa915f8339992c53f5e4d5ea8ca2b2725cbb3c6d672e27d7bc8a29062661038"
+          "content": "81f583e8cc6a542a803b098e0df65fec37215af96b03e49174d5fb71e2df837c51a9ee6cb238e917b120b250bfd2d88b88d4da8dd68d37fabc73fe6effb1b3f3"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001774.tgz"
+          "url": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001820.tgz"
         }
       ],
       "properties": [
@@ -27323,7 +27332,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -27555,7 +27564,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -27569,10 +27578,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/electron-to-chromium@1.5.302",
+      "bom-ref": "web:node_modules/electron-to-chromium@1.5.472",
       "name": "electron-to-chromium",
-      "version": "1.5.302",
-      "purl": "pkg:npm/electron-to-chromium@1.5.302",
+      "version": "1.5.472",
+      "purl": "pkg:npm/electron-to-chromium@1.5.472",
       "licenses": [
         {
           "expression": "ISC"
@@ -27581,13 +27590,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "b0ce8700dd8bc8af362323c1a739c346a953400b6e49a3be4a1cc58964efa0c24b1f267e637f6bf1531f1f3c1b53c31507343859d9fce7ec25665d932c6225c2"
+          "content": "b38fa77d3dbd6f414aa552a8688c65da95aca0d727ec0fe730f4abc5acb0e13dc1b263de576945f58d3a06c01078c1a10934389d82795d24fb8e4a9ee1912a17"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.302.tgz"
+          "url": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.472.tgz"
         }
       ],
       "properties": [
@@ -27613,7 +27622,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -27729,7 +27738,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -28014,7 +28023,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -28188,7 +28197,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -28246,7 +28255,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -28260,10 +28269,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/nanoid@3.3.11",
+      "bom-ref": "web:node_modules/nanoid@3.3.20",
       "name": "nanoid",
-      "version": "3.3.11",
-      "purl": "pkg:npm/nanoid@3.3.11",
+      "version": "3.3.20",
+      "purl": "pkg:npm/nanoid@3.3.20",
       "licenses": [
         {
           "expression": "MIT"
@@ -28272,13 +28281,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "37c4a97cf527529d5b2be3cc616f2a496765f54fb0c0d588e102b13980f2f4902ba3758c5fba7639e55117dbfedf8ee99da90d7af3e688784d999d876c503beb"
+          "content": "b8a760d86dc63422909fd6f260ea716c6aab4f67c63b9291b7927ff1bde9a24f2b4faab119617a871332262118b407fe155c98b83f6145a0ea5f9b8f15827865"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/nanoid/-/nanoid-3.3.11.tgz"
+          "url": "https://registry.npmjs.org/nanoid/-/nanoid-3.3.20.tgz"
         }
       ],
       "properties": [
@@ -28304,7 +28313,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -28376,10 +28385,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/node-releases@2.0.27",
+      "bom-ref": "web:node_modules/node-releases@2.0.63",
       "name": "node-releases",
-      "version": "2.0.27",
-      "purl": "pkg:npm/node-releases@2.0.27",
+      "version": "2.0.63",
+      "purl": "pkg:npm/node-releases@2.0.63",
       "licenses": [
         {
           "expression": "MIT"
@@ -28388,13 +28397,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "9e687794291867782b66fa9c087f9f8e643b5fe1f439e6603f8d0e89eac4680a6d5f85e87cc87993035b5a1ee505db94cc2715ffc919f8d0cb0b09b68a8ac894"
+          "content": "ea58b641a9cbb005e9207d91ea3efb333472bcecabbdd4ea94ab4ee0280174718dbcdf7d6597f2c6ccc7739a39f88641583e6ee87cf083cdc9a065e6a99346f5"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/node-releases/-/node-releases-2.0.27.tgz"
+          "url": "https://registry.npmjs.org/node-releases/-/node-releases-2.0.63.tgz"
         }
       ],
       "properties": [
@@ -28420,7 +28429,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -28550,10 +28559,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/picomatch@4.0.3",
+      "bom-ref": "web:node_modules/picomatch@4.0.7",
       "name": "picomatch",
-      "version": "4.0.3",
-      "purl": "pkg:npm/picomatch@4.0.3",
+      "version": "4.0.7",
+      "purl": "pkg:npm/picomatch@4.0.7",
       "licenses": [
         {
           "expression": "MIT"
@@ -28562,13 +28571,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "e604e680463fb2a2ba8055cb22c40d1f5f6559be1e6cf0cb03849d2cfeddb169085c75a51baea83ee56f5d21853e9a58673f190d9ab475862b6c77c109551bd5"
+          "content": "a9c26ef3c436216a89b030f9dbd24a31dc069bf76f2275b81ef427470887f49b62849bf318eb1c0ed1c4df1d6904a794393cac43c91598b9c9da426eef285c18"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/picomatch/-/picomatch-4.0.3.tgz"
+          "url": "https://registry.npmjs.org/picomatch/-/picomatch-4.0.7.tgz"
         }
       ],
       "properties": [
@@ -28594,7 +28603,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -28608,10 +28617,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/postcss@8.5.6",
+      "bom-ref": "web:node_modules/postcss@8.5.32",
       "name": "postcss",
-      "version": "8.5.6",
-      "purl": "pkg:npm/postcss@8.5.6",
+      "version": "8.5.32",
+      "purl": "pkg:npm/postcss@8.5.32",
       "licenses": [
         {
           "expression": "MIT"
@@ -28620,13 +28629,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "dd86e2d6d02ec003fdb34af5510d89e27e58d06d396c99295083b4fdb23d321c260fbd12e5a4d66d7181c311eb7a54fe5ccd64e9d334a64f92c0d9294d137b3e"
+          "content": "2c994a08201414a3ae6718a951d630d4dcc821312c3dc832386f4b92f449bee2a3fdb4736ee458d00457bcbd29586a6c66f9fc8e4bbe2cc7a9d9e534b1e1e9f2"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/postcss/-/postcss-8.5.6.tgz"
+          "url": "https://registry.npmjs.org/postcss/-/postcss-8.5.32.tgz"
         }
       ],
       "properties": [
@@ -28652,7 +28661,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -29116,7 +29125,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -29188,10 +29197,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/source-map-js@1.2.1",
+      "bom-ref": "web:node_modules/source-map-js@1.2.2",
       "name": "source-map-js",
-      "version": "1.2.1",
-      "purl": "pkg:npm/source-map-js@1.2.1",
+      "version": "1.2.2",
+      "purl": "pkg:npm/source-map-js@1.2.2",
       "licenses": [
         {
           "expression": "BSD-3-Clause"
@@ -29200,13 +29209,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "51758c2a12cec1529bef6f0852d40f5f17d853ebac7726ed52b2bff2e184f0240cbeb84ea70bf30c1c23d108522fb31073bbc8b084811bc550f3e203431a5f40"
+          "content": "2868fff18e37c77e5a6550edb7e27898ad61a0b18750b3187d290e0c93508cd0c2de85b53ea3e8c4cc28d292d4b1633f5041b338dfcdc5e1f2c047cd5cd3f757"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.1.tgz"
+          "url": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.2.tgz"
         }
       ],
       "properties": [
@@ -29232,7 +29241,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -29362,10 +29371,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/update-browserslist-db@1.2.3",
+      "bom-ref": "web:node_modules/update-browserslist-db@1.3.4",
       "name": "update-browserslist-db",
-      "version": "1.2.3",
-      "purl": "pkg:npm/update-browserslist-db@1.2.3",
+      "version": "1.3.4",
+      "purl": "pkg:npm/update-browserslist-db@1.3.4",
       "licenses": [
         {
           "expression": "MIT"
@@ -29374,13 +29383,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "26cd26f5cc7ea8e803c68d1e32214612e796cedcfe778f8cdeb1a598a3d3f93e084bf8cfe32970dcdc29bba7294d33fc4753000b5905e156dd2eddc045fdb4f7"
+          "content": "b7cc289c839d4323a3b4f776564b6506ee908d355392ceaff1b4a2ee4774af656597c4cad4960366d45175b9821ce00ca6191982bccaf8bfaf5cae29c99f2de0"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/update-browserslist-db/-/update-browserslist-db-1.2.3.tgz"
+          "url": "https://registry.npmjs.org/update-browserslist-db/-/update-browserslist-db-1.3.4.tgz"
         }
       ],
       "properties": [
@@ -29406,7 +29415,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -29420,10 +29429,10 @@
     },
     {
       "type": "library",
-      "bom-ref": "web:node_modules/vite@6.4.1",
+      "bom-ref": "web:node_modules/vite@6.4.5",
       "name": "vite",
-      "version": "6.4.1",
-      "purl": "pkg:npm/vite@6.4.1",
+      "version": "6.4.5",
+      "purl": "pkg:npm/vite@6.4.5",
       "licenses": [
         {
           "expression": "MIT"
@@ -29432,13 +29441,13 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "f8ec66eeaf610e82ccc893987d4601b87428f9d9009688b7ddaa4e3cfe7aa738febec7490f3afe8f5348484e69c9a02e28be00dd40f7e2a774971e7e91f2a9da"
+          "content": "e1e9f08c57e2e08c2d121d30fa33f3a4b54e15088f1e69b33f17075d03b212eaf8ee8eaed23139ef70e61a98c0fbb8ab5e830b611643e596855049de4b769b3e"
         }
       ],
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/vite/-/vite-6.4.1.tgz"
+          "url": "https://registry.npmjs.org/vite/-/vite-6.4.5.tgz"
         }
       ],
       "properties": [
@@ -29464,7 +29473,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -29522,7 +29531,7 @@
         },
         {
           "name": "matching:license_evidence",
-          "value": "installed_manifest_declaration"
+          "value": "lockfile_declaration"
         },
         {
           "name": "matching:integrity_verification",
@@ -29562,7 +29571,7 @@
         "root:node_modules/react-router-dom@7.18.4",
         "root:node_modules/sharp@0.35.5",
         "root:node_modules/tesseract.js@7.0.0",
-        "root:node_modules/tsx@4.21.0",
+        "root:node_modules/tsx@4.23.15",
         "root:node_modules/typescript@5.9.3",
         "root:node_modules/vitest@5.0.4",
         "root:node_modules/xlsx@0.20.3",
@@ -29577,107 +29586,107 @@
       ]
     },
     {
-      "ref": "root:node_modules/@esbuild/aix-ppc64@0.27.3",
+      "ref": "root:node_modules/@esbuild/aix-ppc64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/android-arm@0.27.3",
+      "ref": "root:node_modules/@esbuild/android-arm@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/android-arm64@0.27.3",
+      "ref": "root:node_modules/@esbuild/android-arm64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/android-x64@0.27.3",
+      "ref": "root:node_modules/@esbuild/android-x64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/darwin-arm64@0.27.3",
+      "ref": "root:node_modules/@esbuild/darwin-arm64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/darwin-x64@0.27.3",
+      "ref": "root:node_modules/@esbuild/darwin-x64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/freebsd-arm64@0.27.3",
+      "ref": "root:node_modules/@esbuild/freebsd-arm64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/freebsd-x64@0.27.3",
+      "ref": "root:node_modules/@esbuild/freebsd-x64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/linux-arm@0.27.3",
+      "ref": "root:node_modules/@esbuild/linux-arm@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/linux-arm64@0.27.3",
+      "ref": "root:node_modules/@esbuild/linux-arm64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/linux-ia32@0.27.3",
+      "ref": "root:node_modules/@esbuild/linux-ia32@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/linux-loong64@0.27.3",
+      "ref": "root:node_modules/@esbuild/linux-loong64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/linux-mips64el@0.27.3",
+      "ref": "root:node_modules/@esbuild/linux-mips64el@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/linux-ppc64@0.27.3",
+      "ref": "root:node_modules/@esbuild/linux-ppc64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/linux-riscv64@0.27.3",
+      "ref": "root:node_modules/@esbuild/linux-riscv64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/linux-s390x@0.27.3",
+      "ref": "root:node_modules/@esbuild/linux-s390x@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/linux-x64@0.27.3",
+      "ref": "root:node_modules/@esbuild/linux-x64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/netbsd-arm64@0.27.3",
+      "ref": "root:node_modules/@esbuild/netbsd-arm64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/netbsd-x64@0.27.3",
+      "ref": "root:node_modules/@esbuild/netbsd-x64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/openbsd-arm64@0.27.3",
+      "ref": "root:node_modules/@esbuild/openbsd-arm64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/openbsd-x64@0.27.3",
+      "ref": "root:node_modules/@esbuild/openbsd-x64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/openharmony-arm64@0.27.3",
+      "ref": "root:node_modules/@esbuild/openharmony-arm64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/sunos-x64@0.27.3",
+      "ref": "root:node_modules/@esbuild/sunos-x64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/win32-arm64@0.27.3",
+      "ref": "root:node_modules/@esbuild/win32-arm64@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/win32-ia32@0.27.3",
+      "ref": "root:node_modules/@esbuild/win32-ia32@0.28.2",
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/@esbuild/win32-x64@0.27.3",
+      "ref": "root:node_modules/@esbuild/win32-x64@0.28.2",
       "dependsOn": []
     },
     {
@@ -30480,34 +30489,34 @@
       ]
     },
     {
-      "ref": "root:node_modules/esbuild@0.27.3",
+      "ref": "root:node_modules/esbuild@0.28.2",
       "dependsOn": [
-        "root:node_modules/@esbuild/aix-ppc64@0.27.3",
-        "root:node_modules/@esbuild/android-arm64@0.27.3",
-        "root:node_modules/@esbuild/android-arm@0.27.3",
-        "root:node_modules/@esbuild/android-x64@0.27.3",
-        "root:node_modules/@esbuild/darwin-arm64@0.27.3",
-        "root:node_modules/@esbuild/darwin-x64@0.27.3",
-        "root:node_modules/@esbuild/freebsd-arm64@0.27.3",
-        "root:node_modules/@esbuild/freebsd-x64@0.27.3",
-        "root:node_modules/@esbuild/linux-arm64@0.27.3",
-        "root:node_modules/@esbuild/linux-arm@0.27.3",
-        "root:node_modules/@esbuild/linux-ia32@0.27.3",
-        "root:node_modules/@esbuild/linux-loong64@0.27.3",
-        "root:node_modules/@esbuild/linux-mips64el@0.27.3",
-        "root:node_modules/@esbuild/linux-ppc64@0.27.3",
-        "root:node_modules/@esbuild/linux-riscv64@0.27.3",
-        "root:node_modules/@esbuild/linux-s390x@0.27.3",
-        "root:node_modules/@esbuild/linux-x64@0.27.3",
-        "root:node_modules/@esbuild/netbsd-arm64@0.27.3",
-        "root:node_modules/@esbuild/netbsd-x64@0.27.3",
-        "root:node_modules/@esbuild/openbsd-arm64@0.27.3",
-        "root:node_modules/@esbuild/openbsd-x64@0.27.3",
-        "root:node_modules/@esbuild/openharmony-arm64@0.27.3",
-        "root:node_modules/@esbuild/sunos-x64@0.27.3",
-        "root:node_modules/@esbuild/win32-arm64@0.27.3",
-        "root:node_modules/@esbuild/win32-ia32@0.27.3",
-        "root:node_modules/@esbuild/win32-x64@0.27.3"
+        "root:node_modules/@esbuild/aix-ppc64@0.28.2",
+        "root:node_modules/@esbuild/android-arm64@0.28.2",
+        "root:node_modules/@esbuild/android-arm@0.28.2",
+        "root:node_modules/@esbuild/android-x64@0.28.2",
+        "root:node_modules/@esbuild/darwin-arm64@0.28.2",
+        "root:node_modules/@esbuild/darwin-x64@0.28.2",
+        "root:node_modules/@esbuild/freebsd-arm64@0.28.2",
+        "root:node_modules/@esbuild/freebsd-x64@0.28.2",
+        "root:node_modules/@esbuild/linux-arm64@0.28.2",
+        "root:node_modules/@esbuild/linux-arm@0.28.2",
+        "root:node_modules/@esbuild/linux-ia32@0.28.2",
+        "root:node_modules/@esbuild/linux-loong64@0.28.2",
+        "root:node_modules/@esbuild/linux-mips64el@0.28.2",
+        "root:node_modules/@esbuild/linux-ppc64@0.28.2",
+        "root:node_modules/@esbuild/linux-riscv64@0.28.2",
+        "root:node_modules/@esbuild/linux-s390x@0.28.2",
+        "root:node_modules/@esbuild/linux-x64@0.28.2",
+        "root:node_modules/@esbuild/netbsd-arm64@0.28.2",
+        "root:node_modules/@esbuild/netbsd-x64@0.28.2",
+        "root:node_modules/@esbuild/openbsd-arm64@0.28.2",
+        "root:node_modules/@esbuild/openbsd-x64@0.28.2",
+        "root:node_modules/@esbuild/openharmony-arm64@0.28.2",
+        "root:node_modules/@esbuild/sunos-x64@0.28.2",
+        "root:node_modules/@esbuild/win32-arm64@0.28.2",
+        "root:node_modules/@esbuild/win32-ia32@0.28.2",
+        "root:node_modules/@esbuild/win32-x64@0.28.2"
       ]
     },
     {
@@ -30686,12 +30695,6 @@
       "dependsOn": [
         "root:node_modules/dunder-proto@1.0.1",
         "root:node_modules/es-object-atoms@1.1.1"
-      ]
-    },
-    {
-      "ref": "root:node_modules/get-tsconfig@4.13.6",
-      "dependsOn": [
-        "root:node_modules/resolve-pkg-maps@1.0.0"
       ]
     },
     {
@@ -31212,10 +31215,6 @@
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/resolve-pkg-maps@1.0.0",
-      "dependsOn": []
-    },
-    {
       "ref": "root:node_modules/restructure@3.0.2",
       "dependsOn": []
     },
@@ -31536,11 +31535,10 @@
       "dependsOn": []
     },
     {
-      "ref": "root:node_modules/tsx@4.21.0",
+      "ref": "root:node_modules/tsx@4.23.15",
       "dependsOn": [
-        "root:node_modules/esbuild@0.27.3",
-        "root:node_modules/fsevents@2.3.3",
-        "root:node_modules/get-tsconfig@4.13.6"
+        "root:node_modules/esbuild@0.28.2",
+        "root:node_modules/fsevents@2.3.3"
       ]
     },
     {
@@ -31606,14 +31604,14 @@
       "ref": "root:node_modules/vite@8.3.4",
       "dependsOn": [
         "root:node_modules/@types/node@22.19.11",
-        "root:node_modules/esbuild@0.27.3",
+        "root:node_modules/esbuild@0.28.2",
         "root:node_modules/fsevents@2.3.3",
         "root:node_modules/lightningcss@1.33.0",
         "root:node_modules/picomatch@4.0.7",
         "root:node_modules/postcss@8.5.30",
         "root:node_modules/rolldown@1.2.13",
         "root:node_modules/tinyglobby@0.2.17",
-        "root:node_modules/tsx@4.21.0"
+        "root:node_modules/tsx@4.23.15"
       ]
     },
     {
@@ -31728,33 +31726,33 @@
         "web:node_modules/react-router-dom@7.18.4",
         "web:node_modules/react@18.3.1",
         "web:node_modules/typescript@5.9.3",
-        "web:node_modules/vite@6.4.1"
+        "web:node_modules/vite@6.4.5"
       ]
     },
     {
-      "ref": "web:node_modules/@babel/code-frame@7.29.0",
+      "ref": "web:node_modules/@babel/code-frame@7.29.7",
       "dependsOn": [
-        "web:node_modules/@babel/helper-validator-identifier@7.28.5",
+        "web:node_modules/@babel/helper-validator-identifier@7.29.7",
         "web:node_modules/js-tokens@4.0.0",
         "web:node_modules/picocolors@1.1.1"
       ]
     },
     {
-      "ref": "web:node_modules/@babel/compat-data@7.29.0",
+      "ref": "web:node_modules/@babel/compat-data@7.29.7",
       "dependsOn": []
     },
     {
-      "ref": "web:node_modules/@babel/core@7.29.0",
+      "ref": "web:node_modules/@babel/core@7.29.7",
       "dependsOn": [
-        "web:node_modules/@babel/code-frame@7.29.0",
-        "web:node_modules/@babel/generator@7.29.1",
-        "web:node_modules/@babel/helper-compilation-targets@7.28.6",
-        "web:node_modules/@babel/helper-module-transforms@7.28.6",
-        "web:node_modules/@babel/helpers@7.28.6",
-        "web:node_modules/@babel/parser@7.29.0",
-        "web:node_modules/@babel/template@7.28.6",
-        "web:node_modules/@babel/traverse@7.29.0",
-        "web:node_modules/@babel/types@7.29.0",
+        "web:node_modules/@babel/code-frame@7.29.7",
+        "web:node_modules/@babel/generator@7.29.12",
+        "web:node_modules/@babel/helper-compilation-targets@7.29.7",
+        "web:node_modules/@babel/helper-module-transforms@7.29.7",
+        "web:node_modules/@babel/helpers@7.29.10",
+        "web:node_modules/@babel/parser@7.29.12",
+        "web:node_modules/@babel/template@7.29.7",
+        "web:node_modules/@babel/traverse@7.29.12",
+        "web:node_modules/@babel/types@7.29.11",
         "web:node_modules/@jridgewell/remapping@2.3.5",
         "web:node_modules/convert-source-map@2.0.0",
         "web:node_modules/debug@4.4.3",
@@ -31764,43 +31762,43 @@
       ]
     },
     {
-      "ref": "web:node_modules/@babel/generator@7.29.1",
+      "ref": "web:node_modules/@babel/generator@7.29.12",
       "dependsOn": [
-        "web:node_modules/@babel/parser@7.29.0",
-        "web:node_modules/@babel/types@7.29.0",
+        "web:node_modules/@babel/parser@7.29.12",
+        "web:node_modules/@babel/types@7.29.11",
         "web:node_modules/@jridgewell/gen-mapping@0.3.13",
         "web:node_modules/@jridgewell/trace-mapping@0.3.31",
         "web:node_modules/jsesc@3.1.0"
       ]
     },
     {
-      "ref": "web:node_modules/@babel/helper-compilation-targets@7.28.6",
+      "ref": "web:node_modules/@babel/helper-compilation-targets@7.29.7",
       "dependsOn": [
-        "web:node_modules/@babel/compat-data@7.29.0",
-        "web:node_modules/@babel/helper-validator-option@7.27.1",
-        "web:node_modules/browserslist@4.28.1",
+        "web:node_modules/@babel/compat-data@7.29.7",
+        "web:node_modules/@babel/helper-validator-option@7.29.7",
+        "web:node_modules/browserslist@4.29.5",
         "web:node_modules/lru-cache@5.1.1",
         "web:node_modules/semver@6.3.1"
       ]
     },
     {
-      "ref": "web:node_modules/@babel/helper-globals@7.28.0",
+      "ref": "web:node_modules/@babel/helper-globals@7.29.7",
       "dependsOn": []
     },
     {
-      "ref": "web:node_modules/@babel/helper-module-imports@7.28.6",
+      "ref": "web:node_modules/@babel/helper-module-imports@7.29.7",
       "dependsOn": [
-        "web:node_modules/@babel/traverse@7.29.0",
-        "web:node_modules/@babel/types@7.29.0"
+        "web:node_modules/@babel/traverse@7.29.12",
+        "web:node_modules/@babel/types@7.29.11"
       ]
     },
     {
-      "ref": "web:node_modules/@babel/helper-module-transforms@7.28.6",
+      "ref": "web:node_modules/@babel/helper-module-transforms@7.29.7",
       "dependsOn": [
-        "web:node_modules/@babel/core@7.29.0",
-        "web:node_modules/@babel/helper-module-imports@7.28.6",
-        "web:node_modules/@babel/helper-validator-identifier@7.28.5",
-        "web:node_modules/@babel/traverse@7.29.0"
+        "web:node_modules/@babel/core@7.29.7",
+        "web:node_modules/@babel/helper-module-imports@7.29.7",
+        "web:node_modules/@babel/helper-validator-identifier@7.29.7",
+        "web:node_modules/@babel/traverse@7.29.12"
       ]
     },
     {
@@ -31808,69 +31806,69 @@
       "dependsOn": []
     },
     {
-      "ref": "web:node_modules/@babel/helper-string-parser@7.27.1",
+      "ref": "web:node_modules/@babel/helper-string-parser@7.29.11",
       "dependsOn": []
     },
     {
-      "ref": "web:node_modules/@babel/helper-validator-identifier@7.28.5",
+      "ref": "web:node_modules/@babel/helper-validator-identifier@7.29.7",
       "dependsOn": []
     },
     {
-      "ref": "web:node_modules/@babel/helper-validator-option@7.27.1",
+      "ref": "web:node_modules/@babel/helper-validator-option@7.29.7",
       "dependsOn": []
     },
     {
-      "ref": "web:node_modules/@babel/helpers@7.28.6",
+      "ref": "web:node_modules/@babel/helpers@7.29.10",
       "dependsOn": [
-        "web:node_modules/@babel/template@7.28.6",
-        "web:node_modules/@babel/types@7.29.0"
+        "web:node_modules/@babel/template@7.29.7",
+        "web:node_modules/@babel/types@7.29.11"
       ]
     },
     {
-      "ref": "web:node_modules/@babel/parser@7.29.0",
+      "ref": "web:node_modules/@babel/parser@7.29.12",
       "dependsOn": [
-        "web:node_modules/@babel/types@7.29.0"
+        "web:node_modules/@babel/types@7.29.11"
       ]
     },
     {
       "ref": "web:node_modules/@babel/plugin-transform-react-jsx-self@7.27.1",
       "dependsOn": [
-        "web:node_modules/@babel/core@7.29.0",
+        "web:node_modules/@babel/core@7.29.7",
         "web:node_modules/@babel/helper-plugin-utils@7.28.6"
       ]
     },
     {
       "ref": "web:node_modules/@babel/plugin-transform-react-jsx-source@7.27.1",
       "dependsOn": [
-        "web:node_modules/@babel/core@7.29.0",
+        "web:node_modules/@babel/core@7.29.7",
         "web:node_modules/@babel/helper-plugin-utils@7.28.6"
       ]
     },
     {
-      "ref": "web:node_modules/@babel/template@7.28.6",
+      "ref": "web:node_modules/@babel/template@7.29.7",
       "dependsOn": [
-        "web:node_modules/@babel/code-frame@7.29.0",
-        "web:node_modules/@babel/parser@7.29.0",
-        "web:node_modules/@babel/types@7.29.0"
+        "web:node_modules/@babel/code-frame@7.29.7",
+        "web:node_modules/@babel/parser@7.29.12",
+        "web:node_modules/@babel/types@7.29.11"
       ]
     },
     {
-      "ref": "web:node_modules/@babel/traverse@7.29.0",
+      "ref": "web:node_modules/@babel/traverse@7.29.12",
       "dependsOn": [
-        "web:node_modules/@babel/code-frame@7.29.0",
-        "web:node_modules/@babel/generator@7.29.1",
-        "web:node_modules/@babel/helper-globals@7.28.0",
-        "web:node_modules/@babel/parser@7.29.0",
-        "web:node_modules/@babel/template@7.28.6",
-        "web:node_modules/@babel/types@7.29.0",
+        "web:node_modules/@babel/code-frame@7.29.7",
+        "web:node_modules/@babel/generator@7.29.12",
+        "web:node_modules/@babel/helper-globals@7.29.7",
+        "web:node_modules/@babel/parser@7.29.12",
+        "web:node_modules/@babel/template@7.29.7",
+        "web:node_modules/@babel/types@7.29.11",
         "web:node_modules/debug@4.4.3"
       ]
     },
     {
-      "ref": "web:node_modules/@babel/types@7.29.0",
+      "ref": "web:node_modules/@babel/types@7.29.11",
       "dependsOn": [
-        "web:node_modules/@babel/helper-string-parser@7.27.1",
-        "web:node_modules/@babel/helper-validator-identifier@7.28.5"
+        "web:node_modules/@babel/helper-string-parser@7.29.11",
+        "web:node_modules/@babel/helper-validator-identifier@7.29.7"
       ]
     },
     {
@@ -32173,8 +32171,8 @@
     {
       "ref": "web:node_modules/@types/babel__core@7.20.5",
       "dependsOn": [
-        "web:node_modules/@babel/parser@7.29.0",
-        "web:node_modules/@babel/types@7.29.0",
+        "web:node_modules/@babel/parser@7.29.12",
+        "web:node_modules/@babel/types@7.29.11",
         "web:node_modules/@types/babel__generator@7.27.0",
         "web:node_modules/@types/babel__template@7.4.4",
         "web:node_modules/@types/babel__traverse@7.28.0"
@@ -32183,20 +32181,20 @@
     {
       "ref": "web:node_modules/@types/babel__generator@7.27.0",
       "dependsOn": [
-        "web:node_modules/@babel/types@7.29.0"
+        "web:node_modules/@babel/types@7.29.11"
       ]
     },
     {
       "ref": "web:node_modules/@types/babel__template@7.4.4",
       "dependsOn": [
-        "web:node_modules/@babel/parser@7.29.0",
-        "web:node_modules/@babel/types@7.29.0"
+        "web:node_modules/@babel/parser@7.29.12",
+        "web:node_modules/@babel/types@7.29.11"
       ]
     },
     {
       "ref": "web:node_modules/@types/babel__traverse@7.28.0",
       "dependsOn": [
-        "web:node_modules/@babel/types@7.29.0"
+        "web:node_modules/@babel/types@7.29.11"
       ]
     },
     {
@@ -32223,31 +32221,31 @@
     {
       "ref": "web:node_modules/@vitejs/plugin-react@4.7.0",
       "dependsOn": [
-        "web:node_modules/@babel/core@7.29.0",
+        "web:node_modules/@babel/core@7.29.7",
         "web:node_modules/@babel/plugin-transform-react-jsx-self@7.27.1",
         "web:node_modules/@babel/plugin-transform-react-jsx-source@7.27.1",
         "web:node_modules/@rolldown/pluginutils@1.0.0-beta.27",
         "web:node_modules/@types/babel__core@7.20.5",
         "web:node_modules/react-refresh@0.17.0",
-        "web:node_modules/vite@6.4.1"
+        "web:node_modules/vite@6.4.5"
       ]
     },
     {
-      "ref": "web:node_modules/baseline-browser-mapping@2.10.0",
+      "ref": "web:node_modules/baseline-browser-mapping@2.11.34",
       "dependsOn": []
     },
     {
-      "ref": "web:node_modules/browserslist@4.28.1",
+      "ref": "web:node_modules/browserslist@4.29.5",
       "dependsOn": [
-        "web:node_modules/baseline-browser-mapping@2.10.0",
-        "web:node_modules/caniuse-lite@1.0.30001774",
-        "web:node_modules/electron-to-chromium@1.5.302",
-        "web:node_modules/node-releases@2.0.27",
-        "web:node_modules/update-browserslist-db@1.2.3"
+        "web:node_modules/baseline-browser-mapping@2.11.34",
+        "web:node_modules/caniuse-lite@1.0.30001820",
+        "web:node_modules/electron-to-chromium@1.5.472",
+        "web:node_modules/node-releases@2.0.63",
+        "web:node_modules/update-browserslist-db@1.3.4"
       ]
     },
     {
-      "ref": "web:node_modules/caniuse-lite@1.0.30001774",
+      "ref": "web:node_modules/caniuse-lite@1.0.30001820",
       "dependsOn": []
     },
     {
@@ -32269,7 +32267,7 @@
       ]
     },
     {
-      "ref": "web:node_modules/electron-to-chromium@1.5.302",
+      "ref": "web:node_modules/electron-to-chromium@1.5.472",
       "dependsOn": []
     },
     {
@@ -32310,7 +32308,7 @@
     {
       "ref": "web:node_modules/fdir@6.5.0",
       "dependsOn": [
-        "web:node_modules/picomatch@4.0.3"
+        "web:node_modules/picomatch@4.0.7"
       ]
     },
     {
@@ -32350,7 +32348,7 @@
       "dependsOn": []
     },
     {
-      "ref": "web:node_modules/nanoid@3.3.11",
+      "ref": "web:node_modules/nanoid@3.3.20",
       "dependsOn": []
     },
     {
@@ -32358,7 +32356,7 @@
       "dependsOn": []
     },
     {
-      "ref": "web:node_modules/node-releases@2.0.27",
+      "ref": "web:node_modules/node-releases@2.0.63",
       "dependsOn": []
     },
     {
@@ -32373,15 +32371,15 @@
       "dependsOn": []
     },
     {
-      "ref": "web:node_modules/picomatch@4.0.3",
+      "ref": "web:node_modules/picomatch@4.0.7",
       "dependsOn": []
     },
     {
-      "ref": "web:node_modules/postcss@8.5.6",
+      "ref": "web:node_modules/postcss@8.5.32",
       "dependsOn": [
-        "web:node_modules/nanoid@3.3.11",
+        "web:node_modules/nanoid@3.3.20",
         "web:node_modules/picocolors@1.1.1",
-        "web:node_modules/source-map-js@1.2.1"
+        "web:node_modules/source-map-js@1.2.2"
       ]
     },
     {
@@ -32466,14 +32464,14 @@
       "dependsOn": []
     },
     {
-      "ref": "web:node_modules/source-map-js@1.2.1",
+      "ref": "web:node_modules/source-map-js@1.2.2",
       "dependsOn": []
     },
     {
       "ref": "web:node_modules/tinyglobby@0.2.15",
       "dependsOn": [
         "web:node_modules/fdir@6.5.0",
-        "web:node_modules/picomatch@4.0.3"
+        "web:node_modules/picomatch@4.0.7"
       ]
     },
     {
@@ -32481,21 +32479,21 @@
       "dependsOn": []
     },
     {
-      "ref": "web:node_modules/update-browserslist-db@1.2.3",
+      "ref": "web:node_modules/update-browserslist-db@1.3.4",
       "dependsOn": [
-        "web:node_modules/browserslist@4.28.1",
+        "web:node_modules/browserslist@4.29.5",
         "web:node_modules/escalade@3.2.0",
         "web:node_modules/picocolors@1.1.1"
       ]
     },
     {
-      "ref": "web:node_modules/vite@6.4.1",
+      "ref": "web:node_modules/vite@6.4.5",
       "dependsOn": [
         "web:node_modules/esbuild@0.25.12",
         "web:node_modules/fdir@6.5.0",
         "web:node_modules/fsevents@2.3.3",
-        "web:node_modules/picomatch@4.0.3",
-        "web:node_modules/postcss@8.5.6",
+        "web:node_modules/picomatch@4.0.7",
+        "web:node_modules/postcss@8.5.32",
         "web:node_modules/rollup@4.59.0",
         "web:node_modules/tinyglobby@0.2.15"
       ]

@@ -58,6 +58,11 @@ jobs:
           node scripts/create-compliance-inventory.mjs --out "${{ runner.temp }}/community-compliance"
       - name: No production-level critical or high npm advisories
         run: npm audit --omit=dev --audit-level=high
+      - name: No high npm advisories in development or frontend dependencies
+        run: |
+          npm audit --audit-level=high
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          npm audit --prefix web --audit-level=high
       - name: No unlicensed banking XSD bundles
         run: |
           $files = Get-ChildItem -LiteralPath src/payments/xsd -Filter *.xsd -File -ErrorAction SilentlyContinue
