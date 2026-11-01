@@ -23,11 +23,11 @@
       },
       {
         "name": "matching:lock_sha256:package-lock.json",
-        "value": "b875c5d984665528da85ffcf96c73c74543bcde09ea047f4951d2990051b3cd5"
+        "value": "b81d2b14778723a586a3bf45987199cb08af9573cc8fe59e5b225b79857c5369"
       },
       {
         "name": "matching:lock_sha256:web/package-lock.json",
-        "value": "7be6bd036d6059451c73348828c9ef66a1b910e54a3b11b6db6066120d9ac2ef"
+        "value": "444f680051b983e5f4d3162eb3f3a73cc0eb0d94b23e9792e36bad724648723f"
       }
     ]
   },

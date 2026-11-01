@@ -1,5 +1,10 @@
 # Private internal use: scope and evidence addendum
 
+> Scope update, 2026-11-01: the maintainer has requested public publication of
+> the sanitized source repository. See the [current source review](PUBLIC_SOURCE_REVIEW.md).
+> Historical private-use and binary-package results below retain their original
+> scope; public source does not certify a stable product or release an installer.
+
 The owner selected private internal use on 2026-10-16, requested an actual
 snippet attribution investigation, and deferred VM testing. No blanket
 first-party ownership or MIT licensing authority was confirmed. `LICENSE`

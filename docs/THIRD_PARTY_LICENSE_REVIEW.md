@@ -1,5 +1,10 @@
 # Third-party dependency license review (preliminary)
 
+> Scope update, 2026-11-01: the maintainer has requested public publication of
+> the sanitized source repository. See the [current source review](compliance/PUBLIC_SOURCE_REVIEW.md).
+> Historical private-use and binary-package results below retain their original
+> scope; public source does not certify a stable product or release an installer.
+
 > Historical 2026-10-13 baseline retained for provenance. Current qualification supersedes its package versions, counts and unfinished-function statements; see [compliance/README.md](compliance/README.md). This historical table is not current acceptance.
 **Status:** PARTIAL — not legal approval or permission to publish.
 

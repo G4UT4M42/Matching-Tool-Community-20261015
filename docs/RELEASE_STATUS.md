@@ -1,5 +1,10 @@
 # Release gate — Matching Tool Community
 
+> Scope update, 2026-11-01: the maintainer has requested public publication of
+> the sanitized source repository. See the [current source review](compliance/PUBLIC_SOURCE_REVIEW.md).
+> Historical private-use and binary-package results below retain their original
+> scope; public source does not certify a stable product or release an installer.
+
 Updated 2026-10-18. Version: `0.2.0-community-candidate.1`.
 
 PRIVATE_REPOSITORY_READY=false; SOFTWARE_ACCEPTED=false; RELEASE_ACCEPTED=false.
@@ -20,7 +25,7 @@ Historical application regression at `2f7d0a8`: 440/440, zero failures/skips. So
 - Final source/package artifact checksums, evidence manifest and German owner report.
 - Actual provider registration, bank consent and sandbox/live acceptance remain specific external limits. Supported local sandbox PIS is now implemented; production PIS is hard-disabled and live PISP authority/provider enablement remain external facts. They do not excuse missing supported local code. Pristine Windows VM qualification is OWNER_DEFERRED, not passed or currently requested. Supported synthetic workflows do not certify live provider operation.
 
-No public publication is authorized. Productive V2, private financial records and existing browser sessions remain untouched. No mandatory gate is promoted by a focused test or successful build.
+At the October 18 checkpoint, no public publication was authorized. Productive V2, private financial records and existing browser sessions remain untouched. No mandatory gate is promoted by a focused test or successful build.
 
 
 ## Final source freeze protocol

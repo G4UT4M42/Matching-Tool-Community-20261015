@@ -1,11 +1,37 @@
 # Security policy
 
-This is a **pre-release private staging repository**, not a supported production application.
+Matching Tool is a development preview. No stable production release has been
+issued. Report problems against the latest `main` revision and identify the
+exact version, affected component and environment.
 
-Do not report issues by attaching real transactions, invoices, bank-account details, customer identities, API tokens, browser profiles or database snapshots to a public issue. Provide reproduction steps with generated synthetic data and neutral placeholders.
+## Report a vulnerability privately
 
-Security boundaries for release: local-only HTTP binding by default; authenticated and CSRF-protected state-changing routes; restrictive file roots; least-privilege secret handling; verified WAL-safe SQLite backups; staged offline restores; owner-confirmed real-money actions; denial of automatic retries for ambiguous bank status; rate, file-size and resource limits.
+Use GitHub's [private vulnerability reporting form](https://github.com/G4UT4M42/Matching-Tool-Community-20261015/security/advisories/new).
+Include reproduction steps using synthetic data and describe the expected and
+observed security boundary. Do not publish an exploit or sensitive details in
+a public issue while a fix is being assessed.
 
-A security issue that may expose credentials, financial records or authorize payments is a release blocker. Do not bypass failing tests by disabling protection.
+Never attach real transactions, invoices, bank-account details, customer
+identities, API tokens, browser profiles or database snapshots to issues,
+pull requests or security reports. Use generated fictional examples and
+neutral placeholders. Do not test against another person's installation or
+live bank/provider accounts.
 
-Upstream asset/license and dependency-vulnerability audits are still required before first publication. Security contacts and disclosure handling will be configured before public visibility is enabled.
+## Security boundaries
+
+The application binds to loopback by default. It uses authenticated and
+CSRF-protected state-changing routes, restrictive file roots, role checks,
+protected provider credentials, WAL-safe backups and staged offline restores.
+Invoice portal browser sessions are isolated. Live bank payment submission is
+disabled; simulated ambiguous outcomes remain locked rather than automatically
+retried. Size, rate and resource limits are part of the security contract.
+
+Changes that expose credentials or financial records, bypass permissions or
+authorize unintended financial actions require a fix and regression evidence.
+Do not disable protection or weaken an assertion to make a check pass.
+
+CI checks the source privacy gate, synthetic financial and browser tests,
+build/typechecks, migration obligations, dependency inventories and root and
+frontend dependency advisories. Passing CI does not certify every deployment
+or third-party service. See the [source review](docs/compliance/PUBLIC_SOURCE_REVIEW.md)
+and [release process](docs/RELEASE_PROCESS.md) for their exact scope.

@@ -1,5 +1,10 @@
 # Dependency evidence and redistribution review
 
+> Scope update, 2026-11-01: the maintainer has requested public publication of
+> the sanitized source repository. See the [current source review](PUBLIC_SOURCE_REVIEW.md).
+> Historical private-use and binary-package results below retain their original
+> scope; public source does not certify a stable product or release an installer.
+
 Status: IMPLEMENTED for reproducible evidence collection. Ownership, complete
 native-library compliance, legal review, and release acceptance remain open.
 

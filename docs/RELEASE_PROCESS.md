@@ -1,8 +1,13 @@
 # Release process and publication gates
 
+> Scope update, 2026-11-01: the maintainer has requested public publication of
+> the sanitized source repository. See the [current source review](compliance/PUBLIC_SOURCE_REVIEW.md).
+> Historical private-use and binary-package results below retain their original
+> scope; public source does not certify a stable product or release an installer.
+
 Every release requires an independently verified commit, an immutable evidence package and explicit signoff for data integrity, security, privacy and licensing. The current state is a synthetic developer preview and NOT_READY for public visibility or real accounting.
 
-## Candidate workflow
+## Historical complete software/binary candidate workflow
 
 1. Identify the authoritative Community branch and stop concurrent edits to overlapping files. Preserve original private V2 Git/data as a separate protected installation.
 2. Verify the Git tree, ignored/generated outputs, commit metadata, object history, dependency sources and assets. No original private history may be transferred to the public candidate.
@@ -22,7 +27,7 @@ Changes to stored schemas, identities, financial treatment, payment records and 
 
 An unsafe release candidate remains private and unpublished. A versioned release must preserve users' previous good dataset generation and perform a verified destination rollback on migration failure. Restoring an app dataset never authorizes new banking execution.
 
-## Current blockers
+## Historical complete-release blockers
 
 Full financial workflows, complete legacy migration and backup/restore, full UI translations, independent asset/license ownership checks, clean-OS/cross-platform testing, hosted CI, private GitHub remote preparation, privacy signoff and final owner permission are not all complete.
 

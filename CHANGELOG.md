@@ -20,8 +20,18 @@ This file tracks Community source-preparation changes. No public stable release 
 - Corrected Windows PowerShell 5.1 demo-launch compatibility, supported Node.js 22 on PATH, and added protected isolated synthetic profiles.
 - Added real synthetic local HTTP start/restart/access-control tests, Windows negative launcher tests and current installation/release documentation.
 
-## Publication
+## Initial publication status — 2026-10-13 (historical)
 
 Current version is a developer-preview candidate, NOT_READY. No production-finance compatibility, complete backup/restore or real V2 upgrade is certified. Redistribution rights, release artifacts, hosted CI and independent privacy/security/licensing reviews remain pending.
 
 Do not interpret this changelog as a stable release announcement. Public GitHub publication requires explicit final owner approval.
+
+## Source-publication preparation — 2026-11-01
+
+- Prepared an English product README, contribution and private security-reporting guidance.
+- Recorded the exact source/history, dependency, snippet and Actions privacy review separately from binary-package acceptance.
+- The maintainer requested MIT source publication; its final ownership and execution record is maintained in docs/compliance/PUBLIC_SOURCE_REVIEW.md.
+
+- The maintainer confirmed rights in the original application code and selected MIT for the sanitized source history and current tree. Third-party components keep their own licenses.
+- Added a human-readable third-party component index and MIT package metadata.
+- Assigned two complete Windows backup/restore integration tests explicit bounded thirty-second deadlines; all byte/integrity/ownership/audit assertions and application guards remain unchanged.

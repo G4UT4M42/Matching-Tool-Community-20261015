@@ -1,6 +1,6 @@
 # Contributing
 
-Contributions are welcome after the project is approved for public release. Security and accounting integrity take priority over convenience.
+Feedback, bug reports, improvements and translations are welcome. Security and accounting integrity take priority over convenience.
 
 ## Mandatory pull-request obligations
 1. Describe the user-visible behavior, data structures affected, and privacy/security impact.
@@ -22,3 +22,25 @@ All user-facing strings must be represented by translation keys. The default loc
 Run `node scripts/check-migration-pr.mjs --base <base-git-ref>` once application source is integrated. Attach test evidence, dependency/license review and a summary of any risks. A green script does not replace code review.
 
 Never run integration tests against live banking, user data, or externally exposed HTTP without explicit owner-controlled authorization.
+
+## License and provenance
+
+Submit original contributions under the project's [MIT license](LICENSE).
+Only contribute material you have the necessary rights to publish. Identify
+third-party code or assets, their original source and license; retain required
+copyright and permission notices. Do not assume that a public code snippet is
+unrestricted. Unclear rights must be resolved before merge.
+
+## Country-specific reports and adaptations
+
+Country-specific accounting reports, tax formats, translations and workflow
+adaptations are welcome. Describe the country/jurisdiction, reporting period,
+supported taxpayer or business scope and authoritative public requirements.
+Provide independently calculated synthetic expected results, including
+rounding, currency, credit-note and missing-evidence cases. Make unsupported
+cases explicit rather than silently guessing a tax treatment.
+
+Existing reports are jurisdiction-neutral. Official tax-return generation and
+filing remain roadmap work; a contribution should identify precisely which
+part it implements and tests. Never attach actual tax returns or financial
+records as examples.

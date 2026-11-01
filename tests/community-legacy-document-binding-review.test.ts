@@ -22,6 +22,10 @@ let root:string,state:MatchingState,db:typeof import('../src/storage/db.js'),jso
 const originalPath=()=>join(root,'documents','synthetic-original.bin');
 const derivedPath=()=>join(root,'documents','attachments',sha(owner.workspace_id),sha(bytes));
 const exclusive=async<T>(operation:()=>Promise<T>)=>operation();
+// Full backup/stage/activation/reopen workflows include strict Windows storage
+// checks. The default five-second unit-test budget can expire on hosted runners.
+// Keep the workflow bounded and retain every byte, ownership and audit assertion.
+const backupRestoreTestTimeoutMs=30_000;
 function service(workspaceId:string|undefined=owner.workspace_id){return new CommunityDocumentService({root:join(root,'documents'),workspaceId,getState:()=>state,persistAndActivate:(before,next,actor)=>{state=canonical.commitCanonicalState(before,next,actor);}});}
 function restart(){db.closeDb();db.getDb();state=json.loadState()!;canonical.initializeCanonicalState(state);}
 beforeEach(async context=>{
@@ -51,12 +55,12 @@ describe('independent ordinary legacy document workspace binding',()=>{
   const backup=await import('../src/community/persistence/backup.js'),restore=await import('../src/community/persistence/restore.js'),before=readFileSync(join(root,'state','state.json'));
   const created=await backup.createCommunityBackup(root,exclusive),archive=readFileSync(created.path),inspected=backup.inspectBackupBytes(archive);expect(inspected.files.get('documents/synthetic-original.bin')).toEqual(bytes);expect(inspected.files.has('documents/document-index-v1.json')).toBe(false);expect(existsSync(derivedPath())).toBe(false);
   unlinkSync(originalPath());db.closeDb();const staged=await restore.stageCommunityRestore(root,archive,exclusive);await restore.activateCommunityRestore(root,staged.id,staged.fingerprint,exclusive,async change=>{change();});restart();expect((await service().download(owner,documentId)).buffer).toEqual(bytes);expect((await service().list(owner)).map(record=>record.id)).toEqual([documentId]);expect(state.documents.size).toBe(1);expect(readFileSync(join(root,'state','state.json'))).toEqual(before);expect(readFileSync(originalPath())).toEqual(bytes);
- });
+ },backupRestoreTestTimeoutMs);
  it('backs up audited archive/restore recovery with both original and derived evidence while retaining one economic row',async()=>{
   await service().disposition(owner,documentId,'archive');await service().disposition(owner,documentId,'restore');const before=readFileSync(join(root,'state','state.json')),audit=structuredClone(state.audit_events),backup=await import('../src/community/persistence/backup.js'),restore=await import('../src/community/persistence/restore.js');unlinkSync(join(root,'documents','document-index-v1.json'));
   const created=await backup.createCommunityBackup(root,exclusive),archive=readFileSync(created.path),inspected=backup.inspectBackupBytes(archive);expect(inspected.files.get('documents/synthetic-original.bin')).toEqual(bytes);expect(inspected.files.get('documents/attachments/'+sha(owner.workspace_id)+'/'+sha(bytes))).toEqual(bytes);unlinkSync(originalPath());unlinkSync(derivedPath());db.closeDb();
   const staged=await restore.stageCommunityRestore(root,archive,exclusive);await restore.activateCommunityRestore(root,staged.id,staged.fingerprint,exclusive,async change=>{change();});restart();const docs=service();expect((await docs.list(owner))).toHaveLength(1);expect((await docs.download(owner,documentId)).buffer).toEqual(bytes);expect(state.documents.size).toBe(1);expect(state.audit_events).toEqual(audit);expect(readFileSync(join(root,'state','state.json'))).toEqual(before);
- });
+ },backupRestoreTestTimeoutMs);
  it('returns opaque nonimage originals with an octet-stream attachment filename rather than a fabricated spreadsheet extension',async()=>{
   const app=express();app.use((_req,res,next)=>{res.locals.communityPrincipal=owner;next();});app.use('/documents',createCommunityDocumentsRouter(service(),()=>true));server=app.listen(0,'127.0.0.1');await new Promise<void>(ok=>server!.once('listening',ok));const response=await fetch('http://127.0.0.1:'+(server.address() as {port:number}).port+'/documents/'+documentId+'/content');expect(response.status).toBe(200);expect(response.headers.get('content-type')).toContain('application/octet-stream');expect(response.headers.get('content-disposition')).not.toContain('.xlsx');expect(Buffer.from(await response.arrayBuffer())).toEqual(bytes);
  });

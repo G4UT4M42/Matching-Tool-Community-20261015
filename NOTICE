@@ -37,3 +37,16 @@ components, include applicable license texts, and satisfy source/relink
 obligations before distributing a binary installation package.
 
 Release acceptance and source ownership confirmation remain separate gates.
+
+Source repository scope
+
+The public source repository does not vendor the npm dependencies, OCR data,
+fonts, native/WASM libraries or Node.js runtime described above. Dependency
+references and portable evidence manifests retain their original scopes.
+Prepared installers and runtime archives are separate distribution artifacts;
+this source publication does not release them or satisfy their recipient-side
+notice, source or relink obligations.
+
+The maintainer confirmed rights in the original application code and selected
+MIT for this source publication. See THIRD_PARTY_COMPONENTS.md for actual
+dependency versions, license families and source-versus-binary scope.
