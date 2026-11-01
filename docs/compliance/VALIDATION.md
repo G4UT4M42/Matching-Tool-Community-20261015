@@ -1,5 +1,17 @@
 # Compliance inventory validation — 2026-10-15
 
+## Source dependency refresh — 2026-11-01
+
+The root lock now selects body-parser 1.20.9, multer 2.5.0 and qs 6.16.1.
+No other dependency version or integrity changed. The source-controlled SBOM
+and summary were regenerated from a fresh Node 22.23.3 installation. Collection
+self-tests passed; 517 installations, 374 installed, 143 absent, 381 notice-file
+occurrences and 235 distinct original legal texts were observed. Both root and
+frontend production audits reported zero advisories at this review. These are
+technical inventory results; the historical review and limitations below remain
+identified with their original snapshots. Source publication and distribution
+of prepared native/binary packages require separate scope decisions.
+
 Runtime: Node.js 22.23.3, Windows x64.
 
 ```powershell

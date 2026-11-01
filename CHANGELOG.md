@@ -2,6 +2,11 @@
 
 This file tracks Community source-preparation changes. No public stable release has been issued.
 
+## Unreleased — 2026-11-01
+
+- Updated body-parser to 1.20.9, multer to 2.5.0 and the qs override to 6.16.1 to address GHSA-27r3-jxmh-p828, GHSA-q7qp-rjg7-q26m and GHSA-6pq8-jhm2-2vcw.
+- Refreshed the exact-lock dependency inventory. Application behavior, stored financial contracts and provider connections are unchanged.
+
 ## Unreleased — 2026-10-13
 
 - Established a separate sanitized Community developer-preview source tree with a fresh Git history.

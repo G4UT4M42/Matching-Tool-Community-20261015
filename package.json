@@ -35,7 +35,7 @@
     "csv-parse": "^7.0.3",
     "express": "^4.21.0",
     "fast-xml-parser": "5.11.0",
-    "multer": "^2.1.1",
+    "multer": "2.5.0",
     "pdfjs-dist": "^5.5.207",
     "pdfkit": "^0.18.0",
     "pino": "^9.6.0",
@@ -61,6 +61,6 @@
   },
   "private": true,
   "overrides": {
-    "qs": "6.16.0"
+    "qs": "6.16.1"
   }
 }
